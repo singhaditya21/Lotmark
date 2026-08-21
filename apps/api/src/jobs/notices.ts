@@ -1,7 +1,8 @@
 import type { Sql } from '../db';
 import { recordAudit } from '../services/audit';
+import { machineForEntity } from '../services/workflows';
 import { nextCode } from '../services/numbering';
-import { assertSystemTransition, ENTITLEMENT_MACHINE } from '@lotmark/domain';
+import { assertSystemTransition } from '@lotmark/domain';
 import { systemAuditContext, type TenantContext } from './context';
 
 /**
@@ -190,10 +191,19 @@ export async function monitoringDue(tx: Sql, tenant: TenantContext): Promise<num
  * than being deleted, because the claim and its decision remain part of the record.
  */
 export async function lapseEntitlements(tx: Sql, tenant: TenantContext): Promise<number> {
-  // The declared machine is consulted even though no person is acting. It was
-  // previously bypassed with a raw UPDATE, so a state change happened that the
-  // machine said required a permission nobody had checked.
-  assertSystemTransition(ENTITLEMENT_MACHINE, 'approved', 'lapsed');
+  /**
+   * The declared machine is consulted even though no person is acting. It was
+   * previously bypassed with a raw UPDATE, so a state change happened that the
+   * machine said required a permission nobody had checked.
+   *
+   * And the machine consulted is now the TENANT'S — a tenant that removed
+   * `approved → lapsed`, or that unticked "the system may make this move
+   * unattended", has said this job may not run here. It stops, and says so,
+   * rather than doing what the code used to say.
+   */
+  const machine = await machineForEntity(tx, tenant.id, 'entitlement');
+  if (!machine) return 0;
+  assertSystemTransition(machine, 'approved', 'lapsed');
 
   const lapsed = await tx`
     UPDATE lotmark.entitlements

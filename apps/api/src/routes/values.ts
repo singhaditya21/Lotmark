@@ -5,13 +5,14 @@ import {
   shelfLifeMonthsBetween, expandedUncertainty, type UncertaintyComponent,
 } from '@lotmark/stats';
 import {
-  isSignatureMeaning, defaultSodSettings, assertTransition, VALUE_MACHINE,
+  isSignatureMeaning, defaultSodSettings, assertTransition,
   type SignatureMeaning, type CompetenceBasis, type AuthScope, type Permission,
 } from '@lotmark/domain';
 import { inTenantTransaction, type Sql } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
+import { machineForEntity } from '../services/workflows';
 import { applySignature, SigningError } from '../services/signing';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
 import { conflict, forbidden, invalidRequest, notFound, sendProblem, stepUpRequired, unprocessable } from '../http/problem';
@@ -164,8 +165,14 @@ export async function registerValueRoutes(app: FastifyInstance): Promise<void> {
       if (value.state !== step.from) {
         return { status: 409 as const, message: `${value.code} is ${value.state}, not ${step.from}.` };
       }
-      // The declared machine is the authority on what may follow what.
-      assertTransition(VALUE_MACHINE, step.from as never, step.to as never);
+      // The declared machine is the authority on what may follow what — and
+      // which machine is declared is now the tenant's to say.
+      const valueMachine = await machineForEntity(
+        tx, ctx.tenantId, 'property_value', (m) => app.log.warn(m));
+      if (!valueMachine) {
+        return { status: 409 as const, message: 'No workflow governs property values.' };
+      }
+      assertTransition(valueMachine, step.from, step.to);
 
       const scope: AuthScope = value.owner_team_id
         ? { kind: 'team', teamId: value.owner_team_id } : { kind: 'tenant' };

@@ -65,6 +65,9 @@ export function defaultWorkflows(): WorkflowConfig[] {
         ...(requiresCompetence(t.requires) ? { requiresCompetence: t.requires } : {}),
         requiresReason: REASON_REQUIRED.has(`${m.name}:${t.from}->${t.to}`),
         guards: [],
+        // Carried, not dropped: without it a machine resolved back out of
+        // configuration forbids the moves scheduled work is allowed to make.
+        systemInitiated: t.systemInitiated === true,
       };
     }),
   }));

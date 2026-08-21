@@ -109,6 +109,11 @@ export const OPERATIONS: readonly Operation[] = [
     '21 CFR 11 §11.200(a)(1): the first signing of a session needs both ' +
     'components. Subsequent signings within the window may use one.'),
   /* ── Custom fields ────────────────────────────────────────────────────── */
+  op('GET', '/api/v1/admin/config/draft/:id/workflows', 'Configuration',
+    'The machines a draft would install', 'user:manage',
+    'Resolved by the runtime resolver against the draft\u2019s entries, and it reports the '
+    + 'transitions the resolver DROPPED \u2014 which a diagram drawn from the raw JSON would not.'),
+
   op('GET', '/api/v1/admin/config/draft/:id/form/:entity', 'Configuration',
     'Preview a form as this draft would render it', 'user:manage',
     'Resolved by the runtime resolver against the draft\u2019s own entries, so the designer\u2019s '

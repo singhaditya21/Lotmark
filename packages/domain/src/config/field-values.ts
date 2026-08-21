@@ -33,8 +33,12 @@ export function isCustomFieldEntity(v: string): v is CustomFieldEntity {
 }
 
 /**
- * Where the parent record lives, what its state is called, and how it reaches a
- * team.
+ * Where each record type lives, what its state column is called, and how it
+ * reaches a team.
+ *
+ * Named for the entity rather than for custom fields, because it is not about
+ * custom fields: `publicationProblems()` uses it to ask which states records
+ * are CURRENTLY in before letting a workflow change remove one.
  *
  * Three questions, one map, because all three are asked at the same moment and
  * answering them separately is how they drift apart.
@@ -56,7 +60,7 @@ export function isCustomFieldEntity(v: string): v is CustomFieldEntity {
  * Exhaustive by construction: `Record<CustomFieldEntity, …>` means the compiler
  * refuses a new entity until it has been given all three.
  */
-export const CUSTOM_FIELD_PARENT: Record<CustomFieldEntity, {
+export const ENTITY_RECORD: Record<CustomFieldEntity, {
   readonly table: string;
   readonly stateColumn: string;
   /** 'own' — the table carries owner_team_id; 'project' — join to it; 'none'. */

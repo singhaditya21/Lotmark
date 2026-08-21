@@ -249,6 +249,46 @@
         }
       }
     },
+    "/api/v1/admin/config/draft/{id}/workflows": {
+      "get": {
+        "operationId": "getAdminConfigDraftByIdWorkflows",
+        "summary": "The machines a draft would install",
+        "description": "Resolved by the runtime resolver against the draft’s entries, and it reports the transitions the resolver DROPPED — which a diagram drawn from the raw JSON would not. Requires `user:manage`.",
+        "tags": [
+          "Configuration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
     "/api/v1/admin/config/draft/{id}/form/{entity}": {
       "get": {
         "operationId": "getAdminConfigDraftByIdFormByEntity",

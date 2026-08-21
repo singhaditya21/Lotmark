@@ -1,13 +1,14 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import {
-  assertTransition, canTransition, nextStates, CAPA_MACHINE, IllegalTransitionError,
+  assertTransition, canTransition, nextStates, IllegalTransitionError,
   defaultSodSettings, type AuthScope,
 } from '@lotmark/domain';
 import { inTenantTransaction } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
+import { machineForEntity } from '../services/workflows';
 import {
   sendProblem, notFound, conflict, invalidRequest, forbidden, unprocessable,
 } from '../http/problem';
@@ -52,11 +53,17 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
     });
     if (!verdict.allowed) return sendProblem(reply, forbidden(verdict.reason, verdict.message));
 
-    const rows = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, (tx) =>
-      tx`SELECT c.id, c.code, c.source, c.severity, c.state, c.raised_on, c.due_on,
-                c.root_cause, c.corrective_action, c.closed_at, t.name AS team
-         FROM lotmark.capa c LEFT JOIN lotmark.teams t ON t.id = c.owner_team_id
-         WHERE c.tenant_id = ${ctx.tenantId} ORDER BY c.raised_on DESC, c.code DESC`);
+    const { rows, machine } = await inTenantTransaction(
+      db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => ({
+        rows: await tx`SELECT c.id, c.code, c.source, c.severity, c.state, c.raised_on, c.due_on,
+                              c.root_cause, c.corrective_action, c.closed_at, t.name AS team
+                       FROM lotmark.capa c LEFT JOIN lotmark.teams t ON t.id = c.owner_team_id
+                       WHERE c.tenant_id = ${ctx.tenantId} ORDER BY c.raised_on DESC, c.code DESC`,
+        // Resolved from THIS tenant's configuration, falling back to the code
+        // machine. Read in the same transaction as the rows, so the moves
+        // offered belong to the same configuration the states were read under.
+        machine: await machineForEntity(tx, ctx.tenantId, 'capa', (m) => app.log.warn(m)),
+      }));
 
     return reply.send({
       capa: rows.map((r) => {
@@ -65,7 +72,7 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
           ...c,
           // The UI should offer only moves the machine permits, and the machine
           // is the authority on that — not a hardcoded list in the console.
-          availableTransitions: nextStates(CAPA_MACHINE, c['state'] as never),
+          availableTransitions: machine ? nextStates(machine, c['state'] as string) : [],
         };
       }),
     });
@@ -117,14 +124,20 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
         return { status: 403 as const, verdict };
       }
 
+      const machine = await machineForEntity(tx, ctx.tenantId, 'capa', (m) => app.log.warn(m));
+      if (!machine) {
+        // No machine at all is a programming error, not a configuration one.
+        return { status: 409 as const, message: 'No workflow governs complaints and CAPA.' };
+      }
+
       try {
-        assertTransition(CAPA_MACHINE, capa.state as never, body.to as never);
+        assertTransition(machine, capa.state as string, body.to);
       } catch (e) {
         if (e instanceof IllegalTransitionError) {
           return {
             status: 409 as const,
             message: `${capa.code} is ${capa.state}; it cannot move to ${body.to}. ` +
-              `Available: ${nextStates(CAPA_MACHINE, capa.state as never).join(', ') || 'none'}.`,
+              `Available: ${nextStates(machine, capa.state as string).join(', ') || 'none'}.`,
           };
         }
         throw e;
@@ -177,7 +190,7 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
         body: {
           capa: { id: capa.id, code: capa.code, state: body.to },
           from: capa.state,
-          availableTransitions: nextStates(CAPA_MACHINE, body.to as never),
+          availableTransitions: nextStates(machine, body.to),
         },
       };
     });
@@ -195,15 +208,24 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
   app.get('/capa/workflow', async (req, reply) => {
     const ctx = await requireSession(app, req, reply);
     if (!ctx) return;
+
+    const machine = await inTenantTransaction(
+      db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY },
+      (tx) => machineForEntity(tx, ctx.tenantId, 'capa', (m) => app.log.warn(m)));
+
+    if (!machine) return sendProblem(reply, notFound('No workflow governs complaints and CAPA.'));
+
     return reply.send({
-      states: CAPA_MACHINE.states,
-      initial: CAPA_MACHINE.initial,
-      terminal: CAPA_MACHINE.terminal,
-      transitions: CAPA_MACHINE.transitions.map((t) => ({
+      states: machine.states,
+      initial: machine.initial,
+      terminal: machine.terminal,
+      transitions: machine.transitions.map((t) => ({
         from: t.from, to: t.to, action: t.action, requires: t.requires,
       })),
-      // Proof the two agree, rather than two lists that drift.
-      canCloseFromEffectiveness: canTransition(CAPA_MACHINE, 'effectiveness', 'closed') !== null,
+      // Proof the two agree, rather than two lists that drift. Now answered
+      // from the tenant's own machine, so a tenant that removed that move gets
+      // `false` and a console that stops offering it.
+      canCloseFromEffectiveness: canTransition(machine, 'effectiveness', 'closed') !== null,
     });
   });
 }

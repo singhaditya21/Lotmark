@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   fieldConfigSchema, picklistConfigSchema, layoutConfigSchema,
   valuesSchemaFor, missingRequired, resolveForm, writableFields,
-  CUSTOM_FIELD_ENTITIES, CUSTOM_FIELD_PARENT, CUSTOM_FIELD_PERMISSIONS,
+  CUSTOM_FIELD_ENTITIES, ENTITY_RECORD, CUSTOM_FIELD_PERMISSIONS,
   FROZEN_STATES, isFrozen,
   isSupportedFieldType, isPermission, ALL_MACHINES,
   type FieldConfig, type PicklistConfig, type LayoutConfig,
@@ -58,8 +58,8 @@ describe('the entity vocabulary cannot drift from the product', () => {
 
   it('names a table and a state column for every entity', () => {
     for (const entity of CUSTOM_FIELD_ENTITIES) {
-      expect(CUSTOM_FIELD_PARENT[entity].table, entity).toBeTruthy();
-      expect(CUSTOM_FIELD_PARENT[entity].stateColumn, entity).toBeTruthy();
+      expect(ENTITY_RECORD[entity].table, entity).toBeTruthy();
+      expect(ENTITY_RECORD[entity].stateColumn, entity).toBeTruthy();
     }
   });
 

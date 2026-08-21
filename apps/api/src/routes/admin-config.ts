@@ -18,6 +18,7 @@ import {
   publicationProblems, changeDigest, ConfigAdminError, KIND_RISK,
 } from '../services/config-admin';
 import { definitionsFrom, renderableForm } from '../services/custom-fields';
+import { machinesFromVersion } from '../services/workflows';
 import {
   sendProblem, notFound, unprocessable, invalidRequest, forbidden,
 } from '../http/problem';
@@ -273,6 +274,44 @@ export async function registerAdminConfigRoutes(app: FastifyInstance): Promise<v
 
       if (!form) return sendProblem(reply, notFound('No such configuration version.'));
       return reply.send({ form });
+    });
+
+  /**
+   * The machines a draft would install, as the runtime would resolve them.
+   *
+   * Same reasoning as the form preview: resolved by the resolver the product
+   * runs on, against the draft's own entries. A diagram drawn from a second
+   * reading of the same JSON can be confidently right about a machine the
+   * runtime would build differently.
+   */
+  app.get<{ Params: { id: string } }>(
+    '/admin/config/draft/:id/workflows', async (req, reply) => {
+      const ctx = await requireAdmin(req, reply);
+      if (!ctx) return;
+
+      const out = await tx(ctx, async (t) => {
+        const version = await versionById(t, ctx.tenantId, req.params.id);
+        if (!version) return null;
+        const problems: string[] = [];
+        const machines = await machinesFromVersion(t, version.id, (m) => problems.push(m));
+        return { machines, problems };
+      });
+
+      if (!out) return sendProblem(reply, notFound('No such configuration version.'));
+      return reply.send({
+        workflows: [...out.machines.entries()].map(([entity, m]) => ({
+          entity,
+          states: m.states,
+          initial: m.initial,
+          terminal: m.terminal,
+          transitions: m.transitions.map((t) => ({
+            from: t.from, to: t.to, action: t.action, requires: t.requires,
+            systemInitiated: t.systemInitiated === true,
+          })),
+        })),
+        /** Transitions the resolver DROPPED, which a diagram would not show. */
+        dropped: out.problems,
+      });
     });
 
   app.get<{ Params: { id: string } }>('/admin/config/draft/:id/review', async (req, reply) => {

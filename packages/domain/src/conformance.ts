@@ -280,6 +280,31 @@ export const REQUIREMENTS: readonly Requirement[] = [
       'expires a password the holder chose.',
   },
   {
+    id: 'REQ-SEQUENCING',
+    clause: '21 CFR 11 §11.10(f)',
+    statement:
+      'Operational system checks enforce permitted sequencing of steps and ' +
+      'events, and the permitted sequence is the tenant\u2019s to declare.',
+    status: 'enforced',
+    code: [
+      'packages/domain/src/state-machines.ts',
+      'packages/domain/src/config/workflows.ts',
+      'apps/api/src/services/workflows.ts',
+    ],
+    tests: [
+      { file: 'packages/domain/src/__tests__/workflows.test.ts', named: 'round trip is lossless' },
+      { file: 'apps/api/src/__tests__/config-admin.test.ts', named: 'nowhere to go' },
+    ],
+    note:
+      'Every lifecycle is an explicit transition table, and the table now comes ' +
+      'from the ACTIVE configuration with the code machine as the fallback. One ' +
+      'machine governs every record of an entity at a time, so publication ' +
+      'refuses a change that would leave records in a state the new machine does ' +
+      'not have. NOT yet extensible for studies: `studies.state` carries a CHECK ' +
+      'listing its two states, and publication refuses a third rather than ' +
+      'letting the INSERT fail.',
+  },
+  {
     id: 'REQ-AUTHORITY',
     clause: '21 CFR 11 §11.10(g)',
     statement:

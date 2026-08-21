@@ -102,6 +102,21 @@ export const transitionConfigSchema = z.object({
   requiresReason: z.boolean().default(false),
   /** Guard expressions evaluated before the move; all must hold. */
   guards: z.array(z.string()).default([]),
+  /**
+   * May scheduled work make this move, with no person behind it?
+   *
+   * A job holds no authority, so it cannot satisfy `requires` — and should not:
+   * the permission describes a human act. This flag is how a machine states
+   * which moves the system is allowed to make unattended.
+   *
+   * Added because it was MISSING. `defaultWorkflows()` derives configuration
+   * from the code machines and dropped this flag on the floor, so the
+   * derivation did not in fact prove the model could express everything that
+   * was hardcoded — and a workflow resolved back out of configuration would
+   * have quietly forbidden the entitlement-lapse job its own machine permits.
+   * `workflows.test.ts` now asserts the round trip is lossless.
+   */
+  systemInitiated: z.boolean().default(false),
 });
 export type TransitionConfig = z.infer<typeof transitionConfigSchema>;
 

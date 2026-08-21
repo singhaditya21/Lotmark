@@ -1,13 +1,14 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import {
-  assertTransition, ORDER_MACHINE, ENTITLEMENT_MACHINE, defaultSodSettings,
+  assertTransition, defaultSodSettings,
   type OrderState,
 } from '@lotmark/domain';
 import { inTenantTransaction, type Sql } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
+import { machineForEntity } from '../services/workflows';
 import { nextCode } from '../services/numbering';
 import {
   sendProblem, notFound, conflict, unprocessable, invalidRequest, forbidden,
@@ -226,7 +227,11 @@ export async function registerCommerceRoutes(app: FastifyInstance): Promise<void
                      OR r.celsius > split_part(s.temperature_class, '-', 2)::numeric)) AS excursions
         FROM lotmark.shipments s WHERE s.tenant_id = ${ctx.tenantId}`;
 
-      return { orders, lines, shipments };
+      // Read in the same transaction as the orders, so the moves offered and
+      // the states shown come from one read of the configuration.
+      const machine = await machineForEntity(t, ctx.tenantId, 'order', (m) => app.log.warn(m));
+
+      return { orders, lines, shipments, machine };
     });
 
     return reply.send({
@@ -234,7 +239,9 @@ export async function registerCommerceRoutes(app: FastifyInstance): Promise<void
       scope: can(ctx, 'order:read_all') ? 'all' : 'own',
       canAdvance: can(ctx, 'order:advance'),
       /** Every state the machine permits, so the console never offers a 409. */
-      transitions: ORDER_MACHINE.transitions.map((t) => ({ from: t.from, to: t.to, action: t.action })),
+      transitions: body.machine
+        ? body.machine.transitions.map((t) => ({ from: t.from, to: t.to, action: t.action }))
+        : [],
     });
   });
 
@@ -341,9 +348,12 @@ export async function registerCommerceRoutes(app: FastifyInstance): Promise<void
 
       // The declared machine decides, not this route. An illegal move is a
       // defect caught at the boundary rather than a corrupt record found later.
+      const machine = await machineForEntity(t, ctx.tenantId, 'order', (m) => app.log.warn(m));
+      if (!machine) return { status: 409 as const, message: 'No workflow governs orders.' };
+
       let step;
       try {
-        step = assertTransition(ORDER_MACHINE, order.state, parsed.data.to as OrderState);
+        step = assertTransition(machine, order.state, parsed.data.to);
       } catch (e) {
         return { status: 409 as const, message: e instanceof Error ? e.message : 'Illegal transition.' };
       }
@@ -466,8 +476,11 @@ export async function registerCommerceRoutes(app: FastifyInstance): Promise<void
       if (!claim) return { status: 404 as const };
 
       const to = parsed.data.approve ? 'approved' : 'rejected';
+      const machine = await machineForEntity(
+        t, ctx.tenantId, 'entitlement', (m) => app.log.warn(m));
+      if (!machine) return { status: 409 as const, message: 'No workflow governs price tiers.' };
       try {
-        assertTransition(ENTITLEMENT_MACHINE, claim.state as never, to as never);
+        assertTransition(machine, claim.state as string, to);
       } catch (e) {
         return { status: 409 as const, message: e instanceof Error ? e.message : 'Illegal transition.' };
       }

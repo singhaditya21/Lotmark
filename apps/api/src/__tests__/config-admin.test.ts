@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { createHmac } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { buildApp } from '../app';
+import { inTenantTransaction } from '../db';
 
 /**
  * Administering configuration.
@@ -300,6 +301,246 @@ describe('custom fields have to hold together before they publish', () => {
     expect(r.problems, r.problems.join(' | ')).toEqual([]);
     expect(r.publishable).toBe(true);
     expect(r.needsSignature, 'a field is a behaviour change').toBe(true);
+  });
+});
+
+describe('a workflow has to be able to govern the records that exist', () => {
+  /**
+   * The active version governs every record of an entity — not the version each
+   * record was created under, because two records following different rules
+   * because they were made on different days is not something an operator can
+   * hold in their head or an assessor can be shown. The price of that choice is
+   * paid here, at publication.
+   *
+   * The fixture mirrors the seeded CAPA machine exactly. Writing an invented
+   * one instead is how the first draft of these tests failed: the stranding
+   * check reported 21 records in a state the fixture had not declared, which
+   * was entirely correct and entirely my mistake.
+   */
+  const CAPA_STATES = [
+    { key: 'open', name: 'Open' },
+    { key: 'investigation', name: 'Investigation' },
+    { key: 'root_cause', name: 'Root cause' },
+    { key: 'capa', name: 'Corrective action' },
+    { key: 'effectiveness', name: 'Effectiveness' },
+    { key: 'closed', name: 'Closed' },
+  ];
+  const CAPA_TRANSITIONS = [
+    { from: 'open', to: 'investigation', requires: 'capa:manage', action: 'Investigation opened' },
+    { from: 'investigation', to: 'root_cause', requires: 'capa:manage', action: 'Root cause identified' },
+    { from: 'root_cause', to: 'capa', requires: 'capa:manage', action: 'Corrective action raised' },
+    { from: 'capa', to: 'effectiveness', requires: 'capa:manage', action: 'Effectiveness check started' },
+    { from: 'effectiveness', to: 'closed', requires: 'capa:manage', action: 'CAPA closed' },
+    { from: 'effectiveness', to: 'capa', requires: 'capa:manage', action: 'Effectiveness check failed, action reopened' },
+  ];
+  const capaWorkflow = (over: Record<string, unknown> = {}) => ({
+    key: 'capa', name: 'Capa', entity: 'capa',
+    states: CAPA_STATES, initial: 'open', terminal: ['closed'],
+    transitions: CAPA_TRANSITIONS, ...over,
+  });
+
+  it('refuses removing a state records are sitting in', async () => {
+    // Exactly the shape of the role check: name it, count who is affected, say
+    // what to do. Without it those records have no outgoing transition at all,
+    // and no screen can explain why.
+    const id = await openDraft('Drop the investigation state');
+    const res = await putEntry(id, 'workflow', 'capa', capaWorkflow({
+      states: CAPA_STATES.filter((s) => s.key !== 'investigation'),
+      transitions: [
+        { from: 'open', to: 'root_cause', requires: 'capa:manage', action: 'Root cause identified' },
+        ...CAPA_TRANSITIONS.slice(2),
+      ],
+    }));
+    expect(res.statusCode, res.body).toBe(200);
+
+    const r = await review(id);
+    expect(r.publishable).toBe(false);
+    expect(r.problems.join(' ')).toMatch(/does not declare the state 'investigation'/);
+    expect(r.problems.join(' ')).toMatch(/would have nowhere to go/);
+  });
+
+  it('refuses a study state the database cannot store', async () => {
+    /**
+     * `studies.state` carries a CHECK listing its two states — the only state
+     * vocabulary in the schema welded into DDL. A third would fail at the
+     * INSERT as a 500, long after the change was signed off.
+     */
+    const id = await openDraft('A third study state');
+    await putEntry(id, 'workflow', 'study', {
+      key: 'study', name: 'Study', entity: 'study',
+      states: [
+        { key: 'draft', name: 'Draft' },
+        { key: 'reviewed', name: 'Reviewed' },
+        { key: 'signed', name: 'Signed' },
+      ],
+      initial: 'draft', terminal: ['signed'],
+      transitions: [
+        { from: 'draft', to: 'reviewed', requires: 'study:run', action: 'Reviewed' },
+        { from: 'reviewed', to: 'signed', requires: 'study:sign', action: 'Signed' },
+      ],
+    });
+    const r = await review(id);
+    expect(r.publishable).toBe(false);
+    expect(r.problems.join(' ')).toMatch(/the database cannot store/);
+  });
+
+  it('accepts a workflow that keeps every state in use', async () => {
+    // Adding a transition takes nothing away, so nothing can be stranded.
+    const id = await openDraft('A shortcut through CAPA');
+    await putEntry(id, 'workflow', 'capa', capaWorkflow({
+      transitions: [
+        ...CAPA_TRANSITIONS,
+        { from: 'open', to: 'closed', requires: 'capa:manage', action: 'Closed without action' },
+      ],
+    }));
+    const r = await review(id);
+    expect(r.problems, r.problems.join(' | ')).toEqual([]);
+    expect(r.publishable).toBe(true);
+    expect(r.needsSignature, 'a workflow is a behaviour change').toBe(true);
+  });
+
+  it('refuses a workflow whose own shape does not hold together', async () => {
+    // Caught by the schema rather than at publication, but it must not reach
+    // the draft at all — an unreachable state is always a mistake.
+    const id = await openDraft('An unreachable state');
+    const res = await putEntry(id, 'workflow', 'capa', capaWorkflow({
+      states: [...CAPA_STATES, { key: 'limbo', name: 'Limbo' }],
+    }));
+    expect(res.statusCode).toBe(422);
+    expect(res.json<{ detail: string }>().detail).toMatch(/unreachable/);
+  });
+});
+
+describe('configuration is what the machine is, not a description of it', () => {
+  /**
+   * The claim this whole change rests on. Resolved against the DRAFT rather
+   * than by publishing: publishing would swap the tenant's active version
+   * underneath every other test file running beside this one.
+   */
+  const CAPA_STATES = [
+    { key: 'open', name: 'Open' }, { key: 'investigation', name: 'Investigation' },
+    { key: 'root_cause', name: 'Root cause' }, { key: 'capa', name: 'Corrective action' },
+    { key: 'effectiveness', name: 'Effectiveness' }, { key: 'closed', name: 'Closed' },
+  ];
+  const CAPA_TRANSITIONS = [
+    { from: 'open', to: 'investigation', requires: 'capa:manage', action: 'Investigation opened' },
+    { from: 'investigation', to: 'root_cause', requires: 'capa:manage', action: 'Root cause identified' },
+    { from: 'root_cause', to: 'capa', requires: 'capa:manage', action: 'Corrective action raised' },
+    { from: 'capa', to: 'effectiveness', requires: 'capa:manage', action: 'Effectiveness check started' },
+    { from: 'effectiveness', to: 'closed', requires: 'capa:manage', action: 'CAPA closed' },
+    { from: 'effectiveness', to: 'capa', requires: 'capa:manage', action: 'Effectiveness check failed, action reopened' },
+  ];
+
+  const workflowsOf = async (draftId: string) => {
+    const res = await app.inject({
+      method: 'GET', url: `/api/v1/admin/config/draft/${draftId}/workflows`,
+      headers: { cookie: admin },
+    });
+    expect(res.statusCode, res.body).toBe(200);
+    return res.json<{
+      workflows: Array<{
+        entity: string; states: string[]; initial: string; terminal: string[];
+        transitions: Array<{ from: string; to: string; action: string; systemInitiated: boolean }>;
+      }>;
+      dropped: string[];
+    }>();
+  };
+
+  it('installs a transition a tenant added, and it was not there before', async () => {
+    const id = await openDraft('A shortcut through CAPA');
+    const before = await workflowsOf(id);
+    const beforeCapa = before.workflows.find((w) => w.entity === 'capa')!;
+    expect(beforeCapa.transitions.some((t) => t.from === 'open' && t.to === 'closed'))
+      .toBe(false);
+
+    await putEntry(id, 'workflow', 'capa', {
+      key: 'capa', name: 'Capa', entity: 'capa', states: CAPA_STATES,
+      initial: 'open', terminal: ['closed'],
+      transitions: [
+        ...CAPA_TRANSITIONS,
+        { from: 'open', to: 'closed', requires: 'capa:manage', action: 'Closed without action' },
+      ],
+    });
+
+    const after = await workflowsOf(id);
+    const afterCapa = after.workflows.find((w) => w.entity === 'capa')!;
+    const added = afterCapa.transitions.find((t) => t.from === 'open' && t.to === 'closed');
+    expect(added, 'the move a tenant configured must be the move the runtime resolves')
+      .toBeDefined();
+    expect(added!.action).toBe('Closed without action');
+  });
+
+  it('carries the moves scheduled work may make unattended', async () => {
+    /**
+     * `systemInitiated` was DROPPED by the derivation until this change, so a
+     * machine resolved out of configuration silently forbade the
+     * entitlement-lapse job the move its own machine permits. The job now
+     * resolves the tenant's machine, so this is the difference between it
+     * running and it stopping.
+     */
+    const id = await openDraft('Check the system flag survives');
+    const { workflows } = await workflowsOf(id);
+    const entitlement = workflows.find((w) => w.entity === 'entitlement')!;
+    const lapse = entitlement.transitions.find((t) => t.from === 'approved' && t.to === 'lapsed');
+    expect(lapse, 'approved → lapsed must exist').toBeDefined();
+    expect(lapse!.systemInitiated).toBe(true);
+
+    // And a move meant for a person is not quietly handed to a job.
+    const decide = entitlement.transitions.find((t) => t.to === 'approved');
+    expect(decide!.systemInitiated).toBe(false);
+  });
+
+  it('ignores a workflow that does not parse, and says so', async () => {
+    /**
+     * Stored JSONB is validated on READ, never cast and trusted — the rule
+     * `session.ts` applies to roles. A workflow naming a permission the system
+     * does not enforce fails that check as a WHOLE ENTRY, because `requires` is
+     * `permissionSchema`; the per-transition drop inside `machineFromConfig` is
+     * a second line behind it, exercised directly in `workflows.test.ts`.
+     *
+     * What matters here is that one bad entry does not take out the entity. It
+     * is skipped with a reason, and `machineForEntity` falls back to the
+     * built-in — so every CAPA route keeps working while somebody fixes the
+     * configuration, instead of the section going dark.
+     *
+     * Written past the API on purpose: the API would rightly refuse this, and
+     * the question is what happens to an entry that arrived some other way — a
+     * migration, or an older version of this code.
+     */
+    const id = await openDraft('A permission nothing enforces');
+
+    /**
+     * Written directly, because the API would rightly refuse it — and INSIDE a
+     * tenant transaction, because `config_entries` is under forced row-level
+     * security and a bare `app.db` UPDATE matches zero rows and reports
+     * success. Which it did, the first time this was written.
+     */
+    const [tenantRow] = await app.db`SELECT * FROM lotmark.resolve_tenant(NULL)`;
+    await inTenantTransaction(app.db, {
+      tenantId: (tenantRow as { id: string }).id,
+      auditKey: app.cfg.LOTMARK_AUDIT_KEY,
+      auditKeyGeneration: app.cfg.LOTMARK_AUDIT_KEY_GENERATION,
+    }, async (tx) => {
+      const rows = await tx`
+        UPDATE lotmark.config_entries
+        SET payload = jsonb_set(payload, '{transitions,0,requires}', '"invented:permission"')
+        WHERE version_id = ${id} AND kind = 'workflow' AND key = 'capa'
+        RETURNING id`;
+      expect(rows.length, 'the entry must actually have been rewritten').toBe(1);
+    });
+
+    const after = await workflowsOf(id);
+    expect(after.dropped.join(' ')).toMatch(/does not parse and was ignored/);
+    expect(after.workflows.some((w) => w.entity === 'capa'),
+      'the unreadable entry must be skipped, not half-built').toBe(false);
+
+    // And the entity is not left without a machine: the built-in still governs,
+    // so the CAPA screens keep working while somebody fixes the configuration.
+    const live = await app.inject({
+      method: 'GET', url: '/api/v1/capa/workflow', headers: { cookie: admin },
+    });
+    expect(live.statusCode, live.body).toBe(200);
+    expect(live.json<{ states: string[] }>().states).toContain('investigation');
   });
 });
 

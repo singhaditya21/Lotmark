@@ -1,7 +1,7 @@
 import {
   fieldConfigSchema, picklistConfigSchema, layoutConfigSchema,
   resolveForm, writableFields, valuesSchemaFor, missingRequired,
-  CUSTOM_FIELD_PARENT, isCustomFieldEntity, isFrozen,
+  ENTITY_RECORD, isCustomFieldEntity, isFrozen,
   type FieldConfig, type PicklistConfig, type LayoutConfig,
   type CustomFieldEntity, type ResolvedForm,
 } from '@lotmark/domain';
@@ -201,7 +201,7 @@ export interface ParentRecord {
 export async function parentRecord(
   tx: Sql, tenantId: string, entity: CustomFieldEntity, recordId: string,
 ): Promise<ParentRecord | null> {
-  const meta = CUSTOM_FIELD_PARENT[entity];
+  const meta = ENTITY_RECORD[entity];
 
   const team =
     meta.teamVia === 'own' ? 'r.owner_team_id'

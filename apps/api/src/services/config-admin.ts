@@ -3,8 +3,9 @@ import {
   effectivePermissionsOfRole, roleConfigSchema, isPermission, RETENTION_SCHEDULE,
   ALL_CONFIG_KINDS, CONFIG_RISK, hasProductDefault,
   fieldConfigSchema, picklistConfigSchema, layoutConfigSchema, isSupportedFieldType,
+  workflowConfigSchema, statesTheDatabaseRefuses, ENTITY_RECORD,
   type ConfigKind, type ConfigChange, type RoleConfig,
-  type FieldConfig, type PicklistConfig, type LayoutConfig,
+  type FieldConfig, type PicklistConfig, type LayoutConfig, type WorkflowConfig,
 } from '@lotmark/domain';
 import { createHash } from 'node:crypto';
 import type { Sql } from '../db';
@@ -359,6 +360,87 @@ export async function publicationProblems(
   }
 
   problems.push(...await customFieldProblems(tx, tenantId, entries));
+  problems.push(...await workflowProblems(tx, tenantId, entries));
+
+  return problems;
+}
+
+/**
+ * Whether the workflows in this version can govern the records that exist.
+ *
+ * ── The active version governs every record ─────────────────────────────────
+ *
+ * Not the version each record was created under. Two lots of the same kind
+ * following different rules because they were made on different days is not
+ * something an operator can hold in their head or an assessor can be shown. The
+ * price of that choice is paid here: a published change that removes a state
+ * records are sitting in would strand them, so it is refused.
+ *
+ * The precedent is exactly the role check above — removing a role somebody
+ * holds is refused for the same reason, and the message has the same shape:
+ * name the thing, count who is affected, say what to do.
+ */
+async function workflowProblems(
+  tx: Sql, tenantId: string, entries: readonly ConfigEntryRow[],
+): Promise<string[]> {
+  const problems: string[] = [];
+
+  const workflows: WorkflowConfig[] = [];
+  for (const e of entries.filter((x) => x.kind === 'workflow')) {
+    const parsed = workflowConfigSchema.safeParse(e.payload);
+    if (!parsed.success) {
+      problems.push(`Workflow '${e.key}' is not valid: ${parsed.error.issues[0]?.message ?? 'unknown'}`);
+      continue;
+    }
+    workflows.push(parsed.data);
+  }
+
+  for (const wf of workflows) {
+    /**
+     * A state the database could not store.
+     *
+     * `studies.state` carries a CHECK listing its two states. A configured
+     * study workflow adding a third fails at the INSERT, which reaches a user
+     * as a 500 long after the change was signed off. Said here instead.
+     */
+    for (const state of statesTheDatabaseRefuses(wf)) {
+      problems.push(
+        `Workflow '${wf.key}' adds the state '${state}' to ${wf.entity}, which the database ` +
+        'cannot store — that column carries a CHECK listing the states it accepts. ' +
+        'Making those states extensible is a schema change, not a configuration one.',
+      );
+    }
+
+    const record = ENTITY_RECORD[wf.entity as keyof typeof ENTITY_RECORD];
+    if (!record) continue;
+
+    /**
+     * States records are actually sitting in, which the new machine must keep.
+     *
+     * Identifiers come from a compiler-checked map and never from the entry —
+     * `wf.entity` has already been narrowed by the schema to one of seven
+     * literals. A table name cannot be a bind parameter; the safety is the
+     * narrowing, not the quoting.
+     */
+    const rows = await tx.unsafe(
+      `SELECT r.${record.stateColumn} AS state, count(*)::int AS held
+       FROM lotmark.${record.table} r WHERE r.tenant_id = $1
+       GROUP BY 1`,
+      [tenantId],
+    );
+
+    const declared = new Set(wf.states.map((s) => s.key));
+    for (const r of rows) {
+      const row = r as unknown as { state: string | null; held: number };
+      if (row.state === null || declared.has(row.state)) continue;
+      problems.push(
+        `Workflow '${wf.key}' does not declare the state '${row.state}', and ` +
+        `${row.held} ${wf.entity} record${row.held === 1 ? '' : 's'} ` +
+        `${row.held === 1 ? 'is' : 'are'} in it. They would have nowhere to go. ` +
+        'Keep the state, or move those records out of it first.',
+      );
+    }
+  }
 
   return problems;
 }

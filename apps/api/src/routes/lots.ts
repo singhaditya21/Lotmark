@@ -1,13 +1,14 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import {
-  isSignatureMeaning, defaultSodSettings, assertTransition, LOT_MACHINE,
+  isSignatureMeaning, defaultSodSettings, assertTransition,
   type SignatureMeaning, type CompetenceBasis, type AuthScope, type Permission,
 } from '@lotmark/domain';
 import { inTenantTransaction, type Sql } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
+import { machineForEntity } from '../services/workflows';
 import { applySignature, rejectSigning, SigningRejection } from '../services/signing';
 import { refuseSigning } from '../services/signing-refusal';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
@@ -117,7 +118,17 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
         return { status: 403 as const, verdict };
       }
 
-      assertTransition(LOT_MACHINE, 'draft', 'released');
+      /**
+       * The tenant's own machine, not the code's.
+       *
+       * A tenant that removed `draft → released` has said lots are not released
+       * this way, and this route must stop rather than do it anyway. Resolved
+       * inside the transaction that is about to write, so the machine consulted
+       * and the row written come from one read of the configuration.
+       */
+      const lotMachine = await machineForEntity(tx, ctx.tenantId, 'lot', (m) => app.log.warn(m));
+      if (!lotMachine) return { status: 409 as const, message: 'No workflow governs lots.' };
+      assertTransition(lotMachine, 'draft', 'released');
 
       const [prevRow] = await tx`
         SELECT id, lot_code FROM lotmark.lots

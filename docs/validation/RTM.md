@@ -8,7 +8,7 @@ The source is `packages/domain/src/conformance.ts`, and every citation below is 
 
 | Status | Count | Meaning |
 |---|---|---|
-| enforced | 24 | the code refuses the thing |
+| enforced | 25 | the code refuses the thing |
 | partial | 3 | enforced on some paths; the gap is stated |
 | declared | 1 | written down, nothing checks it |
 | not implemented | 0 | absent, and recorded as absent |
@@ -94,6 +94,19 @@ A secure, computer-generated, time-stamped audit trail records operator entries 
 | Implemented by | `packages/db/migrations/0002_audit_chain.sql`<br>`apps/api/src/services/audit.ts` |
 | Demonstrated by | `packages/db/src/__tests__/audit-chain.test.ts` — "altered entry"<br>`packages/db/src/__tests__/audit-chain.test.ts` — "append-only" |
 | Live evidence | `chain` on the conformance view |
+
+## 21 CFR 11 §11.10(f)
+
+### REQ-SEQUENCING — enforced
+
+Operational system checks enforce permitted sequencing of steps and events, and the permitted sequence is the tenant’s to declare.
+
+> Every lifecycle is an explicit transition table, and the table now comes from the ACTIVE configuration with the code machine as the fallback. One machine governs every record of an entity at a time, so publication refuses a change that would leave records in a state the new machine does not have. NOT yet extensible for studies: `studies.state` carries a CHECK listing its two states, and publication refuses a third rather than letting the INSERT fail.
+
+| | |
+|---|---|
+| Implemented by | `packages/domain/src/state-machines.ts`<br>`packages/domain/src/config/workflows.ts`<br>`apps/api/src/services/workflows.ts` |
+| Demonstrated by | `packages/domain/src/__tests__/workflows.test.ts` — "round trip is lossless"<br>`apps/api/src/__tests__/config-admin.test.ts` — "nowhere to go" |
 
 ## 21 CFR 11 §11.10(g)
 

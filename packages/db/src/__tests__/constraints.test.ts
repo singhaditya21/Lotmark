@@ -10,6 +10,7 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type Sql } from '../client';
+import { DDL_CONSTRAINED_STATES } from '@lotmark/domain';
 
 const T = '11111111-1111-1111-1111-111111111111';
 const ORG = '22222222-2222-2222-2222-222222222222';
@@ -625,5 +626,53 @@ describe('signing keys (migration 0003)', () => {
            VALUES (${T}, 'v1', 'PEM', 'fp', now(), now())`)
         .rejects.toSatisfy(violates('signing_key_retirement_states_reason'));
     });
+  });
+});
+
+describe('the states the schema itself pins down', () => {
+  /**
+   * `DDL_CONSTRAINED_STATES` in @lotmark/domain tells the configuration model
+   * which states the database could not store, so publication can refuse a
+   * workflow with a sentence rather than letting the INSERT fail as a 500.
+   *
+   * That list is written by hand and the constraint is written in SQL, so this
+   * is what stops them disagreeing. It reads the constraint the database
+   * actually carries — if somebody drops `study_state_known` for a trigger and
+   * makes study states extensible, this fails and the list has to be updated
+   * with it.
+   */
+  it('matches the CHECK constraint the database actually carries', async () => {
+    const [row] = await sql`
+      SELECT pg_get_constraintdef(oid) AS def
+      FROM pg_constraint
+      WHERE conname = 'study_state_known'
+        AND conrelid = 'lotmark.studies'::regclass`;
+    const def = (row as { def: string } | undefined)?.def;
+
+    expect(def, 'study_state_known has gone; DDL_CONSTRAINED_STATES must change with it')
+      .toBeDefined();
+
+    const inConstraint = [...def!.matchAll(/'([a-z_]+)'::text/g)].map((m) => m[1]!).sort();
+    expect(inConstraint).toEqual([...DDL_CONSTRAINED_STATES['study']!].sort());
+  });
+
+  it('pins down no OTHER entity, which is why only study is listed', async () => {
+    // If a second state vocabulary is welded into DDL, it has to be declared
+    // too — otherwise publication would let a workflow through that the
+    // database then refuses at the INSERT.
+    const rows = await sql`
+      SELECT conrelid::regclass::text AS tbl, conname
+      FROM pg_constraint
+      WHERE contype = 'c'
+        AND conrelid::regclass::text IN (
+          'lotmark.projects', 'lotmark.studies', 'lotmark.property_values',
+          'lotmark.lots', 'lotmark.orders', 'lotmark.entitlements', 'lotmark.capa')
+        AND conname LIKE '%state_known%' OR conname LIKE '%stage_known%'`;
+    const constrained = new Set(
+      rows.map((r) => (r as { tbl: string }).tbl.replace('lotmark.', '')),
+    );
+    // studies is the only one, and `study` is the only key in the list.
+    expect([...constrained]).toEqual(['studies']);
+    expect(Object.keys(DDL_CONSTRAINED_STATES)).toEqual(['study']);
   });
 });
