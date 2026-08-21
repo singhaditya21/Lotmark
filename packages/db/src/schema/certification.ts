@@ -50,6 +50,9 @@ export const certificateIssuesTable = lotmark.table('certificate_issues', {
   issuedByUserId: uuid('issued_by_user_id').notNull().references(() => usersTable.id),
   issuedAt: timestamp('issued_at', { withTimezone: true, mode: 'string' }).notNull(),
 
+  /** The configuration version this issue was produced under. */
+  configVersionId: uuid('config_version_id'),
+
   /** Why this issue exists. Required from issue 2 onward. */
   reissueReason: text('reissue_reason'),
 

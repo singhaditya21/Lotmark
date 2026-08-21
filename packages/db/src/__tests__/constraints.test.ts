@@ -33,9 +33,9 @@ async function inRollback<T2>(fn: (tx: Sql) => Promise<T2>): Promise<T2> {
                VALUES (${T}, 't', 'T', 'T', 'ISO 17034', 'X-{SEQ}', 'local')`;
       await tx`INSERT INTO lotmark.organisations (id, tenant_id, code, name, kind)
                VALUES (${ORG}, ${T}, 'O', 'Org', 'producer')`;
-      await tx`INSERT INTO lotmark.users (id, tenant_id, organisation_id, code, email, display_name, password_hash, role_id)
-               VALUES (${U1}, ${T}, ${ORG}, 'u1', 'a@b.c', 'A', 'x', 'scientist'),
-                      (${U2}, ${T}, ${ORG}, 'u2', 'd@e.f', 'B', 'x', 'techmgr')`;
+      await tx`INSERT INTO lotmark.users (id, tenant_id, organisation_id, code, email, display_name, password_hash)
+               VALUES (${U1}, ${T}, ${ORG}, 'u1', 'a@b.c', 'A', 'x'),
+                      (${U2}, ${T}, ${ORG}, 'u2', 'd@e.f', 'B', 'x')`;
       const out = await fn(tx as unknown as Sql);
       throw Object.assign(new Error('rollback'), { [ROLLBACK]: true, out });
     });
@@ -287,6 +287,159 @@ describe('certificate issues', () => {
           VALUES (${T}, ${cert}, ${n}, 99.62, 0.84, 'Assay', '% w/w', ${U2}, now(), 'r')`;
       await ins(1);
       await expect(ins(1)).rejects.toSatisfy(violates('certificate_issues_cert_number_unique'));
+    });
+  });
+});
+
+describe('configuration versioning', () => {
+  const draft = (tx: Sql, n: number, status = 'draft') =>
+    tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by,
+                                            published_by, published_at)
+       VALUES (${T}, ${n}, ${status}, 'initial', ${U1},
+               ${status === 'draft' ? null : U2}, ${status === 'draft' ? null : 'now()'})`;
+
+  it('allows exactly one ACTIVE version per tenant', async () => {
+    await inRollback(async (tx) => {
+      await tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by, published_by, published_at)
+               VALUES (${T}, 1, 'active', 'initial', ${U1}, ${U2}, now())`;
+      // A second active version would make "which rules apply" ambiguous.
+      await expect(tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by, published_by, published_at)
+                      VALUES (${T}, 2, 'active', 'second', ${U1}, ${U2}, now())`)
+        .rejects.toSatisfy(violates('config_versions_one_active_per_tenant'));
+    });
+  });
+
+  it('allows many drafts alongside one active version', async () => {
+    await inRollback(async (tx) => {
+      await tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by, published_by, published_at)
+               VALUES (${T}, 1, 'active', 'initial', ${U1}, ${U2}, now())`;
+      await expect(draft(tx, 2)).resolves.toBeDefined();
+      await expect(draft(tx, 3)).resolves.toBeDefined();
+    });
+  });
+
+  it('REJECTS a published version that names nobody', async () => {
+    await inRollback(async (tx) => {
+      await expect(tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by)
+                      VALUES (${T}, 1, 'active', 'initial', ${U1})`)
+        .rejects.toSatisfy(violates('config_version_publication_is_accountable'));
+    });
+  });
+
+  it('REJECTS a configuration entry of an unknown kind', async () => {
+    await inRollback(async (tx) => {
+      const [v] = await tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, change_reason, created_by)
+                           VALUES (${T}, 1, 'initial', ${U1}) RETURNING id`;
+      await expect(tx`INSERT INTO lotmark.config_entries (tenant_id, version_id, kind, key, payload)
+                      VALUES (${T}, ${(v as { id: string }).id}, 'arbitrary_nonsense', 'k', '{}'::jsonb)`)
+        .rejects.toSatisfy(violates('config_entry_kind_known'));
+    });
+  });
+
+  it('REJECTS two entries with the same kind and key in one version', async () => {
+    await inRollback(async (tx) => {
+      const [v] = await tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, change_reason, created_by)
+                           VALUES (${T}, 1, 'initial', ${U1}) RETURNING id`;
+      const vid = (v as { id: string }).id;
+      const ins = () => tx`INSERT INTO lotmark.config_entries (tenant_id, version_id, kind, key, payload)
+                           VALUES (${T}, ${vid}, 'role', 'scientist', '{}'::jsonb)`;
+      await ins();
+      await expect(ins()).rejects.toSatisfy(violates('config_entries_version_kind_key_unique'));
+    });
+  });
+});
+
+describe('teams and role assignments', () => {
+  const team = async (tx: Sql, key: string) => {
+    const [t] = await tx`INSERT INTO lotmark.teams (tenant_id, key, name)
+                         VALUES (${T}, ${key}, ${key}) RETURNING id`;
+    return (t as { id: string }).id;
+  };
+
+  it('REJECTS joining the same team twice while still a member', async () => {
+    await inRollback(async (tx) => {
+      const teamId = await team(tx, 'organics');
+      const join = () => tx`INSERT INTO lotmark.team_memberships (tenant_id, team_id, user_id, joined_on)
+                            VALUES (${T}, ${teamId}, ${U1}, '2026-01-01')`;
+      await join();
+      await expect(join()).rejects.toSatisfy(violates('team_memberships_one_live'));
+    });
+  });
+
+  it('allows re-joining after leaving', async () => {
+    await inRollback(async (tx) => {
+      const teamId = await team(tx, 'organics');
+      await tx`INSERT INTO lotmark.team_memberships (tenant_id, team_id, user_id, joined_on, left_on)
+               VALUES (${T}, ${teamId}, ${U1}, '2024-01-01', '2025-06-30')`;
+      await expect(tx`INSERT INTO lotmark.team_memberships (tenant_id, team_id, user_id, joined_on)
+                      VALUES (${T}, ${teamId}, ${U1}, '2026-01-01')`).resolves.toBeDefined();
+    });
+  });
+
+  it('REJECTS leaving before joining', async () => {
+    await inRollback(async (tx) => {
+      const teamId = await team(tx, 'organics');
+      await expect(tx`INSERT INTO lotmark.team_memberships (tenant_id, team_id, user_id, joined_on, left_on)
+                      VALUES (${T}, ${teamId}, ${U1}, '2026-01-01', '2024-01-01')`)
+        .rejects.toSatisfy(violates('membership_range_ordered'));
+    });
+  });
+
+  it('allows the same person different roles on different teams', async () => {
+    await inRollback(async (tx) => {
+      const organics = await team(tx, 'organics');
+      const inorganics = await team(tx, 'inorganics');
+      await tx`INSERT INTO lotmark.role_assignments (tenant_id, user_id, role_key, team_id)
+               VALUES (${T}, ${U1}, 'scientist', ${organics})`;
+      await expect(tx`INSERT INTO lotmark.role_assignments (tenant_id, user_id, role_key, team_id)
+                      VALUES (${T}, ${U1}, 'techmgr', ${inorganics})`).resolves.toBeDefined();
+    });
+  });
+
+  it('REJECTS granting the same role twice at the same scope', async () => {
+    await inRollback(async (tx) => {
+      const organics = await team(tx, 'organics');
+      const grant = () => tx`INSERT INTO lotmark.role_assignments (tenant_id, user_id, role_key, team_id)
+                             VALUES (${T}, ${U1}, 'scientist', ${organics})`;
+      await grant();
+      // Revoking one would leave the other silently in force.
+      await expect(grant()).rejects.toSatisfy(violates('role_assignments_no_duplicate_live'));
+    });
+  });
+
+  it('REJECTS a duplicate TENANT-WIDE grant, where team_id is null', async () => {
+    await inRollback(async (tx) => {
+      const grant = () => tx`INSERT INTO lotmark.role_assignments (tenant_id, user_id, role_key, team_id)
+                             VALUES (${T}, ${U1}, 'quality', NULL)`;
+      await grant();
+      // The COALESCE in the index is what makes NULL scopes comparable at all;
+      // without it Postgres would treat every tenant-wide grant as distinct.
+      await expect(grant()).rejects.toSatisfy(violates('role_assignments_no_duplicate_live'));
+    });
+  });
+
+  it('allows re-granting a role that was revoked', async () => {
+    await inRollback(async (tx) => {
+      await tx`INSERT INTO lotmark.role_assignments (tenant_id, user_id, role_key, team_id, revoked_at, revoked_by)
+               VALUES (${T}, ${U1}, 'quality', NULL, now(), ${U2})`;
+      await expect(tx`INSERT INTO lotmark.role_assignments (tenant_id, user_id, role_key, team_id)
+                      VALUES (${T}, ${U1}, 'quality', NULL)`).resolves.toBeDefined();
+    });
+  });
+
+  it('REJECTS a revocation that names nobody', async () => {
+    await inRollback(async (tx) => {
+      await expect(tx`INSERT INTO lotmark.role_assignments (tenant_id, user_id, role_key, revoked_at)
+                      VALUES (${T}, ${U1}, 'quality', now())`)
+        .rejects.toSatisfy(violates('role_assignment_revocation_is_accountable'));
+    });
+  });
+
+  it('REJECTS an assignment whose validity ends before it starts', async () => {
+    await inRollback(async (tx) => {
+      await expect(tx`INSERT INTO lotmark.role_assignments (tenant_id, user_id, role_key, valid_from, valid_to)
+                      VALUES (${T}, ${U1}, 'quality', '2026-12-31', '2026-01-01')`)
+        .rejects.toSatisfy(violates('role_assignment_range_ordered'));
     });
   });
 });

@@ -27,7 +27,14 @@ export const usersTable = lotmark.table('users', {
   mfaEnrolledAt: timestamp('mfa_enrolled_at', { withTimezone: true, mode: 'string' }),
   mfaRequired: boolean('mfa_required').notNull().default(true),
 
-  roleId: text('role_id').notNull(),
+  /**
+   * NOTE: there is no `role_id` column.
+   *
+   * A person is routinely a Scientist on one laboratory section and a reviewer
+   * on another, and one column cannot say so. Authority lives in
+   * `role_assignments`, scoped to a team or to the whole tenant, and dated so
+   * that leave cover expires without anyone remembering to revoke it.
+   */
 
   /** Avatar tint carried from the prototype; cosmetic only. */
   colour: text('colour'),

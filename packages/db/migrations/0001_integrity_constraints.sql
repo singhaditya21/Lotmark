@@ -177,3 +177,82 @@ ALTER TABLE "lotmark"."facility_excursions"
     disposition = 'under assessment'
     OR (disposition_by_user_id IS NOT NULL AND disposition_at IS NOT NULL)
   );
+
+-- ---------------------------------------------------------------------------
+-- 8. Configuration versioning and the User-Team-Role construct.
+--
+-- Added when the product became a low-code platform. The constraints here are
+-- what stop "deeply configurable" from meaning "no rules at all".
+-- ---------------------------------------------------------------------------
+
+-- Foreign keys the generator cannot infer (team ownership is polymorphic in
+-- intent but concrete per table).
+ALTER TABLE "lotmark"."projects"        ADD CONSTRAINT projects_owner_team_fk        FOREIGN KEY (owner_team_id) REFERENCES "lotmark"."teams"(id) ON DELETE RESTRICT;
+ALTER TABLE "lotmark"."studies"         ADD CONSTRAINT studies_owner_team_fk         FOREIGN KEY (owner_team_id) REFERENCES "lotmark"."teams"(id) ON DELETE RESTRICT;
+ALTER TABLE "lotmark"."lots"            ADD CONSTRAINT lots_owner_team_fk            FOREIGN KEY (owner_team_id) REFERENCES "lotmark"."teams"(id) ON DELETE RESTRICT;
+ALTER TABLE "lotmark"."orders"          ADD CONSTRAINT orders_owner_team_fk          FOREIGN KEY (owner_team_id) REFERENCES "lotmark"."teams"(id) ON DELETE RESTRICT;
+ALTER TABLE "lotmark"."capa"            ADD CONSTRAINT capa_owner_team_fk            FOREIGN KEY (owner_team_id) REFERENCES "lotmark"."teams"(id) ON DELETE RESTRICT;
+
+ALTER TABLE "lotmark"."studies"            ADD CONSTRAINT studies_config_version_fk    FOREIGN KEY (config_version_id) REFERENCES "lotmark"."config_versions"(id) ON DELETE RESTRICT;
+ALTER TABLE "lotmark"."property_values"    ADD CONSTRAINT values_config_version_fk     FOREIGN KEY (config_version_id) REFERENCES "lotmark"."config_versions"(id) ON DELETE RESTRICT;
+ALTER TABLE "lotmark"."lots"               ADD CONSTRAINT lots_config_version_fk       FOREIGN KEY (config_version_id) REFERENCES "lotmark"."config_versions"(id) ON DELETE RESTRICT;
+ALTER TABLE "lotmark"."certificate_issues" ADD CONSTRAINT cert_issues_config_version_fk FOREIGN KEY (config_version_id) REFERENCES "lotmark"."config_versions"(id) ON DELETE RESTRICT;
+
+ALTER TABLE "lotmark"."config_versions"
+  ADD CONSTRAINT config_version_based_on_fk FOREIGN KEY (based_on_version_id)
+  REFERENCES "lotmark"."config_versions"(id) ON DELETE RESTRICT;
+
+ALTER TABLE "lotmark"."config_versions"
+  ADD CONSTRAINT config_version_status_known CHECK (status IN ('draft', 'active', 'superseded'));
+
+-- Exactly one ACTIVE configuration per tenant. Two would make "which rules
+-- apply" ambiguous, and every record stamped afterwards unexplainable.
+CREATE UNIQUE INDEX config_versions_one_active_per_tenant
+  ON "lotmark"."config_versions" (tenant_id) WHERE status = 'active';
+
+-- A published version names who published it and when; a draft names neither.
+ALTER TABLE "lotmark"."config_versions"
+  ADD CONSTRAINT config_version_publication_is_accountable CHECK (
+    status = 'draft'
+    OR (published_by IS NOT NULL AND published_at IS NOT NULL)
+  );
+
+ALTER TABLE "lotmark"."config_versions"
+  ADD CONSTRAINT config_version_number_positive CHECK (version_number >= 1);
+
+-- A configuration entry must name a kind the product knows how to validate.
+ALTER TABLE "lotmark"."config_entries"
+  ADD CONSTRAINT config_entry_kind_known CHECK (
+    kind IN ('role','workflow','field','picklist','layout','view','dashboard',
+             'report','numbering','template','translation','sod','retention','flag')
+  );
+
+-- ── Teams and role assignments ─────────────────────────────────────────────
+
+ALTER TABLE "lotmark"."team_memberships"
+  ADD CONSTRAINT membership_range_ordered CHECK (left_on IS NULL OR joined_on <= left_on);
+
+-- One live membership per person per team. Re-joining after leaving is a new
+-- row; being in the same team twice at once is a data error.
+CREATE UNIQUE INDEX team_memberships_one_live
+  ON "lotmark"."team_memberships" (team_id, user_id) WHERE left_on IS NULL;
+
+ALTER TABLE "lotmark"."role_assignments"
+  ADD CONSTRAINT role_assignment_range_ordered CHECK (
+    valid_from IS NULL OR valid_to IS NULL OR valid_from <= valid_to
+  );
+
+-- The same role, at the same scope, must not be granted twice concurrently:
+-- revoking one would leave the other silently in force.
+CREATE UNIQUE INDEX role_assignments_no_duplicate_live
+  ON "lotmark"."role_assignments" (user_id, role_key, COALESCE(team_id, '00000000-0000-0000-0000-000000000000'::uuid))
+  WHERE revoked_at IS NULL;
+
+-- A revocation names who did it.
+ALTER TABLE "lotmark"."role_assignments"
+  ADD CONSTRAINT role_assignment_revocation_is_accountable CHECK (
+    revoked_at IS NULL OR revoked_by IS NOT NULL
+  );
+
+ALTER TABLE "lotmark"."custom_field_values"
+  ADD CONSTRAINT custom_values_is_object CHECK (jsonb_typeof(values) = 'object');

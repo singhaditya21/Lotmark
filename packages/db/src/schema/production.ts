@@ -19,6 +19,11 @@ export const projectsTable = lotmark.table('projects', {
   ownerUserId: uuid('owner_user_id').references(() => usersTable.id),
 
   /** Nominal unit of sale, e.g. '50 mg'. */
+  /**
+   * The team that owns this record — the unit of data scope. A user sees it
+   * only if they hold the relevant permission in this team, or tenant-wide.
+   */
+  ownerTeamId: uuid('owner_team_id'),
   intakeQuantity: text('intake_quantity'),
   /** Target relative expanded uncertainty, e.g. '0.5%'. */
   targetUncertainty: text('target_uncertainty'),
@@ -87,6 +92,20 @@ export const studiesTable = lotmark.table('studies', {
 
   /** Which estimator produced it, so a future change of method is visible. */
   estimatorVersion: text('estimator_version').notNull().default('guide35-v1'),
+
+  /**
+   * The team that owns this record — the unit of data scope. A user sees it
+   * only if they hold the relevant permission in this team, or tenant-wide.
+   */
+  ownerTeamId: uuid('owner_team_id'),
+  /**
+   * The configuration version this record was created under.
+   *
+   * Makes "under what rules was this produced" answerable after the tenant has
+   * reconfigured, and scopes re-validation to what actually changed.
+   */
+  configVersionId: uuid('config_version_id'),
+
 
   signedByUserId: uuid('signed_by_user_id').references(() => usersTable.id),
   signedOn: isoDate('signed_on'),
@@ -173,6 +192,13 @@ export const propertyValuesTable = lotmark.table('property_values', {
   /** draft | assigned | authorised — see VALUE_MACHINE. */
   state: text('state').notNull().default('draft'),
 
+  /**
+   * The configuration version this record was created under.
+   *
+   * Makes "under what rules was this produced" answerable after the tenant has
+   * reconfigured, and scopes re-validation to what actually changed.
+   */
+  configVersionId: uuid('config_version_id'),
   /** SoD-1 reads this: the assigner may not authorise. */
   assignedBy: uuid('assigned_by').references(() => usersTable.id),
   assignedAt: timestamp('assigned_at', { withTimezone: true, mode: 'string' }),
@@ -225,6 +251,18 @@ export const lotsTable = lotmark.table('lots', {
   /** Whether a government price tier may be applied to this lot. */
   tierable: boolean('tierable').notNull().default(true),
 
+  /**
+   * The team that owns this record — the unit of data scope. A user sees it
+   * only if they hold the relevant permission in this team, or tenant-wide.
+   */
+  ownerTeamId: uuid('owner_team_id'),
+  /**
+   * The configuration version this record was created under.
+   *
+   * Makes "under what rules was this produced" answerable after the tenant has
+   * reconfigured, and scopes re-validation to what actually changed.
+   */
+  configVersionId: uuid('config_version_id'),
   /** SoD-4 reads this: the creator may not release. */
   createdBy: uuid('created_by').references(() => usersTable.id),
   releasedBy: uuid('released_by').references(() => usersTable.id),

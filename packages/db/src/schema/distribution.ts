@@ -18,6 +18,9 @@ export const ordersTable = lotmark.table('orders', {
   state: text('state').notNull().default('placed'),
   placedOn: isoDate('placed_on').notNull(),
 
+  /** The team responsible for fulfilling this order. */
+  ownerTeamId: uuid('owner_team_id'),
+
   totalMinor: integer('total_minor').notNull().default(0),
   currency: text('currency').notNull().default('INR'),
   courier: text('courier'),

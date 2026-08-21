@@ -94,6 +94,8 @@ export const capaTable = lotmark.table('capa', {
   state: text('state').notNull().default('open'),
 
   ownerUserId: uuid('owner_user_id').references(() => usersTable.id),
+  /** The team accountable for this CAPA. */
+  ownerTeamId: uuid('owner_team_id'),
   raisedOn: isoDate('raised_on').notNull(),
   dueOn: isoDate('due_on'),
 
