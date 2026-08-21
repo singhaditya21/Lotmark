@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lotmark — Product Wireframe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --ink:#1B2233;--ink2:#4A5468;--ink3:#6B7588;--line:#C9CFDA;--line2:#E2E6ED;
+ --fill:#EFF1F5;--fill2:#F7F8FA;--page:#FFFFFF;--bg:#E9ECF1;
+ --acc:#B85C00;--core:#0B6A4D;--coreT:#E2EFEA;--comm:#7A8296;--commT:#EDEFF3;
+ --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.skip{position:absolute;left:-9999px;background:#fff;padding:10px 16px;z-index:300;font-weight:600}.skip:focus{left:0;top:0}
+
+/* chrome */
+.bar{position:sticky;top:0;z-index:60;background:var(--ink);color:#fff;display:flex;align-items:center;gap:14px;padding:0 16px;min-height:52px;flex-wrap:wrap}
+.bar .lg{display:flex;align-items:center;gap:9px;font-weight:600;white-space:nowrap}
+.mark{width:26px;height:26px;border-radius:5px;background:#fff;color:var(--ink);display:grid;place-items:center;font:700 11px var(--mono)}
+.bar small{display:block;font:400 10px var(--sans);color:#9AA5BB;text-transform:uppercase;letter-spacing:.06em}
+.seg{display:flex;gap:2px;background:rgba(255,255,255,.11);padding:3px;border-radius:7px}
+.seg button{padding:5px 11px;border-radius:5px;font-size:12.5px;font-weight:500;color:#C4CDDD;white-space:nowrap}
+.seg button[aria-pressed=true]{background:#fff;color:var(--ink);font-weight:600}
+.barR{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fid{font:500 10.5px var(--mono);color:#9AA5BB;border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:4px 8px}
+
+.shell{display:grid;grid-template-columns:250px 1fr;min-height:calc(100vh - 52px)}
+.rail{background:#fff;border-right:1px solid var(--line);padding:12px 10px 40px;overflow-y:auto;max-height:calc(100vh - 52px);position:sticky;top:52px}
+.rail h4{font:600 9.5px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);margin:14px 6px 5px}
+.rail h4:first-child{margin-top:2px}
+.rail button{display:flex;justify-content:space-between;align-items:center;gap:6px;width:100%;text-align:left;padding:6px 8px;border-radius:6px;font-size:12.5px;color:var(--ink2);margin-bottom:1px}
+.rail button:hover{background:var(--fill2)}
+.rail button[aria-current=page]{background:var(--ink);color:#fff;font-weight:600}
+.rail .tag{font:600 8.5px var(--mono);padding:1px 4px;border-radius:3px}
+.tag.core{background:var(--coreT);color:var(--core)}
+.tag.comm{background:var(--commT);color:var(--comm)}
+.rail button[aria-current=page] .tag{background:rgba(255,255,255,.2);color:#fff}
+
+.stage{padding:20px 22px 70px;max-width:1180px}
+.crumb{font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+h1.t{font-size:21px;margin:4px 0 5px;letter-spacing:-.02em}
+.meta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.pill{font:600 10px var(--mono);border-radius:12px;padding:2px 9px;background:#fff;border:1px solid var(--line);color:var(--ink2)}
+.pill.core{background:var(--coreT);border-color:#B9D6CA;color:var(--core)}
+.pill.comm{background:var(--commT);border-color:var(--line);color:var(--comm)}
+.pill.iso{background:#FDF3E6;border-color:#EBD3B0;color:var(--acc)}
+.lede{color:var(--ink2);max-width:78ch;margin:0 0 16px}
+
+/* wireframe canvas */
+.canvas{background:var(--page);border:1px solid var(--line);border-radius:6px;padding:0;overflow:hidden;box-shadow:0 1px 3px rgba(27,34,51,.07)}
+.wtop{background:var(--fill);border-bottom:1px solid var(--line);padding:9px 13px;display:flex;align-items:center;gap:10px;font:600 11.5px var(--mono);color:var(--ink2)}
+.wtop .dots{display:flex;gap:4px}.wtop .dots i{width:8px;height:8px;border-radius:50%;background:var(--line);display:block}
+.wbody{padding:16px}
+.wf-sec{font:600 9.5px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);margin:16px 0 7px;padding-bottom:4px;border-bottom:1px solid var(--line2)}
+.wf-sec:first-child{margin-top:0}
+.wf-box{background:var(--fill2);border:1px dashed var(--line);border-radius:4px;display:grid;place-items:center;font:500 11px var(--mono);color:var(--ink3);text-align:center;padding:6px;position:relative}
+.wf-img{background:repeating-linear-gradient(45deg,#F4F5F8,#F4F5F8 6px,#ECEEF3 6px,#ECEEF3 12px);border:1px solid var(--line);border-radius:4px;display:grid;place-items:center;font:500 10.5px var(--mono);color:var(--ink3)}
+.wf-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}
+.wf-field{flex:1;min-width:130px}
+.wf-field label{display:block;font:600 9.5px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:3px}
+.wf-input{height:30px;background:#fff;border:1px solid var(--line);border-radius:4px}
+.wf-input.ta{height:58px}
+.wf-input.sel:after{content:'▾';float:right;margin:5px 8px 0 0;color:var(--ink3);font-size:11px}
+.wf-btn{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:5px 11px;font:600 11px var(--sans);color:var(--ink2);background:#fff}
+.wf-btn.p{background:var(--ink);color:#fff;border-color:var(--ink)}
+.wf-btn.g{background:var(--core);color:#fff;border-color:var(--core)}
+.wf-btn.d{border-style:dashed;color:var(--ink3)}
+table.wf{width:100%;border-collapse:collapse;font-size:11.5px;font-family:var(--mono)}
+table.wf th{text-align:left;background:var(--fill);border:1px solid var(--line);padding:6px 8px;font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3)}
+table.wf td{border:1px solid var(--line2);padding:6px 8px;color:var(--ink3)}
+table.wf td.s{background:var(--fill2)}
+.wf-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:12px;overflow-x:auto}
+.wf-tabs span{padding:7px 12px;font-size:12px;color:var(--ink3);border-bottom:2px solid transparent;white-space:nowrap}
+.wf-tabs span.on{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
+.wf-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px;margin-bottom:12px}
+.wf-kpi{border:1px solid var(--line);border-radius:5px;padding:9px;background:var(--fill2)}
+.wf-kpi b{display:block;height:18px;width:52px;background:var(--line2);border-radius:3px;margin-top:5px}
+.wf-kpi span{font:600 9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.wf-chip{display:inline-block;border:1px solid var(--line);border-radius:11px;padding:1.5px 8px;font:600 9.5px var(--mono);color:var(--ink3);background:#fff}
+.wf-list div{border:1px solid var(--line2);border-radius:4px;padding:8px 10px;margin-bottom:6px;font-size:11.5px;color:var(--ink3);display:flex;justify-content:space-between;gap:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.split{display:grid;grid-template-columns:200px 1fr;gap:12px}
+.ann{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--acc);color:#fff;font:700 10px var(--mono);vertical-align:middle;margin:0 3px}
+body.noann .ann{display:none}
+.notes{margin-top:14px;background:#FDF7EF;border:1px solid #EBD9BE;border-radius:6px;padding:13px 15px}
+body.noann .notes{display:none}
+.notes h5{margin:0 0 8px;font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+.notes ol{margin:0;padding-left:20px;font-size:12.5px;color:var(--ink2)}
+.notes li{margin-bottom:5px}
+.notes li b{color:var(--ink)}
+
+/* sitemap */
+.smgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:13px}
+.smgrp{background:#fff;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.smgrp header{padding:10px 12px;border-bottom:1px solid var(--line2);background:var(--fill)}
+.smgrp header b{display:block;font-size:13px}
+.smgrp header span{font:600 9.5px var(--mono);color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}
+.smgrp ul{list-style:none;margin:0;padding:7px}
+.smgrp li{padding:0}
+.smgrp li button{display:flex;justify-content:space-between;width:100%;text-align:left;padding:6px 8px;border-radius:5px;font-size:12px;color:var(--ink2)}
+.smgrp li button:hover{background:var(--fill2)}
+.bnd{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.bnd .col{border-radius:8px;padding:14px;border:1px solid var(--line)}
+.bnd .col.core{background:var(--coreT);border-color:#B9D6CA}
+.bnd .col.comm{background:var(--commT)}
+.bnd h3{margin:0 0 3px;font-size:15px}
+.bnd p{margin:0 0 10px;font-size:12.5px;color:var(--ink2)}
+.bnd ul{margin:0;padding-left:17px;font-size:12.5px;line-height:1.75}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+@media print{
+ .bar,.rail,.pager,button{display:none!important}
+ body{background:#fff;font-size:11pt}
+ .stage{max-width:none;padding:0}
+ .canvas,.smgrp,.bnd .col{border:1px solid #999;box-shadow:none;break-inside:avoid}
+ .notes{background:#fff;border:1px solid #999}
+ h1.t{page-break-after:avoid}
+ table.wf{font-size:9pt}
+}
+@media(max-width:980px){.shell{grid-template-columns:1fr}.rail{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line)}
+ .g2,.bnd,.split{grid-template-columns:1fr}.g3,.g4{grid-template-columns:1fr 1fr}}
+</style>
+<body>
+<a class="skip" href="#stage">Skip to content</a>
+<header class="bar">
+ <div class="lg"><div class="mark" aria-hidden="true">LM</div><div>Lotmark<small>Reference material lifecycle platform</small></div></div>
+ <div class="seg" role="group" aria-label="View"><button id="v-wire" aria-pressed="true" onclick="setView('wire')">Screens</button><button id="v-map" aria-pressed="false" onclick="setView('map')">Product map</button></div>
+ <div class="barR">
+  <div class="seg" role="group" aria-label="Annotations"><button id="a-on" aria-pressed="true" onclick="setAnn(true)">Notes on</button><button id="a-off" aria-pressed="false" onclick="setAnn(false)">Notes off</button></div>
+  <span class="fid">low-fidelity wireframe</span></div>
+</header>
+<div class="shell"><nav class="rail" id="rail" aria-label="Screens"></nav><main class="stage" id="stage" tabindex="-1"></main></div>
+
+<script>
+/* ══════════ wireframe primitives ══════════ */
+const W={
+ sec:t=>`<div class="wf-sec">${t}</div>`,
+ box:(l,h=54,extra='')=>`<div class="wf-box" style="height:${h}px;${extra}">${l||''}</div>`,
+ img:(l,h=76)=>`<div class="wf-img" style="height:${h}px">${l}</div>`,
+ row:(...k)=>`<div class="wf-row">${k.join('')}</div>`,
+ fld:(l,f=1,kind='')=>`<div class="wf-field" style="flex:${f}"><label>${l}</label><div class="wf-input ${kind}"></div></div>`,
+ btn:(l,k='')=>`<span class="wf-btn ${k}">${l}</span>`,
+ chip:l=>`<span class="wf-chip">${l}</span>`,
+ tabs:(a,i=0)=>`<div class="wf-tabs">${a.map((x,n)=>`<span class="${n===i?'on':''}">${x}</span>`).join('')}</div>`,
+ kpis:a=>`<div class="wf-kpis">${a.map(l=>`<div class="wf-kpi"><span>${l}</span><b></b></div>`).join('')}</div>`,
+ tbl:(cols,rows=4,fills={})=>`<table class="wf"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>
+   ${Array.from({length:rows},(_,r)=>`<tr>${cols.map((c,i)=>`<td class="${i===0?'s':''}">${fills[i]&&fills[i][r]!==undefined?fills[i][r]:'&nbsp;'}</td>`).join('')}</tr>`).join('')}</tbody></table>`,
+ list:a=>`<div class="wf-list">${a.map(([l,r])=>`<div><span>${l}</span><span>${r||''}</span></div>`).join('')}</div>`,
+ ann:n=>`<span class="ann">${n}</span>`,
+ win:(title,inner,chrome=true)=>`<div class="canvas">${chrome?`<div class="wtop"><span class="dots"><i></i><i></i><i></i></span>${title}</div>`:''}<div class="wbody">${inner}</div></div>`
+};
+const {sec,box,img,row,fld,btn,chip,tabs,kpis,tbl,list,ann,win}=W;
+
+/* ══════════ screens ══════════ */
+const SCREENS=[
+
+/* ───────── 0 · FOUNDATION ───────── */
+{id:'map',g:'Foundation',n:'Product map',kind:'',iso:'',roles:'',
+ lede:'Twenty-three modules in five groups. The shading is the product decision: build the green, configure the grey.',
+ render:()=>renderMap()+`<div class="notes" style="margin-top:14px"><h5>Companion artefacts</h5><ol>
+   <li>The working application is <b>lotmark-app.html</b>. Its Build coverage screen maps every screen below to its implementation status, and that map is generated from this file rather than maintained by hand.</li>
+   <li>The numbers on the Deployment scenarios and Market sizing screens come from <b>Lotmark_and_IPC_Estimate_v5.xlsx</b> and are injected by the build script, not typed in.</li></ol></div>`,notes:[]},
+
+{id:'boundary',g:'Foundation',n:'Core vs commodity',kind:'',iso:'',roles:'',
+ lede:'The IPC estimate put roughly 60% of effort into things Drupal and OpenCart already do. That is the part to stop building.',
+ render:()=>`<div class="bnd">
+  <div class="col core"><h3>Core — build</h3><p>Nothing off the shelf does this, and ISO 17034 obliges every accredited producer to do it somehow.</p>
+   <ul><li>Production planning and study management</li><li>Property values with uncertainty budgets</li><li>Value authorisation, which cannot be subcontracted</li><li>Certificate generation and reissue control</li><li>Lot lifecycle, supersession and validity</li><li>Entitlement-based pricing</li><li>Cold-chain dispatch and excursion capture</li><li>Tamper-evident audit ledger</li><li>Clause-level conformance evidence</li></ul></div>
+  <div class="col comm"><h3>Commodity — configure</h3><p>Mature products exist. Every hour spent building these is an hour not spent on the core.</p>
+   <ul><li>Content management and publishing</li><li>Storefront, cart and checkout</li><li>Payment gateway</li><li>Forum, polls, events, recruitment</li><li>Video hosting and streaming</li><li>Site search</li><li>Email and SMS delivery</li><li>Analytics collection</li></ul></div></div>
+  <div class="notes"><h5>Why this boundary</h5><ol>
+   <li><b>The wedge is the green column.</b> A producer can adopt lot lifecycle, certificates and audit while keeping whatever storefront they already run. That is roughly a fifth of a full programme and it fixes the worst pain first.</li>
+   <li><b>The grey column is where differentiation goes to die.</b> It is also where most of a bespoke government build's cost sits, which is why the same money buys so little distinctive capability.</li>
+   <li><b>Integration, not replacement.</b> The product publishes catalogue and certificate data outward; it does not need to own the shop window.</li></ol></div>`,notes:[]},
+
+/* ───────── A · PRODUCTION ───────── */
+{id:'market',g:'Foundation',n:'Market sizing',kind:'',iso:'',roles:'',
+ lede:'The gap I left open last time. ILAC publishes the number, and it is smaller than the pitch assumed — but it points at a second, much larger market sitting next to it.',
+ render:()=>`
+ ${sec('Counted, not estimated')}
+ ${tbl(['Population','Count','Source','Confidence'],4,
+  {0:['Reference material producers accredited under the ILAC MRA','Producers registered in COMAR (voluntary)','Certified reference materials listed in COMAR','Laboratories accredited to ISO/IEC 17025'],
+   1:['320+','~220','~11,000','114,600+'],
+   2:['ILAC Secretariat, 2025','BAM COMAR user guide','BAM COMAR user guide','ILAC Secretariat, 2025'],
+   3:['authoritative','floor — voluntary listing','floor','authoritative']})}
+ <p class="lede" style="margin-top:12px">Two things fall out immediately. A COMAR producer averages about fifty materials, while the one estate examined closely carries 1,341 — so producers vary by more than an order of magnitude and an average is useless for pricing. And the producer population is roughly <b>one three-hundred-and-fiftieth</b> the size of the laboratory population that consumes what they make.</p>
+
+ ${sec('Model A — the producer platform '+ann(1))}
+ ${tbl(['Step','Low','Base','High','Basis'],6,
+  {0:['Producer universe','Addressable (enough SKUs to need a system)','Five-year penetration','Customers','Annual contract value','Annual recurring revenue'],
+   1:['400','140','15%','21','$30k','$0.6M'],
+   2:['550','190','25%','48','$60k','$2.9M'],
+   3:['700','245','40%','98','$110k','$10.8M'],
+   4:['320 accredited plus unaccredited producers','~35% carry enough materials to justify software','vertical SaaS into a known, listable population','','benchmarked against mid-market LIMS','']})}
+
+ ${sec('Model B — the laboratory vault '+ann(2))}
+ ${tbl(['Step','Low','Base','High','Basis'],6,
+  {0:['Accredited laboratory universe','Addressable (holds enough standards to care)','Five-year penetration','Customers','Annual contract value','Annual recurring revenue'],
+   1:['114,600','34,000','0.5%','170','$1.2k','$0.2M'],
+   2:['114,600','46,000','2%','920','$3k','$2.8M'],
+   3:['114,600','57,000','5%','2,850','$6k','$17.1M'],
+   4:['ILAC MRA figure','~30-50% hold reference materials in quantity','self-serve, low touch','','per-laboratory subscription','']})}
+
+ <div class="bnd" style="margin-top:16px">
+  <div class="col core"><h3>What the numbers actually say</h3>
+   <ul><li>The producer platform is a <b>listable</b> market — you can name every prospect — but a small one. Even at forty per cent penetration it tops out around ₹103 crore.</li>
+   <li>The laboratory vault reaches a population 350 times larger with a product that is far cheaper to build, because it is a read-side surface over data producers already publish.</li>
+   <li>Base cases land within touching distance of each other, so the choice is not about size today. It is about ceiling and about motion.</li></ul></div>
+  <div class="col comm"><h3>The connection that decides it</h3>
+   <ul><li>Every producer that adopts the platform hands over their customer list. One pharmacopoeia alone sells to hundreds of laboratories.</li>
+   <li><b>The producer platform is the distribution channel for the vault.</b> Land the producer, then reach their buyers through the certificates they already send.</li>
+   <li>That sequencing also fixes the vault's cold-start problem: a vault with no certificates in it is worthless, and producers supply the certificates.</li></ul></div></div>
+
+ ${sec('Where this model now lives '+ann(4))}
+ ${box('The revenue model — both sizing models, the contract-value assumptions and the ARR arithmetic — now lives in the Market & Revenue sheet of Lotmark_and_IPC_Estimate_v5.xlsx, alongside the cost side. The figures on this screen are injected from that sheet by sync_artefacts.py. The two halves of the business case are no longer in different file formats.',72)}
+
+ ${sec('Verdict '+ann(3))}
+ ${box('Build the producer platform because it is winnable and it names its own customers. Price it as a business, not as a land grab. Treat the laboratory vault as the second act it exists to unlock, and design the certificate and QR surfaces from day one so that act is possible.',72)}`,
+ notes:['<b>These are counted figures with a stated method, not a market report.</b> The producer and laboratory populations come from ILAC directly. Everything below the first row of each model is an assumption, labelled as one, with the arithmetic visible so the numbers can be argued with.',
+        '<b>The addressable filter is the weakest input in both models.</b> Nobody publishes how many materials a producer carries or how many standards a laboratory holds. Two customer conversations would replace both guesses.',
+        '<b>The model is now in the workbook, not here.</b> Both sizing models were living in a design file while the cost side sat in a spreadsheet. They are now in one place, which is the only way the contradiction between the assumed contract value and the break-even is visible on a single screen.',
+        '<b>A niche is not a failure.</b> A $3M ARR vertical business with 320 nameable prospects and a compliance-driven purchase is a good outcome. It is simply a different plan from one that assumes a large market, and the honest number should shape the plan before any money is spent.']},
+
+{id:'schema',g:'Foundation',n:'Data model',kind:'core',iso:'',roles:'Architecture',
+ lede:'Three questions the product must answer that no amount of later feature work can retrofit. Each depends on a relation existing in the schema on day one.',
+ render:()=>`
+ ${sec('Entities')}
+ <div class="g4">
+  ${[['Production','Project · Material · ProcessStep · Study · StudyResult · PropertyValue · UncertaintyComponent'],
+     ['Certification','Certificate · CertificateIssue · Template · TemplateVersion · Authorisation'],
+     ['Distribution','Sku · Lot · Unit · Order · OrderLine · Shipment · LoggerReading · Entitlement'],
+     ['Governance','Person · Competence · Equipment · Calibration · Facility · Subcontractor · AuditEntry · Consent']]
+   .map(([g,e])=>`<div style="border:1px solid var(--line);border-radius:5px;padding:10px">
+     <div style="font:600 9.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px">${g}</div>
+     <div style="font:400 11px var(--mono);color:var(--ink2);line-height:1.7">${e}</div></div>`).join('')}</div>
+
+ ${sec('Closure 1 — retrospective equipment impact '+ann(1))}
+ ${box('Equipment → Calibration (dated) → StudyResult → Study → Project → Lot → CertificateIssue',52)}
+ ${list([['Question it answers','Which released lots relied on an instrument whose calibration has just been found to have lapsed?'],
+         ['Breaks if','StudyResult stores the instrument as free text, or Calibration stores only current status rather than dated intervals'],
+         ['Cost of adding later','Every historical study must be re-read and re-keyed, and most cannot be reconstructed at all']])}
+
+ ${sec('Closure 2 — certificate holder list '+ann(2))}
+ ${box('Lot → CertificateIssue (versioned) → OrderLine → Order → Customer → Contact',52)}
+ ${list([['Question it answers','Who received issue 1 of a certificate that has now been reissued, and have they acknowledged it?'],
+         ['Breaks if','OrderLine references a Sku rather than the Lot actually allocated, or Certificate is overwritten on reissue instead of versioned'],
+         ['Cost of adding later','The historical holder list is unrecoverable, which is the one thing document control actually requires']])}
+
+ ${sec('Closure 3 — competence at the moment of signing '+ann(3))}
+ ${box('Person → Competence (activity, valid from, valid to) → Signature (snapshot) → Study | PropertyValue | CertificateIssue',52)}
+ ${list([['Question it answers','Was the person who signed this study authorised for that activity on that date?'],
+         ['Breaks if','Competence is a current-state flag rather than a dated record, or Signature does not snapshot the authorisation it relied on'],
+         ['Cost of adding later','Every past signature becomes unverifiable, and an assessor will ask']])}
+
+ ${sec('Schema rules that make the closures hold '+ann(4))}
+ ${tbl(['Rule','Applies to','Why'],6,
+  {0:['Temporal validity on every credential','Signature snapshots its basis','Versioned, never overwritten','Allocation recorded at the line','No soft delete on evidence','Append-only ledger with chained digests'],
+   1:['Calibration, Competence, Entitlement, Subcontractor','Signature','CertificateIssue, TemplateVersion, PropertyValue','OrderLine','Study, PropertyValue, AuditEntry, Certificate','AuditEntry'],
+   2:['Status must be answerable as at a past date, not only today','A later change to a competence record must not rewrite history','Reissue produces a diff; the prior issue stays retrievable','What shipped is the lot allocated, not the SKU ordered','Withdrawal is a state, not a disappearance','Tamper evidence has to be structural, not procedural']})}`,
+ notes:['<b>This is the expensive one.</b> Referencing equipment as a record rather than a string costs nothing on day one and is close to unrecoverable afterwards, because the information was never captured in a form anything can query.',
+        '<b>The holder list is why certification and distribution belong in one product.</b> Split them across two systems and this chain has a join nobody owns.',
+        '<b>Dated competence, not a flag.</b> Almost every quality system stores training as current state. The question an assessor asks is about a date in the past, which a flag cannot answer.',
+        '<b>These six rules are the whole architecture argument.</b> Everything else in the product is replaceable; a schema that cannot express these closures cannot be fixed by any amount of later feature work.']},
+{id:'deploy',g:'Foundation',n:'Deployment scenarios',kind:'',iso:'',roles:'',
+ lede:'One product, two ways it reaches a customer. The estimate workbook prices both, and the arithmetic is less comfortable than it first looks.',
+ render:()=>`
+ ${sec('The two routes')}
+ <div class="bnd">
+  <div class="col core"><h3>Product route</h3><p>The customer becomes a tenant. Configuration, not construction.</p>
+   <ul><li>Core supplied: lots, studies, property values, authorisation, certificates, entitlement, dispatch, audit, conformance</li>
+   <li>Customer configures: numbering series, storage classes, certificate template, residency, optional modules</li>
+   <li>Customer still buys separately: portal and CMS, migration, certification, hosting, anything in the commodity column</li></ul></div>
+  <div class="col comm"><h3>Bespoke route</h3><p>Everything built for one customer, which is where this work started.</p>
+   <ul><li>Every module written from scratch against one requirement document</li>
+   <li>No reuse, no second customer, no product asset at the end</li>
+   <li>Cheaper to defend in a tender, more expensive to live with</li></ul></div></div>
+
+ ${sec('What the numbers actually say '+ann(1))}
+ ${tbl(['Route','Effort PD','Build INR Cr','Licence 5yr','All in 5yr','Reading'],6,
+  {0:['Cost to build the product itself','A — two independent builds','B — bespoke unified build','C — bespoke, phase 1 only','D — replatform the estate','E — customer adopts the product'],
+   1:['1,676','4,220','3,714','2,865','3,343','2,787'],
+   2:['2.54','6.38','5.62','4.33','5.06','4.22'],
+   3:['—','—','—','—','—','3.00'],
+   4:['2.54','6.38','5.62','4.33','5.06','7.22'],
+   5:['Less than one bespoke engagement','','The bid basis','Defers the AI layer and mobile','Unvalidated','Costs MORE at the assumed licence']})}
+
+ ${sec('The uncomfortable finding '+ann(2))}
+ ${box('Adopting the product removes only about a quarter of the build, because most of what a government customer needs — portal, CMS, bilingual content, migration, certification, hosting, mobile shell — was never product scope. At a sixty lakh annual licence, adoption costs more over five years than a bespoke build.',78)}
+ ${sec('Break-even licence')}
+ ${box('Roughly ₹28 lakh a year. Above it the customer is cheaper commissioning bespoke; below it, adopting wins.',52)}
+
+ ${sec('Which resolves the pricing question '+ann(3))}
+ ${list([['Break-even for the largest plausible tenant','about ₹28 lakh a year, roughly $34,000k'],
+         ['Base annual contract value in the market model','$60k'],
+         ['Implication','Either the market model prices too high, or the largest government producers are not the segment the product is priced for']])}`,
+ notes:['<b>This table is the whole commercial argument in one place.</b> The product costs less to build than a single bespoke engagement was priced at, which is the case for building it. But it does not automatically make any one customer cheaper, which is the case against assuming adoption sells itself.',
+        '<b>I had this wrong before modelling it.</b> I said adoption was probably the cheapest route on the board. Modelled per module, it is the most expensive of the five once the licence is counted. The reason is structural: the product core is a minority of a government portal programme.',
+        '<b>The break-even is below the assumed price point.</b> That tension is real and unresolved. It is the single most useful thing to take into a customer conversation, because it is answerable only by asking what a producer would actually pay.']},
+{id:'proj-list',g:'Production',n:'Production projects',kind:'core',iso:'ISO 17034 §7.2',roles:'RM Scientist · Production Lead',
+ lede:'Every reference material starts as a planned project. The standard requires a documented production plan governing all steps.',
+ render:()=>win('Lotmark › Production › Projects',
+  tabs(['All projects','Planning','In study','Awaiting authorisation','Released'],0)+
+  row(fld('Search',3),fld('Material class',1,'sel'),fld('Status',1,'sel'),`<span class="wf-btn p">New project</span>`)+
+  kpis(['Active projects','In homogeneity','In stability','Awaiting value authorisation','Released this quarter'])+
+  ann(1)+tbl(['Project','Material','Intended use','Stage','Owner','Target release'],6,
+    {0:['PRJ-0412','PRJ-0413','PRJ-0414','PRJ-0415','PRJ-0416','PRJ-0417'],
+     3:['Planning','Homogeneity','Stability','Characterisation','Authorisation','Released']}),
+  true),
+ notes:['<b>Project is the root object.</b> Lots, studies, property values and certificates all hang off it, so traceability is structural rather than assembled at audit time.',
+        '<b>Stage mirrors the standard.</b> Planning, homogeneity, stability, characterisation, value assignment, authorisation, release — an assessor can walk the pipeline without asking for a document.']},
+
+{id:'proj-detail',g:'Production',n:'Project — production plan',kind:'core',iso:'ISO 17034 §7.2, §7.3',roles:'Production Lead',
+ lede:'The production plan is the controlled document the standard actually asks for. Here it is a live record, not a Word file.',
+ render:()=>win('Lotmark › Production › PRJ-0414',
+  tabs(['Plan','Material','Studies','Characterisation','Property values','Lots','Documents','History'],0)+
+  `<div class="split"><div>${sec('Project')}${list([['Reference','PRJ-0414'],['Material','Ibuprofen'],['Class','Organic, high purity'],['Intended use','Assay, identification'],['Owner','—'],['Status','In stability']])}</div>
+   <div>${sec('Production plan '+ann(1))}
+    ${row(fld('Intended property values',2),fld('Target uncertainty',1))}
+    ${row(fld('Minimum sample intake',1),fld('Unit size',1),fld('Planned units',1))}
+    ${row(fld('Homogeneity design',1,'sel'),fld('Stability design',1,'sel'))}
+    ${row(fld('Characterisation approach',1,'sel'),fld('Metrological traceability route',2))}
+    ${sec('Subcontracted activities '+ann(2))}
+    ${tbl(['Activity','Provider','Competence evidence','Assessed','Expires'],3,{0:['Homogeneity testing','Packaging','Storage'],2:['Accreditation certificate','Audit report','—']})}
+    ${row(btn('Save draft'),btn('Submit plan for approval','p'))}</div></div>`),
+ notes:['<b>Plan as data, not prose.</b> Because the design parameters are fields, the system can later check that what was executed matches what was planned — which is the thing assessors actually probe.',
+        '<b>Subcontracting is constrained by the standard.</b> Production planning, value assignment, value authorisation and document authorisation cannot be subcontracted. The picker refuses those four and the field records competence evidence for everything else.']},
+
+{id:'material',g:'Production',n:'Candidate material',kind:'core',iso:'ISO 17034 §7.4',roles:'RM Scientist',
+ lede:'Sourcing, receipt, processing and the chain of custody before a lot exists.',
+ render:()=>win('Lotmark › Production › PRJ-0414 › Material',
+  `${sec('Source')}${row(fld('Supplier',2),fld('Supplier batch',1),fld('Received',1))}
+   ${row(fld('Quantity received',1),fld('Purity claimed',1),fld('Receipt condition',1,'sel'))}
+   ${sec('Processing steps '+ann(1))}
+   ${tbl(['Step','Method','Operator','Equipment','Date','Record'],4,{0:['Drying','Milling','Sieving','Blending']})}
+   ${row(btn('Add step','d'))}
+   ${sec('Packaging and labelling')}
+   ${row(fld('Container type',1,'sel'),fld('Fill quantity',1),fld('Units filled',1),fld('Fill order recorded',1,'sel'))}
+   ${box('Label preview — material name, lot, unit size, storage class, expiry, producer mark, unique unit number',70)+ann(2)}`),
+ notes:['<b>Processing steps carry equipment references.</b> Each links to the equipment register, so a calibration lapse surfaces against every lot that used the instrument rather than being discovered separately.',
+        '<b>Fill order matters.</b> Homogeneity designs commonly sample by fill sequence, so the fill order is captured at packaging rather than reconstructed later.']},
+
+{id:'homogeneity',g:'Production',n:'Homogeneity study',kind:'core',iso:'ISO 17034 §7.5',roles:'RM Scientist · Statistician',
+ lede:'Between-unit and within-unit variation, with the uncertainty contribution the certificate will later carry.',
+ render:()=>win('Lotmark › Production › PRJ-0414 › Studies › Homogeneity',
+  `${row(fld('Design',1,'sel'),fld('Units selected',1),fld('Replicates per unit',1),fld('Method',2))}
+   ${sec('Results '+ann(1))}
+   <div class="g2"><div>${tbl(['Unit','Rep 1','Rep 2','Mean','s'],6,{0:['U-004','U-019','U-037','U-058','U-072','U-091']})}</div>
+    <div>${img('Scatter — measured value by fill sequence, with control limits',150)}
+     ${sec('ANOVA')}${list([['Between-unit MS','—'],['Within-unit MS','—'],['s(bb)','—'],['u(bb) contribution','—'],['Sufficiently homogeneous','—']])}</div></div>
+   ${sec('Outcome')}${row(fld('Conclusion',3,'ta'),fld('Assessed by',1))}
+   ${row(btn('Attach raw data'),btn('Sign off study','p'))+ann(2)}`),
+ notes:['<b>u(bb) flows forward automatically.</b> The between-unit contribution computed here becomes a line in the uncertainty budget and then a number on the certificate. No re-keying, and no drift between the study and the document.',
+        '<b>Sign-off is a person, not a checkbox.</b> The signer must hold the competence authorisation for this activity, checked against the personnel register at the moment of signing.']},
+
+{id:'stability',g:'Production',n:'Stability studies',kind:'core',iso:'ISO 17034 §7.6',roles:'RM Scientist',
+ lede:'Short-term transport stability and long-term storage stability. Together they set the validity period and the shipping class.',
+ render:()=>win('Lotmark › Production › PRJ-0414 › Studies › Stability',
+  tabs(['Short-term (transport)','Long-term (storage)','Ongoing monitoring'],1)+
+  `${row(fld('Design',1,'sel'),fld('Storage condition',1,'sel'),fld('Timepoints',1),fld('Reference condition',1,'sel'))}
+   <div class="g2"><div>${tbl(['Timepoint','Condition','Result','Δ from t0'],6,{0:['t0','1 mo','3 mo','6 mo','12 mo','24 mo']})}</div>
+    <div>${img('Trend — property value over time with regression and confidence band',160)}
+     ${list([['Slope','—'],['Slope significant','—'],['u(lts) contribution','—'],['Proposed shelf life','—']])}</div></div>
+   ${sec('Derived controls '+ann(1))}
+   ${row(fld('Validity period',1),fld('Storage class',1,'sel'),fld('Transport class',1,'sel'),fld('Excursion tolerance',1))}
+   ${sec('Ongoing monitoring schedule '+ann(2))}
+   ${tbl(['Next check','Units reserved','Owner','Alert'],2)}`),
+ notes:['<b>Three fields the distribution side needs.</b> Validity period drives expiry alerting, storage class drives the pack instruction, and transport class drives whether a logger is mandatory. They are set once here and consumed everywhere downstream.',
+        '<b>Post-release monitoring is a requirement, not an option.</b> Units are reserved at packaging and the schedule generates work automatically, because a lapsed monitoring point is a finding.']},
+
+{id:'characterisation',g:'Production',n:'Characterisation',kind:'core',iso:'ISO 17034 §7.7',roles:'RM Scientist · Statistician',
+ lede:'How the property value is determined — single method, multiple methods, or interlaboratory comparison.',
+ render:()=>win('Lotmark › Production › PRJ-0414 › Characterisation',
+  `${row(fld('Approach',2,'sel'),fld('Number of laboratories',1),fld('Number of methods',1))}
+   ${sec('Participating laboratories '+ann(1))}
+   ${tbl(['Laboratory','Accreditation','Method','Result','u','Included'],5)}
+   ${row(btn('Invite laboratory','d'),btn('Import results'))}
+   <div class="g2" style="margin-top:12px"><div>${img('Youden / consistency plot across laboratories',150)}</div>
+    <div>${sec('Consensus')}${list([['Estimator','—'],['Assigned value','—'],['u(char)','—'],['Outliers excluded','—'],['Exclusion justification','—']])}</div></div>`),
+ notes:['<b>Exclusions must be justified in writing.</b> The field is mandatory before the consensus can be carried forward, because unexplained outlier removal is the most common characterisation finding.',
+        '<b>Participant accreditation is verified, not asserted.</b> Laboratory records link to the subcontractor competence register with expiry dates.']},
+
+{id:'values',g:'Production',n:'Property values and uncertainty',kind:'core',iso:'ISO 17034 §7.8, ISO Guide 35',roles:'Statistician · Technical Manager',
+ lede:'The uncertainty budget, assembled from the studies rather than typed in.',
+ render:()=>win('Lotmark › Production › PRJ-0414 › Property values',
+  `${sec('Assigned values '+ann(1))}
+   ${tbl(['Property','Value','Unit','u(char)','u(bb)','u(lts)','u(sts)','u combined','k','U expanded'],3,
+     {0:['Assay (as is)','Assay (dried)','Water content']})}
+   ${row(btn('Recompute from studies','d'),btn('Add property'))}
+   <div class="g2" style="margin-top:12px">
+    <div>${sec('Budget composition')}${img('Stacked bar — contribution of each component to combined uncertainty',140)}</div>
+    <div>${sec('Metrological traceability '+ann(2))}${row(fld('Traceable to',2))}${row(fld('Route',2,'ta'))}${list([['Higher-order reference','—'],['Comparison method','—']])}</div></div>
+   ${sec('Status')}${row(btn('Save'),btn('Submit for authorisation','p'))}`),
+ notes:['<b>The budget is derived, not entered.</b> Every component traces to the study that produced it. Change a study and the budget recomputes, with the previous version retained.',
+        '<b>Traceability is a required statement.</b> A certified reference material must carry a statement of metrological traceability, so the certificate cannot be issued while this is empty.']},
+
+{id:'authorise',g:'Production',n:'Value authorisation',kind:'core',iso:'ISO 17034 §6.2 — non-subcontractable',roles:'Technical Manager',
+ lede:'The decision the standard says the producer must make itself. Modelled as a named, segregated, irreversible act.',
+ render:()=>win('Lotmark › Production › Authorisation queue',
+  `${kpis(['Awaiting authorisation','Authorised this month','Returned','Median days to decide'])}
+   ${sec('PRJ-0414 · Ibuprofen '+ann(1))}
+   <div class="g2"><div>${sec('Evidence presented')}
+     ${list([['Production plan','conforms'],['Homogeneity study','signed'],['Stability study','signed'],['Characterisation','signed'],['Uncertainty budget','complete'],['Traceability statement','present'],['Equipment calibration','all current'],['Operator competence','all current']])}</div>
+    <div>${sec('Decision')}${row(fld('Assigned values reviewed',1,'sel'))}${row(fld('Uncertainties reviewed',1,'sel'))}
+     ${row(fld('Decision rationale',1,'ta'))}${row(fld('Authorised by',1),fld('Date',1))}
+     ${row(btn('Return to study'),btn('Authorise values','g'))}
+     ${box('Blocked when the authoriser is also the assigner of these values, or when any evidence row above is incomplete',54)+ann(2)}</div></div>`),
+ notes:['<b>Four things cannot be subcontracted.</b> Production planning, value assignment, value authorisation, and authorisation of the RM documents. The product refuses to route any of them outside the tenant — that constraint is the compliance argument in one screen.',
+        '<b>Segregation of duties is enforced here, not advised.</b> The account that assigned the values is refused authorisation of the same values even when it holds the permission, and the refusal is written to the ledger.']},
+
+{id:'lots',g:'Production',n:'Lot register',kind:'core',iso:'ISO 17034 §7.9',roles:'Production Lead · Stock Controller',
+ lede:'The object everything downstream points at. One lot, one certificate, one validity window, one stock position.',
+ render:()=>win('Lotmark › Production › Lots',
+  tabs(['Current','Pending release','Superseded','Expired','Recalled'],0)+
+  row(fld('Search lot or material',3),fld('Storage class',1,'sel'),fld('Expiring within',1,'sel'),btn('Create lot','p'))+
+  ann(1)+tbl(['Lot','Material','Project','Units','Available','Valid to','Storage','State','Certificate'],6,
+   {0:['IPRSP101','IPRSM097','IPRSA115','IPRSI011','IMPN003','IMPD012'],
+    7:['current','current','current','expiring','current','low stock']})+
+  `<div class="g3" style="margin-top:12px">
+   ${box('Expiry horizon — units by month to expiry',86)}
+   ${box('Stock cover — days remaining at trailing demand',86)}
+   ${box('Supersession chain — lot lineage for a selected material',86)}</div>${ann(2)}`),
+ notes:['<b>Supersession is automatic and recorded.</b> Releasing a new lot moves the previous one to superseded and stamps the date, so lineage is a stored relationship rather than a convention someone maintains by hand.',
+        '<b>Two signals nobody currently gets.</b> Expiry horizon and stock cover both derive from data the producer already has but cannot see together — the reason a standard can be out of stock while sitting near the top of the demand report.']},
+
+/* ───────── B · CERTIFICATION ───────── */
+{id:'cert-build',g:'Certification',n:'Certificate builder',kind:'core',iso:'ISO Guide 31',roles:'Technical Manager',
+ lede:'Assembled from authorised values. Nothing on a certificate can be typed in that is not already a controlled record.',
+ render:()=>win('Lotmark › Certification › Certificate for lot IPRSP101',
+  `<div class="split"><div>${sec('Sections')}
+    ${list([['Header and producer',''],['Material identity',''],['Intended use',''],['Property values',''],['Uncertainty',''],['Traceability',''],['Validity',''],['Storage and handling',''],['Instructions for use',''],['Authorisation',''],['Legal notice','']])}</div>
+   <div>${sec('Preview '+ann(1))}
+    ${box('Producer mark · accreditation number · certificate number · issue date',44)}
+    ${box('Material name, CAS, formula, lot, unit size',54)}
+    ${box('Property value table — value, expanded uncertainty, coverage factor, unit',76)}
+    ${box('Statement of metrological traceability',44)}
+    ${box('Valid to · storage class · transport class · handling and safety',54)}
+    ${box('Authorised by — name, role, date, signature block',48)}
+    ${row(btn('Preview PDF'),btn('Compare with previous issue'),btn('Issue certificate','g'))}
+    ${box('Issue is blocked while any source record is unauthorised or any mandatory section is empty',44)+ann(2)}</div></div>`),
+ notes:['<b>No free text on the value table.</b> Every number is bound to an authorised property value. If a study is later corrected, the certificate is flagged for reissue instead of quietly disagreeing with its own evidence.',
+        '<b>Issue is a gate, not a button.</b> The same authorisation rules that govern property values govern document issue, because the standard treats authorisation of RM documents as non-subcontractable too.']},
+
+{id:'cert-template',g:'Certification',n:'Certificate templates',kind:'core',iso:'',roles:'Technical Manager · Tenant Admin',
+ lede:'Each producer certifies in their own format. Templates are the multi-tenant hinge — same engine, different house style.',
+ render:()=>win('Lotmark › Settings › Certificate templates',
+  `${row(fld('Template',2,'sel'),fld('Applies to material class',1,'sel'),fld('Language',1,'sel'),btn('New template','p'))}
+   <div class="g2"><div>${sec('Blocks')}${list([['Producer header','locked'],['Accreditation mark','locked'],['Property value table','required'],['Uncertainty statement','required'],['Traceability statement','required'],['Validity','required'],['Storage and transport','required'],['Instructions for use','optional'],['Safety','optional'],['Custom block','optional']])}${row(btn('Add block','d'))}</div>
+   <div>${sec('Layout '+ann(1))}${img('Drag-and-drop page canvas with block outlines and page breaks',210)}
+    ${row(fld('Numbering scheme',1),fld('Reissue suffix',1))}</div></div>
+   ${sec('Governance '+ann(2))}${row(fld('Template version',1),fld('Approved by',1),fld('Effective from',1),fld('Supersedes',1))}`),
+ notes:['<b>Required blocks cannot be removed.</b> The template designer enforces the minimum content of a reference material certificate, so a tenant cannot style their way out of conformance.',
+        '<b>Templates are versioned and approved.</b> A certificate records which template version produced it, so a reissue years later can reproduce the original faithfully.']},
+
+{id:'cert-registry',g:'Certification',n:'Certificate registry and reissue',kind:'core',iso:'ISO 17034 §7.11',roles:'Technical Manager · Quality',
+ lede:'Every certificate ever issued, what changed, and who holds an outdated copy.',
+ render:()=>win('Lotmark › Certification › Registry',
+  row(fld('Search certificate, lot or material',3),fld('Status',1,'sel'),fld('Issued between',1))+
+  tbl(['Certificate','Lot','Issue','Issued','Authorised by','Status','Holders notified'],6,
+   {0:['CRT-2041','CRT-2042','CRT-2043','CRT-2044','CRT-2045','CRT-2046'],5:['current','current','reissued','withdrawn','current','current']})+
+  `${sec('Reissue — CRT-2043 '+ann(1))}
+   <div class="g2"><div>${sec('What changed')}${tbl(['Field','Issue 1','Issue 2'],3)}</div>
+    <div>${sec('Notification '+ann(2))}${list([['Customers holding issue 1','—'],['Notified','—'],['Acknowledged','—'],['Outstanding','—']])}
+     ${row(btn('Notify holders','p'),btn('Export holder list'))}</div></div>`),
+ notes:['<b>Reissue produces a diff, not a replacement.</b> Both issues stay retrievable, and the difference is displayed rather than left for a customer to spot.',
+        '<b>The holder list is the point.</b> A producer that cannot name who received a superseded certificate cannot demonstrate control of its documents. Order history makes that list computable, which is why certification and distribution belong in one product.']},
+
+/* ───────── C · DISTRIBUTION ───────── */
+{id:'catalogue',g:'Distribution',n:'Catalogue management',kind:'core',iso:'',roles:'Catalogue Manager',
+ lede:'The saleable view of the lot register — what is listed, at what price, to whom.',
+ render:()=>win('Lotmark › Distribution › Catalogue',
+  tabs(['All items','Listed','Unlisted','Out of stock','Discontinued'],0)+
+  row(fld('Search',3),fld('Category',1,'sel'),fld('Price tier',1,'sel'),btn('Bulk import'),btn('New item','p'))+
+  ann(1)+tbl(['SKU','Material','Current lot','Unit','List price','Tiers','Availability','Listed'],6,
+   {0:['IPRSP101','IPRSM097','IPRSA115','IPRSI011','IMPN003','IMPD012']})+
+  `${sec('Bulk operations '+ann(2))}${row(btn('Import from spreadsheet','d'),btn('Export catalogue'),btn('Publish to storefront'),btn('Publish to API'))}`),
+ notes:['<b>Listing is separate from existence.</b> A lot can be released for internal use, reserved for monitoring, or withheld from sale, without three different systems disagreeing about whether it is available.',
+        '<b>Bulk import is a first-class path.</b> Producers arrive with a spreadsheet or a PDF list of hundreds of items — a verified case in the field. Onboarding fails if the first step is manual entry.']},
+
+{id:'entitlement',g:'Distribution',n:'Customer entitlement',kind:'core',iso:'',roles:'Finance · Commercial',
+ lede:'Who gets which price, on what evidence, and when that evidence expires.',
+ render:()=>win('Lotmark › Distribution › Entitlement',
+  tabs(['Queue','Approved','Expiring','Lapsed','Rejected'],0)+
+  kpis(['Awaiting review','Approved','Expiring in 90 days','Lapsed','Median decision days'])+
+  tbl(['Claim','Organisation','Tier claimed','Evidence','Raised','Reviewer','State'],5,
+   {0:['ENT-118','ENT-124','ENT-127','ENT-131','ENT-133'],6:['approved','in review','in review','expiring','lapsed']})+
+  `${sec('ENT-124 '+ann(1))}
+   <div class="g2"><div>${list([['Organisation','—'],['Tier claimed','Government'],['Discount effect','—'],['Evidence document','—'],['Verified against','—']])}
+     ${box('Evidence viewer — uploaded recognition letter or notification',110)}</div>
+    <div>${sec('Decision')}${row(fld('Checklist item 1',1,'sel'),fld('Checklist item 2',1,'sel'))}
+     ${row(fld('Rationale',1,'ta'))}${row(fld('Revalidate after',1,'sel'))}
+     ${row(btn('Request clarification'),btn('Reject'),btn('Approve tier','g'))}
+     ${box('Automatic hold on the revalidation date. Entitlement never becomes permanent.',48)+ann(2)}</div></div>`),
+ notes:['<b>Tiers are assignment, not discounting.</b> Producers commonly publish two price lists already. The build is the evidence trail and the expiry, not the arithmetic — a distinction that halved one workstream in the IPC estimate.',
+        '<b>Perpetual entitlement is the control weakness.</b> Approving once and never revisiting is the pattern found in the source documents. Revalidation with automatic hold is the fix, and it is a default rather than an option.']},
+
+{id:'orders',g:'Distribution',n:'Orders',kind:'core',iso:'',roles:'Commercial · Finance',
+ lede:'One ledger regardless of whether the order arrived through the storefront, the API, a purchase order or the phone.',
+ render:()=>win('Lotmark › Distribution › Orders',
+  tabs(['All','Awaiting payment','Awaiting dispatch','In transit','Delivered','Exceptions'],0)+
+  row(fld('Search',3),fld('Channel',1,'sel'),fld('Tier',1,'sel'),fld('Date range',1))+
+  kpis(['Open orders','Value in flight','Cold-chain in transit','Exceptions','Median turnaround'])+
+  ann(1)+tbl(['Order','Customer','Channel','Lines','Value','Tier','State','Cold chain'],6,
+   {0:['ORD-24081','ORD-24082','ORD-24083','ORD-24084','ORD-24085','ORD-24086'],
+    2:['Storefront','API','Purchase order','Storefront','Phone','API']})+
+  `${sec('Exceptions '+ann(2))}${list([['Ordered lot superseded before dispatch','2'],['Temperature excursion on delivery','1'],['Entitlement lapsed after order placed','1'],['Stock reserved but not picked','3']])}`),
+ notes:['<b>Channel is a field, not a separate system.</b> Producers take orders by email and phone for years after launching a shop. If those cannot enter the same ledger, the ledger is not the record.',
+        '<b>Exceptions are named, not buried.</b> Each of these is a real event with a defined handling path — the superseded-lot case in particular is invisible in every generic commerce product.']},
+
+{id:'order-detail',g:'Distribution',n:'Order detail',kind:'core',iso:'',roles:'Commercial · Dispatch',
+ lede:'What was ordered, which lot actually shipped, and which certificate went with it.',
+ render:()=>win('Lotmark › Distribution › ORD-24083',
+  `<div class="split"><div>${sec('Order')}${list([['Reference','ORD-24083'],['Customer','—'],['Channel','—'],['Tier applied','—'],['Placed','—'],['State','—']])}
+    ${sec('Documents')}${list([['Proforma','—'],['Tax invoice','—'],['Packing list','—'],['Certificates','—']])}</div>
+   <div>${sec('Lines '+ann(1))}
+    ${tbl(['SKU','Material','Lot allocated','Qty','Unit price','Certificate','Storage'],3)}
+    ${sec('Fulfilment timeline')}
+    ${list([['Placed','—'],['Payment cleared','—'],['Allocated to lot','—'],['Picked and packed','—'],['Dispatched','—'],['Delivered','—'],['Logger reading closed','—']])}
+    ${sec('Linked records '+ann(2))}${row(chip('Entitlement ENT-124'),chip('Certificate CRT-2041'),chip('Shipment SHP-8841'),chip('Invoice INV-3320'))}</div></div>`),
+ notes:['<b>Lot allocation is explicit.</b> The certificate that travels with a shipment is the certificate for the lot actually allocated, which is what makes the holder list in the certificate registry computable.',
+        '<b>Everything cross-links.</b> From an order you can reach the entitlement decision, the certificate, the shipment and the invoice in one hop each — the shape an auditor traverses.']},
+
+{id:'dispatch',g:'Distribution',n:'Dispatch and cold chain',kind:'core',iso:'ISO 17034 §7.10',roles:'Dispatch',
+ lede:'Storage class set during stability work becomes a pack instruction here. Absent from both IPC documents despite most items needing 2–8 °C.',
+ render:()=>win('Lotmark › Distribution › Dispatch board',
+  `<div class="g4">${['To pick','Packing','Ready','Dispatched'].map(s=>`<div>${sec(s)}
+    ${box('Order card — reference, customer, priority flag, storage class badge',72)}
+    ${box('Order card',72)}</div>`).join('')}</div>
+   ${sec('Pack instruction — SHP-8841 '+ann(1))}
+   <div class="g2"><div>${list([['Storage class','2–8 °C'],['Transport class','Chilled, 72 h'],['Pack configuration','—'],['Coolant','—'],['Logger required','Yes'],['Logger serial','—']])}</div>
+    <div>${box('Pack diagram — placement of units, coolant and logger',120)}</div></div>
+   ${sec('Carrier and tracking')}${row(fld('Carrier',1,'sel'),fld('Service',1,'sel'),fld('Consignment',1),btn('Book','p'))}
+   ${sec('Delivery closure '+ann(2))}${row(fld('Delivered',1),fld('Logger reading',1),fld('Excursion?',1,'sel'),fld('Disposition',1,'sel'))}`),
+ notes:['<b>The pack instruction is generated, not remembered.</b> It derives from the transport class the stability study produced, so a new picker packs correctly on their first day.',
+        '<b>An excursion is a decision, not a note.</b> Delivery cannot close without a logger reading, and an excursion routes to a documented disposition — accept, quarantine or replace — which becomes a complaint record if the customer is affected.']},
+
+{id:'storefront',g:'Distribution',n:'Customer storefront',kind:'comm',iso:'',roles:'Customer',
+ lede:'Configured, not built. The product supplies catalogue, price and certificate data; the shop window can be anything.',
+ render:()=>win('customer.producer.org',
+  `${box('Site header — producer identity, search, account, cart',48)}
+   ${row(fld('Search materials, CAS or lot',3),fld('Category',1,'sel'),fld('Availability',1,'sel'))}
+   <div class="g3">${[1,2,3].map(()=>`<div style="border:1px solid var(--line);border-radius:5px;padding:10px">
+     ${box('Material name and identifiers',38)}${box('Lot · validity bar · storage class',44)}
+     ${row(box('Price',26,'flex:1'),btn('Add','p'))}</div>`).join('')}</div>
+   ${sec('What the product supplies '+ann(1))}
+   ${list([['Catalogue and availability','API'],['Tier-resolved price for the signed-in customer','API'],['Current lot and validity','API'],['Certificate and safety document links','API'],['Order creation and status','API']])}
+   ${box('Everything else — theme, content pages, cart, payment, search UI — is the commodity layer',44)+ann(2)}`),
+ notes:['<b>This screen is deliberately thin.</b> It is the one place the product should resist building. A producer with an existing shop keeps it; a producer without one gets a reference implementation.',
+        '<b>The API contract is the actual deliverable.</b> Five endpoints replace an entire e-commerce workstream, which is where the difference between the core and the commodity becomes a costed decision rather than an opinion.']},
+
+{id:'cust-account',g:'Distribution',n:'Customer account and document vault',kind:'core',iso:'',roles:'Customer',
+ lede:'Where a customer finds every certificate they hold, and learns when one is superseded.',
+ render:()=>win('customer.producer.org › My account',
+  tabs(['Orders','Certificates','Entitlement','Alerts','Users'],1)+
+  `${kpis(['Materials held','Expiring in 90 days','Superseded certificates','Open orders'])}
+   ${ann(1)}${tbl(['Material','Lot','Certificate','Issued','Valid to','Status','Action'],5,
+    {5:['current','current','expiring','superseded','expired']})}
+   ${sec('Alerts '+ann(2))}
+   ${list([['Lot expiring within 90 days','email + portal'],['Replacement lot released','email + portal'],['Certificate reissued for a lot you hold','email + portal'],['Entitlement revalidation due','email']])}
+   ${row(btn('Download all current certificates'),btn('Alert preferences'))}`),
+ notes:['<b>This is the feature customers ask for and nobody ships.</b> A quality manager needs to prove every standard in the laboratory has a valid certificate. Today that is a folder of PDFs and a spreadsheet.',
+        '<b>Superseded is a state the customer can see.</b> Coupled with the holder list on the producer side, it closes the loop that document control actually requires.']},
+
+{id:'vault',g:'Distribution',n:'Laboratory vault — standalone',kind:'core',iso:'',roles:'Laboratory quality manager',
+ lede:'The second product. Same data, opposite side of the transaction, a market roughly 350 times larger than the producer side.',
+ render:()=>win('vault.lotmark.io › My reference materials',
+  tabs(['Inventory','Expiring','Superseded','Suppliers','Audit pack'],0)+
+  kpis(['Standards held','Valid','Expiring in 90 days','Superseded certificate','No certificate on file'])+
+  `${row(fld('Search',3),fld('Supplier',1,'sel'),fld('Location',1,'sel'),fld('Status',1,'sel'),btn('Scan unit','p'))}
+   ${ann(1)}${tbl(['Material','Lot','Supplier','Certificate','Valid to','Location','Status'],6,
+    {6:['valid','valid','expiring','superseded','expired','no certificate']})}
+   ${sec('Where the records come from '+ann(2))}
+   ${list([['Producers running the platform','certificates arrive automatically with the order'],
+           ['Producers not running it','scan the unit QR, or upload the certificate PDF'],
+           ['Legacy holdings','bulk import from a spreadsheet']])}
+   ${sec('Audit pack '+ann(3))}
+   ${box('One click: every standard held, its certificate, validity, storage location and supersession status, as at a chosen date',56)}
+   ${row(btn('Generate pack','g'),btn('Schedule monthly'),btn('Share with assessor'))}`),
+ notes:['<b>This is the job a quality manager does with a folder of PDFs and a spreadsheet.</b> Proving every standard on the shelf has a current certificate is an ISO/IEC 17025 obligation for over 114,600 accredited laboratories.',
+        '<b>Cold start is the whole problem, and the producer platform solves it.</b> Certificates flow in automatically from producers already on the platform, so early customers arrive with their vault half-populated. Without that channel this product starts empty and stays empty.',
+        '<b>The audit pack is the wedge, not the inventory.</b> Labs will not maintain a list for its own sake. They will maintain one that turns their next assessment into an export.']},
+
+/* ───────── D · COMPLIANCE ───────── */
+{id:'conformance',g:'Compliance',n:'ISO 17034 conformance',kind:'core',iso:'ISO 17034 — all clauses',roles:'Quality Manager',
+ lede:'The moat. Every clause mapped to the records the product already holds, with the gaps named.',
+ render:()=>win('Lotmark › Compliance › Conformance',
+  kpis(['Clauses evidenced','Clauses partial','Clauses with no evidence','Records expiring','Days to next assessment'])+
+  `${row(fld('Standard',1,'sel'),fld('Clause group',1,'sel'),fld('Status',1,'sel'),btn('Export assessment pack','p'))}
+   ${ann(1)}${tbl(['Clause','Requirement','Evidence source','Records','Last verified','Status'],8,
+    {0:['4.1','5.2','6.2','6.3','7.2','7.5','7.8','7.11'],
+     5:['evidenced','evidenced','partial','evidenced','evidenced','evidenced','evidenced','gap']})}
+   ${sec('Assessment pack '+ann(2))}
+   ${list([['Clause-by-clause evidence index','generated'],['Sample production plans','selected'],['Sample certificates','selected'],['Study reports','linked'],['Personnel competence records','current'],['Equipment calibration records','current'],['Subcontractor evidence','current'],['Complaint and CAPA log','generated']])}`),
+ notes:['<b>This is the reason a producer buys.</b> Not because ordering is nicer, but because an accreditation assessment stops being a three-week document hunt. That is the sales conversation.',
+        '<b>Gaps are shown, not hidden.</b> A conformance screen that always reads green is worthless. Naming the unevidenced clauses is what makes the evidenced ones credible.']},
+
+{id:'audit',g:'Compliance',n:'Audit ledger',kind:'core',iso:'ISO 17034 §8.4',roles:'Quality · Admin',
+ lede:'Append-only, hash-chained, verifiable. Every state change, decision, document issue and data reveal.',
+ render:()=>win('Lotmark › Compliance › Audit ledger',
+  row(fld('Search',2),fld('Actor',1,'sel'),fld('Event type',1,'sel'),fld('Object',1,'sel'),fld('Date range',1))+
+  row(btn('Verify chain','p'),btn('Export'),chip('chain intact'),chip('—— entries'))+
+  ann(1)+tbl(['Seq','Time','Actor','Role','Event','Object','Digest'],8)+
+  `${sec('Verification '+ann(2))}
+   <div class="g2">${box('Chain recomputation — each digest folds in its predecessor',80)}
+    ${box('Break detection — sequence number where recomputation first diverges',80)}</div>`),
+ notes:['<b>Hash chaining is the cheapest credible answer.</b> Requirement documents demand immutable logs and never say how. Each entry folding in its predecessor means altering one row invalidates every row after it, and that is demonstrable in a meeting.',
+        '<b>Reveals are events too.</b> Viewing a masked field is recorded with the actor and the justification, which is what turns access control into evidence.']},
+
+{id:'subcontract',g:'Compliance',n:'Subcontractor competence',kind:'core',iso:'ISO 17034 §6.2',roles:'Quality Manager',
+ lede:'The standard permits subcontracting some activities and forbids others. Both halves live here.',
+ render:()=>win('Lotmark › Compliance › Subcontractors',
+  `${sec('Permitted and forbidden '+ann(1))}
+   <div class="g2"><div>${sec('May be subcontracted')}${list([['Processing and handling',''],['Homogeneity assessment',''],['Stability assessment',''],['Characterisation testing',''],['Storage',''],['Distribution','']])}</div>
+    <div>${sec('May never be subcontracted')}${list([['Production planning','blocked'],['Selection of subcontractors','blocked'],['Assignment of property values','blocked'],['Authorisation of property values','blocked'],['Authorisation of RM documents','blocked']])}</div></div>
+   ${sec('Providers')}${tbl(['Provider','Activities','Accreditation','Scope verified','Assessed','Expires','Status'],5)}
+   ${sec('Assessment record '+ann(2))}${row(fld('Method',1,'sel'),fld('Assessor',1),fld('Outcome',1,'sel'),fld('Next due',1))}`),
+ notes:['<b>The forbidden list is enforced in the workflow.</b> Those five activities cannot be routed to an external party anywhere in the product. The screen documents a constraint the software already applies.',
+        '<b>Expiry drives work.</b> A lapsed subcontractor accreditation blocks new work routed to them and flags every lot that relied on them since the lapse.']},
+
+{id:'capa',g:'Compliance',n:'Complaints, nonconformity and CAPA',kind:'core',iso:'ISO 17034 §8.6, §8.7',roles:'Quality Manager',
+ lede:'Customer complaints, internal nonconformities and temperature excursions all land in one register.',
+ render:()=>win('Lotmark › Compliance › CAPA',
+  tabs(['Open','Investigation','Action','Effectiveness check','Closed'],0)+
+  kpis(['Open records','Overdue actions','Recurrence rate','Median days to close'])+
+  tbl(['Record','Source','Object','Severity','Owner','Raised','Due','State'],6,
+   {1:['Customer complaint','Excursion','Internal NC','Assessment finding','Customer complaint','Internal NC']})+
+  `${sec('NCR-0231 '+ann(1))}
+   <div class="g2"><div>${sec('Investigation')}${row(fld('Description',1,'ta'))}${row(fld('Immediate action',1,'ta'))}${row(fld('Root cause method',1,'sel'),fld('Root cause',2))}</div>
+    <div>${sec('Action and verification '+ann(2))}${row(fld('Corrective action',1,'ta'))}${row(fld('Owner',1),fld('Due',1))}
+     ${row(fld('Effectiveness check',1,'ta'))}${row(fld('Verified by',1),fld('Closed',1))}
+     ${sec('Impact')}${list([['Lots affected','—'],['Certificates affected','—'],['Customers to notify','—'],['Recall required','—']])}</div></div>`),
+ notes:['<b>Excursions flow in automatically.</b> A cold-chain breach raised at delivery becomes a record here without anyone re-typing it, which is how the dispatch and quality halves of the product justify sitting together.',
+        '<b>Impact is computed.</b> Because lots, certificates and orders are linked, the blast radius of a nonconformity — which customers, which certificates, whether a recall is required — is a query rather than an investigation.']},
+
+{id:'equipment',g:'Compliance',n:'Equipment and facilities',kind:'core',iso:'ISO 17034 §6.4, §6.5',roles:'Lab Manager',
+ lede:'Calibration status and controlled-environment records, linked to the lots that depended on them.',
+ render:()=>win('Lotmark › Compliance › Equipment',
+  tabs(['Equipment','Storage facilities','Environmental monitoring'],0)+
+  kpis(['Instruments','Calibration due 30 days','Overdue','Out of service'])+
+  tbl(['Asset','Type','Location','Last calibration','Next due','Status','Lots relying on it'],6,
+   {5:['current','current','due soon','overdue','current','out of service']})+
+  `${sec('Impact of a lapse '+ann(1))}
+   ${box('When calibration lapses, every lot whose studies used the instrument is listed for assessment',60)}
+   ${sec('Storage facility monitoring '+ann(2))}
+   <div class="g2">${box('Temperature trace by chamber, with alarm thresholds',110)}${box('Excursion log — duration, magnitude, materials affected, disposition',110)}</div>`),
+ notes:['<b>Retrospective impact is the hard part.</b> Finding out today that an instrument drifted means knowing which lots to reassess. That is only answerable if studies reference equipment as records rather than as text.',
+        '<b>Chamber excursions affect stored stock.</b> The same disposition workflow as a transport excursion, applied to inventory instead of a shipment.']},
+
+{id:'competence',g:'Compliance',n:'Personnel competence',kind:'core',iso:'ISO 17034 §6.3',roles:'Quality Manager · HR',
+ lede:'Who is authorised to do what, and the training that backs it. Enforced at the point of signing.',
+ render:()=>win('Lotmark › Compliance › Personnel',
+  tabs(['People','Authorisations','Training','Matrix'],3)+
+  `${sec('Competence matrix '+ann(1))}
+   ${tbl(['Person','Prepare material','Run homogeneity','Run stability','Assign values','Authorise values','Issue certificates','Dispatch'],6)}
+   ${sec('Authorisation record')}
+   ${row(fld('Person',1,'sel'),fld('Activity',1,'sel'),fld('Evidence',1,'sel'),fld('Granted',1),fld('Reviewed',1),fld('Expires',1))}
+   ${sec('Enforcement '+ann(2))}
+   ${box('Sign-off, value assignment and certificate issue check this matrix at the moment of action and refuse if the authorisation is missing or expired',60)}`),
+ notes:['<b>Competence is checked, not filed.</b> Most quality systems keep training records in a folder and hope. Here the matrix is consulted when someone signs a study or authorises a value, and an expired authorisation blocks the action.',
+        '<b>The matrix doubles as the assessment artefact.</b> It is the table an assessor asks for, and it is live rather than assembled the week before.']},
+
+/* ───────── E · PLATFORM ───────── */
+{id:'users',g:'Platform',n:'Users, roles and permissions',kind:'core',iso:'',roles:'Tenant Admin',
+ lede:'Roles carry permissions; segregation rules sit on top and can refuse an action the permission allows.',
+ render:()=>win('Lotmark › Settings › Users and roles',
+  tabs(['Users','Roles','Permission matrix','Segregation rules','Sessions'],3)+
+  `${sec('Segregation of duties rules '+ann(1))}
+   ${tbl(['Rule','Applies to','Constraint','Enforced at','Bypass'],5,
+    {0:['SoD-1','SoD-2','SoD-3','SoD-4','SoD-5'],
+     2:['Assigner of values may not authorise them','Author of a document may not authorise it','Raiser of an entitlement claim may not decide it','Refund above threshold needs a second approver','Study signer must hold current competence'],
+     4:['none','none','none','none','none']})}
+   ${row(btn('Add rule','d'))}
+   ${sec('Permission matrix '+ann(2))}${box('Roles across the top, permissions down the side, read from the same object the authorisation guard uses',140)}`),
+ notes:['<b>Segregation rules are data, not code.</b> Different producers organise differently — a small producer may need a documented exception where a large one does not. Rules are configurable but every rule has an owner and an audit trail, and none can be bypassed silently.',
+        '<b>One source of truth for authorisation.</b> The matrix rendered here is the same structure the runtime guard consults, so the documentation cannot drift from the enforcement.']},
+
+{id:'tenant',g:'Platform',n:'Tenant and producer profile',kind:'core',iso:'',roles:'Tenant Admin',
+ lede:'Multi-tenant by design. One deployment, many producers, no shared records.',
+ render:()=>win('Lotmark › Settings › Producer profile',
+  `${sec('Identity')}${row(fld('Producer name',2),fld('Legal entity',2))}
+   ${row(fld('Accreditation body',1),fld('Accreditation number',1),fld('Scope',2))}
+   ${sec('Conventions '+ann(1))}
+   ${row(fld('Lot numbering',1),fld('Certificate numbering',1),fld('Order numbering',1),fld('Fiscal year start',1))}
+   ${row(fld('Default storage classes',2),fld('Transport classes',2))}
+   ${sec('Localisation')}${row(fld('Languages',1,'sel'),fld('Currency',1,'sel'),fld('Tax regime',1,'sel'),fld('Invoice rules',1,'sel'))}
+   ${sec('Data residency '+ann(2))}${row(fld('Region',1,'sel'),fld('Retention policy',1,'sel'),fld('Export on exit',1,'sel'))}`),
+ notes:['<b>Numbering conventions are non-negotiable for producers.</b> Existing lot and certificate series must continue unbroken across a migration, or historical records stop reconciling.',
+        '<b>Residency is a sales blocker if it is an afterthought.</b> Government producers frequently require in-country hosting; the tenant model has to make that a configuration rather than a separate deployment.']},
+
+{id:'integrations',g:'Platform',n:'Integrations',kind:'core',iso:'',roles:'Tenant Admin · IT',
+ lede:'The product sits between systems that already exist. What it consumes and what it publishes.',
+ render:()=>win('Lotmark › Settings › Integrations',
+  `<div class="g2"><div>${sec('Inbound '+ann(1))}
+    ${list([['LIMS or QC system','study results and raw data'],['ERP','stock, cost, financial posting'],['Identity provider','single sign-on'],['Accreditation body feed','scope and expiry']])}</div>
+   <div>${sec('Outbound')}
+    ${list([['Storefront or commerce','catalogue, price, availability'],['Carrier','booking and tracking'],['Payment','authorisation and settlement'],['Tax authority','e-invoicing'],['Customer systems','certificate retrieval API']])}</div></div>
+   ${sec('Connection health')}${tbl(['Integration','Direction','Auth','Last sync','Records','Errors','State'],5)}
+   ${sec('The dependency that decides everything '+ann(2))}
+   ${box('Without a LIMS or QC source, study results are entered by hand. The product must ship a manual entry path and treat the integration as an upgrade, not a prerequisite.',60)}`),
+ notes:['<b>Certificate retrieval as a public API is a distribution strategy.</b> Customers embed it in their own quality systems, which makes the producer stickier than any feature.',
+        '<b>The LIMS gap is real and must not be assumed away.</b> In the one estate examined closely, lot data was maintained as a hand-edited PDF. Assuming a clean upstream feed would have made the product unsellable to the first customer.']},
+
+{id:'analytics',g:'Platform',n:'Analytics and MIS',kind:'core',iso:'',roles:'Management',
+ lede:'The four questions a producer cannot answer today.',
+ render:()=>win('Lotmark › Analytics',
+  tabs(['Demand','Portfolio','Operations','Compliance'],0)+
+  `<div class="g2">
+    ${box('Most requested materials — including those searched but unavailable',130)}
+    ${box('Failed searches — the development pipeline candidates',130)}
+    ${box('Expiry horizon versus replenishment lead time',130)}
+    ${box('Turnaround by stage — plan to release, order to dispatch',130)}</div>
+   ${sec('Scheduled reports '+ann(1))}
+   ${tbl(['Report','Audience','Frequency','Format','Last sent'],4)}
+   ${sec('Unit economics '+ann(2))}
+   ${list([['Cost per SKU maintained','—'],['Cost per order','—'],['Revenue per material','—'],['Lots released per scientist','—']])}`),
+ notes:['<b>Failed searches are a product pipeline.</b> A material customers repeatedly look for and cannot find is a candidate for development. Producers currently discover this anecdotally.',
+        '<b>Cost per SKU is the honest unit for this product.</b> It barely moves with order volume, whereas cost per order swings several-fold on an assumption most producers cannot verify.']},
+
+/* ───────── F · FIELD ───────── */
+{id:'mobile-cust',g:'Field',n:'Customer mobile',kind:'core',iso:'',roles:'Customer',
+ lede:'A quality manager checking, from the bench, whether the standard in their hand is still valid.',
+ render:()=>`<div style="max-width:330px"><div class="canvas">
+  <div class="wtop"><span class="dots"><i></i><i></i><i></i></span>Mobile</div><div class="wbody">
+   ${box('Scan the unit QR code',46)+ann(1)}
+   ${box('Material · lot · unit number',44)}
+   ${box('Validity — valid to date and remaining days',52)}
+   ${box('Status — current / superseded / expired',40)}
+   ${list([['Certificate','PDF'],['Safety data sheet','PDF'],['Instructions for use','PDF']])}
+   ${row(btn('Reorder this material','p'))}
+   ${box('If superseded — replacement lot and a one-tap reorder',48)+ann(2)}
+   ${box('Tab bar — Scan · My materials · Orders · Alerts',40)}</div></div></div>`,
+ notes:['<b>The QR code is printed at packaging.</b> It resolves to the unit, not the material, so scanning tells you about the vial in your hand rather than the catalogue entry.',
+        '<b>Superseded is the moment of value.</b> Discovering at the bench that a lot has been replaced, before a method validation is invalidated, is the single clearest reason a customer installs anything.']},
+
+{id:'mobile-dispatch',g:'Field',n:'Dispatch handheld',kind:'core',iso:'',roles:'Dispatch',
+ lede:'Pick, pack and logger capture without a keyboard.',
+ render:()=>`<div style="max-width:330px"><div class="canvas">
+  <div class="wtop"><span class="dots"><i></i><i></i><i></i></span>Handheld</div><div class="wbody">
+   ${box('Order queue — priority orders first',46)}
+   ${box('Pick list — material, lot, location, quantity',66)+ann(1)}
+   ${box('Scan unit to confirm — refuses a wrong lot',52)}
+   ${box('Pack instruction — storage class, coolant, logger',60)}
+   ${box('Scan logger serial to bind it to the shipment',46)+ann(2)}
+   ${box('Print labels and documents',40)}
+   ${box('Confirm dispatch',40)}</div></div></div>`,
+ notes:['<b>Scanning enforces lot allocation.</b> Picking a different lot than the one allocated is refused at the shelf, which is the only reliable point to catch it.',
+        '<b>Binding the logger at pack time is what makes closure possible.</b> Without the serial captured here, the delivery cannot be closed against a reading later.']}
+];
+
+/* ══════════ views ══════════ */
+const GROUPS=['Foundation','Production','Certification','Distribution','Compliance','Platform','Field'];
+let S={id:'map',view:'wire',ann:true};
+
+function renderMap(){
+  const counts={};GROUPS.forEach(g=>counts[g]=SCREENS.filter(s=>s.g===g).length);
+  return `<div class="smgrid">${GROUPS.map(g=>`<div class="smgrp">
+    <header><b>${g}</b><span>${counts[g]} screen${counts[g]>1?'s':''}</span></header>
+    <ul>${SCREENS.filter(s=>s.g===g).map(s=>`<li><button onclick="open_('${s.id}')">${s.n}
+      ${s.kind?`<span class="tag ${s.kind}">${s.kind==='core'?'CORE':'CONFIG'}</span>`:''}</button></li>`).join('')}</ul></div>`).join('')}</div>
+   <div class="notes" style="margin-top:16px"><h5>Reading the map</h5><ol>
+    <li><b>Production through Certification is the half nobody sells.</b> Every module there exists because ISO 17034 obliges a producer to do it, and the tooling today is spreadsheets plus a LIMS that stops at the test result.</li>
+    <li><b>Distribution is where the two IPC documents lived entirely.</b> They described the shop and the portal and never once mentioned homogeneity, stability, property values or authorisation — which is why the estimate carried a gap for the missing upstream source.</li>
+    <li><b>Compliance is the reason to buy.</b> The other four groups make work faster; this one makes an accreditation assessment survivable.</li></ol></div>`;
+}
+function rail(){
+  return GROUPS.map(g=>`<h4>${g}</h4>`+SCREENS.filter(s=>s.g===g).map(s=>
+   `<button aria-current="${S.id===s.id?'page':'false'}" onclick="open_('${s.id}')"><span>${s.n}</span>
+    ${s.kind?`<span class="tag ${s.kind}">${s.kind==='core'?'CORE':'CFG'}</span>`:''}</button>`).join('')).join('');
+}
+function open_(id){S.id=id;S.view='wire';paint();const el=document.getElementById('stage');if(el&&el.scrollIntoView)el.scrollIntoView({block:'start'});}
+function setView(v){S.view=v;if(v==='map')S.id='map';paint();}
+function setAnn(v){S.ann=v;document.body.classList.toggle('noann',!v);paint();}
+function paint(){
+  document.getElementById('v-wire').setAttribute('aria-pressed',S.view==='wire');
+  document.getElementById('v-map').setAttribute('aria-pressed',S.view==='map');
+  document.getElementById('a-on').setAttribute('aria-pressed',S.ann);
+  document.getElementById('a-off').setAttribute('aria-pressed',!S.ann);
+  document.getElementById('rail').innerHTML=rail();
+  const s=SCREENS.find(x=>x.id===S.id)||SCREENS[0];
+  const i=SCREENS.indexOf(s),prev=SCREENS[i-1],next=SCREENS[i+1];
+  document.getElementById('stage').innerHTML=`
+   <div class="crumb">${s.g}</div><h1 class="t">${s.n}</h1>
+   <div class="meta">
+    ${s.kind==='core'?'<span class="pill core">CORE — BUILD</span>':''}
+    ${s.kind==='comm'?'<span class="pill comm">COMMODITY — CONFIGURE</span>':''}
+    ${s.iso?`<span class="pill iso">${s.iso}</span>`:''}
+    ${s.roles?`<span class="pill">${s.roles}</span>`:''}
+    <span class="pill">${i+1} of ${SCREENS.length}</span></div>
+   ${s.lede?`<p class="lede">${s.lede}</p>`:''}
+   ${s.render()}
+   ${s.notes&&s.notes.length?`<div class="notes"><h5>Design notes</h5><ol>${s.notes.map(n=>`<li>${n}</li>`).join('')}</ol></div>`:''}
+   <div class="pager">
+    ${prev?`<button class="wf-btn" onclick="open_('${prev.id}')">← ${prev.n}</button>`:'<span></span>'}
+    ${next?`<button class="wf-btn" onclick="open_('${next.id}')">${next.n} →</button>`:'<span></span>'}</div>`;
+}
+document.addEventListener('keydown',e=>{
+ if(e.target&&e.target.closest&&e.target.closest('input,textarea'))return;
+ const i=SCREENS.findIndex(x=>x.id===S.id);
+ if(e.key==='ArrowRight'&&SCREENS[i+1]){open_(SCREENS[i+1].id)}
+ if(e.key==='ArrowLeft'&&SCREENS[i-1]){open_(SCREENS[i-1].id)}
+});
+paint();
+</script>
+</body></html>

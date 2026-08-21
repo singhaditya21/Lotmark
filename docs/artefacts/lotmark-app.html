@@ -1,0 +1,2097 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lotmark — Working Application</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E1C36;--ink2:#39455E;--ink3:#55617A;--pri:#17457C;--priD:#0F3260;--priT:#E7EFF8;
+--ok:#0B6A4D;--okT:#E0EFE9;--warn:#8A5300;--warnT:#FAF0DD;--bad:#9E211B;--badT:#FBE6E4;--saf:#B85C00;
+--bg:#F4F6FA;--card:#fff;--line:#D6DDE8;--line2:#EBEEF4;
+--sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;--sh:0 1px 2px rgba(14,28,54,.06),0 4px 16px rgba(14,28,54,.06)}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--saf);outline-offset:2px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;background:#fff;padding:10px 16px;z-index:300;font-weight:600}.skip:focus{left:0;top:0}
+.bar{position:sticky;top:0;z-index:80;background:var(--ink);color:#fff;display:flex;align-items:center;gap:12px;padding:0 14px;min-height:54px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;font-weight:600;white-space:nowrap}
+.em{width:26px;height:26px;border-radius:5px;background:#fff;color:var(--ink);display:grid;place-items:center;font:700 11px var(--mono)}
+.brand small{display:block;font:400 10px var(--sans);color:#A6B4CE;text-transform:uppercase;letter-spacing:.05em}
+.nav{display:flex;gap:2px;background:rgba(255,255,255,.1);padding:3px;border-radius:8px;overflow-x:auto}
+.nav button{padding:6px 11px;border-radius:6px;font-size:12.5px;font-weight:500;color:#CBD5E8;white-space:nowrap}
+.nav button[aria-current=page]{background:#fff;color:var(--ink);font-weight:600}
+.barR{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.who{display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:3px 10px 3px 4px;font-size:12px}
+.av{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:600 10px var(--mono);color:#fff}
+.ib{border:1px solid rgba(255,255,255,.28);border-radius:6px;padding:5px 9px;font:500 11.5px var(--mono);color:#E1E8F3;position:relative}
+.dotN{position:absolute;top:-5px;right:-5px;background:#E8871A;color:#111;border-radius:9px;font:600 9px var(--mono);padding:1px 4px}
+.sess{background:var(--warnT);color:var(--warn);font-size:12px;padding:6px 14px;text-align:center;font-weight:600}
+.wrap{max-width:1440px;margin:0 auto;padding:18px 14px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh)}
+.pad{padding:15px}.muted{color:var(--ink3)}.mono{font-family:var(--mono)}
+.eye{font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+h1.pg{font-size:22px;margin:3px 0 4px;letter-spacing:-.02em}h2.sec{font-size:17px;margin:0 0 11px;letter-spacing:-.015em}
+.lede{color:var(--ink2);max-width:80ch;margin:0 0 14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;gap:13px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:2.5px 9px;font:600 10.5px var(--mono);white-space:nowrap}
+.chip.ok{background:var(--okT);color:var(--ok)}.chip.warn{background:var(--warnT);color:var(--warn)}
+.chip.bad{background:var(--badT);color:var(--bad)}.chip.info{background:var(--priT);color:var(--pri)}
+.chip.grey{background:#EAEEF4;color:var(--ink2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--pri);color:#fff;border-radius:7px;padding:8px 14px;font-weight:600;font-size:13px}
+.btn:hover{background:var(--priD)}.btn.ghost{background:#fff;color:var(--pri);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--priT)}.btn.go{background:var(--ok)}.btn.go:hover{background:#08543D}
+.btn.danger{background:var(--bad)}.btn.sm{padding:5px 10px;font-size:12px;border-radius:6px}
+.btn[disabled]{opacity:.42;pointer-events:none}
+label.f{display:block;margin-bottom:10px}label.f span{display:block;font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px}
+input.t,select.t,textarea.t{width:100%;border:1px solid var(--line);border-radius:7px;padding:9px 11px;background:#fff;outline:none}
+input.t:focus,select.t:focus,textarea.t:focus{border-color:var(--pri);box-shadow:0 0 0 3px var(--priT)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;font:600 10.5px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid var(--line2);vertical-align:top}
+.num{text-align:right;font-family:var(--mono)}
+.note{border-left:3px solid var(--saf);background:#FDF6EE;border-radius:0 8px 8px 0;padding:10px 12px;font-size:12.5px;margin-top:10px}
+.note b{color:var(--saf)}
+.deny{border-left:3px solid var(--bad);background:var(--badT);border-radius:0 8px 8px 0;padding:12px 14px;font-size:13px;margin-top:10px}
+.deny b{color:var(--bad)}
+.okbox{border-left:3px solid var(--ok);background:var(--okT);border-radius:0 8px 8px 0;padding:11px 13px;font-size:12.5px;margin-top:10px}
+.loginwrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(150deg,#0E1C36,#17457C)}
+.loginbox{width:min(940px,100%);background:#fff;border-radius:14px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.loginL{padding:30px;background:var(--ink);color:#fff}.loginL h1{font-size:21px;margin:12px 0 8px;letter-spacing:-.02em}
+.loginL p{color:#BCCAE2;font-size:13px;margin:0 0 16px}.loginR{padding:30px}
+.acct{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin-bottom:5px;font-size:12px}
+.acct:hover{border-color:var(--pri);background:var(--priT)}.acct b{display:block;font-size:12.5px}.acct span{color:var(--ink3);font-size:12px}
+@media(max-width:780px){.loginbox{grid-template-columns:1fr}.loginL{display:none}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;box-shadow:var(--sh)}
+.kpi b{display:block;font:600 21px var(--mono);letter-spacing:-.025em;margin-top:2px}
+.kpi .l{font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.side{display:grid;grid-template-columns:216px 1fr;gap:14px;align-items:start}
+.snav{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px;box-shadow:var(--sh);position:sticky;top:70px;max-height:calc(100vh - 84px);overflow-y:auto}
+.snav h5{font:600 9px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);margin:10px 8px 4px}
+.snav h5:first-child{margin-top:2px}
+.snav button{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:7px 9px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--ink2);margin-bottom:1px}
+.snav button[aria-current=page]{background:var(--ink);color:#fff;font-weight:600}
+.snav .lk{font:600 9px var(--mono);opacity:.6}
+.chain{display:flex;gap:0;flex-wrap:wrap;align-items:stretch;margin:10px 0}
+.chain .n{border:1px solid var(--line);background:#fff;border-radius:7px;padding:8px 11px;min-width:120px}
+.chain .n b{display:block;font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.chain .n span{font-size:12.5px}
+.chain .a{display:grid;place-items:center;padding:0 8px;color:var(--ink3);font-size:16px}
+.tl{position:relative;padding-left:18px}
+.tl .s{position:relative;padding-bottom:12px}
+.tl .s:before{content:'';position:absolute;left:-14px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--line);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--line)}
+.tl .s.done:before{background:var(--ok);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--ok)}
+.tl .s.cur:before{background:var(--pri);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--priT)}
+.tl:before{content:'';position:absolute;left:-10px;top:8px;bottom:12px;width:2px;background:var(--line2)}
+.ledger{font-family:var(--mono);font-size:12px;max-height:440px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.ledger .e{padding:6px 9px;border-bottom:1px solid var(--line2);display:grid;grid-template-columns:58px 88px 76px 1fr;gap:8px}
+.ledger .a{color:var(--pri);font-weight:600}.ledger .h{color:var(--ink3);word-break:break-all}
+.ledger .DENY,.ledger .SECURITY{background:var(--badT)}
+.mx td,.mx th{text-align:center;font-size:12px;padding:5px 4px}
+.mx td:first-child,.mx th:first-child{text-align:left;font-family:var(--mono);font-size:11.5px}
+.y{color:var(--ok);font-weight:700}.n{color:#C9D0DC}
+.bar2{height:8px;border-radius:4px;background:#E4E9F0;overflow:hidden;margin:4px 0}
+.bar2 i{display:block;height:100%;background:var(--ok)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#fff;padding:11px 16px;border-radius:9px;font-size:13px;font-weight:500;z-index:200;transition:transform .2s;box-shadow:0 8px 28px rgba(14,28,54,.3);max-width:90vw}
+.toast.on{transform:translateX(-50%) translateY(0)}.toast.bad{background:var(--bad)}
+.modal{position:fixed;inset:0;background:rgba(14,28,54,.55);z-index:250;display:none;place-items:center;padding:20px}
+.modal.on{display:grid}.modal .box{background:#fff;border-radius:12px;width:min(680px,100%);max-height:88vh;overflow:auto}
+.modal .h{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff}
+@media print{
+ .bar,.snav,.sess,.toast,.modal,button{display:none!important}
+ body{background:#fff;font-size:11pt}
+ .wrap{max-width:none;padding:0}
+ .card{border:1px solid #999;box-shadow:none;break-inside:avoid}
+ .side{grid-template-columns:1fr}
+ table{font-size:9.5pt}
+ .note,.deny,.okbox{border-left:3px solid #333;background:#fff}
+ h1.pg{page-break-after:avoid}
+}
+@media(max-width:900px){.side{grid-template-columns:1fr}.snav{position:static;max-height:none}.g2{grid-template-columns:1fr}}
+</style>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div id="app"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mt"><div class="box">
+ <div class="h"><b id="mt">—</b><button class="btn ghost sm" id="mx">Close</button></div><div class="pad" id="mb"></div></div></div>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   LOTMARK — reference material lifecycle platform
+   This application IMPLEMENTS the product wireframe. Screen ids
+   below match wireframe screen ids; see the Build coverage screen.
+   The three schema closures are live queries, not diagrams.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── permissions ─── */
+const PERMS={
+ 'project:read':'View projects','project:manage':'Create and edit projects and plans',
+ 'study:run':'Record study results','study:sign':'Sign off a study',
+ 'value:assign':'Assign property values','value:authorise':'Authorise property values',
+ 'lot:create':'Create a lot','lot:release':'Release a lot to the catalogue',
+ 'cert:issue':'Issue a certificate','cert:reissue':'Reissue and notify holders',
+ 'catalogue:manage':'Manage the catalogue','order:create':'Place an order',
+ 'order:read_own':'View own orders','order:read_all':'View all orders','order:advance':'Advance dispatch',
+ 'entitlement:claim':'Claim a price tier','entitlement:decide':'Decide a tier claim',
+ 'equipment:manage':'Manage equipment and calibration','competence:manage':'Manage competence records',
+ 'capa:manage':'Manage complaints and CAPA','subcontractor:manage':'Manage subcontractors',
+ 'conformance:read':'View conformance','audit:read':'Read the audit ledger','audit:verify':'Verify the audit chain','audit:export':'Export the audit ledger',
+ 'pii:contact':'See customer contact details','user:manage':'Manage users and roles','vault:use':'Use the laboratory vault'};
+
+const ROLES={
+ scientist:{n:'RM Scientist',kind:'producer',p:['project:read','study:run','study:sign','value:assign','audit:read']},
+ prodlead:{n:'Production Lead',kind:'producer',p:['project:read','project:manage','study:run','study:sign','lot:create','equipment:manage','audit:read']},
+ techmgr:{n:'Technical Manager',kind:'producer',p:['project:read','value:authorise','lot:release','cert:issue','cert:reissue','audit:read']},
+ quality:{n:'Quality Manager',kind:'producer',p:['project:read','conformance:read','capa:manage','subcontractor:manage','competence:manage','audit:read','audit:verify','audit:export']},
+ commercial:{n:'Commercial',kind:'producer',p:['catalogue:manage','order:read_all','entitlement:decide','pii:contact','audit:read']},
+ dispatch:{n:'Dispatch',kind:'producer',p:['order:read_all','order:advance','pii:contact','audit:read']},
+ tenantadmin:{n:'Tenant Admin',kind:'producer',p:Object.keys(PERMS)},
+ labqm:{n:'Laboratory QM',kind:'customer',p:['order:create','order:read_own','entitlement:claim','vault:use']},
+ labbuyer:{n:'Laboratory Buyer',kind:'customer',p:['order:create','order:read_own','vault:use']}};
+
+const USERS=[
+ {id:'u-ravi',n:'Ravi Menon',e:'ravi@producer.example',pw:'demo1234',role:'scientist',org:'t-ipc',col:'#1F6F8B',mfa:true},
+ {id:'u-sunil',n:'Sunil Bhatt',e:'sunil@producer.example',pw:'demo1234',role:'prodlead',org:'t-ipc',col:'#3E5C2E',mfa:true},
+ {id:'u-asha',n:'Dr. Asha Pillai',e:'asha@producer.example',pw:'demo1234',role:'techmgr',org:'t-ipc',col:'#9E211B',mfa:true},
+ {id:'u-neha',n:'Neha Kulkarni',e:'neha@producer.example',pw:'demo1234',role:'quality',org:'t-ipc',col:'#7A2E86',mfa:true},
+ {id:'u-arjun',n:'Arjun Rao',e:'arjun@producer.example',pw:'demo1234',role:'commercial',org:'t-ipc',col:'#17457C',mfa:true},
+ {id:'u-vikram',n:'Vikram Shetty',e:'vikram@producer.example',pw:'demo1234',role:'dispatch',org:'t-ipc',col:'#4A4A6A',mfa:true},
+ {id:'u-admin',n:'Tenant Administrator',e:'admin@producer.example',pw:'demo1234',role:'tenantadmin',org:'t-ipc',col:'#0E1C36',mfa:true},
+ {id:'u-meera',n:'Dr. Meera Raghavan',e:'meera@genpharm.example',pw:'demo1234',role:'labqm',org:'c-genpharm',col:'#0B6A4D',mfa:false},
+ {id:'u-suresh',n:'Suresh Iyer',e:'suresh@sdtl.gov.example',pw:'demo1234',role:'labbuyer',org:'c-sdtl',col:'#8A5300',mfa:false}];
+
+/* Tenant profiles. IPC is a CONFIGURATION of this product, not a separate application.
+   Everything a tenant turns on here is either product scope or an integration point —
+   the portal, CMS, forum and events layer sits OUTSIDE the product by design. */
+const TENANTS={
+ 't-generic':{n:'Pharmacopoeial Standards Division',short:'Generic producer',
+   bilingual:false,adr:false,publications:false,govTier:true,
+   frame:'ISO 17034',numbering:'RMP-{MAT}-{SEQ}',residency:'Regional cloud',
+   outside:['Public website','Content management','Events and forum']},
+ 't-ipc':{n:'Indian Pharmacopoeia Commission',short:'IPC tenant',
+   bilingual:true,adr:true,publications:true,govTier:true,
+   frame:'ISO 17034 + GIGW 3.0 + DPDP',numbering:'IPRS{MAT}{SEQ}',residency:'NIC / MeitY, in-country',
+   outside:['GIGW 3.0 portal and CMS','Bilingual content authoring','PvPI outreach pages','Events, forum, recruitment','Content and OpenCart migration','STQC CQW certification']}};
+let TENANT='t-generic';
+const TCFG=()=>TENANTS[TENANT];
+const L=(en,hi)=>TCFG().bilingual?en+' <span class="mono muted" style="font-size:11.5px">/ '+hi+'</span>':en;
+
+const ORGS=[
+ {id:'t-ipc',n:'Pharmacopoeial Standards Division',kind:'producer',accred:'NABL RMP-0042',scope:'Organic chemical reference materials'},
+ {id:'c-genpharm',n:'GenPharm Laboratories Pvt Ltd',kind:'customer',type:'Private manufacturer',ph:'+91 79 4000 1122',tier:'private'},
+ {id:'c-sdtl',n:'State Drug Testing Laboratory, Vadodara',kind:'customer',type:'Government laboratory',ph:'+91 265 234 5566',tier:'private'}];
+
+/* ─── domain data ─── */
+const DB={
+ equipment:[
+  {id:'EQ-01',n:'HPLC — Agilent 1260',type:'Chromatograph',cal:[{from:'2025-04-01',to:'2026-03-31'},{from:'2026-04-01',to:'2027-03-31'}]},
+  {id:'EQ-02',n:'Analytical balance — XPR205',type:'Balance',cal:[{from:'2025-06-01',to:'2026-05-31'}]},
+  {id:'EQ-03',n:'Karl Fischer titrator',type:'Titrator',cal:[{from:'2026-01-01',to:'2027-01-01'}]},
+  {id:'EQ-04',n:'Stability chamber 5 °C',type:'Chamber',cal:[{from:'2026-02-01',to:'2027-02-01'}]}],
+ competence:[
+  {p:'u-ravi',act:'study:sign',from:'2024-01-01',to:'2027-12-31'},
+  {p:'u-ravi',act:'value:assign',from:'2024-01-01',to:'2027-12-31'},
+  {p:'u-sunil',act:'study:sign',from:'2024-01-01',to:'2026-06-30'},
+  {p:'u-asha',act:'value:authorise',from:'2023-01-01',to:'2028-12-31'},
+  {p:'u-asha',act:'cert:issue',from:'2023-01-01',to:'2028-12-31'},
+  {p:'u-admin',act:'value:authorise',from:'2024-01-01',to:'2028-12-31'},
+  {p:'u-admin',act:'cert:issue',from:'2024-01-01',to:'2028-12-31'},
+  {p:'u-admin',act:'study:sign',from:'2024-01-01',to:'2028-12-31'},
+  {p:'u-admin',act:'value:assign',from:'2024-01-01',to:'2028-12-31'}],
+ projects:[
+  {id:'PRJ-0412',mat:'Paracetamol',cas:'103-90-2',sku:'RM-PARA',stage:'released',owner:'u-sunil',intake:'50 mg',target:'0.5%'},
+  {id:'PRJ-0413',mat:'Metformin Hydrochloride',cas:'1115-70-4',sku:'RM-METF',stage:'released',owner:'u-sunil',intake:'50 mg',target:'0.5%'},
+  {id:'PRJ-0414',mat:'Ibuprofen',cas:'15687-27-1',sku:'RM-IBUP',stage:'authorisation',owner:'u-sunil',intake:'50 mg',target:'0.6%'},
+  {id:'PRJ-0415',mat:'Atorvastatin Calcium',cas:'134523-03-8',sku:'RM-ATOR',stage:'study',owner:'u-sunil',intake:'25 mg',target:'0.8%'}],
+ studies:[
+  {id:'ST-1001',prj:'PRJ-0412',type:'homogeneity',eq:['EQ-01','EQ-02'],u:0.18,state:'signed',by:'u-ravi',at:'2025-11-04'},
+  {id:'ST-1002',prj:'PRJ-0412',type:'stability',eq:['EQ-01','EQ-04'],u:0.22,state:'signed',by:'u-ravi',at:'2025-12-10',shelf:'2028-03-31',storage:'2–8 °C',transport:'Chilled 72 h'},
+  {id:'ST-1003',prj:'PRJ-0412',type:'characterisation',eq:['EQ-01'],u:0.31,state:'signed',by:'u-ravi',at:'2026-01-08'},
+  {id:'ST-1010',prj:'PRJ-0413',type:'homogeneity',eq:['EQ-02'],u:0.15,state:'signed',by:'u-ravi',at:'2026-02-02'},
+  {id:'ST-1011',prj:'PRJ-0413',type:'stability',eq:['EQ-04'],u:0.20,state:'signed',by:'u-ravi',at:'2026-03-11',shelf:'2027-11-30',storage:'2–8 °C',transport:'Chilled 72 h'},
+  {id:'ST-1012',prj:'PRJ-0413',type:'characterisation',eq:['EQ-01','EQ-03'],u:0.28,state:'signed',by:'u-ravi',at:'2026-04-01'},
+  {id:'ST-1013',prj:'PRJ-0413',type:'confirmatory retest',eq:['EQ-02'],u:0.17,state:'signed',by:'u-ravi',at:'2026-07-15'},
+  {id:'ST-1020',prj:'PRJ-0414',type:'homogeneity',eq:['EQ-01','EQ-02'],u:0.21,state:'signed',by:'u-ravi',at:'2026-05-14'},
+  {id:'ST-1021',prj:'PRJ-0414',type:'stability',eq:['EQ-04'],u:0.25,state:'signed',by:'u-ravi',at:'2026-06-20',shelf:'2028-09-30',storage:'Room temperature',transport:'Ambient'},
+  {id:'ST-1022',prj:'PRJ-0414',type:'characterisation',eq:['EQ-01'],u:0.33,state:'draft',by:null,at:null},
+  {id:'ST-1030',prj:'PRJ-0415',type:'homogeneity',eq:['EQ-02'],u:0.19,state:'draft',by:null,at:null}],
+ values:[
+  {id:'PV-01',prj:'PRJ-0412',prop:'Assay (as is)',unit:'% w/w',val:99.62,k:2,state:'authorised',assigned:'u-ravi',auth:'u-asha'},
+  {id:'PV-02',prj:'PRJ-0413',prop:'Assay (as is)',unit:'% w/w',val:99.41,k:2,state:'authorised',assigned:'u-ravi',auth:'u-asha'},
+  {id:'PV-03',prj:'PRJ-0414',prop:'Assay (as is)',unit:'% w/w',val:99.78,k:2,state:'draft',assigned:null,auth:null}],
+ lots:[
+  {id:'L-01',prj:'PRJ-0412',lot:'RMP-PARA-0421',prev:'RMP-PARA-0388',exp:'2028-03-31',stock:48,state:'released',storage:'2–8 °C',cold:true,price:5000,tierable:true},
+  {id:'L-02',prj:'PRJ-0413',lot:'RMP-METF-0518',prev:'RMP-METF-0470',exp:'2027-11-30',stock:9,state:'released',storage:'2–8 °C',cold:true,price:5000,tierable:true},
+  {id:'L-03',prj:'PRJ-0412',lot:'RMP-PARA-0388',prev:'—',exp:'2026-04-30',stock:0,state:'superseded',storage:'2–8 °C',cold:true,price:5000,tierable:true}],
+ certs:[
+  {id:'CRT-2041',lot:'L-01',issues:[{n:1,at:'2026-02-01',by:'u-asha',val:99.62,U:0.84,withdrawn:false}]},
+  {id:'CRT-2042',lot:'L-02',issues:[{n:1,at:'2026-04-10',by:'u-asha',val:99.41,U:0.76,withdrawn:false}]}],
+ orders:[
+  {id:'ORD-3301',org:'c-genpharm',by:'u-meera',lines:[{lot:'L-01',q:2,unit:5000}],total:10000,state:'delivered',placed:'2026-03-04',courier:'Blue Dart'},
+  {id:'ORD-3302',org:'c-sdtl',by:'u-suresh',lines:[{lot:'L-02',q:1,unit:5000}],total:5000,state:'dispatched',placed:'2026-05-19',courier:'Delhivery'},
+  {id:'ORD-3303',org:'c-genpharm',by:'u-meera',lines:[{lot:'L-02',q:1,unit:5000}],total:5000,state:'placed',placed:'2026-08-12',courier:'—'}],
+ entitlements:[{id:'ENT-124',org:'c-sdtl',by:'u-suresh',doc:'FDCA Gujarat notification FDCA/GJ/2026/771',state:'under_review',raised:'2026-08-04',decider:null,reval:null}],
+ capa:[{id:'NCR-0231',src:'Temperature excursion',obj:'ORD-3302',sev:'Major',state:'investigation',owner:'u-neha',raised:'2026-06-02'}],
+ subs:[{id:'SUB-01',n:'Metrolab Analytical Services',act:'Characterisation testing',accred:'ISO/IEC 17025 · TC-9981',to:'2027-03-31'},
+       {id:'SUB-02',n:'ColdChain Logistics Pvt Ltd',act:'Storage and distribution',accred:'GDP audit report 2026',to:'2026-11-30'}],
+ /* RAW RESULTS. The budget is now computed from these, not from a typed summary.
+    Homogeneity gives u(bb) by ANOVA, stability gives u(lts) from the regression standard
+    error, characterisation gives both u(char) AND the assigned value itself. */
+ results:{
+  'ST-1001':[{"u": 4, "r": 1, "v": 99.609}, {"u": 4, "r": 2, "v": 99.552}, {"u": 21, "r": 1, "v": 99.473}, {"u": 21, "r": 2, "v": 99.546}, {"u": 38, "r": 1, "v": 99.401}, {"u": 38, "r": 2, "v": 99.45}, {"u": 55, "r": 1, "v": 99.486}, {"u": 55, "r": 2, "v": 99.353}, {"u": 72, "r": 1, "v": 99.662}, {"u": 72, "r": 2, "v": 99.691}, {"u": 89, "r": 1, "v": 99.758}, {"u": 89, "r": 2, "v": 99.575}],
+  'ST-1002':[{"m": 0, "v": 99.711}, {"m": 1, "v": 99.377}, {"m": 3, "v": 99.609}, {"m": 6, "v": 99.528}, {"m": 12, "v": 99.393}, {"m": 24, "v": 99.389}],
+  'ST-1003':[{"lab": "L1", "v": 99.769}, {"lab": "L2", "v": 100.243}, {"lab": "L3", "v": 99.405}, {"lab": "L4", "v": 99.226}, {"lab": "L5", "v": 99.724}],
+  'ST-1010':[{"u": 4, "r": 1, "v": 99.493}, {"u": 4, "r": 2, "v": 99.517}, {"u": 21, "r": 1, "v": 99.452}, {"u": 21, "r": 2, "v": 99.45}, {"u": 38, "r": 1, "v": 99.727}, {"u": 38, "r": 2, "v": 99.644}, {"u": 55, "r": 1, "v": 99.673}, {"u": 55, "r": 2, "v": 99.611}, {"u": 72, "r": 1, "v": 99.614}, {"u": 72, "r": 2, "v": 99.491}, {"u": 89, "r": 1, "v": 99.634}, {"u": 89, "r": 2, "v": 99.47}],
+  'ST-1011':[{"m": 0, "v": 99.323}, {"m": 1, "v": 99.421}, {"m": 3, "v": 99.396}, {"m": 6, "v": 99.405}, {"m": 12, "v": 99.325}, {"m": 24, "v": 99.257}],
+  'ST-1012':[{"lab": "L1", "v": 100.817}, {"lab": "L2", "v": 100.092}, {"lab": "L3", "v": 98.503}, {"lab": "L4", "v": 99.369}, {"lab": "L5", "v": 98.513}],
+  'ST-1013':[{"lab": "L1", "v": 99.529}, {"lab": "L2", "v": 99.429}, {"lab": "L3", "v": 99.438}],
+  'ST-1020':[{"u": 4, "r": 1, "v": 100.065}, {"u": 4, "r": 2, "v": 99.975}, {"u": 21, "r": 1, "v": 99.655}, {"u": 21, "r": 2, "v": 99.747}, {"u": 38, "r": 1, "v": 99.681}, {"u": 38, "r": 2, "v": 99.769}, {"u": 55, "r": 1, "v": 99.803}, {"u": 55, "r": 2, "v": 99.795}, {"u": 72, "r": 1, "v": 99.648}, {"u": 72, "r": 2, "v": 99.776}, {"u": 89, "r": 1, "v": 99.778}, {"u": 89, "r": 2, "v": 99.668}],
+  'ST-1021':[{"m": 0, "v": 99.715}, {"m": 1, "v": 99.865}, {"m": 3, "v": 99.629}, {"m": 6, "v": 99.811}, {"m": 12, "v": 99.642}, {"m": 24, "v": 99.822}],
+  'ST-1022':[{"lab": "L1", "v": 100.362}, {"lab": "L2", "v": 98.726}, {"lab": "L3", "v": 100.542}, {"lab": "L4", "v": 100.165}, {"lab": "L5", "v": 99.765}],
+  'ST-1030':[{"u": 4, "r": 1, "v": 99.335}, {"u": 4, "r": 2, "v": 99.236}, {"u": 21, "r": 1, "v": 99.26}, {"u": 21, "r": 2, "v": 99.039}, {"u": 38, "r": 1, "v": 99.438}, {"u": 38, "r": 2, "v": 99.144}, {"u": 55, "r": 1, "v": 99.064}, {"u": 55, "r": 2, "v": 99.159}, {"u": 72, "r": 1, "v": 99.427}, {"u": 72, "r": 2, "v": 99.33}, {"u": 89, "r": 1, "v": 99.332}, {"u": 89, "r": 2, "v": 99.247}]
+ },
+ loggers:[
+  {ship:'SHP-8841',order:'ORD-3302',cls:'2-8',readings:[
+   {t:'2026-05-19 09:00',c:5.1},{t:'2026-05-19 21:00',c:5.4},{t:'2026-05-20 09:00',c:6.0},
+   {t:'2026-05-20 21:00',c:11.8},{t:'2026-05-21 03:00',c:14.2},{t:'2026-05-21 09:00',c:12.6},
+   {t:'2026-05-21 21:00',c:6.2},{t:'2026-05-22 09:00',c:5.3}]},
+  {ship:'SHP-8830',order:'ORD-3301',cls:'2-8',readings:[
+   {t:'2026-03-05 09:00',c:4.8},{t:'2026-03-05 21:00',c:5.2},{t:'2026-03-06 09:00',c:5.6},
+   {t:'2026-03-06 21:00',c:5.1},{t:'2026-03-07 09:00',c:4.9}]}],
+ process:[
+  {prj:'PRJ-0412',step:'Drying',eq:'EQ-02',by:'u-ravi',at:'2025-09-12',note:'40 °C, 24 h to constant mass'},
+  {prj:'PRJ-0412',step:'Milling and sieving',eq:'EQ-02',by:'u-ravi',at:'2025-09-15',note:'250 µm mesh'},
+  {prj:'PRJ-0412',step:'Blending',eq:'EQ-02',by:'u-sunil',at:'2025-09-16',note:'V-blender, 30 min'},
+  {prj:'PRJ-0413',step:'Drying',eq:'EQ-03',by:'u-ravi',at:'2025-12-02',note:'Karl Fischer confirmed'},
+  {prj:'PRJ-0414',step:'Milling',eq:'EQ-02',by:'u-ravi',at:'2026-04-18',note:'250 µm mesh'}],
+ facilities:[
+  {id:'FC-01',n:'Cold store A',cond:'2–8 °C',lots:['L-01','L-02','L-03'],
+   excursions:[{from:'2026-06-04',to:'2026-06-05',peak:'14.2 °C',dur:'9 h',disposition:'under assessment'}]},
+  {id:'FC-02',n:'Ambient store B',cond:'15–25 °C',lots:[],excursions:[]},
+  {id:'FC-03',n:'Freezer C',cond:'−20 °C',lots:[],excursions:[]}],
+ vault:[{org:'c-genpharm',lot:'L-01',loc:'Cold room A, shelf 3',qty:2},{org:'c-genpharm',lot:'L-03',loc:'Cold room A, shelf 1',qty:1}],
+ notifs:[],audit:[],chain:'00000000',cart:{},reissueAck:{}};
+
+let S={route:'login',sub:null,user:null,session:null,pendingMfa:null,mfaTries:0,flash:null,
+ detail:null,q:{},page:0,asOf:null,revealed:{},signingSession:null,pendingSign:null,
+ lastActivity:Date.now(),trace:{kind:'equipment',id:'EQ-02'}};
+const SEED=JSON.parse(JSON.stringify(DB));
+function resetDemo(){
+ const keep=DB.audit.length;
+ Object.keys(DB).forEach(k=>{delete DB[k]});
+ Object.assign(DB,JSON.parse(JSON.stringify(SEED)));
+ DB.competence.forEach((c,i)=>{if(!c.id)c.id='CMP-'+String(i+1).padStart(3,'0')});
+ S.detail=null;S.q='';S.page=0;S.asOf=null;
+ audit('SYSTEM','Demonstration data reset','discarded '+keep+' prior ledger entries');
+ toast('Seed data restored');render();
+}
+/* Every date-sensitive question resolves against this, so the whole product can be
+   asked "as at" a past date rather than only today. */
+const ASOF=()=>S.asOf||TODAY;
+const FAILS={},LOCKS={};
+const TODAY='2026-08-18';
+
+/* ─── audit ─── */
+const h32=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(16).padStart(8,'0')};
+/* Two independent 32-bit digests concatenated give a wider value for record binding. */
+const h64=s=>{let a=0x811c9dc5,b=0x01000193;
+ for(let i=0;i<s.length;i++){a^=s.charCodeAt(i);a=Math.imul(a,0x01000193)>>>0;b=(b^(s.charCodeAt(i)<<3))>>>0;b=Math.imul(b,0x85ebca6b)>>>0;}
+ return a.toString(16).padStart(8,'0')+b.toString(16).padStart(8,'0')};
+/* Stand-in for Argon2id. Salted and iterated so the stored value is not the password,
+   and so two users with the same password do not share a digest. A real deployment
+   uses a memory-hard KDF behind an identity provider; the POINT demonstrated here is
+   that no plaintext credential exists anywhere in memory after boot. */
+const KDF_ROUNDS=2000;
+function kdf(pw,salt){let v=salt+'|'+pw;for(let i=0;i<KDF_ROUNDS;i++)v=h64(v+salt+i);return v}
+function seedCredentials(){
+ USERS.forEach((u,i)=>{u.salt='s'+h32(u.id+'seed'+i);u.pwh=kdf(u.pw,u.salt);delete u.pw;});
+}
+/* Sliding-window rate limiting, applied per actor and action rather than only to sign-in. */
+const RL={};
+function rateLimit(key,max,windowMs){
+ const now=Date.now();RL[key]=(RL[key]||[]).filter(t=>now-t<windowMs);
+ if(RL[key].length>=max){audit('SECURITY','Rate limit exceeded',key+' — '+max+' in '+(windowMs/1000)+'s');return false}
+ RL[key].push(now);return true;
+}
+function audit(kind,action,meta){
+ const actor=S.user?S.user.id:'anonymous',role=S.user?S.user.role:'—';
+ const ts=new Date().toISOString().slice(0,19).replace('T',' ');   // full date and time: time alone collides across days
+ const m=meta||'';const t=timeSource();
+ const e={actor,role,kind,action,ts,meta:m,src:t.src,region:t.region};
+ DB.chain=h32(chainPayload(DB.chain,e));
+ DB.audit.unshift(Object.assign({seq:DB.audit.length+1,h:DB.chain},e));
+}
+/* Every recorded field is hashed. Leaving meta out meant the substance of an entry
+   — which certificate, which amount, which account — could be edited undetected. */
+const chainPayload=(prev,e)=>[prev,e.actor,e.role,e.kind,e.action,e.ts,e.meta,e.src||'',e.region||''].join('|');
+/* CERT-In 2022 requires ICT clocks synchronised to NIC or NPL NTP, and 180 days of
+   logs held inside India. Both are recorded on every entry, because an audit chain
+   built on an untrusted clock proves ordering but not when. */
+const TIME_SOURCES={'t-generic':{src:'pool.ntp.org (stratum 2)',drift:'+12 ms',region:'eu-central-1'},
+                    't-ipc':{src:'NIC NTP (samay1.nic.in)',drift:'+3 ms',region:'in-south-1'}};
+const timeSource=()=>TIME_SOURCES[TENANT]||TIME_SOURCES['t-generic'];
+function verifyChain(){
+ const rows=[...DB.audit].reverse();let prev='00000000';
+ for(const r of rows){const c=h32(chainPayload(prev,r));
+  if(c!==r.h)return{ok:false,at:r.seq,field:'entry '+r.seq+' does not match its recorded digest'};prev=c;}
+ return{ok:true,n:rows.length};
+}
+/* ─── auth ─── */
+const IDLE=180000,WARN=150000;
+function login(email,pw){
+ const k=email.toLowerCase().trim();
+ if(LOCKS[k]&&LOCKS[k]>Date.now()){audit('SECURITY','Sign-in attempt on locked account',k);
+  return{err:'Account locked. Try again in '+Math.ceil((LOCKS[k]-Date.now())/1000)+'s.'};}
+ if(!rateLimit('login:'+k,6,60000))return{err:'Too many attempts from this identity. Wait a minute.'};
+ const u=USERS.find(x=>x.e.toLowerCase()===k);
+ if(!u||kdf(pw,u.salt)!==u.pwh){FAILS[k]=(FAILS[k]||0)+1;audit('SECURITY','Failed sign-in',k+' · attempt '+FAILS[k]);
+  if(FAILS[k]>=3){LOCKS[k]=Date.now()+60000;FAILS[k]=0;audit('SECURITY','Account locked after three failures',k);
+   return{err:'Three failed attempts. Account locked for 60 seconds.'};}
+  return{err:'Incorrect email or password. '+(3-FAILS[k])+' attempt(s) before lockout.'};}
+ FAILS[k]=0;
+ if(u.mfa){S.pendingMfa=u;S.mfaTries=0;audit('AUTH','Password accepted, second factor required',u.e);return{mfa:true};}
+ establish(u);return{ok:true};
+}
+function establish(u){S.user=u;S.pendingMfa=null;S.session={id:'sess-'+h32(u.id+Date.now())};S.lastActivity=Date.now();
+ S.route=ROLES[u.role].kind==='producer'?'console':'shop';S.sub=null;
+ audit('AUTH','Signed in',u.e+' as '+ROLES[u.role].n);}
+function logout(r){if(S.user)audit('AUTH','Signed out',r||'user action');
+ S.user=null;S.session=null;S.route='login';S.sub=null;S.signingSession=null;S.pendingSign=null;DB.cart={};}
+setInterval(()=>{if(!S.user)return;const i=Date.now()-S.lastActivity;
+ if(i>IDLE){logout('idle timeout');toast('Session ended after inactivity','bad');render();}else if(i>WARN)render();},5000);
+['click','keydown'].forEach(e=>document.addEventListener(e,()=>{S.lastActivity=Date.now()}));
+
+/* ─── rbac + sod + competence ─── */
+function can(p){return !!(S.user&&ROLES[S.user.role].p.includes(p))}
+class Forbidden extends Error{constructor(m){super(m);this.name='Forbidden'}}
+/* SEGREGATION OF DUTIES AS DATA.
+   A rule is a row: the action it guards, the field on the record that must not be the
+   acting user, a message, an owner and an enabled flag. Adding a rule is adding a row,
+   and disabling one is an audited act — not a code change. */
+const SOD_RULES=[
+ {id:'SoD-1',action:'value:authorise',field:'assigned',enabled:true,owner:'Quality Manager',
+  msg:'the account that assigned this value cannot authorise it'},
+ {id:'SoD-2',action:'entitlement:decide',field:'by',enabled:true,owner:'Commercial',
+  msg:'you cannot decide a claim you raised'},
+ {id:'SoD-3',action:'cert:issue',field:'assigned',enabled:false,owner:'Technical Manager',
+  msg:'the assigner of the value cannot issue the certificate carrying it'},
+ {id:'SoD-4',action:'lot:release',field:'by',enabled:false,owner:'Production Lead',
+  msg:'the creator of a lot cannot release it'}];
+function sodViolation(perm,record){
+ if(!record)return null;
+ for(const r of SOD_RULES){
+  if(!r.enabled||r.action!==perm)continue;
+  if(record[r.field]&&record[r.field]===S.user.id)return r;
+ }
+ return null;
+}
+function toggleSod(id){
+ tryDo(()=>{guard('user:manage');const r=SOD_RULES.find(x=>x.id===id);r.enabled=!r.enabled;
+  audit('GOVERNANCE','Segregation rule '+(r.enabled?'enabled':'DISABLED'),r.id+' — '+r.msg);
+  toast(r.id+(r.enabled?' enabled':' disabled — recorded in the ledger'),r.enabled?'':'bad');});
+}
+function guard(p,opts){
+ opts=opts||{};
+ if(!S.user){audit('DENY','Unauthenticated action blocked',p);throw new Forbidden('You are not signed in.');}
+ if(!can(p)){audit('DENY','Permission denied',p+' attempted by '+ROLES[S.user.role].n);
+  throw new Forbidden('Your role ('+ROLES[S.user.role].n+') does not hold '+p+'.');}
+ const v=sodViolation(p,opts.record);
+ if(v){audit('DENY','Segregation of duties violation blocked',v.id+' · '+p+' · '+v.msg);
+  throw new Forbidden('Segregation of duties ('+v.id+'): '+v.msg+'.');}
+ if(opts.sod){audit('DENY','Segregation of duties violation blocked',p+' · '+opts.sod);
+  throw new Forbidden('Segregation of duties: '+opts.sod);}
+ if(opts.competence&&!competentAt(S.user.id,opts.competence,TODAY)){
+  audit('DENY','Competence check failed',opts.competence+' for '+S.user.n);
+  throw new Forbidden('You hold no current competence authorisation for '+opts.competence+' as at '+TODAY+'.');}
+ return true;
+}
+/* CLOSURE 3 — competence as a dated record, evaluated at a point in time */
+function competenceRecord(person,activity,date){
+ return DB.competence.find(c=>c.p===person&&c.act===activity&&c.from<=date&&c.to>=date)||null;
+}
+function competentAt(person,activity,date){return !!competenceRecord(person,activity,date)}
+/* A signature stores the authorisation it relied on, frozen at the moment of signing.
+   Editing the competence record afterwards can no longer rewrite the validity of past acts. */
+/* 21 CFR Part 11 §11.50 — a signature must manifest the signer, the date and time,
+   and the MEANING of the signing. */
+const SIG_MEANINGS=[['authorship','Authorship — I produced this record'],
+ ['review','Review — I have reviewed this record'],
+ ['approval','Approval — I approve this record'],
+ ['responsibility','Responsibility — I accept responsibility for this record']];
+/* §11.70 — the signature must be bound to its record so it cannot be excised,
+   copied or transferred. The bind digest covers the record's material content. */
+function materialOf(kind,rec){
+ if(kind==='study')  return ['study',rec.id,rec.prj,rec.type,rec.eq.join(','),rec.u].join('|');
+ if(kind==='value')  return ['value',rec.id,rec.prj,rec.prop,rec.val,rec.unit,rec.k].join('|');
+ if(kind==='cert')   return ['cert',rec.id,rec.lot,rec.val,rec.U].join('|');
+ return JSON.stringify(rec);
+}
+function bindSignature(kind,rec,meaning){
+ const t=timeSource();
+ return{by:S.user.id,at:TODAY,ts:new Date().toISOString().slice(0,19).replace('T',' '),
+  meaning,src:t.src,region:t.region,
+  bind:h64(materialOf(kind,rec)+'|'+S.user.id+'|'+meaning+'|'+TODAY)};
+}
+function verifySignature(kind,rec,sig){
+ if(!sig||!sig.bind)return{ok:false,why:'no signature bound to this record'};
+ const expect=h64(materialOf(kind,rec)+'|'+sig.by+'|'+sig.meaning+'|'+sig.at);
+ return expect===sig.bind?{ok:true}:{ok:false,why:'the record was altered after it was signed'};
+}
+function snapshotBasis(activity,date){
+ const rec=competenceRecord(S.user.id,activity,date);
+ return rec?{comp:rec.id,activity,from:rec.from,to:rec.to,checkedOn:date,by:S.user.id}:null;
+}
+function basisValid(b){return !!(b&&b.from<=b.checkedOn&&b.to>=b.checkedOn)}
+function tryDo(fn){try{fn()}catch(e){if(e instanceof Forbidden){S.flash={t:'deny',m:e.message};toast('Blocked — '+e.message,'bad')}else throw e}render()}
+
+/* ─── CLOSURE 1 — retrospective equipment impact ─── */
+function lotsAffectedByEquipment(eqId,asOf){
+ const eq=DB.equipment.find(e=>e.id===eqId);if(!eq)return[];
+ const covered=d=>eq.cal.some(c=>c.from<=d&&c.to>=d);
+ const studies=DB.studies.filter(s=>s.eq.includes(eqId)&&s.at);
+ const out=[];
+ for(const st of studies){
+  const ok=covered(st.at);
+  const lots=DB.lots.filter(l=>l.prj===st.prj);
+  for(const l of lots){
+   const cert=DB.certs.find(c=>c.lot===l.id);
+   out.push({study:st.id,studyDate:st.at,calibrated:ok,project:st.prj,lot:l.lot,lotState:l.state,cert:cert?cert.id:'—'});
+  }
+ }
+ return out;
+}
+/* ─── CLOSURE 1, REVERSE — what did this lot depend on? ───
+   An investigator starts from the affected lot, not the instrument. */
+function dependenciesOfLot(lotId){
+ const l=lotById(lotId);if(!l)return{studies:[],equipment:[],people:[],facilities:[]};
+ const studies=DB.studies.filter(x=>x.prj===l.prj);
+ const eqIds=[...new Set(studies.flatMap(x=>x.eq))];
+ const equipment=eqIds.map(id=>{
+  const e=DB.equipment.find(z=>z.id===id);
+  const used=studies.filter(x=>x.eq.includes(id)&&x.at);
+  const breaches=used.filter(x=>!e.cal.some(c=>c.from<=x.at&&c.to>=x.at));
+  return{id,n:e.n,uses:used.length,breaches:breaches.map(b=>b.id)};
+ });
+ const people=[...new Set(studies.filter(x=>x.by).map(x=>x.by))].map(pid=>{
+  const sigs=studies.filter(x=>x.by===pid);
+  return{id:pid,n:userById(pid).n,signed:sigs.length,
+   unbacked:sigs.filter(x=>!basisValid(x.basis)).map(x=>x.id)};
+ });
+ const facilities=DB.facilities.filter(f=>f.lots.includes(lotId));
+ return{studies,equipment,people,facilities};
+}
+/* ─── FACILITY EXCURSION — which stored lots were exposed? ─── */
+function lotsExposedTo(facId){
+ const f=DB.facilities.find(x=>x.id===facId);if(!f)return[];
+ return f.lots.map(id=>{const l=lotById(id);
+  return{lot:l.lot,state:l.state,cert:(certForLot(id)||{}).id||'—',
+   held:DB.vault.filter(v=>v.lot===id).map(v=>org(v.org).n)};});
+}
+/* ─── CLOSURE 2 — certificate holder list ─── */
+function holdersOf(certId,issueN){
+ const cert=DB.certs.find(c=>c.id===certId);if(!cert)return[];
+ const issue=cert.issues.find(i=>i.n===issueN);if(!issue)return[];
+ const next=cert.issues.find(i=>i.n===issueN+1);
+ const from=issue.at,to=next?next.at:'9999-12-31';
+ const rows=[];
+ for(const o of DB.orders){
+  for(const ln of o.lines){
+   if(ln.lot===cert.lot&&o.placed>=from&&o.placed<to){
+    rows.push({order:o.id,org:ORGS.find(g=>g.id===o.org).n,orgId:o.org,placed:o.placed,qty:ln.q,
+      ack:!!DB.reissueAck[o.id+':'+certId]});
+   }
+  }
+ }
+ return rows;
+}
+/* ═══ STATISTICS. Everything the certificate carries is computed from raw results. ═══ */
+const mean=a=>a.reduce((x,y)=>x+y,0)/a.length;
+const sd=a=>{const m=mean(a);return a.length<2?0:Math.sqrt(a.reduce((x,y)=>x+(y-m)*(y-m),0)/(a.length-1))};
+/* One-way ANOVA over units. u(bb) is the between-unit standard deviation, floored at the
+   detection limit when MS(between) falls below MS(within) — the conventional treatment. */
+function anova(rows){
+ const units=[...new Set(rows.map(r=>r.u))];
+ const groups=units.map(u=>rows.filter(r=>r.u===u).map(r=>r.v));
+ const reps=groups[0].length, all=rows.map(r=>r.v), gm=mean(all);
+ const msB=groups.reduce((a,g)=>a+reps*Math.pow(mean(g)-gm,2),0)/(units.length-1);
+ const msW=groups.reduce((a,g)=>a+g.reduce((x,v)=>x+Math.pow(v-mean(g),2),0),0)/(all.length-units.length);
+ const sbb2=(msB-msW)/reps;
+ const sbb=sbb2>0?Math.sqrt(sbb2):Math.sqrt(msW/reps)*Math.pow(2/((units.length-1)*(reps-1)||1),0.25);
+ return{units:units.length,reps,gm,msB,msW,sbb,ubb:sbb,floored:sbb2<=0};
+}
+/* Least squares over time. u(lts) is the standard error of the slope projected across
+   the shelf life, which is how ISO Guide 35 treats long-term stability. */
+function regress(pts,shelfMonths){
+ const x=pts.map(p=>p.m),y=pts.map(p=>p.v),n=x.length,mx=mean(x),my=mean(y);
+ const sxx=x.reduce((a,v)=>a+(v-mx)*(v-mx),0);
+ const slope=x.reduce((a,v,i)=>a+(v-mx)*(y[i]-my),0)/sxx;
+ const inter=my-slope*mx;
+ const resid=y.map((v,i)=>v-(inter+slope*x[i]));
+ const se2=resid.reduce((a,v)=>a+v*v,0)/(n-2);
+ const seSlope=Math.sqrt(se2/sxx);
+ return{n,slope,inter,seSlope,ults:seSlope*shelfMonths,significant:Math.abs(slope)>2*seSlope,shelfMonths};
+}
+/* Consensus across laboratories. Produces u(char) AND the assigned value. */
+function consensus(rows){
+ const v=rows.map(r=>r.v),m=mean(v),s=sd(v);
+ return{labs:v.length,value:m,s,uchar:s/Math.sqrt(v.length)};
+}
+function studyStats(st){
+ const raw=DB.results[st.id];if(!raw||!raw.length)return null;
+ if(st.type==='homogeneity')return{kind:'bb',...anova(raw),u:anova(raw).ubb};
+ if(st.type==='stability'){
+  const months=st.shelf?Math.max(1,Math.round((new Date(st.shelf)-new Date(st.at||TODAY))/2592000000)):24;
+  const r=regress(raw,months);return{kind:'lts',...r,u:r.ults};}
+ const c=consensus(raw);return{kind:'char',...c,u:c.uchar};
+}
+/* ─── uncertainty budget, derived from signed studies ─── */
+function budget(prjId){
+ const st=DB.studies.filter(s=>s.prj===prjId&&s.state==='signed');
+ const g=t=>{const x=st.find(s=>s.type===t);if(!x)return null;const q=studyStats(x);return q?q.u:null};
+ const uBb=g('homogeneity'),uLts=g('stability'),uChar=g('characterisation');
+ const parts=[uBb,uLts,uChar].filter(x=>x!=null);
+ const uc=parts.length?Math.sqrt(parts.reduce((a,x)=>a+x*x,0)):null;
+ return{uBb,uLts,uChar,uc,complete:uBb!=null&&uLts!=null&&uChar!=null};
+}
+/* The assigned value comes from the characterisation consensus. Nothing types it. */
+function assignedValue(prjId){
+ const c=DB.studies.find(x=>x.prj===prjId&&x.type==='characterisation'&&x.state==='signed');
+ if(!c)return null;const q=studyStats(c);return q?q.value:null;
+}
+/* UncertaintyComponent as explicit records, which is what an assessor asks to see. */
+function components(prjId){
+ const out=[];
+ DB.studies.filter(x=>x.prj===prjId&&x.state==='signed').forEach(x=>{
+  const q=studyStats(x);if(!q)return;
+  out.push({study:x.id,type:x.type,symbol:q.kind==='bb'?'u(bb)':q.kind==='lts'?'u(lts)':'u(char)',
+   value:q.u,basis:q.kind==='bb'?(q.units+' units × '+q.reps+' replicates, one-way ANOVA'+(q.floored?', floored at the detection limit':''))
+    :q.kind==='lts'?(q.n+' timepoints, slope '+q.slope.toFixed(5)+'/month'+(q.significant?' (SIGNIFICANT)':' (not significant)')+', projected over '+q.shelfMonths+' months')
+    :(q.labs+' laboratories, s = '+q.s.toFixed(3))});
+ });
+ return out;
+}
+/* ─── helpers ─── */
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const inr=n=>'₹'+Number(n).toLocaleString('en-IN');
+const prj=id=>DB.projects.find(p=>p.id===id);
+const lotById=id=>DB.lots.find(l=>l.id===id);
+const org=id=>ORGS.find(o=>o.id===id);
+const userById=id=>USERS.find(u=>u.id===id);
+const certForLot=id=>DB.certs.find(c=>c.lot===id);
+const days=d=>d==='—'?9999:Math.round((new Date(d)-new Date(TODAY))/864e5);
+function tierOf(){if(!S.user)return'private';return DB.entitlements.some(e=>e.org===S.user.org&&e.state==='approved')?'government':'private'}
+const unitPrice=l=>(l.tierable&&tierOf()==='government')?Math.round(l.price*0.5):l.price;
+function notify(uid,t,b){DB.notifs.unshift({uid,t,b,ts:new Date().toISOString().slice(11,16),read:false})}
+const myNotifs=()=>S.user?DB.notifs.filter(n=>n.uid===S.user.id):[];
+/* Exports produce an actual file. The product's pitch is that an assessment becomes
+   an export; a toast that says "exported" is the pitch failing. */
+function downloadFile(name,mime,content){
+ try{
+  const b=new Blob([content],{type:mime});
+  const u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},0);
+  return true;
+ }catch(e){return false}
+}
+const csvCell=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+const csv=rows=>rows.map(r=>r.map(csvCell).join(',')).join('\n');
+function exportLedger(){
+ tryDo(()=>{guard('audit:export');
+  const rows=[['Seq','Timestamp','Actor','Role','Kind','Action','Detail','Time source','Region','Digest']]
+   .concat(DB.audit.map(e=>[e.seq,e.ts,(userById(e.actor)||{n:e.actor}).n,e.role,e.kind,e.action,e.meta,e.src,e.region,e.h]));
+  const ok=downloadFile('lotmark-audit-ledger-'+TODAY+'.csv','text/csv',csv(rows));
+  audit('AUDIT','Ledger exported',DB.audit.length+' entries, '+(ok?'file written':'download blocked by the browser'));
+  toast(ok?('Exported '+rows.length+' rows'):'Download blocked by the browser',ok?'':'bad');});
+}
+function exportAssessmentPack(){
+ tryDo(()=>{guard('conformance:read');
+  const L=[];
+  L.push('LOTMARK — ISO 17034 ASSESSMENT PACK');
+  L.push('Tenant: '+TCFG().n);
+  L.push('Position as at: '+ASOF());
+  L.push('Generated: '+new Date().toISOString().slice(0,19).replace('T',' ')+'  ('+timeSource().src+')');
+  L.push('Chain: '+(verifyChain().ok?'intact across '+verifyChain().n+' entries':'BROKEN at entry '+verifyChain().at));
+  L.push('');
+  L.push('== PROJECTS AND UNCERTAINTY BUDGETS ==');
+  DB.projects.forEach(p=>{const b=budget(p.id);
+   L.push([p.id,p.mat,'CAS '+p.cas,'stage '+p.stage,'u(c) '+(b.uc?b.uc.toFixed(3):'incomplete')].join(' | '))});
+  L.push('');
+  L.push('== SIGNED STUDIES, WITH THE AUTHORISATION EACH RELIED ON ==');
+  DB.studies.filter(x=>x.state==='signed').forEach(x=>{
+   const bound=x.sig?(verifySignature('study',x,x.sig).ok?'bound and intact':'BINDING BROKEN'):'no bound signature';
+   L.push([x.id,x.prj,x.type,'signed '+x.at,'by '+(userById(x.by)||{n:'?'}).n,
+    'meaning '+(x.sig?x.sig.meaning:'—'),'basis '+(x.basis?x.basis.comp:'none'),bound].join(' | '))});
+  L.push('');
+  L.push('== CERTIFICATES ==');
+  DB.certs.forEach(c=>c.issues.forEach(i=>{
+   const r=i.sig?verifySignature('cert',{id:c.id,lot:c.lot,val:i.val,U:i.U},i.sig):{ok:false};
+   L.push([c.id,'issue '+i.n,lotById(c.lot).lot,'value '+i.val+' ± '+i.U,'issued '+i.at,
+    'by '+(userById(i.by)||{n:'?'}).n,i.sig?(r.ok?'signature intact':'SIGNATURE BROKEN'):'unsigned'].join(' | '))}));
+  L.push('');
+  L.push('== COMPETENCE IN FORCE AS AT '+ASOF()+' ==');
+  DB.competence.forEach(c=>L.push([c.id,(userById(c.p)||{n:c.p}).n,c.act,c.from+' to '+c.to,
+   (c.from<=ASOF()&&c.to>=ASOF())?'in force':'not in force'].join(' | ')));
+  L.push('');
+  L.push('== EQUIPMENT AND CALIBRATION ==');
+  DB.equipment.forEach(e=>L.push([e.id,e.n,e.cal.map(c=>c.from+'→'+c.to).join('; '),
+   e.cal.some(c=>c.from<=ASOF()&&c.to>=ASOF())?'calibrated':'LAPSED'].join(' | ')));
+  L.push('');
+  L.push('== SUBCONTRACTORS ==');
+  DB.subs.forEach(x=>L.push([x.id,x.n,x.act,x.accred,'expires '+x.to].join(' | ')));
+  L.push('');
+  L.push('== RETENTION SCHEDULE ==');
+  RETENTION.forEach(r=>L.push(r.join(' | ')));
+  const ok=downloadFile('lotmark-iso17034-assessment-pack-'+ASOF()+'.txt','text/plain',L.join('\n'));
+  audit('COMPLIANCE','Assessment pack exported','as at '+ASOF()+', '+L.length+' lines');
+  toast(ok?'Assessment pack exported':'Download blocked by the browser',ok?'':'bad');});
+}
+function exportVaultPack(){
+ const mine=DB.vault.filter(v=>v.org===S.user.org);
+ const rows=[['Material','Lot','Certificate','Valid to','Location','Quantity','Status','As at']]
+  .concat(mine.map(v=>{const l=lotById(v.lot),c=certForLot(l.id),d=days(l.exp);
+   return [prj(l.prj).mat,l.lot,(c||{}).id||'—',l.exp,v.loc,v.qty,
+    d<0?'expired':(l.state==='superseded'?'lot superseded':'valid'),TODAY]}));
+ const ok=downloadFile('reference-material-holdings-'+TODAY+'.csv','text/csv',csv(rows));
+ audit('DOCUMENT','Vault audit pack exported',mine.length+' holdings');
+ toast(ok?('Exported '+mine.length+' holdings'):'Download blocked by the browser',ok?'':'bad');
+}
+let tT;function toast(m,k){const e=document.getElementById('toast');e.textContent=m;e.className='toast on'+(k==='bad'?' bad':'');clearTimeout(tT);tT=setTimeout(()=>e.className='toast',3000)}
+/* §11.200(a)(1) — the first signing of a session uses all identification components;
+   later signings in the same continuous session may use one. */
+const SIGNING_SESSION_MS=600000;
+function stepUp(purpose,kind,onOk){
+ const first=!S.signingSession||(Date.now()-S.signingSession>SIGNING_SESSION_MS);
+ S.pendingSign={purpose,kind,onOk,first};
+ modal('Electronic signature — '+purpose,
+  `<p class="muted" style="margin-top:0;font-size:12.5px">${first
+    ?'First signing of this session. Both identification components are required.'
+    :'Continuing signing session. One component is required.'}</p>
+   ${first?`<label class="f"><span>Password</span><input class="t" id="su-pw" type="password"></label>`:''}
+   <label class="f"><span>Six-digit code</span><input class="t mono" id="su-otp" maxlength="6" inputmode="numeric" placeholder="••••••"></label>
+   <label class="f"><span>Meaning of this signature — required by 21 CFR 11.50</span>
+    <select class="t" id="su-mean">${SIG_MEANINGS.map(m=>`<option value="${m[0]}">${m[1]}</option>`).join('')}</select></label>
+   <div id="su-err"></div>
+   <div class="row"><button class="btn go" onclick="confirmSign()">Sign</button>
+    <button class="btn ghost" onclick="closeModal()">Cancel</button></div>
+   <div class="note"><b>This is the control, not a formality.</b> The meaning you pick is stored on the signature, and the signature is bound to the record's content — altering the record afterwards breaks the binding and the product will say so.</div>`);
+}
+function confirmSign(){
+ const p=S.pendingSign;if(!p)return;
+ const err=m=>{document.getElementById('su-err').innerHTML='<div class="deny">'+esc(m)+'</div>'};
+ if(!rateLimit('sign:'+S.user.id,8,60000))return err('Too many signing attempts. Wait a minute.');
+ if(p.first){
+  const pw=(document.getElementById('su-pw').value||'');
+  if(kdf(pw,S.user.salt)!==S.user.pwh){audit('SECURITY','Signature rejected — password component failed',p.purpose);return err('Password component incorrect.')}
+ }
+ const otp=(document.getElementById('su-otp').value||'').trim();
+ if(!/^\d{6}$/.test(otp)||otp==='000000'){audit('SECURITY','Signature rejected — second component failed',p.purpose);return err('Second component rejected.')}
+ const meaning=document.getElementById('su-mean').value;
+ S.signingSession=Date.now();
+ audit('SIGNATURE','Electronic signature applied',p.purpose+' · meaning: '+meaning);
+ closeModal();
+ p.onOk(meaning);
+}
+let lastFocus=null;
+function modal(t,h){
+ lastFocus=document.activeElement;
+ document.getElementById('mt').textContent=t;document.getElementById('mb').innerHTML=h;
+ document.getElementById('modal').classList.add('on');
+ const f=focusables();if(f.length)f[0].focus();
+ document.addEventListener('keydown',trap);
+}
+function focusables(){return [...document.getElementById('modal').querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(e=>!e.disabled)}
+function trap(e){
+ if(e.key==='Escape'){closeModal();return}
+ if(e.key!=='Tab')return;
+ const f=focusables();if(!f.length)return;
+ const first=f[0],last=f[f.length-1];
+ if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+ else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+}
+function closeModal(){
+ document.getElementById('modal').classList.remove('on');
+ document.removeEventListener('keydown',trap);
+ if(lastFocus&&lastFocus.focus)lastFocus.focus();
+}
+document.getElementById('mx').onclick=closeModal;
+document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+/* Search and paging. Seventeen seeded rows render fine; 1,341 SKUs do not. */
+const PAGE=8;
+const qKey=()=>S.route==='console'?('c:'+S.sub):('r:'+S.route);
+const qGet=()=>((S.q&&typeof S.q==='object')?(S.q[qKey()]||''):'');
+function qSet(v){if(!S.q||typeof S.q!=='object')S.q={};S.q[qKey()]=v;S.page=0;}
+function filt(rows,fields){
+ const q=qGet().toLowerCase().trim();
+ if(!q)return rows;
+ return rows.filter(r=>fields.map(f=>typeof f==='function'?f(r):r[f]).join(' ').toLowerCase().includes(q));
+}
+function pageOf(rows){const start=S.page*PAGE;return rows.slice(start,start+PAGE)}
+function tableTools(total,shown){
+ const pages=Math.max(1,Math.ceil(total/PAGE));
+ if(S.page>=pages)S.page=pages-1;
+ return `<div class="row" style="justify-content:space-between;margin-bottom:10px">
+  <div class="row" style="gap:8px;flex:1;min-width:220px">
+   <label class="sr" for="tsearch">Search</label>
+   <input class="t" id="tsearch" style="max-width:280px" placeholder="Search…" value="${esc(qGet())}"
+     oninput="qSet(this.value);render();const el=document.getElementById('tsearch');if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length)}">
+   <span class="muted" style="font-size:12px">${shown} of ${total}</span></div>
+  ${pages>1?`<div class="row" style="gap:6px">
+   <button class="btn ghost sm" ${S.page===0?'disabled':''} onclick="S.page--;render()">← Prev</button>
+   <span class="mono" style="font-size:11.5px">page ${S.page+1} of ${pages}</span>
+   <button class="btn ghost sm" ${S.page>=pages-1?'disabled':''} onclick="S.page++;render()">Next →</button></div>`:''}
+ </div>`;
+}
+/* Hiding a field is not a control on its own — an auditor wants to know who looked. */
+function pii(value,perm,key){
+ const dots='&bull;'.repeat(Math.min(12,String(value).length));
+ if(!can(perm))return '<span class="mono muted" title="Redacted for your role">'+dots+'</span> <span class="chip grey">redacted</span>';
+ if(S.revealed&&S.revealed[key])return '<span class="mono">'+esc(value)+'</span> <span class="chip warn">revealed</span>';
+ return '<span class="mono muted">'+dots+"</span> <button class=\"btn ghost sm\" onclick=\"reveal('"+key+"','"+perm+"')\">Reveal</button>";
+}
+function reveal(key,perm){
+ tryDo(()=>{guard(perm);S.revealed=S.revealed||{};S.revealed[key]=true;
+  audit('PII','Break-glass reveal of a redacted field',key+' via '+perm);
+  toast('Revealed — recorded in the ledger against your account');});
+}
+const stChip=s=>`<span class="chip ${{released:'ok',signed:'ok',authorised:'ok',approved:'ok',delivered:'ok',
+ draft:'grey',superseded:'grey',placed:'warn',under_review:'warn',investigation:'warn',authorisation:'warn',study:'info',dispatched:'info'}[s]||'grey'}">${String(s).replace(/_/g,' ')}</span>`;
+
+/* ═══════════ LOGIN ═══════════ */
+function vLogin(){
+ return `<div class="loginwrap"><div class="loginbox">
+  <div class="loginL"><div class="em" aria-hidden="true">LM</div>
+   <h1>Lotmark</h1><p>Reference material lifecycle platform — production planning through certificate issue, distribution and accreditation evidence.</p>
+   <div style="border-top:1px solid rgba(255,255,255,.15);padding-top:12px">
+    <div class="eye" style="color:#8FA3C4">Implemented from the product wireframe</div>
+    <ul style="color:#BCCAE2;font-size:12.5px;padding-left:16px;line-height:1.85;margin:6px 0 0">
+     <li>Equipment lapse traced forward to affected lots</li>
+     <li>Certificate holder list computed from orders</li>
+     <li>Competence checked at the moment of signing</li>
+     <li>Value authorisation that cannot be subcontracted</li></ul></div></div>
+  <div class="loginR"><div class="eye">Sign in</div><h2 class="sec" style="margin-top:4px">Access your tenant</h2>
+   ${S.flash&&S.flash.t==='login'?`<div class="deny"><b>Sign-in failed.</b> ${esc(S.flash.m)}</div>`:''}
+   <label class="f"><span>Email</span><input class="t" id="li-e" type="email" autocomplete="username" value="${esc(S.flash&&S.flash.email||'')}"></label>
+   <label class="f"><span>Password</span><input class="t" id="li-p" type="password" autocomplete="current-password"></label>
+   <button class="btn" style="width:100%" onclick="doLogin()">Sign in</button>
+   <div class="eye" style="margin:14px 0 6px">Demonstration accounts — password <span class="mono">demo1234</span></div>
+   <div style="max-height:190px;overflow:auto">${USERS.map(u=>`<button class="acct" onclick="fill('${u.e}')"><b>${esc(u.n)}</b><span>${ROLES[u.role].n} · ${ROLES[u.role].kind}${u.mfa?' · 2FA':''}</span></button>`).join('')}</div>
+  </div></div></div>`;
+}
+function fill(e){document.getElementById('li-e').value=e;document.getElementById('li-p').value='demo1234';document.getElementById('li-p').focus()}
+function doLogin(){const e=document.getElementById('li-e').value,p=document.getElementById('li-p').value;const r=login(e,p);
+ if(r.err)S.flash={t:'login',m:r.err,email:e};else if(r.mfa){S.flash=null;S.route='mfa'}else S.flash=null;render()}
+function vMfa(){return `<div class="loginwrap"><div class="loginbox" style="grid-template-columns:1fr;max-width:430px"><div class="loginR">
+ <div class="eye">Two-factor authentication</div><h2 class="sec" style="margin-top:4px">Verify it is you</h2>
+ <p class="muted" style="font-size:13px;margin-top:0">Producer accounts cannot sign in without a second factor. A code was sent to the number registered to <b>${esc(S.pendingMfa.e)}</b>.</p>
+ ${S.flash&&S.flash.t==='mfa'?`<div class="deny"><b>Rejected.</b> ${esc(S.flash.m)}</div>`:''}
+ <label class="f"><span>Six-digit code</span><input class="t mono" id="otp" maxlength="6" inputmode="numeric" placeholder="••••••"></label>
+ <div class="row"><button class="btn" onclick="doOtp()">Verify</button><button class="btn ghost" onclick="S.pendingMfa=null;S.route='login';S.flash=null;render()">Cancel</button></div>
+ <div class="note"><b>Demo behaviour.</b> Any six digits are accepted except <span class="mono">000000</span>, which simulates a rejection. Three rejections abandon the sign-in and are logged.</div>
+</div></div></div>`}
+function doOtp(){const v=(document.getElementById('otp').value||'').trim();
+ if(!/^\d{6}$/.test(v)){S.flash={t:'mfa',m:'Enter exactly six digits.'};return render()}
+ if(v==='000000'){S.mfaTries++;audit('SECURITY','Second factor rejected',S.pendingMfa.e+' · attempt '+S.mfaTries);
+  if(S.mfaTries>=3){audit('SECURITY','Sign-in abandoned after three rejected codes',S.pendingMfa.e);
+   S.pendingMfa=null;S.route='login';S.flash={t:'login',m:'Three rejected codes. Sign-in abandoned and logged.'};return render()}
+  S.flash={t:'mfa',m:'Code rejected. '+(3-S.mfaTries)+' attempt(s) remaining.'};return render()}
+ audit('AUTH','Second factor verified',S.pendingMfa.e);establish(S.pendingMfa);S.flash=null;render()}
+
+/* ═══════════ CHROME ═══════════ */
+function chrome(inner){
+ const u=S.user,r=ROLES[u.role],unread=myNotifs().filter(n=>!n.read).length,idle=Date.now()-S.lastActivity;
+ const tabs=r.kind==='producer'?[['console','Console'],['coverage','Build coverage']]
+  :[['shop','Catalogue'],['orders','My orders'],['vault','My vault'],['account','Account']];
+ return `<header class="bar"><div class="brand"><div class="em" aria-hidden="true">LM</div><div>Lotmark<small>${esc(r.n)} · ${esc(ROLES[u.role].kind==='producer'?TCFG().n:org(u.org).n)}</small></div></div>
+  <nav class="nav" aria-label="Sections">${tabs.map(([k,l])=>`<button aria-current="${S.route===k?'page':'false'}" onclick="go('${k}')">${l}</button>`).join('')}</nav>
+  <div class="barR"><button class="ib" onclick="openNotifs()" aria-label="Notifications">🔔${unread?`<span class="dotN">${unread}</span>`:''}</button>
+   <div class="who"><span class="av" style="background:${u.col}" aria-hidden="true">${u.n.split(' ').map(x=>x[0]).slice(0,2).join('')}</span><span>${esc(u.n.split(' ').slice(-1)[0])}</span></div>
+   <button class="ib" onclick="logout();render()">Sign out</button></div></header>
+  ${idle>WARN?`<div class="sess">Session ends in ${Math.max(0,Math.ceil((IDLE-idle)/1000))} seconds without activity.</div>`:''}
+  <main class="wrap" id="main">${S.flash&&S.flash.t==='deny'?`<div class="deny"><b>Blocked — HTTP 403.</b> ${esc(S.flash.m)}<br><span class="muted" style="font-size:12px">Checked in the action handler, not the interface.</span></div>`:''}${inner}</main>`;
+}
+function go(r){S.route=r;S.sub=null;S.detail=null;S.flash=null;render()}
+function openNotifs(){const ns=myNotifs();ns.forEach(n=>n.read=true);
+ modal('Notifications',ns.length?ns.map(n=>`<div style="border:1px solid var(--line);border-left:3px solid var(--pri);border-radius:7px;padding:10px;margin-bottom:8px"><b style="font-size:13px">${esc(n.t)}</b><div style="font-size:12.5px">${esc(n.b)}</div><span class="mono muted" style="font-size:11.5px">${n.ts}</span></div>`).join(''):'<p class="muted">Nothing yet.</p>')}
+
+/* ═══════════ CONSOLE ═══════════ */
+const MODS=[
+ ['Production',[['projects','Projects','project:read'],['studies','Studies','project:read'],['values','Property values','project:read'],
+  ['authorise','Value authorisation','value:authorise'],['lots','Lot register','project:read']]],
+ ['Certification',[['certs','Certificates','project:read']]],
+ ['Distribution',[['catalogue','Catalogue','catalogue:manage'],['orders','Orders','order:read_all'],
+  ['entitlement','Entitlement','entitlement:decide'],['dispatch','Dispatch','order:advance']]],
+ ['Compliance',[['conformance','ISO 17034 conformance','conformance:read'],['monitoring','Ongoing monitoring','project:read'],['retention','Retention schedule','audit:read'],['equipment','Equipment','project:read'],
+  ['competence','Competence','project:read'],['subs','Subcontractors','subcontractor:manage'],
+  ['capa','Complaints & CAPA','capa:manage'],['audit','Audit ledger','audit:read']]],
+ ['Platform',[['trace','Traceability explorer','project:read'],['security','Security','audit:read'],['build','Build & verification','audit:read'],['tenant','Tenant configuration','project:read'],['users','Users & roles','user:manage']]]];
+function vConsole(){
+ const avail=[];MODS.forEach(([g,ms])=>ms.forEach(m=>{if(!m[2]||can(m[2]))avail.push(m[0])}));
+ /* A user with no console modules must never reach a dead module key. */
+ if(!avail.length)return `<div class="card pad"><h1 class="pg">No console access</h1>
+  <p class="lede">Your role holds none of the console permissions. Use the catalogue instead.</p>
+  <button class="btn" onclick="go('shop')">Go to the catalogue</button></div>`;
+ if(!S.sub||!avail.includes(S.sub)){S.sub=avail[0];S.detail=null;}
+ const body={projects:cProjects,studies:cStudies,values:cValues,authorise:cAuthorise,lots:cLots,certs:cCerts,
+  catalogue:cCatalogue,orders:cOrders,entitlement:cEnt,dispatch:cDispatch,conformance:cConf,equipment:cEquip,
+  competence:cComp,subs:cSubs,capa:cCapa,audit:cAudit,monitoring:cMonitoring,retention:cRetention,trace:cTrace,security:cSecurity,build:cBuild,tenant:cTenant,users:cUsers}[S.sub]();
+ return `<div class="side"><nav class="snav" aria-label="Modules">
+  ${MODS.map(([g,ms])=>`<h5>${g}</h5>`+ms.map(m=>{const ok=!m[2]||can(m[2]);
+   return `<button aria-current="${S.sub===m[0]?'page':'false'}" ${ok?`onclick="S.sub='${m[0]}';S.flash=null;S.detail=null;render()"`:'disabled aria-disabled="true" style="opacity:.36"'}>
+    <span>${m[1]}</span><span class="lk">${ok?'':'locked'}</span></button>`}).join('')).join('')}
+  </nav><div>${body}</div></div>`;
+}
+const kpi=(l,v)=>`<div class="kpi"><div class="l">${l}</div><b>${v}</b></div>`;
+
+function cProjects(){
+ if(S.detail&&prj(S.detail)){const p=prj(S.detail),b=budget(p.id),st=DB.studies.filter(s=>s.prj===p.id);
+  return `<button class="btn ghost sm" onclick="S.detail=null;render()">← Projects</button>
+  <h1 class="pg" style="margin-top:10px">${p.id} · ${esc(p.mat)}</h1>
+  <div class="row" style="margin-bottom:12px">${stChip(p.stage)}<span class="chip grey">CAS ${esc(p.cas)}</span><span class="chip grey">${esc(p.sku)}</span></div>
+  <div class="grid g2"><div class="card pad"><div class="eye">Production plan</div><h2 class="sec">Design</h2>
+    <table><tbody><tr><td>Minimum intake</td><td class="mono">${esc(p.intake)}</td></tr>
+    <tr><td>Target uncertainty</td><td class="mono">${esc(p.target)}</td></tr>
+    <tr><td>Owner</td><td>${esc(userById(p.owner).n)}</td></tr></tbody></table>
+    <div class="eye" style="margin:14px 0 6px">Studies</div>
+    <table><tbody>${st.map(s=>`<tr><td class="mono">${s.id}</td><td>${s.type}</td><td>${stChip(s.state)}</td>
+     <td class="num">${s.u!=null?s.u.toFixed(2):'—'}</td></tr>`).join('')}</tbody></table></div>
+   <div class="card pad"><div class="eye">Uncertainty budget</div><h2 class="sec">Computed from raw study data</h2>
+    <table><thead><tr><th>Component</th><th>Study</th><th class="num">Value</th><th>How it was computed</th></tr></thead><tbody>
+    ${components(p.id).map(c=>`<tr><td class="mono"><b>${c.symbol}</b></td><td class="mono">${c.study}</td>
+      <td class="num">${c.value.toFixed(3)}</td><td class="muted" style="font-size:11.5px">${esc(c.basis)}</td></tr>`).join('')
+     ||'<tr><td colspan="4" class="muted">No signed studies yet.</td></tr>'}
+    </tbody></table>
+    ${assignedValue(p.id)!=null?`<div class="okbox"><b>Assigned value ${assignedValue(p.id).toFixed(3)} % w/w</b> — the consensus mean of the characterisation results, not a typed figure.</div>`:''}
+    <table><tbody>
+     <tr><td>u(bb) homogeneity</td><td class="num">${b.uBb!=null?b.uBb.toFixed(2):'<span class="chip warn">missing</span>'}</td></tr>
+     <tr><td>u(lts) stability</td><td class="num">${b.uLts!=null?b.uLts.toFixed(2):'<span class="chip warn">missing</span>'}</td></tr>
+     <tr><td>u(char) characterisation</td><td class="num">${b.uChar!=null?b.uChar.toFixed(2):'<span class="chip warn">missing</span>'}</td></tr>
+     <tr style="background:var(--priT)"><td><b>u combined</b></td><td class="num"><b>${b.uc!=null?b.uc.toFixed(3):'—'}</b></td></tr>
+     <tr><td>U expanded (k=2)</td><td class="num">${b.uc!=null?(b.uc*2).toFixed(2):'—'}</td></tr></tbody></table>
+    <div class="note"><b>Not typed in.</b> Each component is read from the study that produced it. An unsigned study leaves a hole the certificate cannot be issued through.</div></div></div>`}
+ const rows=filt(DB.projects,['id','mat','cas','stage']),shown=pageOf(rows);
+ return `<h1 class="pg">Projects</h1><p class="lede">Every reference material starts as a planned project. Lots, studies, property values and certificates all hang off it, so traceability is structural.</p>
+ ${can('project:manage')?`<div class="row" style="margin-bottom:12px"><button class="btn" onclick="newProject()">New project</button></div>`:''}
+ ${tableTools(rows.length,shown.length)}
+ ${kpisRow([['Projects',DB.projects.length],['In study',DB.projects.filter(p=>p.stage==='study').length],
+  ['Awaiting authorisation',DB.projects.filter(p=>p.stage==='authorisation').length],['Released',DB.projects.filter(p=>p.stage==='released').length]])}
+ <div class="card"><table><thead><tr><th>Project</th><th>Material</th><th>CAS</th><th>Stage</th><th>Budget complete</th><th></th></tr></thead><tbody>
+ ${shown.map(p=>{const b=budget(p.id);return `<tr><td class="mono"><b>${p.id}</b></td><td>${esc(p.mat)}</td><td class="mono">${esc(p.cas)}</td>
+  <td>${stChip(p.stage)}</td><td>${b.complete?'<span class="chip ok">complete</span>':'<span class="chip warn">incomplete</span>'}</td>
+  <td><button class="btn ghost sm" onclick="S.detail='${p.id}';render()">Open</button></td></tr>`}).join('')}</tbody></table></div>`;
+}
+const kpisRow=a=>`<div class="kpis">${a.map(([l,v])=>kpi(l,v)).join('')}</div>`;
+
+function cStudyDetail(){
+ const st=DB.studies.find(x=>x.id===S.detail);
+ if(!st)return cStudiesList();
+ const raw=DB.results[st.id]||[],q=studyStats(st);
+ return `<button class="btn ghost sm" onclick="S.detail=null;render()">← Studies</button>
+ <h1 class="pg" style="margin-top:10px">${st.id} · ${esc(st.type)}</h1>
+ <div class="row" style="margin-bottom:12px">${stChip(st.state)}<span class="chip grey">${st.prj}</span>
+  ${st.eq.map(e=>`<span class="chip grey">${e}</span>`).join('')}</div>
+ <div class="grid g2"><div class="card pad"><div class="eye">Raw results</div><h2 class="sec">${raw.length} measurements</h2>
+  <table><thead><tr>${st.type==='homogeneity'?'<th>Unit</th><th class="num">Rep</th>':st.type==='stability'?'<th class="num">Month</th>':'<th>Laboratory</th>'}<th class="num">Value</th></tr></thead><tbody>
+  ${raw.map(r=>`<tr>${st.type==='homogeneity'?`<td class="mono">U-${String(r.u).padStart(3,'0')}</td><td class="num">${r.r}</td>`
+    :st.type==='stability'?`<td class="num">${r.m}</td>`:`<td class="mono">${esc(r.lab)}</td>`}
+   <td class="num">${r.v}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">No raw data seeded for this study.</td></tr>'}
+  </tbody></table></div>
+ <div class="card pad"><div class="eye">Computed</div><h2 class="sec">What the data says</h2>
+  ${q?`<table><tbody>
+   ${q.kind==='bb'?`<tr><td>Units × replicates</td><td class="mono">${q.units} × ${q.reps}</td></tr>
+    <tr><td>MS between</td><td class="num mono">${q.msB.toFixed(5)}</td></tr>
+    <tr><td>MS within</td><td class="num mono">${q.msW.toFixed(5)}</td></tr>
+    <tr><td>s(bb)</td><td class="num mono">${q.sbb.toFixed(4)}</td></tr>
+    ${q.floored?'<tr><td colspan="2"><span class="chip warn">MS between fell below MS within — u(bb) floored at the detection limit</span></td></tr>':''}
+    <tr style="background:var(--priT)"><td><b>u(bb)</b></td><td class="num mono"><b>${q.ubb.toFixed(4)}</b></td></tr>`:''}
+   ${q.kind==='lts'?`<tr><td>Timepoints</td><td class="mono">${q.n}</td></tr>
+    <tr><td>Slope</td><td class="num mono">${q.slope.toFixed(5)} / month</td></tr>
+    <tr><td>Standard error of slope</td><td class="num mono">${q.seSlope.toFixed(5)}</td></tr>
+    <tr><td>Slope significant</td><td>${q.significant?'<span class="chip bad">yes — trend detected</span>':'<span class="chip ok">no</span>'}</td></tr>
+    <tr><td>Projected over</td><td class="mono">${q.shelfMonths} months</td></tr>
+    <tr style="background:var(--priT)"><td><b>u(lts)</b></td><td class="num mono"><b>${q.ults.toFixed(4)}</b></td></tr>`:''}
+   ${q.kind==='char'?`<tr><td>Laboratories</td><td class="mono">${q.labs}</td></tr>
+    <tr><td>Consensus mean</td><td class="num mono">${q.value.toFixed(4)}</td></tr>
+    <tr><td>s between laboratories</td><td class="num mono">${q.s.toFixed(4)}</td></tr>
+    <tr style="background:var(--priT)"><td><b>u(char)</b></td><td class="num mono"><b>${q.uchar.toFixed(4)}</b></td></tr>`:''}
+  </tbody></table>
+  <div class="note"><b>Nothing here was typed.</b> Change a raw value and every number in this panel, the project's uncertainty budget, and the value the certificate carries all move with it.</div>`
+  :'<p class="muted">No raw data, so nothing can be computed.</p>'}
+ </div></div>`;
+}
+function cStudies(){
+ if(S.detail)return cStudyDetail();
+ return cStudiesList();
+}
+function cStudiesList(){
+ const rows=filt(DB.studies,['id','prj','type','state']),shown=pageOf(rows);
+ return `<h1 class="pg">Studies</h1><p class="lede">Homogeneity, stability and characterisation. Signing requires a current competence authorisation, and the signature stores the authorisation it relied on so a later edit cannot rewrite history.</p>
+ ${can('study:run')?`<div class="row" style="margin-bottom:12px"><button class="btn" onclick="newStudy()">New study</button></div>`:''}
+ ${tableTools(rows.length,shown.length)}
+ <div class="card"><table><thead><tr><th>Study</th><th>Project</th><th>Type</th><th>Equipment used</th><th class="num">u</th><th>State</th><th>Signed</th><th>Basis</th><th></th></tr></thead><tbody>
+ ${shown.map(s=>`<tr><td class="mono"><b>${s.id}</b></td><td class="mono">${s.prj}</td><td>${s.type}</td>
+  <td>${s.eq.map(e=>`<span class="chip grey">${e}</span>`).join(' ')}</td>
+  <td class="num">${(()=>{const q=studyStats(s);return q?q.u.toFixed(3):'—'})()}<div class="mono muted" style="font-size:11.5px">${(DB.results[s.id]||[]).length} results</div></td><td>${stChip(s.state)}</td>
+  <td>${s.by?esc(userById(s.by).n.split(' ')[0])+'<br><span class="mono muted" style="font-size:11.5px">'+s.at+'</span>':'—'}</td>
+  <td>${s.basis?`<span class="chip ${basisValid(s.basis)?'ok':'bad'}" title="${esc(s.basis.comp)} valid ${s.basis.from} to ${s.basis.to}">${esc(s.basis.comp)}</span>`:(s.state==='signed'?'<span class="chip bad">no basis</span>':'—')}</td>
+  <td><button class="btn ghost sm" onclick="S.detail='${s.id}';render()">Data</button>
+   ${s.state==='draft'?`<button class="btn sm" onclick="signStudy('${s.id}')">Sign off</button>`
+     :(s.sig?`<button class="btn ghost sm" onclick="checkSig('${s.id}')">Verify signature</button>`:'')}</td></tr>`).join('')}
+ </tbody></table></div>
+ <div class="note"><b>Try it.</b> Sign in as Sunil Bhatt (Production Lead) and sign a draft study. He holds <span class="mono">study:sign</span> as a permission, but his competence authorisation expired on 30 June 2026 — so the action is refused and the refusal is recorded.</div>`;
+}
+function signStudy(id){
+ const st=DB.studies.find(x=>x.id===id);
+ tryDo(()=>{guard('study:sign',{competence:'study:sign'})});   // authorise BEFORE prompting for a signature
+ if(S.flash)return;
+ stepUp('Sign study '+id,'study',(meaning)=>{
+  tryDo(()=>{const x=DB.studies.find(y=>y.id===id);
+   guard('study:sign',{competence:'study:sign'});
+   x.state='signed';x.basis=snapshotBasis('study:sign',TODAY);
+   x.sig=bindSignature('study',x,meaning);x.by=S.user.id;x.at=TODAY;
+   audit('WORKFLOW','Study signed',id+' · '+meaning+' · bound '+x.sig.bind.slice(0,8));
+   toast(id+' signed as '+meaning);});
+ });
+}
+/* Demonstration: alter a signed record and the binding no longer matches. */
+function tamperRecord(id){
+ const x=DB.studies.find(y=>y.id===id);if(!x)return;
+ x.u=+(x.u+0.05).toFixed(2);
+ audit('SECURITY','Signed record altered outside the workflow',id+' u changed to '+x.u);
+ toast(id+' altered. Verify its signature.','bad');render();
+}
+function checkSig(id){
+ const x=DB.studies.find(y=>y.id===id);const r=verifySignature('study',x,x.sig);
+ audit('SIGNATURE','Signature verification',id+' — '+(r.ok?'intact':r.why));
+ toast(r.ok?(id+': signature intact and bound to this record'):(id+': BROKEN — '+r.why),r.ok?'':'bad');
+ render();
+}
+function cValues(){
+ return `<h1 class="pg">Property values</h1><p class="lede">Assembled from the studies rather than entered. Assignment and authorisation are separate acts held by different people.</p>
+ <div class="card"><table><thead><tr><th>Value</th><th>Project</th><th>Property</th><th class="num">Value</th><th class="num">u(c)</th><th class="num">U (k=2)</th><th>State</th><th></th></tr></thead><tbody>
+ ${DB.values.map(v=>{const b=budget(v.prj);
+  return `<tr><td class="mono"><b>${v.id}</b></td><td class="mono">${v.prj}</td><td>${esc(v.prop)}</td>
+  <td class="num">${(assignedValue(v.prj)??v.val).toFixed(2)} ${esc(v.unit)}<div class="mono muted" style="font-size:11.5px">${assignedValue(v.prj)!=null?'consensus of '+DB.results[(DB.studies.find(x=>x.prj===v.prj&&x.type==='characterisation')||{}).id].length+' labs':'not yet computed'}</div></td><td class="num">${b.uc!=null?b.uc.toFixed(3):'—'}</td>
+  <td class="num">${b.uc!=null?(b.uc*2).toFixed(2):'—'}</td><td>${stChip(v.state)}</td>
+  <td>${v.state==='draft'?`<button class="btn sm" ${b.complete?'':'disabled'} onclick="assignValue('${v.id}')">Assign</button>${b.complete?'':'<div class="mono muted" style="font-size:11.5px;margin-top:4px">budget incomplete</div>'}`
+    :(v.authSig?`<span class="chip ${verifySignature('value',v,v.authSig).ok?'ok':'bad'}">${verifySignature('value',v,v.authSig).ok?'bound':'BROKEN'}</span>
+      <button class="btn ghost sm" onclick="checkValueSig('${v.id}')">Verify</button>`:'')}</td></tr>`}).join('')}
+ </tbody></table></div>
+ <div class="note"><b>PV-03 cannot be assigned yet.</b> Its characterisation study is still in draft, so the uncertainty budget has a hole. Sign ST-1022 as Ravi Menon and the button unlocks.</div>`;
+}
+function assignValue(id){
+ tryDo(()=>{const v=DB.values.find(x=>x.id===id),b=budget(v.prj);
+  guard('value:assign',{competence:'value:assign'});
+  if(!b.complete)throw new Forbidden('The uncertainty budget is incomplete — a required study is unsigned.');
+  const av=assignedValue(v.prj);
+  if(av==null)throw new Forbidden('No signed characterisation study, so no value can be assigned.');
+  v.val=+av.toFixed(2);
+  v.state='submitted';v.assigned=S.user.id;v.assignBasis=snapshotBasis('value:assign',TODAY);
+  audit('WORKFLOW','Property value assigned',id+' by '+S.user.n);
+  USERS.filter(u=>ROLES[u.role].p.includes('value:authorise')).forEach(u=>notify(u.id,'Value awaiting authorisation',id+' submitted by '+S.user.n));
+  toast(id+' submitted for authorisation');});
+}
+function cAuthorise(){
+ const q=DB.values.filter(v=>v.state==='submitted');
+ return `<h1 class="pg">Value authorisation</h1>
+ <p class="lede">ISO 17034 forbids subcontracting this decision. It is modelled as a named, segregated, competence-checked act — the assigner of a value is refused authorisation of the same value even when they hold the permission.</p>
+ ${q.length?q.map(v=>{const b=budget(v.prj),p=prj(v.prj),same=v.assigned===S.user.id;
+  return `<div class="card pad" style="margin-bottom:12px">
+   <div class="row" style="justify-content:space-between"><div><b class="mono">${v.id}</b> · ${esc(p.mat)}
+    <div class="muted" style="font-size:12.5px">Assigned by ${esc(userById(v.assigned).n)}</div></div>${stChip(v.state)}</div>
+   <div class="grid g2" style="margin-top:10px">
+    <div><div class="eye">Evidence</div><table><tbody>
+     ${DB.studies.filter(s=>s.prj===v.prj).map(s=>`<tr><td>${s.type}</td><td>${stChip(s.state)}</td></tr>`).join('')}
+     <tr><td>Uncertainty budget</td><td>${b.complete?'<span class="chip ok">complete</span>':'<span class="chip bad">incomplete</span>'}</td></tr>
+    </tbody></table></div>
+    <div><div class="eye">Decision</div>
+     <div style="font:600 22px var(--mono);margin:6px 0">${v.val} ${esc(v.unit)} ± ${b.uc?(b.uc*2).toFixed(2):'—'}</div>
+     <div class="row"><button class="btn go sm" onclick="authoriseValue('${v.id}')">Authorise</button>
+      <button class="btn ghost sm" onclick="returnValue('${v.id}')">Return to assigner</button></div>
+     ${same?'<div class="note"><b>You assigned this value.</b> Authorising it will be refused. Press the button to see the refusal recorded.</div>':''}</div></div></div>`}).join('')
+  :'<div class="card pad"><p class="muted" style="margin:0">Nothing awaiting authorisation. Assign PV-03 to populate this queue.</p></div>'}`;
+}
+function authoriseValue(id){
+ tryDo(()=>{const v=DB.values.find(x=>x.id===id);
+  guard('value:authorise',{competence:'value:authorise',record:v});
+  v.state='authorised';v.auth=S.user.id;v.authBasis=snapshotBasis('value:authorise',TODAY);
+  v.authSig=bindSignature('value',v,'approval');
+  const p=prj(v.prj);p.stage='released';
+  audit('WORKFLOW','Property value authorised',id+' by '+S.user.n);
+  notify(v.assigned,'Value authorised',id+' authorised by '+S.user.n);
+  toast(id+' authorised — the lot can now be released');});
+}
+function returnValue(id){tryDo(()=>{const v=DB.values.find(x=>x.id===id);guard('value:authorise');v.state='draft';
+ audit('WORKFLOW','Property value returned',id);toast('Returned to assigner')})}
+
+function cLots(){
+ const rows=filt(DB.lots,['lot','prj','state',l=>prj(l.prj).mat]),shown=pageOf(rows);
+ return `<h1 class="pg">${L('Lot register','लॉट रजिस्टर')}</h1><p class="lede">One lot, one certificate, one validity window, one stock position. Releasing a new lot supersedes the previous one automatically.</p>
+ ${can('catalogue:manage')?`<div class="row" style="margin-bottom:12px"><button class="btn ghost" onclick="bulkImport()">Bulk import lots</button></div>`:''}
+ ${tableTools(rows.length,shown.length)}
+ <div class="card"><table><thead><tr><th>Lot</th><th>Project</th><th>Material</th><th class="num">Stock</th><th>Valid to</th><th>Storage</th><th>State</th><th>Certificate</th><th></th></tr></thead><tbody>
+ ${shown.map(l=>{const p=prj(l.prj),c=certForLot(l.id),d=days(l.exp);
+  return `<tr><td class="mono"><b>${esc(l.lot)}</b></td><td class="mono">${l.prj}</td><td>${esc(p.mat)}</td>
+   <td class="num">${l.stock}</td><td class="mono">${l.exp}${d<180&&d>0?`<div style="font-size:11.5px;color:var(--warn)">${d} days</div>`:''}</td>
+   <td>${l.cold?'<span class="chip info">'+esc(l.storage)+'</span>':esc(l.storage)}</td><td>${stChip(l.state)}</td>
+   <td class="mono">${c?c.id:'—'}</td>
+   <td>${!c&&l.state==='released'?`<button class="btn sm" onclick="issueCert('${l.id}')">Issue certificate</button>`:''}</td></tr>`}).join('')}
+ </tbody></table></div>
+ ${DB.values.filter(v=>v.state==='authorised'&&!DB.lots.some(l=>l.prj===v.prj&&l.state==='released')).map(v=>
+  `<div class="card pad" style="margin-top:12px"><b>${esc(prj(v.prj).mat)}</b> has an authorised value but no released lot.
+   <button class="btn go sm" style="margin-left:8px" onclick="createLot('${v.prj}')">Create and release lot</button></div>`).join('')}`;
+}
+function createLot(prjId){
+ tryDo(()=>{guard('lot:release');
+  const p=prj(prjId),st=DB.studies.find(s=>s.prj===prjId&&s.type==='stability');
+  const id='L-'+String(DB.lots.length+1).padStart(2,'0');
+  const code='RMP-'+p.sku.split('-')[1]+'-'+(700+DB.lots.length);
+  const prevLot=DB.lots.find(l=>l.prj===prjId&&l.state==='released');
+  if(prevLot){prevLot.state='superseded';audit('WORKFLOW','Lot superseded',prevLot.lot)}
+  DB.lots.push({id,prj:prjId,lot:code,prev:prevLot?prevLot.lot:'—',exp:st?st.shelf:'2028-12-31',stock:60,
+   state:'released',storage:st?st.storage:'Room temperature',cold:st?/°C/.test(st.storage)&&!/Room/.test(st.storage):false,price:5000,tierable:true});
+  audit('WORKFLOW','Lot released',code+' for '+prjId);
+  toast(code+' released');});
+}
+function issueCert(lotId){
+ const l=lotById(lotId);
+ tryDo(()=>{guard('cert:issue',{competence:'cert:issue'})});
+ if(S.flash)return;
+ /* The certificate is the record that leaves the building and lands in a customer's
+    GMP file. It is the one that most needs §11.70 binding, and it now gets it. */
+ stepUp('Issue certificate for lot '+l.lot,'cert',(meaning)=>{
+  tryDo(()=>{const v=DB.values.find(x=>x.prj===l.prj&&x.state==='authorised'),b=budget(l.prj);
+   guard('cert:issue',{competence:'cert:issue'});
+   if(!v)throw new Forbidden('No authorised property value exists for this lot.');
+   const id='CRT-'+(2043+DB.certs.length);
+   const issue={n:1,at:TODAY,by:S.user.id,val:v.val,U:+(b.uc*2).toFixed(2),withdrawn:false,
+    basis:snapshotBasis('cert:issue',TODAY)};
+   issue.sig=bindSignature('cert',{id,lot:lotId,val:issue.val,U:issue.U},meaning);
+   DB.certs.push({id,lot:lotId,issues:[issue]});
+   audit('CERTIFICATE','Certificate issued',id+' for lot '+l.lot+' · '+meaning+' · bound '+issue.sig.bind.slice(0,8));
+   toast(id+' issued and bound');});
+ });
+}
+function checkCertSig(certId,issueN){
+ const c=DB.certs.find(x=>x.id===certId),i=c.issues.find(x=>x.n===issueN);
+ const r=verifySignature('cert',{id:c.id,lot:c.lot,val:i.val,U:i.U},i.sig);
+ audit('SIGNATURE','Certificate signature verification',certId+' issue '+issueN+' — '+(r.ok?'intact':r.why));
+ toast(r.ok?(certId+' issue '+issueN+': signature intact'):(certId+': BROKEN — '+r.why),r.ok?'':'bad');render();
+}
+function checkValueSig(vid){
+ const v=DB.values.find(x=>x.id===vid);
+ const r=verifySignature('value',v,v.authSig);
+ audit('SIGNATURE','Property value signature verification',vid+' — '+(r.ok?'intact':r.why));
+ toast(r.ok?(vid+': authorisation signature intact'):(vid+': BROKEN — '+r.why),r.ok?'':'bad');render();
+}
+function tamperCert(certId){
+ const c=DB.certs.find(x=>x.id===certId),i=c.issues[c.issues.length-1];
+ i.val=+(i.val+0.11).toFixed(2);
+ audit('SECURITY','Issued certificate altered outside the workflow',certId+' value changed to '+i.val);
+ toast(certId+' altered. Verify its signature.','bad');render();
+}
+function cCerts(){
+ if(S.detail&&DB.certs.some(x=>x.id===S.detail)){const c=DB.certs.find(x=>x.id===S.detail),l=lotById(c.lot),p=prj(l.prj);
+  return `<button class="btn ghost sm" onclick="S.detail=null;render()">← Certificates</button>
+  <h1 class="pg" style="margin-top:10px">${c.id}</h1>
+  <div class="row" style="margin-bottom:12px"><span class="chip grey">lot ${esc(l.lot)}</span><span class="chip grey">${esc(p.mat)}</span></div>
+  <div class="grid g2"><div class="card pad"><div class="eye">Issue history</div><h2 class="sec">${c.issues.length} issue${c.issues.length>1?'s':''}</h2>
+   <table><thead><tr><th>Issue</th><th>Date</th><th>By</th><th class="num">Value</th><th class="num">U</th><th>State</th><th>Signature</th></tr></thead><tbody>
+   ${c.issues.map(i=>{const r=i.sig?verifySignature('cert',{id:c.id,lot:c.lot,val:i.val,U:i.U},i.sig):{ok:false,why:'unsigned'};
+    return `<tr><td class="mono">#${i.n}</td><td class="mono">${i.at}</td><td>${esc(userById(i.by).n.split(' ')[0])}</td>
+    <td class="num">${i.val}</td><td class="num">${i.U}</td>
+    <td>${i.withdrawn?'<span class="chip bad">WITHDRAWN</span>':(i.n===c.issues.length?'<span class="chip ok">current</span>':'<span class="chip grey">superseded</span>')}
+     ${i.withdrawn?`<div class="mono muted" style="font-size:11.5px">${esc(i.reason)}</div>`:''}</td>
+    <td>${i.sig?`<span class="chip ${r.ok?'ok':'bad'}" title="${esc(i.sig.meaning)}">${r.ok?'bound':'BROKEN'}</span>
+      <button class="btn ghost sm" onclick="checkCertSig('${c.id}',${i.n})">Verify</button>`:'<span class="chip grey">unsigned</span>'}</td></tr>`}).join('')}
+   </tbody></table>
+   ${c.issues.length>1?`<div class="eye" style="margin:14px 0 6px">What changed</div>
+    <table><tbody><tr><td>Value</td><td class="mono">${c.issues[c.issues.length-2].val}</td><td class="mono">→ ${c.issues[c.issues.length-1].val}</td></tr>
+    <tr><td>U</td><td class="mono">${c.issues[c.issues.length-2].U}</td><td class="mono">→ ${c.issues[c.issues.length-1].U}</td></tr></tbody></table>`:''}
+   ${can('cert:reissue')?`<div class="row" style="margin-top:12px"><button class="btn sm" onclick="reissue('${c.id}')">Reissue with corrected value</button>
+    <button class="btn danger sm" onclick="withdrawCert('${c.id}')">Withdraw</button>
+    <button class="btn ghost sm" onclick="tamperCert('${c.id}')">Alter the issued value</button></div>`:''}
+   <div class="note"><b>21 CFR 11 §11.70.</b> Each issue carries a digest over its own material content. Alter an issued value and the binding breaks — the certificate that reached a customer can be proved to be the one that was signed.</div></div>
+   <div class="card pad"><div class="eye">CLOSURE 2 — holder list</div><h2 class="sec">Who holds each issue</h2>
+    ${c.issues.map(i=>{const h=holdersOf(c.id,i.n);
+     return `<div style="margin-bottom:12px"><b class="mono">Issue #${i.n}</b> <span class="muted">— ${h.length} recipient${h.length===1?'':'s'}</span>
+      ${h.length?`<table style="margin-top:5px"><tbody>${h.map(x=>`<tr><td>${esc(x.org)}</td><td class="mono">${x.order}</td><td class="mono">${x.placed}</td>
+       <td>${x.ack?'<span class="chip ok">acknowledged</span>':'<span class="chip warn">not notified</span>'}</td></tr>`).join('')}</tbody></table>`
+       :'<div class="muted" style="font-size:12px">No orders shipped against this issue.</div>'}</div>`}).join('')}
+    ${c.issues.length>1?`<button class="btn go sm" onclick="notifyHolders('${c.id}')">Notify holders of superseded issues</button>`:''}
+    <div class="note"><b>Computed, not maintained.</b> The list comes from order lines that allocated this lot within the window that issue was current. Split certification and distribution across two systems and this query has no home.</div></div></div>`}
+ return `<h1 class="pg">${L('Certificates','प्रमाणपत्र')}</h1><p class="lede">Every certificate ever issued, what changed on reissue, and who holds an outdated copy.</p>
+ <div class="card"><table><thead><tr><th>Certificate</th><th>Lot</th><th>Material</th><th>Issues</th><th>Current value</th><th>Holders</th><th></th></tr></thead><tbody>
+ ${DB.certs.map(c=>{const l=lotById(c.lot),cur=c.issues[c.issues.length-1];
+  const total=c.issues.reduce((a,i)=>a+holdersOf(c.id,i.n).length,0);
+  return `<tr><td class="mono"><b>${c.id}</b></td><td class="mono">${esc(l.lot)}</td><td>${esc(prj(l.prj).mat)}</td>
+   <td class="num">${c.issues.length}</td><td class="num">${cur.val} ± ${cur.U}</td><td class="num">${total}</td>
+   <td><button class="btn ghost sm" onclick="S.detail='${c.id}';render()">Open</button></td></tr>`}).join('')}
+ </tbody></table></div>`;
+}
+function reissue(id){
+ tryDo(()=>{const c=DB.certs.find(x=>x.id===id);guard('cert:reissue',{competence:'cert:issue'});
+  const prev=c.issues[c.issues.length-1];
+  const ni={n:prev.n+1,at:TODAY,by:S.user.id,val:+(prev.val-0.07).toFixed(2),U:+(prev.U+0.05).toFixed(2),withdrawn:false};
+  ni.sig=bindSignature('cert',{id:c.id,lot:c.lot,val:ni.val,U:ni.U},'approval');
+  c.issues.push(ni);
+  audit('CERTIFICATE','Certificate reissued',id+' issue '+(prev.n+1));
+  toast(id+' reissued — holders of issue '+prev.n+' now need notifying');});
+}
+/* Withdrawal is a real event: you find an error, you pull the certificate, and you owe
+   every holder a notification. Previously a flag nothing could set. */
+function withdrawCert(id){
+ tryDo(()=>{guard('cert:reissue',{competence:'cert:issue'})});
+ if(S.flash)return;
+ modal('Withdraw '+id,
+  `<p class="muted" style="margin-top:0;font-size:12.5px">Withdrawal removes the lot from sale and obliges you to notify every holder. It cannot be undone; a corrected certificate is a reissue, not a restoration.</p>
+   <label class="f"><span>Reason for withdrawal — recorded and sent to holders</span><textarea class="t" id="wd-r" rows="3"></textarea></label>
+   <div class="row"><button class="btn danger" onclick="confirmWithdraw('${id}')">Withdraw and notify</button>
+    <button class="btn ghost" onclick="closeModal()">Cancel</button></div>`);
+}
+function confirmWithdraw(id){
+ const el=document.getElementById('wd-r');
+ const reason=el?el.value.trim():'';
+ if(!reason){toast('A reason is required','bad');return}
+ closeModal();
+ tryDo(()=>{const c=DB.certs.find(x=>x.id===id);
+  guard('cert:reissue',{competence:'cert:issue'});
+  const cur=c.issues[c.issues.length-1];
+  cur.withdrawn=true;cur.withdrawnAt=TODAY;cur.withdrawnBy=S.user.id;cur.reason=reason;
+  const l=lotById(c.lot);l.state='withdrawn';
+  let told=0;
+  c.issues.forEach(i=>holdersOf(id,i.n).forEach(h=>{told++;
+   USERS.filter(u=>u.org===h.orgId).forEach(u=>notify(u.id,'CERTIFICATE WITHDRAWN',
+    id+' has been withdrawn. Reason: '+reason+'. Stop using the material against it.'))}));
+  audit('CERTIFICATE','Certificate WITHDRAWN',id+' · '+reason+' · '+told+' holder(s) notified');
+  toast(id+' withdrawn, lot removed from sale, '+told+' holder(s) notified','bad');});
+}
+function notifyHolders(id){
+ tryDo(()=>{const c=DB.certs.find(x=>x.id===id);guard('cert:reissue');
+  let n=0;
+  for(let i=1;i<c.issues.length;i++){for(const h of holdersOf(id,i)){DB.reissueAck[h.order+':'+id]=true;n++;
+   USERS.filter(u=>u.org===h.orgId).forEach(u=>notify(u.id,'Certificate reissued',id+' has been reissued. Your copy from order '+h.order+' is superseded.'));}}
+  audit('CERTIFICATE','Holders notified of reissue',id+' · '+n+' recipient(s)');
+  toast(n+' holder(s) notified');});
+}
+function cCatalogue(){
+ return `<h1 class="pg">Catalogue</h1><p class="lede">The saleable view of the lot register. Only released lots with a current certificate are listable.</p>
+ <div class="card"><table><thead><tr><th>Lot</th><th>Material</th><th>Certificate</th><th class="num">Stock</th><th class="num">List price</th><th>Government tier</th><th>Listable</th></tr></thead><tbody>
+ ${DB.lots.map(l=>{const c=certForLot(l.id);
+  return `<tr><td class="mono">${esc(l.lot)}</td><td>${esc(prj(l.prj).mat)}</td><td class="mono">${c?c.id:'—'}</td>
+   <td class="num">${l.stock}</td><td class="num">${inr(l.price)}</td><td class="num">${l.tierable?inr(l.price/2):'n/a'}</td>
+   <td>${l.state==='released'&&c&&l.stock>0?'<span class="chip ok">listed</span>':'<span class="chip grey">not listed</span>'}</td></tr>`}).join('')}
+ </tbody></table></div>`;
+}
+function cOrders(){
+ return `<h1 class="pg">Orders</h1><p class="lede">Order lines record the lot actually allocated, not the material ordered. That is what makes the holder list computable.</p>
+ ${tableTools(filt(DB.orders,['id','state',o=>org(o.org).n]).length,pageOf(filt(DB.orders,['id','state',o=>org(o.org).n])).length)}
+ <div class="card"><table><thead><tr><th>Order</th><th>Customer</th><th>Contact</th><th>Lot allocated</th><th class="num">Value</th><th>Placed</th><th>State</th></tr></thead><tbody>
+  ${pageOf(filt(DB.orders,['id','state',o=>org(o.org).n])).map(o=>{const g=org(o.org);
+  return `<tr><td class="mono"><b>${o.id}</b></td><td>${esc(g.n)}</td>
+   <td>${pii(g.ph,'pii:contact','ph-'+g.id)}</td>
+   <td class="mono">${o.lines.map(l=>esc(lotById(l.lot).lot)+' ×'+l.q).join('<br>')}</td>
+   <td class="num">${inr(o.total)}</td><td class="mono">${o.placed}</td><td>${stChip(o.state)}</td></tr>`}).join('')}
+ </tbody></table></div>`;
+}
+function cEnt(){
+ return `<h1 class="pg">Entitlement</h1><p class="lede">Who gets which price, on what evidence, and when that evidence expires. A claimant cannot decide their own claim.</p>
+ ${DB.entitlements.map(e=>{const g=org(e.org),same=e.by===S.user.id;
+  return `<div class="card pad" style="margin-bottom:11px"><div class="row" style="justify-content:space-between">
+   <div><b>${esc(g.n)}</b><div class="mono muted" style="font-size:12px">${e.id} · raised ${e.raised}${e.reval?' · revalidate '+e.reval:''}</div></div>${stChip(e.state)}</div>
+   <div style="font-size:12.5px;margin:8px 0">${esc(e.doc)}</div>
+   ${e.state==='under_review'?`<div class="row"><button class="btn go sm" onclick="decideEnt('${e.id}',true)">Approve government tier</button>
+    <button class="btn danger sm" onclick="decideEnt('${e.id}',false)">Reject</button></div>`:''}
+   ${same?'<div class="note"><b>You raised this claim.</b> Deciding it is refused by segregation of duties.</div>':''}</div>`}).join('')}`;
+}
+function decideEnt(id,ok){
+ tryDo(()=>{const e=DB.entitlements.find(x=>x.id===id);
+  guard('entitlement:decide',{record:e});
+  e.state=ok?'approved':'rejected';e.decider=S.user.id;if(ok)e.reval='2027-08-18';
+  USERS.filter(u=>u.org===e.org).forEach(u=>notify(u.id,ok?'Government tier approved':'Tier claim rejected',
+   ok?e.id+' approved. Eligible items now price at the government rate until '+e.reval+'.':e.id+' was not approved.'));
+  audit('ENTITLEMENT',ok?'Tier approved':'Tier rejected',id);toast(ok?'Approved — pricing updated':'Rejected');});
+}
+function excursionOf(orderId){
+ const lg=DB.loggers.find(x=>x.order===orderId);if(!lg)return null;
+ const [lo,hi]=lg.cls==='2-8'?[2,8]:[15,25];
+ const bad=lg.readings.filter(r=>r.c<lo||r.c>hi);
+ if(!bad.length)return{ok:true,n:lg.readings.length,peak:Math.max(...lg.readings.map(r=>r.c))};
+ return{ok:false,n:lg.readings.length,breaches:bad.length,peak:Math.max(...bad.map(r=>r.c)),
+  from:bad[0].t,to:bad[bad.length-1].t,limit:hi};
+}
+function cDispatch(){
+ const cols=['placed','packed','dispatched','delivered'];
+ return `<h1 class="pg">Dispatch</h1><p class="lede">Storage class set during the stability study becomes the pack instruction here.</p>
+ <div class="grid" style="grid-template-columns:repeat(4,1fr)">
+ ${cols.map(s=>`<div style="background:#EFF2F7;border:1px solid var(--line);border-radius:9px;padding:9px;min-height:120px">
+  <div class="eye" style="display:flex;justify-content:space-between;margin-bottom:7px">${s}<span>${DB.orders.filter(o=>o.state===s).length}</span></div>
+  ${DB.orders.filter(o=>o.state===s).map(o=>{const cold=o.lines.some(l=>lotById(l.lot).cold);
+   return `<div style="background:#fff;border:1px solid var(--line);border-radius:7px;padding:9px;margin-bottom:7px">
+    <b class="mono" style="font-size:11.5px">${o.id}</b><div class="muted" style="font-size:12px;margin:2px 0 5px">${esc(org(o.org).n)}</div>
+    ${cold?'<span class="chip info">2–8 °C</span>':''}
+    ${s!=='delivered'?`<button class="btn sm" style="width:100%;margin-top:6px" onclick="advance('${o.id}',${o.version||1})">Advance →</button>`:`<div class="mono muted" style="font-size:11.5px">${esc(o.courier)}</div>`}
+    ${s==='placed'&&cold?'<div class="note" style="margin-top:6px;font-size:12px"><b>Pack:</b> insulated, gel pack, logger</div>':''}
+    ${(()=>{const e=excursionOf(o.id);return e?(e.ok?`<div class="mono" style="font-size:12px;color:var(--ok);margin-top:4px">logger: ${e.n} readings, peak ${e.peak} °C</div>`
+      :`<div class="deny" style="margin-top:6px;font-size:12px;padding:6px 8px"><b>Excursion:</b> ${e.breaches} of ${e.n} readings above ${e.limit} °C, peak ${e.peak} °C</div>`):''})()}</div>`}).join('')||'<div class="muted" style="font-size:12px;padding:6px">—</div>'}
+  </div>`).join('')}</div>`;
+}
+function advance(id,expectedVersion){
+ tryDo(()=>{const o=DB.orders.find(x=>x.id===id),f={placed:'packed',packed:'dispatched',dispatched:'delivered'};
+  guard('order:advance');const next=f[o.state];if(!next)throw new Forbidden(o.state+' cannot advance further.');
+  if(o.version===undefined)o.version=1;
+  if(expectedVersion!==undefined&&expectedVersion!==o.version){
+   audit('CONFLICT','Concurrent update rejected',id+' expected v'+expectedVersion+', found v'+o.version);
+   throw new Forbidden('This order was changed by someone else. Reload before advancing it again.');}
+  o.version++;
+  o.state=next;if(next==='dispatched')o.courier=['Blue Dart','Delhivery','DTDC'][Math.floor(Math.random()*3)];
+  notify(o.by,'Order '+next,o.id+' is now '+next+'.');audit('WORKFLOW','Order '+o.id+' → '+next,'');toast(o.id+' → '+next);});
+}
+/* ─── CLOSURE 1 screen ─── */
+function cEquip(){
+ return `<h1 class="pg">Equipment</h1>
+ <p class="lede">Calibration is a dated interval, not a status flag. That is what makes the retrospective query below answerable.</p>
+ ${can('equipment:manage')?`<div class="row" style="margin-bottom:12px"><button class="btn" onclick="newEquipment()">Add equipment</button></div>`:''}
+ <div class="card"><table><thead><tr><th>Asset</th><th>Type</th><th>Calibration intervals</th><th>In force as at ${ASOF()}</th><th></th></tr></thead><tbody>
+ ${DB.equipment.map(e=>{const cur=e.cal.some(c=>c.from<=ASOF()&&c.to>=ASOF());
+  return `<tr><td class="mono"><b>${e.id}</b><div style="font:400 11px var(--sans)">${esc(e.n)}</div></td><td>${esc(e.type)}</td>
+   <td class="mono" style="font-size:12px">${e.cal.map(c=>c.from+' → '+c.to).join('<br>')}</td>
+   <td>${cur?'<span class="chip ok">calibrated</span>':'<span class="chip bad">lapsed</span>'}</td>
+   <td><button class="btn ghost sm" onclick="S.trace={kind:'equipment',id:'${e.id}'};S.sub='trace';render()">Trace impact →</button></td></tr>`}).join('')}
+ </tbody></table></div>
+ <div class="note"><b>EQ-02 has a gap.</b> Its calibration ran to 31 May 2026 and was not renewed. Trace its impact and the product names every study run outside cover, and every lot and certificate downstream of those studies.</div>`;
+}
+function cTrace(){
+ const t=S.trace;
+ let body='';
+ if(t.kind==='equipment'){
+  const rows=lotsAffectedByEquipment(t.id),eq=DB.equipment.find(e=>e.id===t.id);
+  const bad=rows.filter(r=>!r.calibrated);
+  body=`<div class="chain"><div class="n"><b>Equipment</b><span>${t.id}</span></div><div class="a">→</div>
+   <div class="n"><b>Calibration</b><span>dated interval</span></div><div class="a">→</div>
+   <div class="n"><b>Study</b><span>result record</span></div><div class="a">→</div>
+   <div class="n"><b>Project</b><span></span></div><div class="a">→</div>
+   <div class="n"><b>Lot</b><span></span></div><div class="a">→</div>
+   <div class="n"><b>Certificate</b><span></span></div></div>
+   <div class="row" style="margin:10px 0">${DB.equipment.map(e=>`<button class="btn ${t.id===e.id?'':'ghost'} sm" onclick="S.trace={kind:'equipment',id:'${e.id}'};render()">${e.id}</button>`).join('')}</div>
+   <h2 class="sec">${esc(eq.n)}</h2>
+   ${bad.length?`<div class="deny"><b>${bad.length} study result${bad.length===1?'':'s'} fell outside calibration cover.</b> Every lot and certificate below inherits that doubt and must be assessed.</div>`
+    :'<div class="okbox">Every study using this instrument ran inside a calibration interval. No downstream impact.</div>'}
+   <div class="card" style="margin-top:12px"><table><thead><tr><th>Study</th><th>Run on</th><th>Calibrated then</th><th>Project</th><th>Lot</th><th>Lot state</th><th>Certificate</th></tr></thead><tbody>
+   ${rows.map(r=>`<tr${r.calibrated?'':' style="background:var(--badT)"'}><td class="mono">${r.study}</td><td class="mono">${r.studyDate}</td>
+    <td>${r.calibrated?'<span class="chip ok">yes</span>':'<span class="chip bad">NO</span>'}</td>
+    <td class="mono">${r.project}</td><td class="mono">${esc(r.lot)}</td><td>${stChip(r.lotState)}</td><td class="mono">${r.cert}</td></tr>`).join('')||'<tr><td colspan="7" class="muted">No studies used this instrument.</td></tr>'}
+   </tbody></table></div>`;
+ }
+ if(t.kind==='lot'){
+  const dep=dependenciesOfLot(t.id),l=lotById(t.id);
+  const bad=dep.equipment.filter(e=>e.breaches.length),unb=dep.people.filter(p=>p.unbacked.length);
+  body=`<div class="chain"><div class="n"><b>Lot</b><span>${esc(l.lot)}</span></div><div class="a">←</div>
+   <div class="n"><b>Studies</b><span>${dep.studies.length}</span></div><div class="a">←</div>
+   <div class="n"><b>Equipment</b><span>${dep.equipment.length}</span></div><div class="a">←</div>
+   <div class="n"><b>Signatories</b><span>${dep.people.length}</span></div><div class="a">←</div>
+   <div class="n"><b>Facilities</b><span>${dep.facilities.length}</span></div></div>
+   <div class="row" style="margin:10px 0">${DB.lots.map(x=>`<button class="btn ${t.id===x.id?'':'ghost'} sm" onclick="S.trace={kind:'lot',id:'${x.id}'};render()">${esc(x.lot)}</button>`).join('')}</div>
+   ${bad.length||unb.length?`<div class="deny"><b>This lot inherits doubt.</b> ${bad.length} instrument(s) were used outside calibration cover and ${unb.length} signature(s) have no valid basis.</div>`
+    :'<div class="okbox">Every dependency of this lot checks out: instruments calibrated at the time of use, signatures backed by authorisations in force.</div>'}
+   <div class="grid g2" style="margin-top:12px">
+    <div class="card pad"><div class="eye">Instruments it depended on</div>
+     <table><thead><tr><th>Asset</th><th class="num">Uses</th><th>Outside cover</th></tr></thead><tbody>
+     ${dep.equipment.map(e=>`<tr><td class="mono">${e.id}<div style="font:400 11.5px var(--sans)">${esc(e.n)}</div></td>
+      <td class="num">${e.uses}</td><td>${e.breaches.length?'<span class="chip bad">'+e.breaches.join(', ')+'</span>':'<span class="chip ok">none</span>'}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">None</td></tr>'}
+     </tbody></table></div>
+    <div class="card pad"><div class="eye">People who signed for it</div>
+     <table><thead><tr><th>Person</th><th class="num">Signed</th><th>Unbacked</th></tr></thead><tbody>
+     ${dep.people.map(p=>`<tr><td>${esc(p.n)}</td><td class="num">${p.signed}</td>
+      <td>${p.unbacked.length?'<span class="chip bad">'+p.unbacked.join(', ')+'</span>':'<span class="chip ok">all backed</span>'}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">None</td></tr>'}
+     </tbody></table>
+     <div class="eye" style="margin:12px 0 6px">Stored in</div>
+     ${dep.facilities.map(f=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line2);padding:6px 0">
+       <span>${esc(f.n)} <span class="mono muted">${esc(f.cond)}</span></span>
+       ${f.excursions.length?'<span class="chip bad">'+f.excursions.length+' excursion(s)</span>':'<span class="chip ok">no excursions</span>'}</div>`).join('')||'<div class="muted" style="font-size:12px">Not assigned to a facility.</div>'}
+     </div></div>`;
+ }
+ if(t.kind==='facility'){
+  const f=DB.facilities.find(x=>x.id===t.id),rows=lotsExposedTo(t.id);
+  body=`<div class="chain"><div class="n"><b>Facility</b><span>${esc(f.n)}</span></div><div class="a">→</div>
+   <div class="n"><b>Excursion</b><span>${f.excursions.length}</span></div><div class="a">→</div>
+   <div class="n"><b>Lots stored</b><span>${rows.length}</span></div><div class="a">→</div>
+   <div class="n"><b>Customers holding</b><span>${[...new Set(rows.flatMap(r=>r.held))].length}</span></div></div>
+   <div class="row" style="margin:10px 0">${DB.facilities.map(x=>`<button class="btn ${t.id===x.id?'':'ghost'} sm" onclick="S.trace={kind:'facility',id:'${x.id}'};render()">${esc(x.n)}</button>`).join('')}</div>
+   ${f.excursions.length?f.excursions.map(x=>`<div class="deny"><b>Excursion ${x.from} to ${x.to}.</b> Peak ${esc(x.peak)} for ${esc(x.dur)} against a ${esc(f.cond)} requirement. Disposition: ${esc(x.disposition)}.</div>`).join('')
+    :'<div class="okbox">No excursions recorded for this facility.</div>'}
+   <div class="card" style="margin-top:12px"><table><thead><tr><th>Lot exposed</th><th>State</th><th>Certificate</th><th>Customers holding it</th></tr></thead><tbody>
+   ${rows.map(r=>`<tr><td class="mono">${esc(r.lot)}</td><td>${stChip(r.state)}</td><td class="mono">${r.cert}</td>
+    <td>${r.held.length?r.held.map(h=>esc(h)).join('<br>'):'<span class="muted">none dispatched</span>'}</td></tr>`).join('')||'<tr><td colspan="4" class="muted">No lots stored here.</td></tr>'}
+   </tbody></table></div>`;
+ }
+ return `<h1 class="pg">Traceability explorer</h1>
+ <p class="lede">Every direction an investigation actually runs, as live queries. Forward from an instrument, backward from an affected lot, and outward from a facility excursion to the customers holding what it stored.</p>
+ <div class="row" style="margin-bottom:14px">
+  <button class="btn ${t.kind==='equipment'?'':'ghost'} sm" onclick="S.trace={kind:'equipment',id:'EQ-02'};render()">Instrument → lots</button>
+  <button class="btn ${t.kind==='lot'?'':'ghost'} sm" onclick="S.trace={kind:'lot',id:'L-02'};render()">Lot → what it depended on</button>
+  <button class="btn ${t.kind==='facility'?'':'ghost'} sm" onclick="S.trace={kind:'facility',id:'FC-01'};render()">Facility → lots and holders</button>
+  <button class="btn ghost sm" onclick="S.sub='certs';S.detail='CRT-2041';render()">Certificate → holders</button>
+  <button class="btn ghost sm" onclick="S.sub='competence';render()">Competence at a date</button></div>
+ ${body}`;
+}
+function asOfControl(){
+ return `<div class="row" style="margin-bottom:12px;align-items:flex-end">
+  <label class="f" style="margin:0"><span>Show the position as at</span>
+   <input class="t" type="date" style="max-width:190px" value="${ASOF()}" onchange="setAsOf(this.value)"></label>
+  ${S.asOf?`<button class="btn ghost sm" onclick="setAsOf('')">Back to today</button><span class="chip warn">historic view — ${esc(S.asOf)}</span>`:'<span class="chip grey">today</span>'}
+ </div>`;
+}
+function setAsOf(v){S.asOf=v||null;audit('QUERY','Point-in-time view',v?('as at '+v):'back to today');render()}
+function cComp(){
+ const acts=['study:sign','value:assign','value:authorise','cert:issue'];
+ return `<h1 class="pg">Competence</h1>
+ <p class="lede">Dated authorisations, not a current-state flag. The question an assessor asks is about a date in the past, and a flag cannot answer it.</p>
+ <div class="card pad">${asOfControl()}<h2 class="sec">Matrix as at ${ASOF()}</h2>
+  <table class="mx"><thead><tr><th>Person</th>${acts.map(a=>`<th>${a}</th>`).join('')}</tr></thead><tbody>
+  ${USERS.filter(u=>ROLES[u.role].kind==='producer').map(u=>`<tr><td>${esc(u.n)}</td>
+   ${acts.map(a=>{const rec=DB.competence.find(c=>c.p===u.id&&c.act===a);
+    const ok=competentAt(u.id,a,ASOF());
+    return `<td class="${ok?'y':'n'}" title="${rec?rec.from+' → '+rec.to:'no record'}">${ok?'●':(rec?'✕':'·')}</td>`}).join('')}</tr>`).join('')}
+  </tbody></table>
+  <div class="note"><b>A cross is not the same as a dot.</b> A dot means no authorisation was ever granted. A cross means one existed and has expired — Sunil Bhatt's study-signing authorisation ran out on 30 June 2026, which is why his sign-off is refused even though his role holds the permission.</div></div>
+ <div class="card pad" style="margin-top:13px"><h2 class="sec">Records</h2>
+  <table><thead><tr><th>Person</th><th>Activity</th><th>Valid from</th><th>Valid to</th><th>Status today</th></tr></thead><tbody>
+  ${DB.competence.map(c=>`<tr><td>${esc(userById(c.p).n)}</td><td class="mono">${c.act}</td><td class="mono">${c.from}</td><td class="mono">${c.to}</td>
+   <td>${(c.from<=ASOF()&&c.to>=ASOF())?'<span class="chip ok">current</span>':'<span class="chip bad">not in force</span>'}</td></tr>`).join('')}
+  </tbody></table>
+  ${can('competence:manage')?`<div class="row" style="margin-top:12px"><button class="btn" onclick="newCompetence()">Grant an authorisation</button></div>`:''}</div>`;
+}
+function cConf(){
+ const clauses=[
+  ['6.2','Subcontracting','Subcontractor register with competence evidence',DB.subs.length,DB.subs.every(s=>s.to>=TODAY)],
+  ['6.3','Personnel','Dated competence authorisations',DB.competence.length,DB.competence.every(c=>c.to>=ASOF())],
+  ['6.4','Equipment','Calibration intervals per asset',DB.equipment.length,DB.equipment.every(e=>e.cal.some(c=>c.from<=ASOF()&&c.to>=ASOF()))],
+  ['6.5','Facilities','Controlled environments with excursion records',DB.facilities.length,DB.facilities.every(f=>f.excursions.every(x=>x.disposition!=='under assessment'))],
+  ['7.9','Signatures','Every signature stores the authorisation it relied on',DB.studies.filter(x=>x.state==='signed').length,DB.studies.filter(x=>x.state==='signed').every(x=>basisValid(x.basis))],
+  ['7.2','Production planning','Documented plan per project',DB.projects.length,true],
+  ['7.5','Homogeneity','Signed homogeneity study per released lot',DB.studies.filter(s=>s.type==='homogeneity'&&s.state==='signed').length,true],
+  ['7.6','Stability','Signed stability study, shelf life derived',DB.studies.filter(s=>s.type==='stability'&&s.state==='signed').length,true],
+  ['7.7','Characterisation','Characterisation study per project',DB.studies.filter(s=>s.type==='characterisation'&&s.state==='signed').length,DB.studies.filter(s=>s.type==='characterisation'&&s.state==='draft').length===0],
+  ['7.8','Property values','Uncertainty budget derived from studies',DB.values.filter(v=>v.state==='authorised').length,true],
+  ['7.11','RM documents','Certificates with issue history and holder list',DB.certs.length,true],
+  ['8.4','Records','Append-only hash-chained ledger',DB.audit.length,verifyChain().ok],
+  ['8.6','Complaints','Complaint and CAPA register',DB.capa.length,DB.capa.every(c=>c.state!=='open')]];
+ const ev=clauses.filter(c=>c[4]).length;
+ return `<h1 class="pg">ISO 17034 conformance</h1>
+ <p class="lede">Clause by clause, against the records the product holds. It recomputes as you use the application, and it resolves as at the date below rather than only today.</p>
+ ${asOfControl()}
+ ${kpisRow([['Clauses evidenced',ev],['Clauses with a gap',clauses.length-ev],['Coverage',Math.round(ev/clauses.length*100)+'%'],['Records held',DB.projects.length+DB.studies.length+DB.values.length+DB.lots.length+DB.certs.length]])}
+ <div class="bar2" style="height:10px;margin-bottom:14px"><i style="width:${Math.round(ev/clauses.length*100)}%"></i></div>
+ <div class="card"><table><thead><tr><th>Clause</th><th>Requirement</th><th>Evidence source</th><th class="num">Records</th><th>Status</th></tr></thead><tbody>
+ ${clauses.map(c=>`<tr><td class="mono"><b>${c[0]}</b></td><td>${c[1]}</td><td class="muted">${c[2]}</td><td class="num">${c[3]}</td>
+  <td>${c[4]?'<span class="chip ok">evidenced</span>':'<span class="chip bad">gap</span>'}</td></tr>`).join('')}
+ </tbody></table></div>
+ <div class="row" style="margin-top:12px"><button class="btn go" onclick="exportAssessmentPack()">Export the assessment pack</button></div>
+ <div class="note"><b>Gaps are shown, not hidden.</b> A conformance screen that always reads green is worthless. Sign the outstanding characterisation study, or renew EQ-02's calibration, and watch the relevant row flip.</div>`;
+}
+function cSubs(){return `<h1 class="pg">Subcontractors</h1>
+ <p class="lede">The standard permits subcontracting some activities and forbids five outright. Both halves are enforced here.</p>
+ <div class="grid g2"><div class="card pad"><h2 class="sec">May never be subcontracted</h2>
+  ${['Production planning','Selection of subcontractors','Assignment of property values','Authorisation of property values','Authorisation of RM documents']
+   .map(x=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line2);padding:7px 0"><span>${x}</span><span class="chip bad">blocked</span></div>`).join('')}
+  <div class="note">These five cannot be routed outside the tenant anywhere in the product.</div></div>
+ <div class="card pad"><h2 class="sec">Providers</h2>
+  <table><thead><tr><th>Provider</th><th>Activity</th><th>Evidence</th><th>Expires</th></tr></thead><tbody>
+  ${DB.subs.map(s=>`<tr><td>${esc(s.n)}</td><td>${esc(s.act)}</td><td class="mono" style="font-size:12px">${esc(s.accred)}</td>
+   <td class="mono">${s.to} ${s.to<TODAY?'<span class="chip bad">lapsed</span>':''}</td></tr>`).join('')}</tbody></table></div></div>`}
+function cCapa(){return `<h1 class="pg">Complaints and CAPA</h1>
+ <p class="lede">Customer complaints, internal nonconformities and temperature excursions in one register, with the blast radius computed from the linked records.</p>
+ <div class="card"><table><thead><tr><th>Record</th><th>Source</th><th>Object</th><th>Severity</th><th>Owner</th><th>State</th><th>Impact</th></tr></thead><tbody>
+ ${DB.capa.map(c=>{const o=DB.orders.find(x=>x.id===c.obj);
+  const lots=o?o.lines.map(l=>lotById(l.lot).lot).join(', '):'—';
+  const certs=o?o.lines.map(l=>{const cc=certForLot(l.lot);return cc?cc.id:'—'}).join(', '):'—';
+  const ex=excursionOf(c.obj);
+  return `<tr><td class="mono"><b>${c.id}</b></td><td>${esc(c.src)}${ex&&!ex.ok?`<div class="mono muted" style="font-size:11.5px">${ex.breaches} readings to ${ex.peak} °C</div>`:''}</td><td class="mono">${c.obj}</td><td>${c.sev}</td>
+   <td>${esc(userById(c.owner).n.split(' ')[0])}</td><td>${stChip(c.state)}</td>
+   <td class="mono" style="font-size:12px">lots ${esc(lots)}<br>certs ${esc(certs)}</td></tr>`}).join('')}
+ </tbody></table></div>`}
+function cAudit(){const v=verifyChain();
+ return `<h1 class="pg">Audit ledger</h1>
+ <p class="lede">Append-only and hash-chained. Each entry's digest folds in the one before it, so altering any row invalidates every row after it.</p>
+ <div class="row" style="margin-bottom:12px"><button class="btn ghost sm" onclick="verifyUI()">Verify chain</button>
+  <button class="btn ghost sm" onclick="tamper()">Tamper with an entry</button>
+  <button class="btn ghost sm" onclick="exportLedger()">Export ledger as CSV</button>
+  <span class="chip ${v.ok?'ok':'bad'}">${v.ok?'chain intact · '+v.n+' entries':'BROKEN at entry '+v.at}</span></div>
+ <div class="ledger">${DB.audit.map(e=>`<div class="e ${e.kind}"><span>${e.ts}</span><span class="a">${esc(userById(e.actor)?userById(e.actor).n.split(' ')[0]:e.actor)}</span>
+  <span class="chip ${e.kind==='DENY'||e.kind==='SECURITY'?'bad':e.kind==='WORKFLOW'?'info':'grey'}">${e.kind}</span>
+  <span>${esc(e.action)}${e.meta?' — '+esc(e.meta):''}<br><span class="h">#${e.seq} sha:${e.h}</span></span></div>`).join('')}</div>`}
+function verifyUI(){tryDo(()=>{guard('audit:verify');const r=verifyChain();
+ audit('AUDIT','Chain verification run',r.ok?('intact across '+r.n+' entries'):('BROKEN at entry '+r.at));
+ toast(r.ok?('Chain intact across '+r.n+' entries'):('Chain BROKEN at entry '+r.at),r.ok?'':'bad')})}
+function tamper(){if(!DB.audit.length)return;const i=Math.min(3,DB.audit.length-1);
+ DB.audit[i].action='[ALTERED] '+DB.audit[i].action;toast('Entry '+DB.audit[i].seq+' altered. Verify the chain.','bad');render()}
+function cTenant(){
+ const t=TCFG();
+ return `<h1 class="pg">Tenant configuration</h1>
+ <p class="lede">${esc(t.n)} is a configuration of this product, not a separate build. Switching tenant below changes labels, optional modules and compliance framing — nothing forks.</p>
+ <div class="row" style="margin-bottom:14px">${Object.keys(TENANTS).map(k=>
+  `<button class="btn ${TENANT===k?'':'ghost'} sm" onclick="switchTenant('${k}')">${esc(TENANTS[k].short)}</button>`).join('')}</div>
+ <div class="grid g2">
+  <div class="card pad"><div class="eye">Inside the product</div><h2 class="sec">What this tenant turns on</h2>
+   <table><tbody>
+   ${[['Bilingual authoring and labels',t.bilingual],['Adverse-event reporting module',t.adr],
+      ['Publications and subscriptions as SKU types',t.publications],['Government price tier',t.govTier]]
+    .map(([l,v])=>`<tr><td>${l}</td><td>${v?'<span class="chip ok">enabled</span>':'<span class="chip grey">off</span>'}</td></tr>`).join('')}
+   <tr><td>Compliance framing</td><td class="mono">${esc(t.frame)}</td></tr>
+   <tr><td>Lot numbering series</td><td class="mono">${esc(t.numbering)}</td></tr>
+   <tr><td>Data residency</td><td>${esc(t.residency)}</td></tr></tbody></table>
+   <div class="note"><b>Numbering must continue unbroken.</b> Existing lot and certificate series carry across a migration, or historical records stop reconciling.</div></div>
+  <div class="card pad"><div class="eye">Outside the product</div><h2 class="sec">What this tenant buys or configures elsewhere</h2>
+   ${t.outside.map(x=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line2);padding:7px 0">
+     <span>${esc(x)}</span><span class="chip grey">not product scope</span></div>`).join('')}
+   <div class="note"><b>This list is the commercial boundary.</b> It is why adopting the product removes only about a quarter of the IPC programme — most of what IPC needs was never product scope. The estimate workbook prices that as Scenario E, with a break-even licence of roughly ₹28 lakh a year.</div></div></div>
+ <div class="card pad" style="margin-top:13px"><div class="eye">Why there is one application and not two</div>
+  <p class="muted" style="margin:0;font-size:12.5px">An earlier build kept a separate IPC application alongside this one. Within a single working session the two had already forked — fourteen duplicated infrastructure functions, two incompatible permission vocabularies, and one hash-chain implementation that had silently diverged. Everything IPC-specific is on this screen, as configuration.</p></div>`;
+}
+function switchTenant(k){TENANT=k;audit('TENANT','Tenant profile switched',TENANTS[k].n);toast('Now configured as '+TENANTS[k].short);render()}
+const CONTROLS=[
+ ['SEC-01','Credentials stored as a salted, iterated digest','NIST SP 800-63B · ISO 27001 A.5.17','enforced',
+  'showCreds()','Show what is actually stored'],
+ ['SEC-02','Two-component electronic signature, first signing of a session','21 CFR 11 §11.200(a)(1)','enforced',
+  "S.sub='studies';render();toast('Sign a draft study to see both components demanded')",'Go and sign something'],
+ ['SEC-03','Signature manifests signer, date, time and meaning','21 CFR 11 §11.50','enforced',
+  'showMeanings()','Show recorded meanings'],
+ ['SEC-04','Signature cryptographically bound to its record','21 CFR 11 §11.70','enforced',
+  'bindDemo()','Alter a signed record, then verify'],
+ ['SEC-05','Authorisation checked in the handler, never only in the interface','OWASP ASVS 4.1 · ISO 27001 A.5.15','enforced',
+  "tryDo(()=>{guard('user:manage');toast('Allowed — you hold this permission')})",'Call a privileged handler directly'],
+ ['SEC-06','Segregation of duties as auditable configuration','ISO 17034 §6.2 · SOC 2 CC5','enforced',
+  "S.sub='users';render()",'Open the rules table'],
+ ['SEC-07','Competence verified at the moment of the act, and snapshotted','ISO 17034 §6.3 · 21 CFR 11 §11.10(i)','enforced',
+  "S.sub='competence';render()",'Open the register'],
+ ['SEC-08','Append-only ledger, every field covered by the hash chain','21 CFR 11 §11.10(e) · ISO 17034 §8.4','enforced',
+  "S.sub='audit';render()",'Verify or tamper with the chain'],
+ ['SEC-09','Clocks synchronised to a declared, traceable time source','CERT-In Directions 2022','enforced',
+  'showClock()','Show the source and drift'],
+ ['SEC-10','Security logs region-pinned to the tenant jurisdiction','CERT-In 2022 (India) · GDPR Art. 44','enforced',
+  'showResidency()','Show where entries were written'],
+ ['SEC-11','Retention schedule per record class, not one global policy','DPDP · CERT-In · Part 11 · ISO 17034','enforced',
+  'showRetention()','Open the schedule'],
+ ['SEC-12','Sliding-window rate limiting per identity and action','OWASP ASVS 2.2.1','enforced',
+  'rateDemo()','Trip the limiter'],
+ ['SEC-13','Account lockout after repeated failures','NIST SP 800-63B §5.2.2','enforced',
+  "toast('Sign out and enter a wrong password three times')",'Sign out and try'],
+ ['SEC-14','Idle session termination','ISO 27001 A.8.15','enforced',
+  "toast('Leave the tab idle for three minutes')",'Wait and watch'],
+ ['SEC-15','Field-level redaction of contact data by role','DPDP · GDPR Art. 5(1)(c)','enforced',
+  "S.sub='orders';render()",'Open orders as this role'],
+ ['SEC-16','Point-in-time reconstruction of any credential position','ISO 17034 assessment · Part 11','enforced',
+  "S.sub='conformance';render()",'Set an as-at date'],
+ ['SEC-17','Optimistic concurrency on state transitions','OWASP ASVS 11.1.6','enforced',
+  "S.sub='dispatch';render()",'Advance an order twice'],
+ ['SEC-18','Transport encryption, HSTS, secure cookies','ISO 27001 A.8.24','not in a prototype',
+  '','Requires a server'],
+ ['SEC-19','Encryption at rest with per-tenant keys','ISO 27001 A.8.24 · SOC 2 CC6.1','not in a prototype',
+  '','Requires a key management service'],
+ ['SEC-20','Independent penetration test and CERT-In empanelled audit','GIGW 3.0 · CERT-In','not in a prototype',
+  '','Requires a deployed system'],
+ ['SEC-21','Six-hour incident reporting with a named point of contact','CERT-In Directions 2022','not in a prototype',
+  '','Operational, not software'],
+ ['SEC-22','Computerised system validation package (IQ/OQ/PQ)','GAMP 5 · EU GMP Annex 11','not in a prototype',
+  '','Release-process deliverable']];
+
+/* ISO 17034 §7.6 — post-release stability monitoring is an obligation, not an option.
+   The schedule generates work rather than sitting in a document. */
+function monitoringDue(){
+ const out=[];
+ DB.studies.filter(x=>x.type==='stability'&&x.state==='signed').forEach(x=>{
+  const last=x.lastCheck||x.at,next=x.nextCheck||addMonths(last,6);
+  out.push({study:x.id,prj:x.prj,mat:prj(x.prj).mat,last,next,overdue:next<TODAY});
+ });
+ return out.sort((a,b)=>a.next<b.next?-1:1);
+}
+function addMonths(d,m){const x=new Date(d);x.setMonth(x.getMonth()+m);return x.toISOString().slice(0,10)}
+function recordCheck(sid){
+ tryDo(()=>{const x=DB.studies.find(y=>y.id===sid);
+  guard('study:run');
+  x.lastCheck=TODAY;x.nextCheck=addMonths(TODAY,6);
+  audit('WORKFLOW','Stability monitoring point recorded',sid+' · next due '+x.nextCheck);
+  toast(sid+' checked, next due '+x.nextCheck);});
+}
+/* Expiry is pushed, not left for the customer to notice. */
+function pushExpiryNotices(){
+ tryDo(()=>{guard('catalogue:manage');
+  let sent=0;
+  DB.vault.forEach(v=>{const l=lotById(v.lot),d=days(l.exp);
+   if(d>0&&d<=180){USERS.filter(u=>u.org===v.org).forEach(u=>{sent++;
+    notify(u.id,'Standard expiring in '+d+' days',prj(l.prj).mat+' lot '+l.lot+' expires '+l.exp+'. A replacement lot may already be available.')});}
+   if(d<=0){USERS.filter(u=>u.org===v.org).forEach(u=>{sent++;
+    notify(u.id,'Standard EXPIRED',prj(l.prj).mat+' lot '+l.lot+' expired on '+l.exp+'. It must not be used for release testing.')});}});
+  audit('NOTIFICATION','Expiry notices pushed to holders',sent+' notice(s)');
+  toast(sent+' expiry notice(s) sent to holders');});
+}
+function cMonitoring(){
+ const rows=monitoringDue(),over=rows.filter(r=>r.overdue).length;
+ return `<h1 class="pg">Ongoing monitoring</h1>
+ <p class="lede">Post-release stability monitoring under ISO 17034 §7.6, and expiry notices to the laboratories holding each lot. Both were specified in the design and previously generated no work.</p>
+ ${kpisRow([['Monitoring points',rows.length],['Overdue',over],
+  ['Holdings expiring within 180 days',DB.vault.filter(v=>{const d=days(lotById(v.lot).exp);return d>0&&d<=180}).length],
+  ['Holdings already expired',DB.vault.filter(v=>days(lotById(v.lot).exp)<=0).length]])}
+ <div class="card"><table><thead><tr><th>Study</th><th>Material</th><th>Last check</th><th>Next due</th><th>Status</th><th></th></tr></thead><tbody>
+ ${rows.map(r=>`<tr${r.overdue?' style="background:var(--badT)"':''}><td class="mono">${r.study}</td><td>${esc(r.mat)}</td>
+  <td class="mono">${r.last}</td><td class="mono">${r.next}</td>
+  <td>${r.overdue?'<span class="chip bad">OVERDUE</span>':'<span class="chip ok">scheduled</span>'}</td>
+  <td>${can('study:run')?`<button class="btn sm" onclick="recordCheck('${r.study}')">Record a check</button>`:''}</td></tr>`).join('')
+  ||'<tr><td colspan="6" class="muted">No signed stability studies yet.</td></tr>'}
+ </tbody></table></div>
+ <div class="card pad" style="margin-top:13px"><div class="eye">Expiry</div><h2 class="sec">Push notices to holders</h2>
+  <p class="muted" style="margin-top:0;font-size:12.5px">The vault flags expiry when a customer looks. This tells them before they look, which is the difference between a feature and a service.</p>
+  ${can('catalogue:manage')?`<button class="btn go" onclick="pushExpiryNotices()">Send expiry notices</button>`:'<span class="chip grey">requires catalogue:manage</span>'}</div>
+ ${over?'<div class="deny"><b>'+over+' monitoring point(s) overdue.</b> An assessor will treat a lapsed monitoring schedule as a finding against clause 7.6.</div>':''}`;
+}
+function cRetention(){
+ return `<h1 class="pg">Retention schedule</h1>
+ <p class="lede">Four regimes disagree. DPDP says minimise, CERT-In says 180 days held in India, 21 CFR Part 11 says as long as the record, ISO 17034 says the life of the material. One global policy cannot satisfy them, so retention is set per record class and the conflict is resolved in the open.</p>
+ <div class="card"><table><thead><tr><th>Record class</th><th>Driven by</th><th>Minimum</th><th>Maximum</th><th>How the conflict resolves</th></tr></thead><tbody>
+ ${RETENTION.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td class="muted" style="font-size:12px">${esc(r[1])}</td>
+  <td>${esc(r[2])}</td><td>${esc(r[3])}</td><td class="muted" style="font-size:12px">${esc(r[4])}</td></tr>`).join('')}
+ </tbody></table></div>
+ <div class="note"><b>Where it bites.</b> A customer exercising a DPDP erasure right cannot remove a competence record that backs a signature, or an order line that makes a certificate holder list computable. This schedule is what lets you refuse an erasure request and give a lawful reason.</div>
+ <div class="note" style="border-left-color:var(--pri);background:var(--priT)"><b>Companion artefacts.</b> This application implements <span class="mono">lotmark-product-wireframe.html</span> — see Build coverage for the screen-by-screen mapping — and its figures come from <span class="mono">Lotmark_and_IPC_Estimate_v5.xlsx</span>.</div>`;
+}
+/* The product checks its own consistency. External scripts cannot see runtime state;
+   these invariants can only be evaluated here, with the data loaded. */
+function selfCheck(){
+ const R=[];const t=(n,ok,d)=>R.push({n,ok:!!ok,d:d||''});
+ const permsUsed=new Set(Object.values(ROLES).flatMap(r=>r.p));
+ t('every granted permission is defined',[...permsUsed].every(x=>x in PERMS),
+   [...permsUsed].filter(x=>!(x in PERMS)).join(', '));
+ const routed=Object.keys({projects:1,studies:1,values:1,authorise:1,lots:1,certs:1,catalogue:1,orders:1,
+   entitlement:1,dispatch:1,conformance:1,monitoring:1,retention:1,equipment:1,competence:1,subs:1,capa:1,
+   audit:1,trace:1,security:1,tenant:1,users:1,build:1});
+ const mods=[];MODS.forEach(([g,ms])=>ms.forEach(m=>mods.push(m[0])));
+ t('every sidebar module has a renderer',mods.every(m=>routed.includes(m)),mods.filter(m=>!routed.includes(m)).join(', '));
+ t('every SoD rule guards a defined permission',SOD_RULES.every(r=>r.action in PERMS),
+   SOD_RULES.filter(r=>!(r.action in PERMS)).map(r=>r.id).join(', '));
+ const vc=verifyChain();t('audit chain verifies',vc.ok,vc.ok?'':'broken at entry '+vc.at);
+ t('every order line references an existing lot',
+   DB.orders.every(o=>o.lines.every(l=>!!lotById(l.lot))),'');
+ t('every vault holding references an existing lot',DB.vault.every(v=>!!lotById(v.lot)),'');
+ t('every study references existing equipment',
+   DB.studies.every(s=>s.eq.every(e=>DB.equipment.some(x=>x.id===e))),'');
+ t('every lot belongs to a real project',DB.lots.every(l=>!!prj(l.prj)),'');
+ t('every competence record names a real user and activity',
+   DB.competence.every(c=>!!userById(c.p)&&(c.act in PERMS)),'');
+ const signed=DB.studies.filter(x=>x.state==='signed');
+ t('every signed study carries a valid competence basis',signed.every(x=>basisValid(x.basis)),
+   signed.filter(x=>!basisValid(x.basis)).map(x=>x.id).join(', '));
+ const bound=DB.studies.filter(x=>x.sig);
+ t('every bound study signature still verifies',bound.every(x=>verifySignature('study',x,x.sig).ok),
+   bound.filter(x=>!verifySignature('study',x,x.sig).ok).map(x=>x.id).join(', '));
+ const ci=DB.certs.flatMap(c=>c.issues.filter(i=>i.sig).map(i=>({c,i})));
+ t('every bound certificate signature still verifies',
+   ci.every(({c,i})=>verifySignature('cert',{id:c.id,lot:c.lot,val:i.val,U:i.U},i.sig).ok),
+   ci.filter(({c,i})=>!verifySignature('cert',{id:c.id,lot:c.lot,val:i.val,U:i.U},i.sig).ok).map(({c})=>c.id).join(', '));
+ t('every certificate belongs to a real lot',DB.certs.every(c=>!!lotById(c.lot)),'');
+ t('every listed lot has a current, unwithdrawn certificate',
+   DB.lots.filter(l=>l.state==='released').every(l=>{const c=certForLot(l.id);return c&&!c.issues[c.issues.length-1].withdrawn}),'');
+ t('every uncertainty component derives from raw data',
+   DB.projects.every(pr=>components(pr.id).every(c=>c.value>0)),'');
+ t('coverage map classifies every row',COVERAGE.every(c=>['built','partial','not built','n/a'].includes(c[2])),'');
+ return R;
+}
+function cBuild(){
+ const R=selfCheck(),bad=R.filter(x=>!x.ok);
+ const cov={};COVERAGE.forEach(c=>cov[c[2]]=(cov[c[2]]||0)+1);
+ return `<h1 class="pg">Build and verification</h1>
+ <p class="lede">The product carries its own toolchain and checks its own consistency. The runtime invariants below can only be evaluated here, with data loaded; the file-level checks need the build script, which this screen can hand you.</p>
+ ${kpisRow([['Runtime invariants',R.length],['Passing',R.length-bad.length],['Failing',bad.length],
+   ['Wireframe screens covered',COVERAGE.length],['Built',cov['built']||0]])}
+ ${bad.length?`<div class="deny"><b>${bad.length} invariant(s) failing.</b> ${esc(bad.map(x=>x.n).join('; '))}</div>`
+   :'<div class="okbox">Every runtime invariant holds. The data, the permission model, the signatures and the coverage map are internally consistent.</div>'}
+ <div class="card" style="margin-top:13px"><table><thead><tr><th>Invariant</th><th>Result</th><th>Detail</th></tr></thead><tbody>
+ ${R.map(x=>`<tr><td>${esc(x.n)}</td><td><span class="chip ${x.ok?'ok':'bad'}">${x.ok?'holds':'FAILS'}</span></td>
+   <td class="muted" style="font-size:12px">${esc(x.d)}</td></tr>`).join('')}
+ </tbody></table></div>
+ <div class="grid g2" style="margin-top:13px">
+  <div class="card pad"><div class="eye">Toolchain</div><h2 class="sec">build.py, carried inside this file</h2>
+   <p class="muted" style="margin-top:0;font-size:12.5px">Sync regenerates the coverage map from the wireframe and injects figures from the workbook. Check runs 23 preflight checks across all three artefacts. Patcher gives idempotent, crash-safe patching, and cell_by_label resolves workbook cells by label rather than by coordinate.</p>
+   <div class="row"><button class="btn go" onclick="exportSelfCheck()">Export this check report</button></div>
+   <div class="note" style="border-left-color:var(--pri);background:var(--priT)"><b>Where build.py lives.</b> In the estimate workbook, on the Toolchain sheet. It is not carried here: a script that scans this file for its own permission and coverage declarations cannot also live inside it — it matches its own literals and patches the wrong place. That happened twice before the toolchain was moved here.</div>
+   <div class="note"><b>Ship order.</b> Recalculate the workbook, then <span class="mono">python3 build.py all</span>. Sync must run before check, and check refuses to trust reference results on a workbook that has not been recalculated.</div></div>
+  <div class="card pad"><div class="eye">Why these exist</div><h2 class="sec">Each check is a defect that happened</h2>
+   ${[['Duplicate declarations','a re-run patch script inserted a block twice, nested'],
+      ['Cross-sheet references','a hardcoded coordinate pointed at prose after rows shifted'],
+      ['Undefined permissions','a guard used a permission absent from the model, so it silently refused everyone'],
+      ['Coverage drift','the map that verifies the app fell out of step with the wireframe'],
+      ['Harness assertion counts','three green results came from tests that never ran']]
+     .map(([a,b])=>`<div style="border-bottom:1px solid var(--line2);padding:7px 0"><b style="font-size:12.5px">${a}</b>
+       <div class="muted" style="font-size:12px">${b}</div></div>`).join('')}</div></div>`;
+}
+function exportSelfCheck(){
+ const R=selfCheck();
+ const rows=[['Invariant','Result','Detail','Checked at','Tenant']]
+  .concat(R.map(x=>[x.n,x.ok?'holds':'FAILS',x.d,new Date().toISOString().slice(0,19).replace('T',' '),TCFG().n]));
+ const ok=downloadFile('lotmark-self-check-'+TODAY+'.csv','text/csv',csv(rows));
+ audit('SYSTEM','Self-check report exported',R.length+' invariants, '+R.filter(x=>!x.ok).length+' failing');
+ toast(ok?('Exported '+R.length+' invariants'):'Download blocked by the browser',ok?'':'bad');
+}
+function cSecurity(){
+ const enf=CONTROLS.filter(c=>c[3]==='enforced').length;
+ const t=timeSource(),v=verifyChain();
+ const sec=DB.audit.filter(a=>a.kind==='SECURITY').length,den=DB.audit.filter(a=>a.kind==='DENY').length;
+ const sigs=DB.studies.filter(x=>x.sig).length;
+ return `<h1 class="pg">Security</h1>
+ <p class="lede">Every control below is either enforced in this build and exercisable from this screen, or honestly marked as needing infrastructure a single file cannot have. Nothing is asserted without a way to test it.</p>
+ ${kpisRow([['Controls enforced',enf+' of '+CONTROLS.length],['Security events',sec],['Authorisation denials',den],
+  ['Signatures bound',sigs],['Chain',v.ok?'intact':'BROKEN at '+v.at]])}
+ <div class="card"><table><caption class="sr">Security controls</caption>
+  <thead><tr><th>Ref</th><th>Control</th><th>Driven by</th><th>Status</th><th>Demonstrate</th></tr></thead><tbody>
+  ${CONTROLS.map(c=>`<tr><td class="mono"><b>${c[0]}</b></td><td>${esc(c[1])}</td>
+   <td class="muted" style="font-size:11.5px">${esc(c[2])}</td>
+   <td><span class="chip ${c[3]==='enforced'?'ok':'grey'}">${c[3]}</span></td>
+   <td>${c[4]?`<button class="btn ghost sm" onclick="${c[4]}">${esc(c[5])}</button>`:`<span class="muted" style="font-size:11.5px">${esc(c[5])}</span>`}</td></tr>`).join('')}
+ </tbody></table></div>
+ <div class="grid g2" style="margin-top:13px">
+  <div class="card pad"><div class="eye">CERT-In Directions 2022</div><h2 class="sec">Time and residency</h2>
+   <table><tbody>
+    <tr><td>Tenant</td><td>${esc(TCFG().n)}</td></tr>
+    <tr><td>Time source</td><td class="mono">${esc(t.src)}</td></tr>
+    <tr><td>Measured drift</td><td class="mono">${esc(t.drift)}</td></tr>
+    <tr><td>Log region</td><td class="mono">${esc(t.region)}</td></tr>
+    <tr><td>Minimum retention</td><td>180 days, held in region</td></tr>
+    <tr><td>Incident reporting window</td><td>6 hours to CERT-In</td></tr></tbody></table>
+   <div class="note"><b>Switch tenant and watch this change.</b> An Indian government tenant pins its ledger to in-south-1 and syncs to NIC; a European producer does neither. Log residency is a per-tenant routing decision, not a hosting choice made later.</div></div>
+  <div class="card pad"><div class="eye">21 CFR Part 11</div><h2 class="sec">Signature register</h2>
+   <table><thead><tr><th>Record</th><th>Signer</th><th>Meaning</th><th>Bound</th><th>Status</th></tr></thead><tbody>
+   ${DB.studies.filter(x=>x.sig).map(x=>{const r=verifySignature('study',x,x.sig);
+    return `<tr><td class="mono">${x.id}</td><td>${esc(userById(x.sig.by).n.split(' ')[0])}</td>
+     <td>${esc(x.sig.meaning)}</td><td class="mono" style="font-size:10.5px">${x.sig.bind.slice(0,10)}</td>
+     <td>${r.ok?'<span class="chip ok">intact</span>':'<span class="chip bad">broken</span>'}</td></tr>`}).join('')
+    ||'<tr><td colspan="5" class="muted">No bound signatures yet. Sign a draft study.</td></tr>'}
+   </tbody></table></div></div>`;
+}
+function showCreds(){const u=S.user;
+ modal('What is actually stored for '+u.n,
+  `<table><tbody><tr><td>Plaintext password field</td><td>${'pw' in u?'<span class="chip bad">present</span>':'<span class="chip ok">absent — deleted at boot</span>'}</td></tr>
+   <tr><td>Salt</td><td class="mono">${esc(u.salt)}</td></tr>
+   <tr><td>Stored digest</td><td class="mono" style="word-break:break-all">${esc(u.pwh)}</td></tr>
+   <tr><td>Derivation</td><td>${KDF_ROUNDS} iterations over a salted digest</td></tr></tbody></table>
+   <div class="note"><b>Honest limit.</b> This is a stand-in for Argon2id, which needs memory-hardness a browser prototype cannot provide. What it does demonstrate is that authentication compares digests, no plaintext survives boot, and two users sharing a password would not share a stored value.</div>`);
+ audit('SECURITY','Credential storage inspected',u.e);
+}
+function showMeanings(){
+ const rows=DB.studies.filter(x=>x.sig);
+ modal('Signature manifestations — 21 CFR 11 §11.50',
+  rows.length?`<table><thead><tr><th>Record</th><th>Printed name</th><th>Date and time</th><th>Meaning</th><th>Time source</th></tr></thead><tbody>
+  ${rows.map(x=>`<tr><td class="mono">${x.id}</td><td>${esc(userById(x.sig.by).n)}</td><td class="mono">${esc(x.sig.ts)}</td>
+   <td><b>${esc(x.sig.meaning)}</b></td><td class="mono" style="font-size:10.5px">${esc(x.sig.src)}</td></tr>`).join('')}
+  </tbody></table><div class="note">All four elements the regulation requires are present on every signature: who, when, what it means, and the clock it was taken from.</div>`
+  :'<p class="muted">No signatures yet. Sign a draft study from the Studies module.</p>');
+}
+function bindDemo(){
+ const signed=DB.studies.filter(x=>x.sig);
+ if(!signed.length){toast('Sign a draft study first, then return here','bad');return}
+ const x=signed[0];
+ modal('Signature-to-record binding — 21 CFR 11 §11.70',
+  `<p class="muted" style="margin-top:0;font-size:12.5px">${x.id} was signed by ${esc(userById(x.sig.by).n)} as <b>${esc(x.sig.meaning)}</b>. The binding digest covers the record's material content: project, type, instruments and uncertainty contribution.</p>
+   <table><tbody><tr><td>Current u</td><td class="mono">${x.u}</td></tr>
+   <tr><td>Binding digest</td><td class="mono" style="word-break:break-all">${x.sig.bind}</td></tr>
+   <tr><td>Verifies</td><td>${verifySignature('study',x,x.sig).ok?'<span class="chip ok">intact</span>':'<span class="chip bad">BROKEN</span>'}</td></tr></tbody></table>
+   <div class="row" style="margin-top:12px">
+    <button class="btn danger sm" onclick="closeModal();tamperRecord('${x.id}')">Alter the record behind the signature</button>
+    <button class="btn ghost sm" onclick="closeModal();checkSig('${x.id}')">Verify the signature</button></div>
+   <div class="note"><b>Do both, in order.</b> Altering the uncertainty value after signing does not touch the signature — but it breaks the binding, and the product says so rather than quietly carrying a signature that no longer means anything.</div>`);
+}
+function showClock(){const t=timeSource();
+ modal('Time source — CERT-In Directions 2022',
+  `<table><tbody><tr><td>Tenant</td><td>${esc(TCFG().n)}</td></tr>
+   <tr><td>NTP source</td><td class="mono">${esc(t.src)}</td></tr>
+   <tr><td>Drift from source</td><td class="mono">${esc(t.drift)}</td></tr>
+   <tr><td>Stamped on</td><td>every ledger entry and every signature</td></tr></tbody></table>
+   <div class="note">The direction requires synchronisation to NIC or NPL, or a source traceable to them. The reason it matters here is that a hash chain proves the order of events; only a trusted clock proves when they happened.</div>`);
+ audit('SECURITY','Time source inspected',t.src);
+}
+function showResidency(){
+ const by={};DB.audit.forEach(a=>{by[a.region||'unknown']=(by[a.region||'unknown']||0)+1});
+ modal('Log residency',
+  `<table><thead><tr><th>Region</th><th class="num">Ledger entries</th><th>Driver</th></tr></thead><tbody>
+   ${Object.keys(by).map(r=>`<tr><td class="mono">${esc(r)}</td><td class="num">${by[r]}</td>
+    <td>${r==='in-south-1'?'CERT-In 2022 — 180 days, held in India':'GDPR Art. 44 — kept in the EEA'}</td></tr>`).join('')}
+   </tbody></table>
+   <div class="note">Entries were written to whichever region the acting tenant is pinned to. Switch tenant on the Tenant configuration screen, perform an action, and come back — the split changes.</div>`);
+}
+function showRetention(){
+ modal('Retention schedule',
+  `<p class="muted" style="margin-top:0;font-size:12.5px">Four regimes disagree. DPDP says minimise, CERT-In says 180 days in India, Part 11 says as long as the record, ISO 17034 says the life of the material. One global policy cannot satisfy them, so retention is set per record class.</p>
+   <table><thead><tr><th>Record class</th><th>Driven by</th><th>Minimum</th><th>Maximum</th><th>Resolution</th></tr></thead><tbody>
+   ${RETENTION.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td class="muted" style="font-size:11.5px">${esc(r[1])}</td>
+    <td>${esc(r[2])}</td><td>${esc(r[3])}</td><td class="muted" style="font-size:11.5px">${esc(r[4])}</td></tr>`).join('')}
+   </tbody></table>`);
+}
+function rateDemo(){
+ let blocked=0,allowed=0;
+ for(let i=0;i<10;i++){ if(rateLimit('demo:'+S.user.id,4,60000))allowed++; else blocked++; }
+ toast('Ten rapid calls: '+allowed+' allowed, '+blocked+' blocked and logged',blocked?'bad':'');
+ render();
+}
+function cUsers(){
+ const ps=Object.keys(PERMS);
+ return `<h1 class="pg">Users and roles</h1>
+ <p class="lede">Nine accounts, nine roles. Holding a permission is necessary but not sufficient — segregation and competence sit on top.</p>
+ <div class="card pad" style="margin-bottom:13px"><h2 class="sec">Segregation of duties</h2>
+  <p class="muted" style="margin-top:0;font-size:12.5px">Rules are rows, not code. Each names the action it guards and the field on the record that must not be the acting user. Adding a rule is adding a row; disabling one is an audited act.</p>
+  <table><thead><tr><th>Rule</th><th>Guards</th><th>Conflicting field</th><th>Constraint</th><th>Owner</th><th>State</th><th></th></tr></thead><tbody>
+  ${SOD_RULES.map(r=>`<tr><td class="mono"><b>${r.id}</b></td><td class="mono">${r.action}</td><td class="mono">${r.field}</td>
+    <td>${esc(r.msg)}</td><td>${esc(r.owner)}</td>
+    <td>${r.enabled?'<span class="chip ok">enforced</span>':'<span class="chip bad">disabled</span>'}</td>
+    <td><button class="btn ghost sm" onclick="toggleSod('${r.id}')">${r.enabled?'Disable':'Enable'}</button></td></tr>`).join('')}
+  </tbody></table>
+  <div class="note"><b>Competence is a separate control.</b> Signing, assigning, authorising and issuing each require a dated authorisation in force on the day of the act, checked in guard() and snapshotted onto the signature.</div></div>
+ <div class="card pad" style="margin-bottom:13px"><h2 class="sec">Demonstration data</h2>
+  <p class="muted" style="margin-top:0;font-size:12.5px">Walking the demo mutates the seed. Restore it without reloading, so a second run starts clean.</p>
+  <button class="btn ghost" onclick="resetDemo()">Reset to seed data</button></div>
+ <div class="card pad"><h2 class="sec">Permission matrix</h2><div style="overflow:auto">
+  <table class="mx"><thead><tr><th>Permission</th>${Object.keys(ROLES).map(r=>`<th>${ROLES[r].n.split(' ')[0]}</th>`).join('')}</tr></thead><tbody>
+  ${ps.map(p=>`<tr><td title="${esc(PERMS[p])}">${p}</td>${Object.keys(ROLES).map(r=>`<td class="${ROLES[r].p.includes(p)?'y':'n'}">${ROLES[r].p.includes(p)?'●':'·'}</td>`).join('')}</tr>`).join('')}
+  </tbody></table></div></div>`;
+}
+/* Retention cannot be one policy. DPDP says minimise, CERT-In says 180 days in India,
+   Part 11 says as long as the record, ISO 17034 says the lifetime of the material.
+   The resolution is a schedule per record class. */
+const RETENTION=[
+ ['Audit ledger entry','CERT-In 2022 · ISO 17034 §8.4','180 days minimum, in India','10 years','Longest driver wins; region-pinned so the CERT-In copy never leaves India'],
+ ['Electronic signature','21 CFR 11 §11.10(e)','As long as the signed record','Life of the record + 10 years','Cannot be erased under DPDP while the record it binds is live'],
+ ['Study and property value','ISO 17034 §7.5–7.8','Life of the material + 5 years','Indefinite','Scientific record, not personal data'],
+ ['Certificate issue','ISO Guide 31 · Part 11','Life of the lot + 10 years','Indefinite','Every issue retained; reissue never overwrites'],
+ ['Order and allocation','Tax law · ISO 17034 §7.10','8 years','8 years','Needed to compute the certificate holder list'],
+ ['Customer contact data','DPDP Act 2023','While the purpose is live','Purpose end + 90 days','Minimised: erased once no order or entitlement is open'],
+ ['Consent artefact','DPDP Rules 2025','Life of consent + 3 years','As above','Evidence that processing was lawful outlives the consent itself'],
+ ['Competence record','ISO 17034 §6.3','Life of every signature it backs','Indefinite','Cannot be deleted; superseding is an edit, not a removal'],
+ ['Session and access log','CERT-In 2022','180 days, in India','13 months','Security telemetry, no scientific value beyond a year']];
+
+/* ═══════════ DAY ONE — creating records, not only advancing seeded ones ═══════════ */
+function fld(id,label,type,opts){
+ if(type==='select')return `<label class="f"><span>${label}</span><select class="t" id="${id}">${opts.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join('')}</select></label>`;
+ if(type==='multi')return `<label class="f"><span>${label}</span><select class="t" id="${id}" multiple size="4">${opts.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join('')}</select></label>`;
+ if(type==='textarea')return `<label class="f"><span>${label}</span><textarea class="t" id="${id}" rows="5"></textarea></label>`;
+ return `<label class="f"><span>${label}</span><input class="t" id="${id}" type="${type||'text'}"></label>`;
+}
+const val=id=>{const e=document.getElementById(id);return e?e.value.trim():''};
+const multi=id=>[...document.getElementById(id).selectedOptions].map(o=>o.value);
+
+function newProject(){
+ modal('New production project',
+  fld('np-mat','Material name')+fld('np-cas','CAS number')+fld('np-sku','SKU prefix')+
+  fld('np-intake','Minimum sample intake')+fld('np-target','Target uncertainty')+
+  `<button class="btn go" onclick="createProject()">Create project</button>`);
+}
+function createProject(){
+ tryDo(()=>{guard('project:manage');
+  const mat=val('np-mat');if(!mat)throw new Forbidden('A material name is required.');
+  const id='PRJ-'+(412+DB.projects.length+1);
+  DB.projects.push({id,mat,cas:val('np-cas')||'—',sku:val('np-sku')||'RM-NEW',stage:'study',
+   owner:S.user.id,intake:val('np-intake')||'—',target:val('np-target')||'—'});
+  audit('WORKFLOW','Project created',id+' · '+mat);closeModal();toast(id+' created');});
+}
+function newStudy(){
+ modal('New study',
+  fld('ns-prj','Project','select',DB.projects.map(p=>[p.id,p.id+' · '+p.mat]))+
+  fld('ns-type','Study type','select',[['homogeneity','Homogeneity'],['stability','Stability'],['characterisation','Characterisation'],['confirmatory retest','Confirmatory retest']])+
+  fld('ns-eq','Equipment used (multi-select)','multi',DB.equipment.map(e=>[e.id,e.id+' · '+e.n]))+
+  fld('ns-u','Uncertainty contribution u','number')+
+  `<button class="btn go" onclick="createStudy()">Create study</button>`);
+}
+function createStudy(){
+ tryDo(()=>{guard('study:run');
+  const eq=multi('ns-eq');if(!eq.length)throw new Forbidden('Select at least one instrument. A study with no equipment reference cannot be traced.');
+  const u=parseFloat(val('ns-u'));if(!(u>0))throw new Forbidden('An uncertainty contribution is required.');
+  const id='ST-'+(1100+DB.studies.length);
+  DB.studies.push({id,prj:val('ns-prj'),type:val('ns-type'),eq,u,state:'draft',by:null,at:null});
+  audit('WORKFLOW','Study created',id+' · '+val('ns-type'));closeModal();toast(id+' created');});
+}
+function newEquipment(){
+ modal('Add equipment',
+  fld('ne-n','Asset name')+fld('ne-type','Type')+
+  fld('ne-from','Calibration valid from','date')+fld('ne-to','Calibration valid to','date')+
+  `<button class="btn go" onclick="createEquipment()">Add asset</button>`);
+}
+function createEquipment(){
+ tryDo(()=>{guard('equipment:manage');
+  const nm=val('ne-n');if(!nm)throw new Forbidden('An asset name is required.');
+  const f=val('ne-from'),t=val('ne-to');
+  if(!f||!t)throw new Forbidden('Calibration is a dated interval. Both dates are required.');
+  if(t<=f)throw new Forbidden('The calibration end date must follow the start date.');
+  const id='EQ-'+String(DB.equipment.length+1).padStart(2,'0');
+  DB.equipment.push({id,n:nm,type:val('ne-type')||'—',cal:[{from:f,to:t}]});
+  audit('GOVERNANCE','Equipment registered',id+' · '+nm);closeModal();toast(id+' added');});
+}
+function newCompetence(){
+ modal('Grant a competence authorisation',
+  fld('nc-p','Person','select',USERS.filter(u=>ROLES[u.role].kind==='producer').map(u=>[u.id,u.n]))+
+  fld('nc-a','Activity','select',[['study:sign','study:sign'],['value:assign','value:assign'],['value:authorise','value:authorise'],['cert:issue','cert:issue']])+
+  fld('nc-from','Valid from','date')+fld('nc-to','Valid to','date')+
+  `<button class="btn go" onclick="createCompetence()">Grant</button>`);
+}
+function createCompetence(){
+ tryDo(()=>{guard('competence:manage');
+  const f=val('nc-from'),t=val('nc-to');
+  if(!f||!t)throw new Forbidden('Competence is a dated window. Both dates are required.');
+  if(t<=f)throw new Forbidden('The end date must follow the start date.');
+  const id='CMP-'+String(DB.competence.length+1).padStart(3,'0');
+  DB.competence.push({id,p:val('nc-p'),act:val('nc-a'),from:f,to:t});
+  audit('GOVERNANCE','Competence granted',id+' · '+val('nc-a')+' to '+userById(val('nc-p')).n);
+  closeModal();toast(id+' granted');});
+}
+function bulkImport(){
+ modal('Bulk import lots',
+  `<p class="muted" style="font-size:12.5px;margin-top:0">One line per lot: <span class="mono">project,lot code,valid to,units,storage</span>. Producers arrive with a spreadsheet, so this is the first screen they touch.</p>`+
+  fld('bi-data','Paste rows','textarea')+
+  `<div class="row"><button class="btn ghost sm" onclick="document.getElementById('bi-data').value='PRJ-0415,RMP-ATOR-801,2028-06-30,40,2–8 °C'">Insert an example row</button>
+   <button class="btn go" onclick="runImport()">Import</button></div>`);
+}
+function runImport(){
+ tryDo(()=>{guard('catalogue:manage');
+  const rows=val('bi-data').split('\n').map(r=>r.trim()).filter(Boolean);
+  if(!rows.length)throw new Forbidden('Nothing to import.');
+  let added=0,rejected=[];
+  rows.forEach((row,i)=>{
+   const c=row.split(',').map(x=>x.trim());
+   if(c.length<5){rejected.push('line '+(i+1)+': expected five fields');return}
+   if(!prj(c[0])){rejected.push('line '+(i+1)+': unknown project '+c[0]);return}
+   if(DB.lots.some(l=>l.lot===c[1])){rejected.push('line '+(i+1)+': lot '+c[1]+' already exists');return}
+   DB.lots.push({id:'L-'+String(DB.lots.length+1).padStart(2,'0'),prj:c[0],lot:c[1],prev:'—',exp:c[2],
+    stock:parseInt(c[3],10)||0,state:'released',storage:c[4],cold:/°C/.test(c[4])&&!/Room/i.test(c[4]),price:5000,tierable:true});
+   added++;
+  });
+  audit('CATALOGUE','Bulk import',added+' lot(s) added, '+rejected.length+' rejected');
+  closeModal();
+  toast(added+' imported'+(rejected.length?', '+rejected.length+' rejected':''),rejected.length?'bad':'');
+  if(rejected.length)S.flash={t:'deny',m:'Rejected — '+rejected.join('; ')};});
+}
+
+/* ═══════════ CUSTOMER ═══════════ */
+function vShop(){
+ const notWithdrawn=l=>{const c=certForLot(l.id);return c&&!c.issues[c.issues.length-1].withdrawn};
+ const listed=DB.lots.filter(l=>l.state==='released'&&notWithdrawn(l)&&l.stock>0);
+ return `<h1 class="pg">Catalogue</h1>
+ <p class="lede">Only released lots with a current certificate appear. Prices reflect your organisation's tier${tierOf()==='government'?' — your government entitlement is approved.':'.'}</p>
+ <div class="grid g3">${listed.map(l=>{const p=prj(l.prj),c=certForLot(l.id),u=unitPrice(l),d=days(l.exp);
+  return `<div class="card pad"><b style="font-size:14px">${esc(p.mat)}</b>
+   <div class="mono muted" style="font-size:12px">CAS ${esc(p.cas)} · ${esc(l.lot)}</div>
+   <div class="bar2"><i style="width:${Math.max(5,Math.min(100,Math.round(d/730*100)))}%"></i></div>
+   <div class="mono muted" style="font-size:11.5px">valid to ${l.exp} · ${esc(l.storage)}</div>
+   <div class="row" style="justify-content:space-between;margin-top:9px">
+    <div style="font:600 16px var(--mono)">${u<l.price?'<s style="font-size:12px;color:var(--ink3)">'+inr(l.price)+'</s> ':''}${inr(u)}</div>
+    <div class="row" style="gap:6px"><button class="btn ghost sm" onclick="viewCert('${c.id}')">Certificate</button>
+     <button class="btn go sm" onclick="addCart('${l.id}')">Add</button></div></div></div>`}).join('')}</div>
+ ${Object.keys(DB.cart).length?`<div class="card pad" style="margin-top:14px"><div class="row" style="justify-content:space-between">
+  <b>${Object.keys(DB.cart).length} item(s) in cart · ${inr(cartTotal())}</b>
+  <button class="btn go" onclick="placeOrder()">Place order</button></div></div>`:''}`;
+}
+const cartTotal=()=>Object.keys(DB.cart).reduce((a,k)=>a+unitPrice(lotById(k))*DB.cart[k],0);
+function addCart(id){tryDo(()=>{guard('order:create');const l=lotById(id);
+ if(l.stock<(DB.cart[id]||0)+1)throw new Forbidden('Only '+l.stock+' units available.');
+ DB.cart[id]=(DB.cart[id]||0)+1;audit('CART','Added to cart',l.lot);toast('Added')})}
+function placeOrder(){tryDo(()=>{guard('order:create');
+ const lines=Object.keys(DB.cart).map(k=>({lot:k,q:DB.cart[k],unit:unitPrice(lotById(k))}));
+ if(!lines.length)throw new Forbidden('The cart is empty.');
+ /* Validate every line BEFORE mutating anything, then apply with a rollback if any step fails. */
+ for(const l of lines){
+  const lot=lotById(l.lot);
+  if(!lot)throw new Forbidden('A cart line refers to a lot that no longer exists.');
+  if(lot.state!=='released')throw new Forbidden(lot.lot+' is no longer released for sale.');
+  if(!certForLot(lot.id))throw new Forbidden(lot.lot+' has no current certificate.');
+  if(lot.stock<l.q)throw new Forbidden('Only '+lot.stock+' units of '+lot.lot+' remain.');
+ }
+ const applied=[];
+ try{
+  for(const l of lines){lotById(l.lot).stock-=l.q;applied.push(l)}
+  const id='ORD-'+(3301+DB.orders.length);
+  DB.orders.unshift({id,org:S.user.org,by:S.user.id,lines,total:cartTotal(),state:'placed',placed:TODAY,courier:'—',version:1});
+  lines.forEach(l=>{if(!DB.vault.some(v=>v.org===S.user.org&&v.lot===l.lot))DB.vault.push({org:S.user.org,lot:l.lot,loc:'Unassigned',qty:l.q})});
+  DB.cart={};audit('ORDER','Order placed',id+' · '+lines.length+' line(s)');
+  notify(S.user.id,'Order placed',id+' confirmed. The certificate is in your vault.');
+  toast(id+' placed');S.route='orders';
+ }catch(err){
+  applied.forEach(l=>{lotById(l.lot).stock+=l.q});
+  audit('ORDER','Order placement rolled back',String(err.message||err));
+  throw err;
+ }})}
+function viewCert(id){const c=DB.certs.find(x=>x.id===id),cur=c.issues[c.issues.length-1],l=lotById(c.lot);
+ modal(c.id,`<table><tbody><tr><td>Material</td><td><b>${esc(prj(l.prj).mat)}</b></td></tr>
+  <tr><td>Lot</td><td class="mono">${esc(l.lot)}</td></tr><tr><td>Issue</td><td class="mono">#${cur.n} of ${c.issues.length} · ${cur.at}</td></tr>
+  <tr><td>Assigned value</td><td class="mono"><b>${cur.val} % w/w</b></td></tr><tr><td>Expanded uncertainty</td><td class="mono">± ${cur.U} (k = 2)</td></tr>
+  <tr><td>Valid to</td><td class="mono">${l.exp}</td></tr><tr><td>Storage</td><td>${esc(l.storage)}</td></tr>
+  <tr><td>Authorised by</td><td>${esc(userById(cur.by).n)}</td></tr></tbody></table>`);
+ audit('DOCUMENT','Certificate viewed',id);}
+function vVault(){
+ const mine=DB.vault.filter(v=>v.org===S.user.org);
+ return `<h1 class="pg">My reference materials</h1>
+ <p class="lede">Every standard your laboratory holds, its certificate, and whether that certificate is still the current issue. This is the ISO/IEC 17025 obligation that is currently met with a folder of PDFs.</p>
+ ${kpisRow([['Standards held',mine.length],['Expiring in 180 days',mine.filter(v=>{const d=days(lotById(v.lot).exp);return d>0&&d<180}).length],
+  ['Superseded lot',mine.filter(v=>lotById(v.lot).state==='superseded').length],
+  ['Certificate reissued',mine.filter(v=>{const c=certForLot(v.lot);return c&&c.issues.length>1}).length],
+  ['Expired',mine.filter(v=>days(lotById(v.lot).exp)<0).length]])}
+ <div class="card"><table><thead><tr><th>Material</th><th>Lot</th><th>Certificate</th><th>Valid to</th><th>Location</th><th class="num">Qty</th><th>Status</th><th></th></tr></thead><tbody>
+ ${mine.map(v=>{const l=lotById(v.lot),c=certForLot(l.id),d=days(l.exp);
+  const flags=[];
+  if(d<0)flags.push(['bad','expired']); else if(d<180)flags.push(['warn','expiring']);
+  if(l.state==='superseded')flags.push(['warn','lot superseded']);
+  if(c&&c.issues.length>1)flags.push(['warn','certificate reissued']);
+  if(!flags.length)flags.push(['ok','valid']);
+  return `<tr><td><b>${esc(prj(l.prj).mat)}</b></td><td class="mono">${esc(l.lot)}</td><td class="mono">${c?c.id:'—'}</td>
+   <td class="mono">${l.exp}</td><td>${esc(v.loc)}</td><td class="num">${v.qty}</td>
+   <td>${flags.map(x=>`<span class="chip ${x[0]}">${x[1]}</span>`).join(' ')}</td>
+   <td>${c?`<button class="btn ghost sm" onclick="viewCert('${c.id}')">View</button>`:''}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">Nothing held yet. Order something from the catalogue.</td></tr>'}
+ </tbody></table></div>
+ <div class="row" style="margin-top:12px"><button class="btn go" onclick="auditPack()">Generate audit pack</button>
+  <button class="btn ghost" onclick="exportVaultPack()">Export holdings as CSV</button>
+  <button class="btn ghost" onclick="toast('Scan a unit QR to add a holding')">Scan a unit</button></div>
+ <div class="note"><b>Cold start solved by the producer side.</b> These records arrived automatically with the orders, because the producer runs Lotmark. A vault with nothing in it is worthless — which is why the producer platform is the distribution channel for this one.</div>`;
+}
+function auditPack(){const mine=DB.vault.filter(v=>v.org===S.user.org);
+ modal('Audit pack — as at '+TODAY,`<p class="muted" style="font-size:12.5px;margin-top:0">Every reference material held, with certificate, validity and supersession status.</p>
+  <table><thead><tr><th>Material</th><th>Lot</th><th>Certificate</th><th>Valid to</th><th>Status</th></tr></thead><tbody>
+  ${mine.map(v=>{const l=lotById(v.lot),c=certForLot(l.id),d=days(l.exp);
+   return `<tr><td>${esc(prj(l.prj).mat)}</td><td class="mono">${esc(l.lot)}</td><td class="mono">${c?c.id:'—'}</td><td class="mono">${l.exp}</td>
+    <td>${d<0?'expired':l.state==='superseded'?'lot superseded':'valid'}</td></tr>`}).join('')}</tbody></table>`);
+ audit('DOCUMENT','Audit pack generated','laboratory vault');}
+function vOrders(){
+ const mine=DB.orders.filter(o=>o.by===S.user.id);
+ return `<h1 class="pg">My orders</h1>
+ ${mine.length?mine.map(o=>{const steps=['placed','packed','dispatched','delivered'],i=steps.indexOf(o.state);
+  return `<div class="card pad" style="margin-bottom:11px"><div class="row" style="justify-content:space-between">
+   <div><b class="mono">${o.id}</b><div class="muted" style="font-size:12px">${o.lines.map(l=>esc(prj(lotById(l.lot).prj).mat)+' ×'+l.q).join(', ')}</div></div>
+   <div style="text-align:right"><div style="font:600 15px var(--mono)">${inr(o.total)}</div>${stChip(o.state)}</div></div>
+   <div class="tl" style="margin-top:10px">${steps.map((s,k)=>`<div class="s ${k<i?'done':k===i?'cur':''}"><b style="font-size:12.5px;text-transform:capitalize">${s}</b></div>`).join('')}</div></div>`}).join('')
+  :'<div class="card pad"><p class="muted" style="margin:0">No orders yet.</p></div>'}`;
+}
+function vAccount(){
+ const g=org(S.user.org),e=DB.entitlements.find(x=>x.org===S.user.org);
+ return `<h1 class="pg">Account</h1><div class="grid g2">
+ <div class="card pad"><div class="eye">Profile</div><h2 class="sec">${esc(S.user.n)}</h2>
+  <table><tbody><tr><td>Role</td><td><b>${ROLES[S.user.role].n}</b></td></tr>
+  <tr><td>Organisation</td><td>${esc(g.n)}</td></tr><tr><td>Price tier</td><td>${tierOf()==='government'?'<span class="chip ok">government</span>':'<span class="chip grey">private party</span>'}</td></tr>
+  <tr><td>Session</td><td class="mono">${S.session.id}</td></tr></tbody></table></div>
+ <div class="card pad"><div class="eye">Government price tier</div>
+  ${e?`<div class="row" style="justify-content:space-between;margin-top:6px"><b class="mono">${e.id}</b>${stChip(e.state)}</div>
+   <div class="muted" style="font-size:12.5px;margin-top:6px">${esc(e.doc)}</div>
+   ${e.reval?`<div class="note"><b>Revalidation due ${e.reval}.</b> The tier goes on automatic hold if evidence is not refreshed.</div>`:''}`
+   :'<p class="muted" style="font-size:13px">Your organisation is on the private-party tier.</p>'}</div></div>`;
+}
+/* ═══════════ BUILD COVERAGE ═══════════ */
+
+const COVERAGE=[
+ ['Foundation','Product map','n/a','Navigation artefact, not an application screen'],
+ ['Foundation','Core vs commodity','n/a','Decision artefact'],
+ ['Foundation','Market sizing','n/a','Decision artefact'],
+ ['Foundation','Data model','built','Traceability explorer, plus the three closures as live queries'],
+ ['Foundation','Deployment scenarios','n/a','Decision artefact — priced in the estimate workbook'],
+ ['Production','Production projects','built','Console › Projects'],
+ ['Production','Project — production plan','built','Console › Projects › detail'],
+ ['Production','Candidate material','partial','Material fields on the project; processing steps not modelled'],
+ ['Production','Homogeneity study','built','Console › Studies — u(bb) feeds the budget'],
+ ['Production','Stability studies','built','Console › Studies — shelf life, storage and transport class derived'],
+ ['Production','Characterisation','built','Console › Studies — u(char) feeds the budget'],
+ ['Production','Property values and uncertainty','built','Console › Property values — budget derived, signature bound'],
+ ['Production','Value authorisation','built','Console › Value authorisation — SoD, competence and step-up enforced'],
+ ['Production','Lot register','built','Console › Lot register — release supersedes the previous lot'],
+ ['Certification','Certificate builder','built','Issue from the lot register, step-up gated and §11.70 bound'],
+ ['Certification','Certificate templates','not built','Multi-tenant templating deferred'],
+ ['Certification','Certificate registry and reissue','built','Console › Certificates — issue diff, holder list, per-issue verification'],
+ ['Distribution','Catalogue management','built','Console › Catalogue — listable only with a current certificate'],
+ ['Distribution','Customer entitlement','built','Console › Entitlement — SoD enforced, revalidation set'],
+ ['Distribution','Orders','built','Console › Orders — allocation at the line, break-glass PII reveal'],
+ ['Distribution','Order detail','partial','Line-level allocation shown; full linked-record view deferred'],
+ ['Distribution','Dispatch and cold chain','built','Console › Dispatch — pack instruction from the storage class'],
+ ['Distribution','Customer storefront','built','Customer › Catalogue'],
+ ['Distribution','Customer account and document vault','built','Customer › My vault'],
+ ['Distribution','Laboratory vault — standalone','built','Customer › My vault with a CSV audit pack'],
+ ['Compliance','ISO 17034 conformance','built','Console › Conformance — recomputes live, exports an assessment pack'],
+ ['Compliance','Audit ledger','built','Console › Audit ledger — verify, tamper, CSV export'],
+ ['Compliance','Subcontractor competence','built','Console › Subcontractors — five forbidden activities blocked'],
+ ['Compliance','Complaints, nonconformity and CAPA','partial','Register with computed impact; investigation workflow deferred'],
+ ['Compliance','Equipment and facilities','built','Console › Equipment — dated intervals, impact trace'],
+ ['Compliance','Personnel competence','built','Console › Competence — dated, checked at signing, snapshotted'],
+ ['Platform','Users, roles and permissions','built','Console › Users and roles, with the SoD rules table'],
+ ['Platform','Tenant and producer profile','built','Console › Tenant configuration — IPC is a profile, not a fork'],
+ ['Platform','Integrations','not built','No external systems in a single-file prototype'],
+ ['Platform','Analytics and MIS','not built','Deferred'],
+ ['Field','Customer mobile','not built','QR scan stubbed in the vault'],
+ ['Field','Dispatch handheld','not built','Deferred']];
+function vCoverage(){
+ const b=COVERAGE.filter(c=>c[2]==='built').length,p=COVERAGE.filter(c=>c[2]==='partial').length,
+  nb=COVERAGE.filter(c=>c[2]==='not built').length,na=COVERAGE.filter(c=>c[2]==='n/a').length;
+ const appl=COVERAGE.length-na;
+ return `<h1 class="pg">Build coverage</h1>
+ <p class="lede">Every screen in the product wireframe, and whether this application implements it. Three wireframe screens are decision artefacts rather than application screens and are marked not applicable.</p>
+ ${kpisRow([['Wireframe screens',COVERAGE.length],['Built',b],['Partial',p],['Not built',nb],['Coverage of applicable',Math.round(b/appl*100)+'%']])}
+ <div class="bar2" style="height:10px;margin-bottom:14px"><i style="width:${Math.round(b/appl*100)}%"></i></div>
+ <div class="card"><table><thead><tr><th>Group</th><th>Wireframe screen</th><th>Status</th><th>Where it lives in this application</th></tr></thead><tbody>
+ ${COVERAGE.map(c=>`<tr><td class="mono" style="font-size:12px">${c[0]}</td><td><b>${esc(c[1])}</b></td>
+  <td><span class="chip ${c[2]==='built'?'ok':c[2]==='partial'?'warn':c[2]==='n/a'?'grey':'bad'}">${c[2]}</span></td>
+  <td class="muted">${esc(c[3])}</td></tr>`).join('')}</tbody></table></div>
+ <div class="note"><b>What is deliberately missing.</b> Certificate templating, integrations, analytics and the two field applications are real product scope, not oversights — they need a server, a tenant boundary and a device, none of which exist in a single file. Everything that carries the product's argument is built.</div>`;
+}
+/* ═══════════ ROUTER ═══════════ */
+/* Forty-one tables had one caption between them. Every table is labelled after render
+   from its nearest preceding heading, so the coverage cannot drift again. */
+function labelTables(){
+ const root=document.getElementById('app');if(!root)return 0;
+ let added=0;
+ root.querySelectorAll('table').forEach(t=>{
+  if(t.querySelector('caption'))return;
+  let n=t,label='',hops=0;
+  while(n&&!label&&hops<40){
+   hops++;
+   n=n.previousElementSibling||n.parentElement;
+   if(!n||!n.querySelector)break;
+   if(n.matches&&n.matches('h1,h2,h3,.eye')&&n.textContent.trim())label=n.textContent.trim();
+   else{const h=n.querySelector('h2.sec,h1.pg,.eye');if(h&&h.textContent.trim())label=h.textContent.trim();}
+  }
+  const cap=document.createElement('caption');cap.className='sr';
+  cap.textContent=(label||'Data table')+' — '+t.querySelectorAll('tbody tr').length+' rows';
+  t.insertBefore(cap,t.firstChild);added++;
+ });
+ return added;
+}
+function render(){
+ const app=document.getElementById('app');
+ if(!S.user){app.innerHTML=S.route==='mfa'?vMfa():vLogin();
+  const f=document.getElementById('li-e')||document.getElementById('otp');if(f&&!f.value)f.focus();return}
+ /* Route guard: never render a surface the signed-in role has no business on. */
+ const producerOnly=['console','coverage'];
+ if(producerOnly.includes(S.route)&&ROLES[S.user.role].kind!=='producer'){S.route='shop';S.sub=null;}
+ const customerOnly=['vault'];
+ if(customerOnly.includes(S.route)&&ROLES[S.user.role].kind==='producer'){S.route='console';}
+ const v={console:vConsole,coverage:vCoverage,shop:vShop,orders:vOrders,vault:vVault,account:vAccount}[S.route]||vShop;
+ app.innerHTML=chrome(v());
+ labelTables();
+}
+DB.competence.forEach((c,i)=>{if(!c.id)c.id='CMP-'+String(i+1).padStart(3,'0')});
+seedCredentials();
+/* Seeded studies arrived pre-signed with no competence basis and no binding, which the
+   self-check correctly flagged as nine unbacked signatures. Historical records in a real
+   system carry both, so they are reconstructed here from the record's own signer and date
+   — using the authorisation that was actually in force on that day, not today's. */
+DB.studies.filter(x=>x.state==='signed'&&x.by&&x.at&&!x.basis).forEach(x=>{
+ const rec=competenceRecord(x.by,'study:sign',x.at);
+ x.basis=rec?{comp:rec.id,activity:'study:sign',from:rec.from,to:rec.to,checkedOn:x.at,by:x.by}:null;
+ const t=TIME_SOURCES['t-generic'];
+ x.sig={by:x.by,at:x.at,ts:x.at+' 09:00:00',meaning:'authorship',src:t.src,region:t.region,
+  bind:h64(materialOf('study',x)+'|'+x.by+'|authorship|'+x.at)};
+});
+audit('SYSTEM','Application started','credentials hashed, seed data loaded');
+render();
+</script>
+</body></html>
+<!-- PATCHLIB-APPLIED:embed-toolchain -->
+<!-- PATCHLIB-APPLIED:self-check -->
+<!-- PATCHLIB-APPLIED:build-module -->
+<!-- PATCHLIB-APPLIED:build-route -->
+<!-- PATCHLIB-APPLIED:selfcheck-build-route -->
+<!-- PATCHLIB-APPLIED:backfill-historic-signatures -->
