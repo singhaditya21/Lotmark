@@ -19,7 +19,9 @@ export interface AuditContext {
 
 export type AuditKind =
   | 'AUTH' | 'DENY' | 'SECURITY' | 'WORKFLOW' | 'SIGNATURE' | 'CERTIFICATE'
-  | 'CONFIGURATION' | 'PII' | 'SYSTEM' | 'QUERY' | 'GOVERNANCE';
+  | 'CONFIGURATION' | 'PII' | 'SYSTEM' | 'QUERY' | 'GOVERNANCE'
+  // Written by scheduled work, which has no session and no user.
+  | 'NOTIFICATION' | 'ENTITLEMENT';
 
 export async function recordAudit(
   tx: Sql,

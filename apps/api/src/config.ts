@@ -46,6 +46,18 @@ const schema = z.object({
    */
   SIGNING_KEY_DIR: z.string().default('.keys'),
 
+  /**
+   * The OWNER connection, used only by the scheduler.
+   *
+   * pg-boss maintains its own schema and needs DDL, which the application role
+   * deliberately does not have. Job HANDLERS still use DATABASE_URL, so the
+   * work itself remains subject to row-level security.
+   */
+  DATABASE_ADMIN_URL: z.string().default('postgres://localhost:5432/lotmark_dev'),
+
+  /** Run the scheduler in this process. Off for the API, on for the worker. */
+  RUN_SCHEDULER: z.coerce.boolean().default(false),
+
   /** Where rendered certificates are stored, content-addressed by digest. */
   DOCUMENT_DIR: z.string().default('.documents'),
 

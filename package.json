@@ -20,7 +20,9 @@
     "smoke": "node apps/api/scripts/smoke.mjs",
     "db:setup": "createdb lotmark_dev 2>/dev/null; pnpm db:migrate && pnpm db:seed",
     "web": "pnpm --filter @lotmark/web dev",
-    "db:status": "pnpm --filter @lotmark/db migrate:status"
+    "db:status": "pnpm --filter @lotmark/db migrate:status",
+    "worker": "pnpm --filter @lotmark/api worker",
+    "job": "pnpm --filter @lotmark/api job"
   },
   "devDependencies": {
     "typescript": "^5.7.2",
