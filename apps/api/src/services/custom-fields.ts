@@ -44,7 +44,21 @@ export async function activeDefinitions(
 ): Promise<Definitions | null> {
   const active = await activeVersion(tx, tenantId);
   if (!active) return null;
-  const entries = await entriesOf(tx, active.id);
+  return definitionsFrom(tx, active.id, onBadEntry);
+}
+
+/**
+ * The same read, against ANY version.
+ *
+ * Exists so the form designer's preview is produced by this resolver rather
+ * than by a second one written in the browser. A preview built from a copy of
+ * these rules is a preview that can be right about a form the runtime renders
+ * differently, which is worse than no preview.
+ */
+export async function definitionsFrom(
+  tx: Sql, versionId: string, onBadEntry?: (msg: string) => void,
+): Promise<Definitions> {
+  const entries = await entriesOf(tx, versionId);
 
   const fields: FieldConfig[] = [];
   const picklists = new Map<string, PicklistConfig>();
@@ -66,7 +80,7 @@ export async function activeDefinitions(
     }
   }
 
-  return { versionId: active.id, fields, picklists, layouts };
+  return { versionId, fields, picklists, layouts };
 }
 
 /** The form for one entity, plus the option lists it needs to render. */

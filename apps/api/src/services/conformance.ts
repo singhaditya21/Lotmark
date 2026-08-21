@@ -42,6 +42,13 @@ const RANK: Record<RequirementStatus, number> = {
   not_implemented: 0, declared: 1, partial: 2, enforced: 3,
 };
 
+/**
+ * KNOWN COST: about fifteen sequential round trips, ~700 ms on an idle
+ * database. Each statement is a few milliseconds; the cost is how many there
+ * are, and they cannot run concurrently because a transaction is one
+ * connection. Acceptable for a screen somebody opens deliberately, and worth
+ * knowing before this is put anywhere that renders on every request.
+ */
 export async function liveEvidence(tx: Sql, tenantId: string): Promise<Map<string, LiveEvidence>> {
   const out = new Map<string, LiveEvidence>();
   const add = (e: LiveEvidence) => out.set(e.key, e);

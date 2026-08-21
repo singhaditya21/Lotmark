@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import {
   isSignatureMeaning, changesRequireSignature, ALL_CONFIG_KINDS, configKeySchema,
+  isCustomFieldEntity,
   type SignatureMeaning, type ConfigKind,
 } from '@lotmark/domain';
 import { inTenantTransaction, type Sql } from '../db';
@@ -16,6 +17,7 @@ import {
   createDraft, upsertEntry, removeEntry, diffDraft, publishDraft, discardDraft,
   publicationProblems, changeDigest, ConfigAdminError, KIND_RISK,
 } from '../services/config-admin';
+import { definitionsFrom, renderableForm } from '../services/custom-fields';
 import {
   sendProblem, notFound, unprocessable, invalidRequest, forbidden,
 } from '../http/problem';
@@ -241,6 +243,37 @@ export async function registerAdminConfigRoutes(app: FastifyInstance): Promise<v
   });
 
   /* ── Reviewing it, before anything is committed to ────────────────────── */
+
+  /**
+   * What a form defined in THIS DRAFT would look like.
+   *
+   * Produced by the runtime resolver, against the draft's own entries — so the
+   * designer's preview is the thing itself rather than a second implementation
+   * of the same rules written in the browser. A preview built from a copy can
+   * be right about a form the runtime renders differently, which is worse than
+   * having no preview at all.
+   */
+  app.get<{ Params: { id: string; entity: string } }>(
+    '/admin/config/draft/:id/form/:entity', async (req, reply) => {
+      const ctx = await requireAdmin(req, reply);
+      if (!ctx) return;
+      if (!isCustomFieldEntity(req.params.entity)) {
+        return sendProblem(reply, notFound(
+          `'${req.params.entity}' is not a record type that can carry custom fields.`));
+      }
+
+      const form = await tx(ctx, async (t) => {
+        const version = await versionById(t, ctx.tenantId, req.params.id);
+        if (!version) return null;
+        const defs = await definitionsFrom(t, version.id, (m) => app.log.warn(m));
+        // Every role, so the preview shows the layout an administrator is
+        // designing rather than one restricted to the roles they happen to hold.
+        return renderableForm(defs, req.params.entity, ctx.roleKeys);
+      });
+
+      if (!form) return sendProblem(reply, notFound('No such configuration version.'));
+      return reply.send({ form });
+    });
 
   app.get<{ Params: { id: string } }>('/admin/config/draft/:id/review', async (req, reply) => {
     const ctx = await requireAdmin(req, reply);

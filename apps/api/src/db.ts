@@ -13,7 +13,22 @@ export type Sql = ReturnType<typeof postgres>;
  */
 export function createDb(cfg: AppConfig): Sql {
   return postgres(cfg.DATABASE_URL, {
-    max: 10,
+    /**
+     * Sized to the environment.
+     *
+     * Vitest runs each test file in its own worker, and each worker builds its
+     * own app and therefore its own pool. At ten per pool, fourteen files could
+     * ask for 140 connections against a default `max_connections` of 100 — and
+     * postgres.js waits rather than failing when it cannot get one, so the
+     * symptom would be a hang, not an error.
+     *
+     * Stated as a headroom measure and not as a fix: it was tried against a
+     * timeout in the conformance suite and changed nothing, and the real cause
+     * turned out to be that `liveEvidence` makes about fifteen sequential round
+     * trips. Four per pool is ample for a suite — a test file issues one
+     * request at a time — and it keeps the ceiling well inside the server's.
+     */
+    max: cfg.NODE_ENV === 'test' ? 4 : 10,
     onnotice: () => {},
     types: {
       date: {

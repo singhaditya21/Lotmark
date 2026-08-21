@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { createHmac } from 'node:crypto';
 import type { FastifyInstance, LightMyRequestResponse } from 'fastify';
 import { buildApp } from '../app';
@@ -13,6 +13,23 @@ import { buildAssessmentPack, canonicalJson } from '../services/conformance';
  * requirement cannot present as satisfied, that the pack states its own limits,
  * and that its digest means something.
  */
+
+/**
+ * This suite needs longer than the 5-second default, and the reason is measured
+ * rather than assumed.
+ *
+ * `liveEvidence` makes about fifteen sequential round trips — it is a whole
+ * assessment, not a page of one table — and takes roughly 700 ms on an idle
+ * database. Each SQL statement is a few milliseconds; the cost is the number of
+ * them, and they cannot be issued concurrently because a transaction is one
+ * connection. Under a parallel suite with fourteen workers competing for one
+ * PostgreSQL and for the CPU that Argon2id sign-ins want, that reliably passes
+ * five seconds.
+ *
+ * Raising the limit here rather than globally, so the next slow test is still
+ * asked to justify itself.
+ */
+vi.setConfig({ testTimeout: 30_000 });
 
 const PASSWORD = 'demo-password-1234';
 const TOTP_SECRET = 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP';

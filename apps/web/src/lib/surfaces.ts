@@ -71,6 +71,10 @@ export const SURFACES: readonly Surface[] = [
   { id: 'conformance', label: 'Conformance', half: 'producer', permission: 'conformance:read' },
   { id: 'people', label: 'People', half: 'producer', permission: 'user:manage' },
   { id: 'configuration', label: 'Configuration', half: 'producer', permission: 'user:manage' },
+  // The low-code surface over the configuration model. Same permission as
+  // Configuration: designing a field IS a configuration change, and it lands in
+  // the same draft, reviewed and signed on the same screen.
+  { id: 'forms', label: 'Form designer', half: 'producer', permission: 'user:manage' },
   // Operational health sits behind `audit:read` because it IS what the system
   // did, in the half nobody watches — and the Quality Manager who reads the
   // ledger is who most needs to know the CAPA-raising job stopped on Tuesday.

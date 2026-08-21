@@ -109,6 +109,11 @@ export const OPERATIONS: readonly Operation[] = [
     '21 CFR 11 §11.200(a)(1): the first signing of a session needs both ' +
     'components. Subsequent signings within the window may use one.'),
   /* ── Custom fields ────────────────────────────────────────────────────── */
+  op('GET', '/api/v1/admin/config/draft/:id/form/:entity', 'Configuration',
+    'Preview a form as this draft would render it', 'user:manage',
+    'Resolved by the runtime resolver against the draft\u2019s own entries, so the designer\u2019s '
+    + 'preview is the thing itself rather than a second implementation of the same rules.'),
+
   op('GET', '/api/v1/custom-fields/:entity', 'Custom fields',
     'The shape of the custom-field form for a record type', 'project:read',
     'Definitions only, no data. The permission required depends on the entity — see '

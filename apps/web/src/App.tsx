@@ -11,6 +11,7 @@ import { Audit } from './pages/Audit';
 import { Capa } from './pages/Capa';
 import { People } from './pages/People';
 import { Configuration } from './pages/Configuration';
+import { FormDesigner } from './pages/FormDesigner';
 import { Operations } from './pages/Operations';
 import { Conformance } from './pages/Conformance';
 import { JobHealthBanner } from './components/JobHealthBanner';
@@ -165,6 +166,8 @@ export function App() {
           <People />
         ) : route === 'configuration' ? (
           <Configuration />
+        ) : route === 'forms' ? (
+          <FormDesigner />
         ) : route === 'operations' ? (
           <Operations />
         ) : route === 'conformance' ? (

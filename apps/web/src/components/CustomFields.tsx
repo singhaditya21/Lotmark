@@ -23,11 +23,11 @@ import { offered, stillNeeded, toInstant, type Option } from '../lib/custom-fiel
  * and the next save would quietly lose it.
  */
 
-type FieldType =
+export type FieldType =
   | 'text' | 'textarea' | 'number' | 'integer' | 'boolean'
   | 'date' | 'datetime' | 'select' | 'multiselect';
 
-interface FieldDef {
+export interface FieldDef {
   key: string;
   label: string;
   type: FieldType;
@@ -40,8 +40,8 @@ interface FieldDef {
   onCertificate: boolean;
 }
 
-interface Placement { field: FieldDef; span: number; readOnly: boolean }
-interface Section { title: string; columns: number; collapsed: boolean; fields: Placement[] }
+export interface Placement { field: FieldDef; span: number; readOnly: boolean }
+export interface Section { title: string; columns: number; collapsed: boolean; fields: Placement[] }
 
 interface RecordFields {
   form: { layoutKey: string | null; sections: Section[]; picklists: Record<string, Option[]> };
@@ -210,7 +210,7 @@ export function CustomFieldsDialog({
 }
 
 /** One control, chosen by the type the tenant configured. */
-function Control({
+export function Control({
   def, options, value, disabled, onChange,
 }: {
   def: FieldDef;
@@ -362,5 +362,57 @@ function History({ entity, recordId }: { entity: string; recordId: string }) {
         </div>
       ))}
     </div>
+  );
+}
+
+/**
+ * A form as it would look, with nothing in it.
+ *
+ * Used by the designer. It renders through the SAME `Control` the runtime uses
+ * and from a form the SERVER resolved, so a preview cannot be right about a
+ * layout the runtime would draw differently. Every control is disabled: this is
+ * a picture of a form, not a form.
+ */
+export function FormPreview({
+  sections, picklists,
+}: {
+  sections: Section[];
+  picklists: Record<string, Option[]>;
+}) {
+  if (sections.length === 0) {
+    return <div className="muted">Nothing to show yet — add a field.</div>;
+  }
+  return (
+    <>
+      {sections.map((section) => (
+        <fieldset key={section.title} style={{ border: 0, padding: 0, margin: '0 0 14px' }}>
+          <legend style={{
+            fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.4px',
+            color: 'var(--muted)', padding: 0, marginBottom: 6,
+          }}>
+            {section.title}
+          </legend>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${section.columns}, minmax(0, 1fr))`,
+            gap: '0 14px',
+          }}>
+            {section.fields.map((placed) => (
+              <div key={placed.field.key}
+                   style={{ gridColumn: `span ${Math.min(placed.span, section.columns)}` }}>
+                <Control
+                  def={placed.field}
+                  options={placed.field.picklistKey
+                    ? picklists[placed.field.picklistKey] ?? [] : []}
+                  value={undefined}
+                  disabled
+                  onChange={() => {}}
+                />
+              </div>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+    </>
   );
 }
