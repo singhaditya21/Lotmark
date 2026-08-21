@@ -181,7 +181,7 @@ CREATE TABLE "lotmark"."audit_checkpoints" (
 CREATE TABLE "lotmark"."audit_ledger" (
 	"id" bigserial PRIMARY KEY NOT NULL,
 	"tenant_id" uuid NOT NULL,
-	"seq" bigserial NOT NULL,
+	"seq" bigint NOT NULL,
 	"actor_user_id" uuid,
 	"actor_label" text NOT NULL,
 	"actor_role_id" text NOT NULL,

@@ -33,8 +33,14 @@ export const auditLedgerTable = lotmark.table('audit_ledger', {
   id: bigserial('id', { mode: 'bigint' }).primaryKey(),
   tenantId: uuid('tenant_id').notNull().references(() => tenantsTable.id, { onDelete: 'restrict' }),
 
-  /** Gap-free per-tenant ordinal. Assigned by trigger inside the insert lock. */
-  seq: bigserial('seq', { mode: 'bigint' }).notNull(),
+  /**
+   * Gap-free per-tenant ordinal, assigned by the chain trigger while holding
+   * the head lock. Deliberately NOT a bigserial: a sequence is per-table, and
+   * it leaves gaps on rollback — which would make a deleted row
+   * indistinguishable from an aborted transaction, destroying the one property
+   * the sequence exists to provide.
+   */
+  seq: bigint('seq', { mode: 'bigint' }).notNull(),
 
   /** Who acted. 'system' for scheduled jobs; never null, never anonymous-by-accident. */
   actorUserId: uuid('actor_user_id').references(() => usersTable.id),
