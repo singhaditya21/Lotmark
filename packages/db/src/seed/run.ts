@@ -12,7 +12,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { hashPassword } from '@lotmark/security';
+import { hashPassword, enrolmentUri } from '@lotmark/security';
 import {
   defaultRoles, defaultWorkflows, defaultSodConfig, defaultNumbering, defaultFlags,
 } from '@lotmark/domain';
@@ -27,6 +27,15 @@ interface Fixture {
   USERS: Array<{ id: string; n: string; e: string; pw: string; role: string; org: string; col: string; mfa: boolean }>;
   ORGS: Array<{ id: string; n: string; kind: string; accred?: string; scope?: string; type?: string; ph?: string; tier?: string }>;
 }
+
+/**
+ * The demo authenticator secret, shared by every seeded account.
+ *
+ * Valid base32. One entry in an authenticator app then works for all nine demo
+ * users, which is what makes the demonstration usable. Real enrolment mints a
+ * random secret per user and displays it exactly once.
+ */
+const DEMO_TOTP_SECRET = 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP';
 
 /** The demo HMAC key. Production supplies this from outside the database. */
 const AUDIT_KEY = process.env.LOTMARK_AUDIT_KEY ?? 'dev-audit-key-change-me';
@@ -74,7 +83,15 @@ async function main() {
   );
 
   await sql.end();
-  console.log('done');
+
+  console.log('\n--- demonstration credentials ---');
+  console.log('password (all accounts): demo-password-1234');
+  console.log('authenticator secret   :', DEMO_TOTP_SECRET);
+  console.log('enrolment URI          :',
+    enrolmentUri({ secret: DEMO_TOTP_SECRET, accountEmail: 'ravi@producer.example', issuer: 'Lotmark' }));
+  console.log('\naccounts:');
+  for (const u of fixture.USERS) console.log(`  ${u.e.padEnd(28)} ${u.role}`);
+  console.log('\ndone');
 }
 
 /**
@@ -111,10 +128,10 @@ async function seedTenantAndOrgs(sql: Sql): Promise<void> {
     VALUES (${TENANT}, 'ipc', 'Indian Pharmacopoeia Commission', 'IPC tenant',
             true, true, true, true,
             'ISO 17034 + GIGW 3.0 + DPDP', 'IPRS{MAT}{SEQ}', 'NIC / MeitY, in-country',
-            ${JSON.stringify([
+            ${sql.json([
               'GIGW 3.0 portal and CMS', 'Bilingual content authoring',
               'PvPI outreach pages', 'Events, forum, recruitment',
-            ])}::jsonb,
+            ] as never)},
             'nic.ntp.gov.in (stratum 1)', 'ap-south-1')`;
 
   for (const o of fixture.ORGS) {
@@ -146,8 +163,11 @@ async function seedConfig(sql: Sql): Promise<string> {
     ...defaultFlags().map((f) => ['flag', f.key, f] as [string, string, unknown]),
   ];
   for (const [kind, key, payload] of entries) {
+    // sql.json(), not JSON.stringify(...)::jsonb — postgres.js serialises the
+    // parameter itself, so pre-stringifying stores a JSON *string* rather than
+    // an object, and every reader then gets a string where it expects a record.
     await sql`INSERT INTO lotmark.config_entries (tenant_id, version_id, kind, key, payload)
-              VALUES (${TENANT}, ${versionId}, ${kind}, ${key}, ${JSON.stringify(payload)}::jsonb)`;
+              VALUES (${TENANT}, ${versionId}, ${kind}, ${key}, ${sql.json(payload as never)})`;
   }
   console.log(`config: ${entries.length} entries in version 1`);
   return versionId;
@@ -177,10 +197,16 @@ async function seedPeople(sql: Sql) {
   // admin as its grantor. One pass would depend on the admin appearing first in
   // the fixture, which is a silent ordering dependency waiting to break.
   for (const u of fixture.USERS) {
+    // A FIXED demo TOTP secret, the same for every seeded account, so one
+    // authenticator entry covers the whole demonstration. Deliberately a
+    // constant and deliberately published: this is demo data, and pretending
+    // otherwise would be security theatre. Real enrolment mints a random secret
+    // per user and shows it once.
     await sql`INSERT INTO lotmark.users
-        (id, tenant_id, organisation_id, code, email, display_name, password_hash, colour, mfa_required)
+        (id, tenant_id, organisation_id, code, email, display_name, password_hash,
+         colour, mfa_required, totp_secret_encrypted, mfa_enrolled_at)
       VALUES (${uuidFor(`user:${u.id}`)}, ${TENANT}, ${uuidFor(`org:${u.org}`)}, ${u.id}, ${u.e}, ${u.n},
-              ${passwordHash}, ${u.col}, ${u.mfa})`;
+              ${passwordHash}, ${u.col}, ${u.mfa}, ${DEMO_TOTP_SECRET}, now())`;
   }
 
   const ORGANICS_STAFF = ['u-ravi', 'u-sunil', 'u-asha'];
