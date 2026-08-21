@@ -12,20 +12,29 @@ processes against your local Postgres.
 ```bash
 pnpm install
 createdb lotmark_dev
-pnpm db:migrate     # 3 migrations: schema, integrity constraints, audit chain
+pnpm db:migrate     # 4 migrations: schema, constraints, audit chain, signing
 pnpm db:seed        # tenant, config v1, teams, and the prototype's dataset
-pnpm api            # http://127.0.0.1:4000
+pnpm dev            # API on :4000, console on :5173
 ```
 
-Then, in another shell:
+Open **http://localhost:5173**. The console proxies `/api` to the API on the
+same origin, so the session cookie needs no `SameSite` relaxation and
+development behaves the way production will.
+
+### Smoke scripts
+
+With the API running, these drive the real flows from the command line:
 
 ```bash
-pnpm smoke ravi@producer.example
+node apps/api/scripts/smoke.mjs neha@producer.example
+node apps/api/scripts/sign-smoke.mjs
+node apps/api/scripts/sod-smoke.mjs
+node apps/api/scripts/pipeline-smoke.mjs
 ```
 
-The smoke script signs in, completes the second factor, lists the projects that
-account may see, recomputes an uncertainty budget from raw measurements, and
-verifies the audit chain.
+`pipeline-smoke` runs the whole slice: sign a study, assign a value, watch
+segregation of duties refuse the assigner, have a second person authorise,
+release a lot, issue a certificate, and verify the chain.
 
 ### Demonstration accounts
 
