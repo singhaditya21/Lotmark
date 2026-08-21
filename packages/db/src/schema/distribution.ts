@@ -136,6 +136,17 @@ export const vaultHoldingsTable = lotmark.table('vault_holdings', {
   lotId: uuid('lot_id').notNull().references(() => lotsTable.id, { onDelete: 'restrict' }),
   storageLocation: text('storage_location'),
   quantity: integer('quantity').notNull().default(0),
+  /**
+   * How this holding was acquired.
+   *
+   * Not every vial arrives through an order — samples, replacements and
+   * proficiency-testing distributions do not. A withdrawal notice derived only
+   * from order lines would miss every one of them, which is why the holder
+   * query is order_lines UNION vault_holdings.
+   */
+  source: text('source', { enum: ['order', 'qr_scan', 'upload', 'import', 'sample'] })
+    .notNull().default('order'),
+  acquiredOn: isoDate('acquired_on'),
   ...timestamps,
 }, (t) => ({
   orgIdx: index('vault_holdings_organisation_idx').on(t.organisationId),
@@ -151,6 +162,16 @@ export const notificationsTable = lotmark.table('notifications', {
   /** What it concerns, so the UI can deep-link. */
   subjectTable: text('subject_table'),
   subjectId: text('subject_id'),
+  /**
+   * Acknowledgement key, precise per ISSUE.
+   *
+   * The prototype keyed reissue acknowledgements on (order, certificate), so
+   * acknowledging issue 2 silently marked issue 3 acknowledged too — the
+   * holder appeared to have seen a document they had never been shown.
+   */
+  certificateId: uuid('certificate_id'),
+  issueNumber: integer('issue_number'),
+  organisationId: uuid('organisation_id'),
   payload: jsonb('payload').$type<Record<string, unknown>>(),
   readAt: timestamp('read_at', { withTimezone: true, mode: 'string' }),
   /** Acknowledgement is required for reissue notices; nulls are chased by a job. */

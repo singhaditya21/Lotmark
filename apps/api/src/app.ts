@@ -11,6 +11,7 @@ import { registerValueRoutes } from './routes/values';
 import { registerLotRoutes } from './routes/lots';
 import { registerCreateRoutes } from './routes/create';
 import { registerPublicRoutes } from './routes/public';
+import { registerCertificateRoutes } from './routes/certificates';
 import { KeyProvider } from './services/keys';
 import { DocumentStore } from './services/documents';
 
@@ -86,6 +87,7 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
   await app.register(registerValueRoutes, { prefix: '/api/v1' });
   await app.register(registerLotRoutes, { prefix: '/api/v1' });
   await app.register(registerCreateRoutes, { prefix: '/api/v1' });
+  await app.register(registerCertificateRoutes, { prefix: '/api/v1' });
   // Unauthenticated, deliberately: an auditor holding a printed certificate
   // must not need an account with the producer whose certificate is in question.
   await app.register(registerPublicRoutes, { prefix: '' });

@@ -318,12 +318,31 @@ async function seedProduction(sql: Sql, configVersionId: string) {
     }
   }
 
+  /**
+   * The prototype stored a typed `u` per study and the expanded uncertainty on
+   * the certificate. Seeding the value without its combined and expanded
+   * uncertainty left an authorised value that could not be certified — it
+   * surfaced as a NOT NULL violation on the first reissue.
+   *
+   * The figures are taken from the certificate the prototype issued for the
+   * same lot, so the seeded state is internally consistent.
+   */
+  const seededU: Record<string, number> = {};
+  for (const c of D['certs'] as Array<any>) {
+    const lot = (D['lots'] as Array<any>).find((l) => l.id === c.lot);
+    if (lot) seededU[lot.prj] = c.issues[c.issues.length - 1].U;
+  }
+
   for (const v of D['values'] as Array<any>) {
     await sql`INSERT INTO lotmark.property_values
         (id, tenant_id, code, project_id, property_name, unit, assigned_value, coverage_factor,
+         combined_uncertainty, expanded_uncertainty,
          state, assigned_by, authorised_by, config_version_id)
       VALUES (${uuidFor(`pv:${v.id}`)}, ${TENANT}, ${v.id}, ${uuidFor(`prj:${v.prj}`)},
-              ${v.prop}, ${v.unit}, ${v.val}, ${v.k}, ${v.state},
+              ${v.prop}, ${v.unit}, ${v.val}, ${v.k},
+              ${seededU[v.prj] != null ? seededU[v.prj]! / v.k : null},
+              ${seededU[v.prj] ?? null},
+              ${v.state},
               ${v.assigned ? uuidFor(`user:${v.assigned}`) : null},
               ${v.auth ? uuidFor(`user:${v.auth}`) : null}, ${configVersionId})`;
   }
