@@ -260,9 +260,28 @@ async function seedConfig(sql: Sql): Promise<string> {
     }),
   ];
 
+  /**
+   * IPC demands a signature to close a nonconformity.
+   *
+   * A tenant OVERRIDE, like the numbering template above — the product does not
+   * ship this, because `capa:manage` is not one of the acts 21 CFR 11 §11.50
+   * makes the point of the record. IPC's quality manual does, and this is what
+   * configuring that looks like: one transition, two meanings, no code.
+   *
+   * It also makes the setting demonstrable. Until this, `requiresSignature` was
+   * configurable and read by nothing, and a seeded configuration where every
+   * value is the default proves nothing about whether it is read.
+   */
+  const workflows = defaultWorkflows().map((w) => (w.entity !== 'capa' ? w : {
+    ...w,
+    transitions: w.transitions.map((t) => (t.from === 'effectiveness' && t.to === 'closed'
+      ? { ...t, requiresSignature: true, signatureMeanings: ['approval', 'responsibility'] as const }
+      : t)),
+  }));
+
   const entries: Array<[string, string, unknown]> = [
     ...defaultRoles().map((r) => ['role', r.key, r] as [string, string, unknown]),
-    ...defaultWorkflows().map((w) => ['workflow', w.key, w] as [string, string, unknown]),
+    ...workflows.map((w) => ['workflow', w.key, w] as [string, string, unknown]),
     ...defaultSodConfig().map((s) => ['sod', s.ruleId, s] as [string, string, unknown]),
     ...ipcNumbering.map((n) => ['numbering', n.key, n] as [string, string, unknown]),
     ...defaultFlags().map((f) => ['flag', f.key, f] as [string, string, unknown]),

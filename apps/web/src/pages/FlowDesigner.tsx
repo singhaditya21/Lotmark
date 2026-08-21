@@ -509,19 +509,8 @@ function MoveDialog({
         </select>
       </Field>
 
-      {/*
-        Stated where somebody is about to rely on it. The alternative is a
-        checkbox that reads as a control and is not one, which is the exact
-        failure this product's conformance view exists to catch.
-      */}
-      <div className="note warn">
-        <b>Recorded, not yet enforced.</b> The two settings below are stored on the
-        transition and nothing reads them: which acts demand a signature is currently fixed
-        in the routes — issuing, releasing and authorising a value always do, and a CAPA
-        move never does. Setting them here changes what the configuration SAYS, not yet what
-        the system does.
-      </div>
-
+      {/* Enforced — the move is refused without a signature carrying one of the
+          meanings chosen below, and a refused signing rolls the move back. */}
       <Field label="Needs an electronic signature">
         <label className="inline">
           <input type="checkbox" checked={t.requiresSignature}
@@ -535,7 +524,7 @@ function MoveDialog({
 
       {t.requiresSignature && (
         <Field label="Meanings the signer may choose"
-               hint="21 CFR 11 §11.50 — the meaning is chosen, never inferred">
+               hint="21 CFR 11 §11.50 — the meaning is chosen, never inferred; at least one">
           <div className="picker">
             {ALL_MEANINGS.map(([key, label]) => (
               <label key={key} className={`pick ${t.signatureMeanings.includes(key) ? 'on' : ''}`}>
@@ -551,6 +540,17 @@ function MoveDialog({
           </div>
         </Field>
       )}
+
+      {/*
+        Stated where somebody is about to rely on it. A checkbox that reads as a
+        control and is not one is the exact failure this product's conformance
+        view exists to catch.
+      */}
+      <div className="note warn">
+        <b>Recorded, not yet enforced.</b> A reason is currently demanded on every CAPA
+        move whatever this says, and required nowhere else. Setting it changes what the
+        configuration says, not what the system does.
+      </div>
 
       <Field label="Needs a stated reason">
         <label className="inline">

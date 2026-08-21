@@ -3,6 +3,7 @@ import { ALL_MACHINES } from '../state-machines';
 import { SOD_RULES } from '../sod';
 import { RETENTION_SCHEDULE } from '../retention';
 import { requiresCompetence } from '../permissions';
+import { alwaysSigned } from '../signatures';
 import type {
   RoleConfig, WorkflowConfig, SodConfig, NumberingConfig, FlagConfig,
 } from './schemas';
@@ -52,7 +53,7 @@ export function defaultWorkflows(): WorkflowConfig[] {
     initial: m.initial,
     terminal: [...m.terminal],
     transitions: m.transitions.map((t) => {
-      const signed = SIGNATURE_REQUIRED.has(t.requires);
+      const signed = alwaysSigned(t.requires);
       return {
         from: t.from,
         to: t.to,
@@ -74,12 +75,9 @@ export function defaultWorkflows(): WorkflowConfig[] {
 }
 
 /**
- * Acts that always manifest a signature. Not configurable downward.
- * These are the four the competence model already gates.
+ * The signature floor now lives in `signatures.ts`, beside the obligation it
+ * comes from, and is enforced rather than merely described — see ALWAYS_SIGNED.
  */
-const SIGNATURE_REQUIRED = new Set([
-  'study:sign', 'value:assign', 'value:authorise', 'cert:issue', 'cert:reissue',
-]);
 
 /** Transitions where a free-text reason is mandatory. */
 const REASON_REQUIRED = new Set([

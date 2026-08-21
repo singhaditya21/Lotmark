@@ -2,13 +2,17 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import {
   assertTransition, canTransition, nextStates, IllegalTransitionError,
-  defaultSodSettings, type AuthScope,
+  defaultSodSettings, signatureRequired, meaningsFor, isSignatureMeaning,
+  type AuthScope, type SignatureMeaning,
 } from '@lotmark/domain';
 import { inTenantTransaction } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
 import { machineForEntity } from '../services/workflows';
+import { applySignature, rejectSigning, SigningRejection } from '../services/signing';
+import { refuseSigning } from '../services/signing-refusal';
+import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
 import {
   sendProblem, notFound, conflict, invalidRequest, forbidden, unprocessable,
 } from '../http/problem';
@@ -25,8 +29,22 @@ import {
  * stated, not removed — a register you can delete from is not a register.
  */
 const transitionBody = z.object({
-  to: z.enum(['investigation', 'root_cause', 'capa', 'effectiveness', 'closed']),
+  /**
+   * Any state name; the MACHINE decides whether it is reachable from here.
+   *
+   * This was an enum of the five built-in CAPA states, which meant a tenant
+   * could configure a sixth and then be unable to move anything into it — the
+   * workflow said yes and the route said "invalid". The machine is the
+   * authority on what may follow what, and `assertTransition` below is where
+   * that is asked.
+   */
+  to: z.string().min(1).max(64),
   reason: z.string().min(1, 'Every move must state why.').max(2000),
+  /**
+   * Required only when the move demands a signature, which is now a property of
+   * the configured transition rather than of this route.
+   */
+  meaning: z.string().optional(),
   rootCause: z.string().max(2000).optional(),
   correctiveAction: z.string().max(2000).optional(),
   preventiveAction: z.string().max(2000).optional(),
@@ -34,7 +52,7 @@ const transitionBody = z.object({
 });
 
 export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
-  const { cfg, db } = app;
+  const { cfg, db, keys } = app;
 
   const auditOf = (ctx: RequestContext) => ({
     tenantId: ctx.tenantId, actorUserId: ctx.userId, actorLabel: ctx.displayName,
@@ -97,7 +115,9 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
     }
     const body = parsed.data;
 
-    const result = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+    let result;
+    try {
+      result = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
       const [row] = await tx`
         SELECT id, code, state, source, owner_team_id, root_cause, corrective_action
         FROM lotmark.capa
@@ -144,6 +164,37 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
       }
 
       /**
+       * Does THIS move demand a signature?
+       *
+       * `signatureRequired` ORs the configured flag with the floor in
+       * `ALWAYS_SIGNED`, so a tenant can add ceremony to a CAPA move and cannot
+       * remove it from an act 21 CFR 11 §11.50 makes the point of the record.
+       * Until now nothing read the configured flag at all: the flow designer
+       * offered a checkbox that changed what the configuration SAID and not
+       * what the system did.
+       */
+      const step = canTransition(machine, capa.state as string, body.to)!;
+      const needsSignature = signatureRequired(step);
+
+      if (needsSignature) {
+        const offered = meaningsFor(step);
+        if (!body.meaning || !isSignatureMeaning(body.meaning)) {
+          return {
+            status: 422 as const,
+            message: 'This move must be signed, and a signature manifests a meaning. '
+              + `Choose one of: ${offered.join(', ')}.`,
+          };
+        }
+        if (!offered.includes(body.meaning)) {
+          return {
+            status: 422 as const,
+            message: `'${body.meaning}' is not a meaning this move offers. `
+              + `Choose one of: ${offered.join(', ')}.`,
+          };
+        }
+      }
+
+      /**
        * A CAPA cannot close without a root cause and a corrective action.
        *
        * Closing one on the strength of "it stopped happening" is how the same
@@ -171,11 +222,50 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
             version = version + 1
         WHERE id = ${capa.id}`;
 
+      /**
+       * Signed AFTER the record is written and BEFORE the transaction resolves.
+       *
+       * `rejectSigning` throws rather than returning: returning from inside the
+       * callback resolves it, and a resolved callback COMMITS — which is how a
+       * refused signing once persisted an unsigned record. The whole move rolls
+       * back, and the refusal is recorded on its own transaction.
+       */
+      let signatureId: string | null = null;
+      if (needsSignature) {
+        const token = req.cookies[SESSION_COOKIE];
+        const session = token
+          ? await loadLiveSession(tx, hashToken(token), cfg.IDLE_TIMEOUT_MINUTES) : null;
+        if (!session) return { status: 401 as const, message: 'Your session has ended.' };
+        const key = await keys.active(tx, ctx.tenantId, (m: string) => app.log.info(m));
+
+        try {
+          const signature = await applySignature(tx, {
+            tenantId: ctx.tenantId,
+            signable: {
+              kind: 'state_transition',
+              record: {
+                entity: 'capa', recordId: capa.id, code: capa.code,
+                from: capa.state as string, to: body.to, reason: body.reason,
+              },
+            },
+            subjectId: capa.id, signerUserId: ctx.userId,
+            meaning: body.meaning as SignatureMeaning,
+            session, signingWindowMinutes: cfg.SIGNING_WINDOW_MINUTES,
+            competenceBasis: null, requiresCompetence: false,
+            key, timeSource: ctx.timeSource, region: ctx.region,
+          });
+          signatureId = signature.id;
+        } catch (e) {
+          rejectSigning(e, { table: 'capa', label: `${capa.code} ${capa.state} → ${body.to}` });
+        }
+      }
+
       await tx`
         INSERT INTO lotmark.state_transitions
-          (tenant_id, subject_type, subject_id, from_state, to_state, actor_user_id, reason)
+          (tenant_id, subject_type, subject_id, from_state, to_state, actor_user_id, reason,
+           signature_id)
         VALUES (${ctx.tenantId}, 'capa', ${capa.id}, ${capa.state}, ${body.to},
-                ${ctx.userId}, ${body.reason})`;
+                ${ctx.userId}, ${body.reason}, ${signatureId})`;
 
       await recordAudit(tx, auditOf(ctx), {
         kind: 'WORKFLOW',
@@ -194,6 +284,30 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
         },
       };
     });
+
+    } catch (e) {
+      /**
+       * A refused signing arrives as a THROW, not a return.
+       *
+       * `rejectSigning` throws precisely so the transaction rolls back — a
+       * return would resolve the callback and a resolved callback COMMITS,
+       * which is how a refused signing once persisted the record it was
+       * refusing to sign. The refusal is then recorded on its own transaction
+       * and answered as a 401 asking for the step-up.
+       *
+       * This route needed it only once a signature could be demanded by
+       * CONFIGURATION rather than by the route, which is why it was not here
+       * before: without the catch the rejection reached the client as a 500,
+       * with the correct message and the wrong status, and nothing offering the
+       * user a way to re-authenticate.
+       */
+      if (e instanceof SigningRejection) {
+        return refuseSigning({
+          db, auditKey: cfg.LOTMARK_AUDIT_KEY, audit: auditOf(ctx), rejection: e, reply,
+        });
+      }
+      throw e;
+    }
 
     switch (result.status) {
       case 404: return sendProblem(reply, notFound('No such CAPA.'));

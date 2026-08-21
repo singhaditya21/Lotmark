@@ -302,11 +302,14 @@ export const REQUIREMENTS: readonly Requirement[] = [
       'refuses a change that would leave records in a state the new machine does ' +
       'not have. NOT yet extensible for studies: `studies.state` carries a CHECK ' +
       'listing its two states, and publication refuses a third rather than ' +
-      'letting the INSERT fail. PARTLY declared: a transition can also carry ' +
-      '`requiresSignature`, `signatureMeanings`, `requiresReason` and `guards`, ' +
-      'and none of those is read — which acts demand a signature is still fixed ' +
-      'in the routes. `systemInitiated` IS enforced. The flow designer says so ' +
-      'beside the controls rather than letting them read as working.',
+      'letting the INSERT fail. A transition\u2019s `requiresSignature`, ' +
+      '`signatureMeanings` and `systemInitiated` are ENFORCED: a move a tenant ' +
+      'marked as signed is refused without one, and a refused signing rolls the ' +
+      'move back rather than leaving it unsigned. Configuration can only ADD a ' +
+      'signature — `ALWAYS_SIGNED` is a floor publication refuses to lower. ' +
+      'PARTIAL because `requiresReason` and `guards` are still recorded and read ' +
+      'by nothing; the flow designer says so beside those controls rather than ' +
+      'letting them read as working.',
   },
   {
     id: 'REQ-AUTHORITY',

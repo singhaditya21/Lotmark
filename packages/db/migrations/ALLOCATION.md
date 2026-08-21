@@ -19,6 +19,7 @@ Take the next free number from this table and add a row; do not take it from
 | 0023 | ~~`conformance_views`~~ | 6 — **withdrawn, never written** | — |
 | 0024 | `password_change` | Forced password change on first sign-in | — |
 | 0025 | `custom_field_values_live` | Form designer — make `field`/`picklist`/`layout` live | 0017 |
+| 0026 | `signed_state_transitions` | Flow designer — a configured move can demand a signature | 0017 |
 
 ## Why those orderings, specifically
 
@@ -63,6 +64,11 @@ Take the next free number from this table and add a row; do not take it from
   risky-change-is-signed CHECK that 0017 added are what make that stamp mean
   something. Safe to run as written only because the table is empty: it has
   existed since 0000 and nothing has ever written to it.
+
+- **0026 after 0017.** A transition can now demand an electronic signature
+  because the tenant's published workflow says so, so the signature's
+  `subject_kind` vocabulary has to admit a workflow move. Depends on 0017 only
+  in the sense that the demand arrives through the configuration publish path.
 
 - **0024 stands alone.** It adds two columns to `users` and depends on nothing.
   It deliberately does NOT back-fill `password_changed_at`, and its default of

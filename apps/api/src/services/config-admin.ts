@@ -3,7 +3,7 @@ import {
   effectivePermissionsOfRole, roleConfigSchema, isPermission, RETENTION_SCHEDULE,
   ALL_CONFIG_KINDS, CONFIG_RISK, hasProductDefault,
   fieldConfigSchema, picklistConfigSchema, layoutConfigSchema, isSupportedFieldType,
-  workflowConfigSchema, statesTheDatabaseRefuses, ENTITY_RECORD,
+  workflowConfigSchema, statesTheDatabaseRefuses, ENTITY_RECORD, alwaysSigned,
   type ConfigKind, type ConfigChange, type RoleConfig,
   type FieldConfig, type PicklistConfig, type LayoutConfig, type WorkflowConfig,
 } from '@lotmark/domain';
@@ -409,6 +409,34 @@ async function workflowProblems(
         'cannot store — that column carries a CHECK listing the states it accepts. ' +
         'Making those states extensible is a schema change, not a configuration one.',
       );
+    }
+
+    /**
+     * A signature cannot be configured away.
+     *
+     * `ALWAYS_SIGNED` is the floor — the acts 21 CFR 11 §11.50 makes the point
+     * of the record. A tenant may add a signature to any move; switching one of
+     * these off would be configuring its way out of the regulation, and the
+     * runtime ORs the floor in regardless. Refusing it here means the
+     * administrator is told rather than having their setting silently ignored,
+     * which is the difference between a rule and a trap.
+     */
+    for (const t of wf.transitions) {
+      if (alwaysSigned(t.requires) && t.requiresSignature === false) {
+        problems.push(
+          `Workflow '${wf.key}' turns the signature off for ${t.from} → ${t.to}, ` +
+          `but '${t.requires}' always manifests one. Configuration can add a signature ` +
+          'to a move; it cannot take this one away.',
+        );
+      }
+      if (t.requiresSignature === true && t.signatureMeanings.length === 0) {
+        // §11.50(a)(3): the meaning is chosen by the signer, so there has to be
+        // something to choose from. An empty list would offer an empty select.
+        problems.push(
+          `Workflow '${wf.key}' asks for a signature on ${t.from} → ${t.to} but offers no ` +
+          'meaning for the signer to choose. A signature manifests a meaning.',
+        );
+      }
     }
 
     const record = ENTITY_RECORD[wf.entity as keyof typeof ENTITY_RECORD];

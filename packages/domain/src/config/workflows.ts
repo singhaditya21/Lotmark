@@ -67,6 +67,14 @@ export function machineFromConfig(
       requires: t.requires as Permission,
       action: t.action,
       ...(t.systemInitiated ? { systemInitiated: true as const } : {}),
+      /**
+       * Carried onto the machine, so the route that makes the move reads the
+       * tenant's rule rather than a constant of its own. `signatureRequired()`
+       * ORs this with the floor: configuration adds ceremony, never removes it.
+       */
+      requiresSignature: t.requiresSignature,
+      signatureMeanings: t.signatureMeanings,
+      requiresReason: t.requiresReason,
     });
   }
 

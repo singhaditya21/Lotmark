@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import {
-  isSignatureMeaning, defaultSodSettings, assertTransition,
+  isSignatureMeaning, defaultSodSettings, assertTransition, alwaysSigned,
   type SignatureMeaning, type CompetenceBasis, type AuthScope, type Permission,
 } from '@lotmark/domain';
 import { inTenantTransaction, type Sql } from '../db';
@@ -107,7 +107,7 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
         // needs no code change.
         record: { createdBy: value.assigned_by },
         sodSettings: defaultSodSettings(), onDate: ctx.today,
-        competenceFor: () => basis, requiresSignature: true,
+        competenceFor: () => basis, requiresSignature: alwaysSigned('lot:release'),
       });
       if (!verdict.allowed) {
         await recordAudit(tx, auditCtxOf(ctx), {
@@ -298,7 +298,9 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
         record: { assignedBy: value.assigned_by },
         sodSettings: defaultSodSettings(), onDate: ctx.today,
         requiresCompetence: 'cert:issue', competenceFor: () => basis,
-        requiresSignature: true,
+        // Issuing a certificate is not a move through any machine, so there is
+        // no transition to read a rule off. The floor answers it.
+        requiresSignature: alwaysSigned('cert:issue'),
       });
       if (!verdict.allowed) {
         await recordAudit(tx, auditCtxOf(ctx), {

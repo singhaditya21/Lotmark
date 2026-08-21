@@ -36,7 +36,8 @@ export function isSignatureMeaning(v: string): v is SignatureMeaning {
 }
 
 /** The kinds of record that can carry a signature. */
-export type SignableKind = 'study' | 'value' | 'certificate' | 'lot' | 'config_version';
+export type SignableKind =
+  | 'study' | 'value' | 'certificate' | 'lot' | 'config_version' | 'state_transition';
 
 /**
  * The canonical material version.
@@ -100,12 +101,35 @@ export interface SignableConfigVersion {
   readonly changeCount: number;
 }
 
+/**
+ * A move through a configured workflow.
+ *
+ * One shape for every entity rather than one per entity, because which moves
+ * demand a signature is now the TENANT'S to declare — a per-entity shape would
+ * mean a code change every time somebody ticked the box on a new machine, which
+ * is the opposite of what configuring it is for.
+ *
+ * The material commits to the entity, the record, both states and the stated
+ * reason. All five are what the signature is about: "I attest that this CAPA
+ * moved from investigation to closed, for this reason." Omitting the reason
+ * would let the same signature stand over a different justification.
+ */
+export interface SignableStateTransition {
+  readonly entity: string;
+  readonly recordId: string;
+  readonly code: string;
+  readonly from: string;
+  readonly to: string;
+  readonly reason: string;
+}
+
 export type SignableRecord =
   | { kind: 'study'; record: SignableStudy }
   | { kind: 'value'; record: SignableValue }
   | { kind: 'certificate'; record: SignableCertificateIssue }
   | { kind: 'lot'; record: SignableLot }
-  | { kind: 'config_version'; record: SignableConfigVersion };
+  | { kind: 'config_version'; record: SignableConfigVersion }
+  | { kind: 'state_transition'; record: SignableStateTransition };
 
 /** Escape field separators so no field can impersonate a boundary. */
 function field(value: string | number): string {
@@ -158,6 +182,13 @@ export function canonicalMaterial(signable: SignableRecord): string {
         field(r.basedOnVersionId ?? ''), field(r.changeDigest), field(r.changeCount),
       ].join('|');
     }
+    case 'state_transition': {
+      const r = signable.record;
+      return [
+        v, 'state_transition', field(r.entity), field(r.recordId), field(r.code),
+        field(r.from), field(r.to), field(r.reason),
+      ].join('|');
+    }
   }
 }
 
@@ -203,4 +234,37 @@ export interface CompetenceBasis {
 export function isBasisValid(b: CompetenceBasis | null | undefined): boolean {
   if (!b) return false;
   return b.validFrom <= b.checkedOn && b.validTo >= b.checkedOn;
+}
+
+
+/**
+ * Acts that ALWAYS manifest a signature, whatever a tenant configures.
+ *
+ * The floor, not the default. Configuration may add a signature requirement to
+ * a move; it may never take one of these away. 21 CFR 11 §11.50 makes signing
+ * these acts the point of the record, and a tenant that could switch it off
+ * would be configuring its way out of the regulation rather than into it — so
+ * `publicationProblems()` refuses a workflow that tries.
+ *
+ * ── `lot:release` is here because two places disagreed ──────────────────────
+ *
+ * This list lived in `defaults.ts` as `SIGNATURE_REQUIRED`, described as "not
+ * configurable downward" and read by nothing but the derivation. Meanwhile the
+ * release route hardcoded `requiresSignature: true`. So the routes demanded a
+ * signature for releasing a lot and the derived configuration said it needed
+ * none — two sources of truth for the same question, disagreeing, with the
+ * comment claiming the weaker one was authoritative. Found when making the
+ * routes read the configured value: doing so naively would have REMOVED the
+ * signature from lot release.
+ *
+ * The route was right. Releasing a lot puts material on the catalogue under a
+ * certificate, and it is signed.
+ */
+export const ALWAYS_SIGNED = [
+  'study:sign', 'value:assign', 'value:authorise',
+  'cert:issue', 'cert:reissue', 'lot:release',
+] as const;
+
+export function alwaysSigned(permission: string): boolean {
+  return (ALWAYS_SIGNED as readonly string[]).includes(permission);
 }

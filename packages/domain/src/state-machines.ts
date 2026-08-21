@@ -12,6 +12,7 @@
  *     corrupt record discovered months later during an audit.
  */
 import type { Permission } from './permissions';
+import { alwaysSigned, ALL_SIGNATURE_MEANINGS } from './signatures';
 
 export interface Transition<S extends string> {
   readonly from: S;
@@ -32,6 +33,41 @@ export interface Transition<S extends string> {
    * moves the system is allowed to make on its own, and a job asserts it.
    */
   readonly systemInitiated?: boolean;
+
+  /**
+   * Ceremony a tenant added to this move, beyond the floor.
+   *
+   * Absent on the built-in machines, deliberately: their signature rule is
+   * `ALWAYS_SIGNED`, and leaving these undefined means a tenant that has
+   * configured nothing gets exactly the behaviour it had before configuration
+   * was read at all. Present only on a machine resolved from configuration.
+   */
+  readonly requiresSignature?: boolean;
+  readonly signatureMeanings?: readonly string[];
+  readonly requiresReason?: boolean;
+}
+
+/**
+ * Does this move demand an electronic signature?
+ *
+ * The floor OR the configuration — never the configuration alone. A tenant may
+ * add a signature to a move; it may not take one away from an act 21 CFR 11
+ * §11.50 makes the point of the record, and `publicationProblems()` refuses a
+ * workflow that tries.
+ */
+export function signatureRequired(t: Transition<string>): boolean {
+  return alwaysSigned(t.requires) || t.requiresSignature === true;
+}
+
+/** Meanings the signer may choose for this move, falling back to all of them. */
+export function meaningsFor(t: Transition<string>): readonly string[] {
+  return t.signatureMeanings && t.signatureMeanings.length > 0
+    ? t.signatureMeanings
+    : ALL_SIGNATURE_MEANINGS;
+}
+
+export function reasonRequired(t: Transition<string>): boolean {
+  return t.requiresReason === true;
 }
 
 export interface StateMachine<S extends string> {

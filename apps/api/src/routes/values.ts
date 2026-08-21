@@ -5,7 +5,7 @@ import {
   shelfLifeMonthsBetween, expandedUncertainty, type UncertaintyComponent,
 } from '@lotmark/stats';
 import {
-  isSignatureMeaning, defaultSodSettings, assertTransition,
+  isSignatureMeaning, defaultSodSettings, assertTransition, signatureRequired,
   type SignatureMeaning, type CompetenceBasis, type AuthScope, type Permission,
 } from '@lotmark/domain';
 import { inTenantTransaction, type Sql } from '../db';
@@ -172,7 +172,16 @@ export async function registerValueRoutes(app: FastifyInstance): Promise<void> {
       if (!valueMachine) {
         return { status: 409 as const, message: 'No workflow governs property values.' };
       }
-      assertTransition(valueMachine, step.from, step.to);
+      const move = assertTransition(valueMachine, step.from, step.to);
+      /**
+       * The rule comes off the move, not out of this route.
+       *
+       * `signatureRequired` ORs the configured flag with the floor, so this is
+       * true for assigning and authorising however a tenant configures them —
+       * which is the point of the floor. What changes is that the route no
+       * longer carries its own opinion about it.
+       */
+      const needsSignature = signatureRequired(move);
 
       const scope: AuthScope = value.owner_team_id
         ? { kind: 'team', teamId: value.owner_team_id } : { kind: 'tenant' };
@@ -188,7 +197,7 @@ export async function registerValueRoutes(app: FastifyInstance): Promise<void> {
         onDate: ctx.today,
         requiresCompetence: step.permission,
         competenceFor: () => basis,
-        requiresSignature: true,
+        requiresSignature: needsSignature,
       });
 
       if (!verdict.allowed) {
