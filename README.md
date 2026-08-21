@@ -126,6 +126,34 @@ anchor. That window is the exposure, and `verify` reports it rather than
 glossing over it. Key custody is `dev_file` and is printed everywhere — it is a
 real separation of duty, and it is not an HSM.
 
+## Point-in-time queries
+
+The question an assessor actually asks is not "is this person authorised" but
+"was this person authorised **on the day they signed**". Answering it from
+today's competence table answers a different question.
+
+```bash
+curl 'localhost:4000/api/v1/projects/<id>/as-of?date=2026-01-15'
+```
+
+While `lotmark.as_of` is set, **every table refuses writes** — enforced by a
+trigger on all 45 tables, not by convention. A convention fails the moment one
+call path forgets, and the failure is a *backdated record*: a signature or a lot
+that appears to have existed at a time it did not. No downstream check can undo
+one.
+
+The trigger covers even the tables written by other triggers (`audit_head`) and
+by SECURITY DEFINER functions (`numbering_counters`) — exempting them would
+leave precisely the paths that bypass ordinary checks as the ones able to write
+into the past.
+
+**The guard never reads the as-of date.** Authorisation asks whether you may do
+this *now*; evaluating it against a past date would let somebody act on a
+competence that has since lapsed. Authorisation runs first, on its own
+transaction, at the real date.
+
+A future as-of is refused: there is no legitimate question it answers.
+
 ## Documents
 
 - [`docs/architecture/`](docs/architecture) — the architecture decision document, its adversarial critique, and [the low-code design](docs/architecture/LOW-CODE.md)

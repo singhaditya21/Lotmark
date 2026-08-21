@@ -47,3 +47,31 @@ export async function inTenantTransaction<T>(
     return fn(tx as unknown as Sql);
   }) as Promise<T>;
 }
+
+/**
+ * Read the records as they stood on a past date.
+ *
+ * Separate from `inTenantTransaction` on purpose, and READ-ONLY by
+ * construction: every table carries a trigger refusing writes while
+ * `lotmark.as_of` is set, so a handler that strays into a write fails loudly
+ * rather than producing a backdated record.
+ *
+ * THE GUARD MUST NEVER SEE THIS DATE. Authorisation asks "may this person do
+ * this NOW" — evaluating it against a past date would let somebody act on the
+ * strength of a competence that has since lapsed, or a role they no longer
+ * hold. `RequestContext.today` therefore stays the real date, and this
+ * parameter is threaded only into the query layer.
+ */
+export async function inTenantAsOf<T>(
+  sql: Sql,
+  args: { readonly tenantId: string; readonly auditKey: string; readonly asOf: string },
+  fn: (tx: Sql) => Promise<T>,
+): Promise<T> {
+  return sql.begin(async (tx) => {
+    await tx`SELECT set_config('lotmark.tenant_id', ${args.tenantId}, true)`;
+    await tx`SELECT set_config('lotmark.audit_key', ${args.auditKey}, true)`;
+    // Rejects a future date, so a caller cannot ask what the records will say.
+    await tx`SELECT lotmark.set_as_of(${args.asOf}::date)`;
+    return fn(tx as unknown as Sql);
+  }) as Promise<T>;
+}

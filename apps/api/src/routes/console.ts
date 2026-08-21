@@ -5,11 +5,11 @@ import {
   type UncertaintyComponent,
 } from '@lotmark/stats';
 import { teamsWherePermitted } from '@lotmark/domain';
-import { inTenantTransaction } from '../db';
+import { inTenantTransaction, inTenantAsOf } from '../db';
 import { requireSession } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
-import { forbidden, notFound, sendProblem } from '../http/problem';
+import { forbidden, invalidRequest, notFound, sendProblem, unprocessable } from '../http/problem';
 
 export async function registerConsoleRoutes(app: FastifyInstance): Promise<void> {
   const { cfg, db } = app;
@@ -202,6 +202,86 @@ export async function registerConsoleRoutes(app: FastifyInstance): Promise<void>
     if (!out) return sendProblem(reply, notFound('No such project.'));
     if ('forbidden' in out) return sendProblem(reply, forbidden(out.forbidden.reason, out.forbidden.message));
     return reply.send(out);
+  });
+
+
+  /**
+   * The register as it stood on a date.
+   *
+   * The question an assessor actually asks. Note that the guard above is
+   * evaluated against ctx.today — the REAL date — and never against the as-of
+   * date: reading history is a present-tense act, and authorising it against a
+   * past date would let somebody read on the strength of access they have since
+   * lost.
+   */
+  app.get<{ Params: { id: string }; Querystring: { date?: string } }>(
+    '/projects/:id/as-of', async (req, reply) => {
+    const ctx = await requireSession(app, req, reply);
+    if (!ctx) return;
+
+    const date = req.query.date;
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return sendProblem(reply, invalidRequest('Supply ?date=YYYY-MM-DD.'));
+    }
+
+    // Authorisation FIRST, at the present moment, on its own transaction —
+    // before the session is put into the past and becomes read-only.
+    const project = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+      const [row] = await tx`
+        SELECT id, code, owner_team_id FROM lotmark.projects
+        WHERE tenant_id = ${ctx.tenantId} AND id = ${req.params.id} LIMIT 1`;
+      return row as { id: string; code: string; owner_team_id: string | null } | undefined;
+    });
+    if (!project) return sendProblem(reply, notFound('No such project.'));
+
+    const verdict = decide({
+      authority: ctx.authority, permission: 'project:read',
+      scope: project.owner_team_id ? { kind: 'team', teamId: project.owner_team_id } : { kind: 'tenant' },
+      sodSettings: {},
+      // ctx.today, deliberately — not the requested date.
+      onDate: ctx.today,
+    });
+    if (!verdict.allowed) return sendProblem(reply, forbidden(verdict.reason, verdict.message));
+
+    try {
+      const body = await inTenantAsOf(db,
+        { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY, asOf: date },
+        async (tx) => {
+          const studies = await tx`
+            SELECT s.code, s.study_type, s.state, s.uncertainty, s.signed_on,
+                   u.display_name AS signed_by,
+                   -- Was the signer authorised ON THE DAY, not today?
+                   (SELECT count(*) > 0 FROM lotmark.competence_as_of(s.signed_by_user_id, 'study:sign'))
+                     AS signer_was_competent
+            FROM lotmark.studies s
+            LEFT JOIN lotmark.users u ON u.id = s.signed_by_user_id
+            WHERE s.tenant_id = ${ctx.tenantId} AND s.project_id = ${project.id}
+              AND s.created_at::date <= lotmark.effective_date()
+            ORDER BY s.code`;
+
+          const lots = await tx`
+            SELECT l.lot_code, lotmark.lot_state_as_of(l.id) AS state_then, l.expiry_date
+            FROM lotmark.lots l
+            WHERE l.tenant_id = ${ctx.tenantId} AND l.project_id = ${project.id}
+              AND l.created_at::date <= lotmark.effective_date()
+            ORDER BY l.lot_code`;
+
+          return {
+            project: { id: project.id, code: project.code },
+            asOf: date,
+            studies,
+            // A lot with no state as at the date did not exist yet.
+            lots: lots.filter((l) => (l as { state_then: string | null }).state_then !== null),
+          };
+        });
+      return reply.send(body);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      if (message.includes('in the future')) {
+        return sendProblem(reply, unprocessable('That date is in the future; the records cannot answer it.'));
+      }
+      throw e;
+    }
   });
 
   /** The audit ledger, newest first. */

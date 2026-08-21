@@ -71,6 +71,7 @@ async function main() {
     await seedDistribution(tx as unknown as Sql);
     await seedCompliance(tx as unknown as Sql);
     await primeCounters(tx as unknown as Sql);
+    await backdateHistory(tx as unknown as Sql);
     await recordSeedInLedger(tx as unknown as Sql);
   });
 
@@ -476,6 +477,76 @@ async function primeCounters(sql: Sql) {
               ON CONFLICT (tenant_id, entity, scope) DO UPDATE SET next_value = ${start}`;
   }
   console.log(`counters: primed past the seeded records`);
+}
+
+/**
+ * Backdate created_at on the historical records.
+ *
+ * The seed represents a producer that has been operating for years: studies
+ * signed in 2025, certificates issued in early 2026. Inserting them all with
+ * created_at = now() makes every point-in-time view answer "nothing existed
+ * yet" for any date before today — technically correct about the ROWS, and
+ * wrong about the history the data claims.
+ *
+ * This is not falsifying a record. It is making the demonstration data
+ * self-consistent: a study whose signed_on is 2025-11-04 should not appear to
+ * have been created after it was signed.
+ *
+ * The AUDIT LEDGER is deliberately NOT backdated. Ledger entries record when an
+ * act was OBSERVED by this system, and this system observed the seed today.
+ * Backdating them would be exactly the lie the chain exists to prevent.
+ */
+async function backdateHistory(sql: Sql) {
+  await sql`UPDATE lotmark.studies SET created_at = signed_on::timestamptz,
+                                       updated_at = signed_on::timestamptz
+            WHERE tenant_id = ${TENANT} AND signed_on IS NOT NULL`;
+  await sql`UPDATE lotmark.study_results r SET created_at = s.created_at, updated_at = s.created_at
+            FROM lotmark.studies s WHERE s.id = r.study_id AND s.signed_on IS NOT NULL`;
+  await sql`UPDATE lotmark.property_values SET created_at = authorised_at, updated_at = authorised_at
+            WHERE tenant_id = ${TENANT} AND authorised_at IS NOT NULL`;
+  await sql`UPDATE lotmark.lots l SET created_at = c.issued_at, updated_at = c.issued_at
+            FROM lotmark.certificates ct
+            JOIN lotmark.certificate_issues c ON c.certificate_id = ct.id AND c.issue_number = 1
+            WHERE ct.lot_id = l.id`;
+  await sql`UPDATE lotmark.certificates ct SET created_at = c.issued_at, updated_at = c.issued_at
+            FROM lotmark.certificate_issues c
+            WHERE c.certificate_id = ct.id AND c.issue_number = 1`;
+
+  // A lot is superseded WHEN ITS SUCCESSOR IS RELEASED, not at an arbitrary
+  // offset. An earlier version used GREATEST(created_at + 1 day, ...), which for
+  // a lot with no certificate left created_at at now() and put the supersession
+  // a day in the FUTURE — so a lot that is superseded today read as 'released'
+  // in every point-in-time view, including today's.
+  await sql`
+    INSERT INTO lotmark.state_transitions
+      (tenant_id, subject_type, subject_id, from_state, to_state, actor_user_id, occurred_at, reason)
+    SELECT ${TENANT}, 'lot', old.id, 'released', 'superseded', old.released_by,
+           successor.created_at, ${'superseded on release of the next lot'}
+    FROM lotmark.lots old
+    JOIN lotmark.lots successor ON successor.previous_lot_id = old.id
+    WHERE old.tenant_id = ${TENANT} AND old.state = 'superseded'`;
+
+  // A superseded lot must have existed BEFORE its successor. Settled FIRST:
+  // the transitions below read created_at, and an earlier version inserted the
+  // 'released' transition before this update ran — dating it today, i.e. AFTER
+  // the supersession, so the lot read as 'released' in every point-in-time view
+  // including the present one.
+  await sql`
+    UPDATE lotmark.lots old SET created_at = successor.created_at - interval '180 days',
+                                updated_at = successor.created_at - interval '180 days'
+    FROM lotmark.lots successor
+    WHERE successor.previous_lot_id = old.id AND old.created_at >= successor.created_at`;
+
+  // Lots need a state history for lot_state_as_of to reconstruct them.
+  await sql`
+    INSERT INTO lotmark.state_transitions
+      (tenant_id, subject_type, subject_id, from_state, to_state, actor_user_id, occurred_at, reason)
+    SELECT ${TENANT}, 'lot', l.id, 'draft', 'released', l.released_by, l.created_at,
+           'released as part of the seeded history'
+    FROM lotmark.lots l WHERE l.tenant_id = ${TENANT}`;
+
+
+  console.log('history: created_at aligned with the dates the records claim');
 }
 
 async function recordSeedInLedger(sql: Sql) {
