@@ -103,6 +103,7 @@ export function defaultNumbering(): NumberingConfig[] {
     { key: 'certificate', entity: 'certificate', template: 'CRT-{SEQ}', resetPolicy: 'never', padTo: 4, startAt: 1 },
     { key: 'project', entity: 'project', template: 'PRJ-{SEQ}', resetPolicy: 'never', padTo: 4, startAt: 1 },
     { key: 'study', entity: 'study', template: 'ST-{SEQ}', resetPolicy: 'never', padTo: 4, startAt: 1 },
+    { key: 'property_value', entity: 'property_value', template: 'PV-{SEQ}', resetPolicy: 'never', padTo: 2, startAt: 1 },
     { key: 'order', entity: 'order', template: 'ORD-{SEQ}', resetPolicy: 'yearly', padTo: 4, startAt: 1 },
     { key: 'capa', entity: 'capa', template: 'NCR-{SEQ}', resetPolicy: 'yearly', padTo: 4, startAt: 1 },
   ];

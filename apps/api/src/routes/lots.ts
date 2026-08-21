@@ -10,6 +10,8 @@ import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
 import { applySignature, SigningError } from '../services/signing';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
+import { nextCode } from '../services/numbering';
+import { conflict, forbidden, invalidRequest, notFound, sendProblem, stepUpRequired, unprocessable } from '../http/problem';
 
 const releaseBody = z.object({
   meaning: z.string().refine(isSignatureMeaning),
@@ -43,24 +45,6 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
   }
 
   /**
-   * Render a lot code from the tenant's numbering template.
-   *
-   * The template is CONFIGURATION — IPC numbers materials IPRS{MAT}{SEQ} and a
-   * generic producer uses RMP-{MAT}-{SEQ}. Hardcoding either would make the
-   * other a fork of the product rather than a tenant of it.
-   */
-  async function renderLotCode(tx: Sql, tenantId: string, materialSku: string): Promise<string> {
-    const [t] = await tx`SELECT lot_numbering_template FROM lotmark.tenants WHERE id = ${tenantId}`;
-    const template = (t as { lot_numbering_template: string }).lot_numbering_template;
-    const [c] = await tx`SELECT count(*)::int AS n FROM lotmark.lots WHERE tenant_id = ${tenantId}`;
-    const seq = (c as { n: number }).n + 1;
-    const material = materialSku.split('-')[1] ?? materialSku;
-    return template
-      .replace('{MAT}', material)
-      .replace(/\{SEQ(?::(\d+))?\}/, (_m, pad) => String(seq).padStart(Number(pad ?? 4), '0'));
-  }
-
-  /**
    * RELEASE A LOT.
    *
    * Only from an AUTHORISED property value. A lot released against an
@@ -77,7 +61,7 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
 
     const parsed = releaseBody.safeParse(req.body);
     if (!parsed.success) {
-      return reply.code(400).send(problem('invalid_request',
+      return sendProblem(reply, invalidRequest(
         parsed.error.issues[0]?.message ?? 'An expiry date and signature meaning are required.'));
     }
     const token = req.cookies[SESSION_COOKIE]!;
@@ -134,7 +118,13 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
         ORDER BY released_at DESC NULLS LAST LIMIT 1`;
       const previous = prevRow as { id: string; lot_code: string } | undefined;
 
-      const lotCode = await renderLotCode(tx, ctx.tenantId, project.sku);
+      // Through the counter, not count(*): counting rows races two concurrent
+      // releases onto the same code, and stops tracking the high-water mark the
+      // moment a lot is superseded.
+      const lotCode = await nextCode(tx, {
+        tenantId: ctx.tenantId, entity: 'lot',
+        material: project.sku.split('-')[1] ?? project.sku, today: ctx.today,
+      });
       const [storageRow] = await tx`
         SELECT storage_condition FROM lotmark.studies
         WHERE tenant_id = ${ctx.tenantId} AND project_id = ${project.id}
@@ -239,7 +229,7 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
     if (!ctx) return;
 
     const parsed = issueBody.safeParse(req.body);
-    if (!parsed.success) return reply.code(400).send(problem('invalid_request', 'A signature meaning is required.'));
+    if (!parsed.success) return sendProblem(reply, invalidRequest('A signature meaning is required.'));
     const token = req.cookies[SESSION_COOKIE]!;
 
     const result = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
@@ -294,8 +284,9 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
       let cert = certRow as { id: string; code: string } | undefined;
 
       if (!cert) {
-        const [countRow] = await tx`SELECT count(*)::int AS n FROM lotmark.certificates WHERE tenant_id = ${ctx.tenantId}`;
-        const code = `CRT-${String((countRow as { n: number }).n + 2041).padStart(4, '0')}`;
+        const code = await nextCode(tx, {
+          tenantId: ctx.tenantId, entity: 'certificate', today: ctx.today,
+        });
         const [created] = await tx`
           INSERT INTO lotmark.certificates (tenant_id, code, lot_id)
           VALUES (${ctx.tenantId}, ${code}, ${lot.id}) RETURNING id, code`;
@@ -396,13 +387,14 @@ type StepResult =
   | { status: 403; verdict: { reason: string; message: string } }
   | { status: 409 | 422 | 401; message: string };
 
-function respond(reply: FastifyReply, result: StepResult, notFound: string) {
+function respond(reply: FastifyReply, result: StepResult, missingMessage: string) {
   switch (result.status) {
-    case 404: return reply.code(404).send(problem('not_found', notFound));
-    case 403: return reply.code(403).send(problem(result.verdict.reason, result.verdict.message));
-    case 409: return reply.code(409).send(problem('conflict', result.message));
-    case 422: return reply.code(422).send(problem('unprocessable', result.message));
-    case 401: return reply.code(401).send(problem('step_up_required', result.message));
+    // `missingMessage`, not `notFound` — the latter shadows the imported helper.
+    case 404: return sendProblem(reply, notFound(missingMessage));
+    case 403: return sendProblem(reply, forbidden(result.verdict.reason, result.verdict.message));
+    case 409: return sendProblem(reply, conflict(result.message));
+    case 422: return sendProblem(reply, unprocessable(result.message));
+    case 401: return sendProblem(reply, stepUpRequired(result.message));
     default: return reply.send(result.body);
   }
 }
@@ -415,6 +407,3 @@ function auditCtxOf(ctx: RequestContext) {
   };
 }
 
-function problem(code: string, detail: string) {
-  return { type: `https://lotmark.local/problems/${code}`, title: code, detail };
-}

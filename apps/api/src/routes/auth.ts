@@ -8,6 +8,7 @@ import {
 import { verifyPassword, verifyTotp } from '@lotmark/security';
 import { recordAudit } from '../services/audit';
 import { requireSession } from '../plugins/session';
+import { authenticationFailed, invalidRequest, sendProblem, sessionExpired } from '../http/problem';
 
 const credentials = z.object({
   email: z.string().email(),
@@ -40,7 +41,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
     config: { rateLimit: { max: 10, timeWindow: '1 minute' } },
   }, async (req, reply) => {
     const parsed = credentials.safeParse(req.body);
-    if (!parsed.success) return reply.code(400).send(problem('invalid_request', 'Email and password are required.'));
+    if (!parsed.success) return sendProblem(reply, invalidRequest('Email and password are required.'));
 
     const tenant = await currentTenant();
     const result = await inTenantTransaction(db, { tenantId: tenant.id, auditKey: cfg.LOTMARK_AUDIT_KEY }, (tx) =>
@@ -56,7 +57,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
       }));
 
     if (result.outcome === 'rejected') {
-      return reply.code(401).send(problem('authentication_failed', result.message));
+      return sendProblem(reply, authenticationFailed(result.message));
     }
 
     reply.setCookie(SESSION_COOKIE, result.sessionToken, {
@@ -75,10 +76,10 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
   }, async (req, reply) => {
     const parsed = mfaBody.safeParse(req.body);
     if (!parsed.success) {
-      return reply.code(400).send(problem('invalid_request', parsed.error.issues[0]?.message ?? 'Invalid code.'));
+      return sendProblem(reply, invalidRequest(parsed.error.issues[0]?.message ?? 'Invalid code.'));
     }
     const token = req.cookies[SESSION_COOKIE];
-    if (!token) return reply.code(401).send(problem('no_session', 'Sign in again.'));
+    if (!token) return sendProblem(reply, sessionExpired('Sign in again.'));
 
     const tenant = await currentTenant();
     const result = await inTenantTransaction(db, { tenantId: tenant.id, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
@@ -97,7 +98,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
 
     if (result.outcome === 'rejected') {
       if (result.sessionRevoked) reply.clearCookie(SESSION_COOKIE, { path: '/' });
-      return reply.code(401).send(problem('second_factor_failed', result.message));
+      return sendProblem(reply, authenticationFailed(result.message));
     }
     return reply.send({ outcome: 'signed_in' });
   });
@@ -145,7 +146,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
     }).safeParse(req.body);
 
     if (!parsed.success) {
-      return reply.code(400).send(problem('invalid_request',
+      return sendProblem(reply, invalidRequest(
         'Both your password and an authenticator code are required to sign.'));
     }
 
@@ -186,7 +187,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
     });
 
     if (!outcome.ok) {
-      return reply.code(401).send(problem('step_up_failed',
+      return sendProblem(reply, authenticationFailed(
         'Your password and authenticator code were not accepted together.'));
     }
     return reply.send({ signingWindowMinutes: cfg.SIGNING_WINDOW_MINUTES });
@@ -214,7 +215,3 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
   });
 }
 
-/** RFC 9457 problem detail. */
-function problem(code: string, detail: string) {
-  return { type: `https://lotmark.local/problems/${code}`, title: code, detail };
-}

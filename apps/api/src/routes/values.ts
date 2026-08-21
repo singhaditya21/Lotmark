@@ -14,6 +14,7 @@ import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
 import { applySignature, SigningError } from '../services/signing';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
+import { conflict, forbidden, invalidRequest, notFound, sendProblem, stepUpRequired, unprocessable } from '../http/problem';
 
 const body = z.object({
   meaning: z.string().refine(isSignatureMeaning),
@@ -141,7 +142,7 @@ export async function registerValueRoutes(app: FastifyInstance): Promise<void> {
 
     const parsed = body.safeParse(req.body);
     if (!parsed.success) {
-      return reply.code(400).send(problem('invalid_request', 'A signature meaning is required.'));
+      return sendProblem(reply, invalidRequest('A signature meaning is required.'));
     }
     const meaning = parsed.data.meaning as SignatureMeaning;
     const token = req.cookies[SESSION_COOKIE]!;
@@ -281,11 +282,11 @@ export async function registerValueRoutes(app: FastifyInstance): Promise<void> {
     });
 
     switch (result.status) {
-      case 404: return reply.code(404).send(problem('not_found', 'No such property value.'));
-      case 403: return reply.code(403).send(problem(result.verdict.reason, result.verdict.message));
-      case 409: return reply.code(409).send(problem('conflict', result.message));
-      case 422: return reply.code(422).send(problem('unprocessable', result.message));
-      case 401: return reply.code(401).send(problem('step_up_required', result.message));
+      case 404: return sendProblem(reply, notFound('No such property value.'));
+      case 403: return sendProblem(reply, forbidden(result.verdict.reason, result.verdict.message));
+      case 409: return sendProblem(reply, conflict(result.message));
+      case 422: return sendProblem(reply, unprocessable(result.message));
+      case 401: return sendProblem(reply, stepUpRequired(result.message));
       default: return reply.send(result.body);
     }
   }
@@ -312,6 +313,3 @@ function auditCtxOf(ctx: RequestContext) {
   };
 }
 
-function problem(code: string, detail: string) {
-  return { type: `https://lotmark.local/problems/${code}`, title: code, detail };
-}

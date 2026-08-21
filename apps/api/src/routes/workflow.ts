@@ -14,6 +14,7 @@ import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
 import { applySignature, verifyStoredSignature, SigningError } from '../services/signing';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
+import { conflict, forbidden, invalidRequest, notFound, sendProblem, stepUpRequired, unprocessable } from '../http/problem';
 
 const signBody = z.object({
   meaning: z.string().refine(isSignatureMeaning, {
@@ -69,7 +70,7 @@ export async function registerWorkflowRoutes(app: FastifyInstance): Promise<void
 
     const parsed = signBody.safeParse(req.body);
     if (!parsed.success) {
-      return reply.code(400).send(problem('invalid_request', parsed.error.issues[0]?.message ?? 'Invalid request.'));
+      return sendProblem(reply, invalidRequest(parsed.error.issues[0]?.message ?? 'Invalid request.'));
     }
     const meaning = parsed.data.meaning as SignatureMeaning;
 
@@ -237,11 +238,11 @@ export async function registerWorkflowRoutes(app: FastifyInstance): Promise<void
     });
 
     switch (result.status) {
-      case 404: return reply.code(404).send(problem('not_found', 'No such study.'));
-      case 403: return reply.code(403).send(problem(result.verdict.reason, result.verdict.message));
-      case 409: return reply.code(409).send(problem('conflict', result.message));
-      case 422: return reply.code(422).send(problem('unprocessable', result.message));
-      case 401: return reply.code(401).send(problem('step_up_required', result.message));
+      case 404: return sendProblem(reply, notFound('No such study.'));
+      case 403: return sendProblem(reply, forbidden(result.verdict.reason, result.verdict.message));
+      case 409: return sendProblem(reply, conflict(result.message));
+      case 422: return sendProblem(reply, unprocessable(result.message));
+      case 401: return sendProblem(reply, stepUpRequired(result.message));
       default: return reply.send(result.body);
     }
   });
@@ -283,8 +284,8 @@ export async function registerWorkflowRoutes(app: FastifyInstance): Promise<void
       });
     });
 
-    if (!out) return reply.code(404).send(problem('not_found', 'No such study.'));
-    if ('forbidden' in out) return reply.code(403).send(problem(out.forbidden.reason, out.forbidden.message));
+    if (!out) return sendProblem(reply, notFound('No such study.'));
+    if ('forbidden' in out) return sendProblem(reply, forbidden(out.forbidden.reason, out.forbidden.message));
     return reply.send(out);
   });
 
@@ -305,6 +306,3 @@ function auditCtxOf(ctx: RequestContext) {
   };
 }
 
-function problem(code: string, detail: string) {
-  return { type: `https://lotmark.local/problems/${code}`, title: code, detail };
-}

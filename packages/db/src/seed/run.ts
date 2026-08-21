@@ -70,6 +70,7 @@ async function main() {
     await seedProduction(tx as unknown as Sql, configVersionId);
     await seedDistribution(tx as unknown as Sql);
     await seedCompliance(tx as unknown as Sql);
+    await primeCounters(tx as unknown as Sql);
     await recordSeedInLedger(tx as unknown as Sql);
   });
 
@@ -165,11 +166,26 @@ async function seedConfig(sql: Sql): Promise<string> {
     VALUES (${versionId}, ${TENANT}, 1, 'draft',
             'Initial product configuration, derived from the built-in defaults', ${admin}, NULL, NULL)`;
 
+  /**
+   * IPC's own numbering, as a tenant OVERRIDE of the product default.
+   *
+   * This is what the configuration model exists for. The product ships
+   * `RMP-{MAT}-{SEQ}`; IPC overrides it with `IPRS{MAT}{SEQ}`. Note that
+   * `tenants.lot_numbering_template` also holds a template — it is now
+   * display-only and the config entry is authoritative. Two sources of truth
+   * for the same fact is how a lot ends up with two different codes depending
+   * on which code path rendered it.
+   */
+  const ipcNumbering = defaultNumbering().map((n) =>
+    n.entity === 'lot'
+      ? { ...n, template: 'IPRS{MAT}{SEQ}' }
+      : n);
+
   const entries: Array<[string, string, unknown]> = [
     ...defaultRoles().map((r) => ['role', r.key, r] as [string, string, unknown]),
     ...defaultWorkflows().map((w) => ['workflow', w.key, w] as [string, string, unknown]),
     ...defaultSodConfig().map((s) => ['sod', s.ruleId, s] as [string, string, unknown]),
-    ...defaultNumbering().map((n) => ['numbering', n.key, n] as [string, string, unknown]),
+    ...ipcNumbering.map((n) => ['numbering', n.key, n] as [string, string, unknown]),
     ...defaultFlags().map((f) => ['flag', f.key, f] as [string, string, unknown]),
   ];
   for (const [kind, key, payload] of entries) {
@@ -419,6 +435,28 @@ async function seedCompliance(sql: Sql) {
               ${uuidFor(`user:${c.owner}`)}, ${uuidFor('team:organics')}, ${c.raised})`;
   }
   console.log(`compliance: ${(D['facilities'] as []).length} facilities, ${(D['capa'] as []).length} CAPA`);
+}
+
+/**
+ * Prime the identifier counters past the seeded rows.
+ *
+ * The seed inserts records with the prototype's own codes (PRJ-0412, ST-1001).
+ * A counter starting at 1 would render PRJ-0001 fine, but a counter starting
+ * below the seeded high-water mark eventually collides on the unique index —
+ * and the failure would surface as a constraint error on an unrelated create,
+ * long after the cause.
+ */
+async function primeCounters(sql: Sql) {
+  const highWater: Array<[string, number]> = [
+    ['project', 500], ['study', 1100], ['property_value', 10],
+    ['lot', 1], ['certificate', 2050], ['order', 3400], ['capa', 300],
+  ];
+  for (const [entity, start] of highWater) {
+    await sql`INSERT INTO lotmark.numbering_counters (tenant_id, entity, scope, next_value)
+              VALUES (${TENANT}, ${entity}, 'all', ${start})
+              ON CONFLICT (tenant_id, entity, scope) DO UPDATE SET next_value = ${start}`;
+  }
+  console.log(`counters: primed past the seeded records`);
 }
 
 async function recordSeedInLedger(sql: Sql) {

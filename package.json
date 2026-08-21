@@ -13,13 +13,14 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "db:generate": "pnpm --filter @lotmark/db generate",
-    "db:migrate": "psql -v ON_ERROR_STOP=1 -q -d lotmark_dev -f packages/db/migrations/0000_initial_schema.sql -f packages/db/migrations/0001_integrity_constraints.sql -f packages/db/migrations/0002_audit_chain.sql -f packages/db/migrations/0003_signing.sql -f packages/db/migrations/0004_row_level_security.sql -f packages/db/migrations/0005_app_role.sql -f packages/db/migrations/0006_tenant_resolution.sql",
+    "db:migrate": "pnpm --filter @lotmark/db migrate",
     "db:seed": "pnpm --filter @lotmark/db seed",
     "db:reset": "pnpm --filter @lotmark/db reset",
     "api": "pnpm --filter @lotmark/api start",
     "smoke": "node apps/api/scripts/smoke.mjs",
     "db:setup": "createdb lotmark_dev 2>/dev/null; pnpm db:migrate && pnpm db:seed",
-    "web": "pnpm --filter @lotmark/web dev"
+    "web": "pnpm --filter @lotmark/web dev",
+    "db:status": "pnpm --filter @lotmark/db migrate:status"
   },
   "devDependencies": {
     "typescript": "^5.7.2",

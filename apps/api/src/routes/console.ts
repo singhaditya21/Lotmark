@@ -9,6 +9,7 @@ import { inTenantTransaction } from '../db';
 import { requireSession } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
+import { forbidden, notFound, sendProblem } from '../http/problem';
 
 export async function registerConsoleRoutes(app: FastifyInstance): Promise<void> {
   const { cfg, db } = app;
@@ -157,9 +158,9 @@ export async function registerConsoleRoutes(app: FastifyInstance): Promise<void>
       };
     });
 
-    if (result.status === 404) return reply.code(404).send(problem('not_found', 'No such project.'));
+    if (result.status === 404) return sendProblem(reply, notFound('No such project.'));
     if (result.status === 403) {
-      return reply.code(403).send(problem(result.verdict.reason, result.verdict.message));
+      return sendProblem(reply, forbidden(result.verdict.reason, result.verdict.message));
     }
     return reply.send(result.body);
   });
@@ -198,8 +199,8 @@ export async function registerConsoleRoutes(app: FastifyInstance): Promise<void>
       }) };
     });
 
-    if (!out) return reply.code(404).send(problem('not_found', 'No such project.'));
-    if ('forbidden' in out) return reply.code(403).send(problem(out.forbidden.reason, out.forbidden.message));
+    if (!out) return sendProblem(reply, notFound('No such project.'));
+    if ('forbidden' in out) return sendProblem(reply, forbidden(out.forbidden.reason, out.forbidden.message));
     return reply.send(out);
   });
 
@@ -212,7 +213,7 @@ export async function registerConsoleRoutes(app: FastifyInstance): Promise<void>
       authority: ctx.authority, permission: 'audit:read',
       scope: { kind: 'tenant' }, sodSettings: {}, onDate: ctx.today,
     });
-    if (!verdict.allowed) return reply.code(403).send(problem(verdict.reason, verdict.message));
+    if (!verdict.allowed) return sendProblem(reply, forbidden(verdict.reason, verdict.message));
 
     const limit = Math.min(Number(req.query.limit ?? 100) || 100, 500);
     const rows = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, (tx) =>
@@ -238,7 +239,7 @@ export async function registerConsoleRoutes(app: FastifyInstance): Promise<void>
       authority: ctx.authority, permission: 'audit:verify',
       scope: { kind: 'tenant' }, sodSettings: {}, onDate: ctx.today,
     });
-    if (!verdict.allowed) return reply.code(403).send(problem(verdict.reason, verdict.message));
+    if (!verdict.allowed) return sendProblem(reply, forbidden(verdict.reason, verdict.message));
 
     const result = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
       const [row] = await tx`SELECT * FROM lotmark.verify_audit_chain(${ctx.tenantId})`;
@@ -266,6 +267,3 @@ export async function registerConsoleRoutes(app: FastifyInstance): Promise<void>
   });
 }
 
-function problem(code: string, detail: string) {
-  return { type: `https://lotmark.local/problems/${code}`, title: code, detail };
-}

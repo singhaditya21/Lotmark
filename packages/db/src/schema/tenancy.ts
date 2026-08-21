@@ -26,7 +26,17 @@ export const tenantsTable = lotmark.table('tenants', {
 
   /** The conformance frame claimed, e.g. 'ISO 17034 + GIGW 3.0 + DPDP'. */
   conformanceFrame: text('conformance_frame').notNull(),
-  /** Lot numbering template, e.g. 'RMP-{MAT}-{SEQ}' or 'IPRS{MAT}{SEQ}'. */
+  /**
+   * DISPLAY ONLY — not authoritative.
+   *
+   * The numbering template that actually renders identifiers lives in
+   * `config_entries` under kind `numbering`, because numbering is tenant
+   * CONFIGURATION and belongs in the versioned model with everything else.
+   * This column is retained for the tenant-profile screen and is kept in step
+   * by the seed. Two sources of truth for one fact is how a lot ends up with
+   * two different codes depending on which code path rendered it — which is
+   * exactly what happened before the counter was introduced.
+   */
   lotNumberingTemplate: text('lot_numbering_template').notNull(),
   /** Where this tenant's data rests, e.g. 'NIC / MeitY, in-country'. */
   dataResidency: text('data_residency').notNull(),

@@ -9,6 +9,7 @@ import { registerConsoleRoutes } from './routes/console';
 import { registerWorkflowRoutes } from './routes/workflow';
 import { registerValueRoutes } from './routes/values';
 import { registerLotRoutes } from './routes/lots';
+import { registerCreateRoutes } from './routes/create';
 import { KeyProvider } from './services/keys';
 
 declare module 'fastify' {
@@ -69,6 +70,7 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
   await app.register(registerWorkflowRoutes, { prefix: '/api/v1' });
   await app.register(registerValueRoutes, { prefix: '/api/v1' });
   await app.register(registerLotRoutes, { prefix: '/api/v1' });
+  await app.register(registerCreateRoutes, { prefix: '/api/v1' });
 
   app.addHook('onClose', async () => { await app.db.end(); });
   return app;

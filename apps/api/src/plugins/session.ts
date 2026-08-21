@@ -5,6 +5,7 @@ import {
 } from '@lotmark/domain';
 import { inTenantTransaction } from '../db';
 import { SESSION_COOKIE, hashToken, loadLiveSession } from '../services/sessions';
+import { notAuthenticated, notProvisioned, secondFactorRequired, sendProblem, sessionExpired } from '../http/problem';
 
 /**
  * The authenticated request context.
@@ -42,7 +43,7 @@ export async function requireSession(
 ): Promise<RequestContext | null> {
   const token = req.cookies[SESSION_COOKIE];
   if (!token) {
-    await reply.code(401).send(problem('not_authenticated', 'Sign in to continue.'));
+    await sendProblem(reply, notAuthenticated('Sign in to continue.'));
     return null;
   }
 
@@ -51,7 +52,7 @@ export async function requireSession(
   const [tenantRow] = await app.db`SELECT * FROM lotmark.resolve_tenant(NULL)`;
   const tenant = tenantRow as { id: string; time_source: string; region: string } | undefined;
   if (!tenant) {
-    await reply.code(503).send(problem('not_provisioned', 'No tenant is provisioned.'));
+    await sendProblem(reply, notProvisioned('No tenant is provisioned.'));
     return null;
   }
 
@@ -144,7 +145,7 @@ export async function requireSession(
 
   if (!ctx) {
     reply.clearCookie(SESSION_COOKIE, { path: '/' });
-    await reply.code(401).send(problem('session_expired', 'Your session has ended. Sign in again.'));
+    await sendProblem(reply, sessionExpired('Your session has ended. Sign in again.'));
     return null;
   }
 
@@ -154,13 +155,10 @@ export async function requireSession(
    * cannot forget it.
    */
   if (!ctx.mfaSatisfied) {
-    await reply.code(401).send(problem('second_factor_required', 'Complete the second factor to continue.'));
+    await sendProblem(reply, secondFactorRequired('Complete the second factor to continue.'));
     return null;
   }
 
   return ctx;
 }
 
-function problem(code: string, detail: string) {
-  return { type: `https://lotmark.local/problems/${code}`, title: code, detail };
-}
