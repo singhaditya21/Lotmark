@@ -108,6 +108,23 @@ export const OPERATIONS: readonly Operation[] = [
     'Re-authenticate to open a signing window',
     '21 CFR 11 §11.200(a)(1): the first signing of a session needs both ' +
     'components. Subsequent signings within the window may use one.'),
+  /* ── Custom fields ────────────────────────────────────────────────────── */
+  op('GET', '/api/v1/custom-fields/:entity', 'Custom fields',
+    'The shape of the custom-field form for a record type', 'project:read',
+    'Definitions only, no data. The permission required depends on the entity — see '
+    + 'CUSTOM_FIELD_PERMISSIONS; project:read is named here as the commonest of them.'),
+  op('GET', '/api/v1/custom-fields/:entity/:recordId', 'Custom fields',
+    'The form and what this record currently holds', 'project:read',
+    'Returns the current revision number, which a save must be based on. 0 means nothing '
+    + 'has been recorded yet.'),
+  op('GET', '/api/v1/custom-fields/:entity/:recordId/history', 'Custom fields',
+    'Every revision of a record\u2019s custom fields', 'project:read',
+    'Append-only: 21 CFR 11 \u00a711.10(e) requires that a change does not obscure what it replaced.'),
+  op('PUT', '/api/v1/custom-fields/:entity/:recordId', 'Custom fields',
+    'Record the next revision of a record\u2019s custom fields', 'project:manage',
+    'Optimistic: basedOnRevision must be the revision the caller read, and a concurrent save '
+    + 'is a 409 rather than a silent overwrite. The permission required depends on the entity.'),
+
   sessionOp('POST', '/api/v1/auth/password', 'Authentication', 'Replace your own password',
     'Requires the current password as well as the session. Reachable while the account still '
     + 'owes a password change — it is the only route that can clear that state. Ends every other '

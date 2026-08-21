@@ -128,6 +128,34 @@ export async function inTenantTransaction<T>(
 }
 
 /**
+ * Run `fn` inside a SAVEPOINT, so an expected constraint violation can be
+ * caught without poisoning the transaction around it.
+ *
+ * PostgreSQL aborts the WHOLE transaction on any statement error. Catching a
+ * unique violation and carrying on therefore does not work: every later
+ * statement returns "current transaction is aborted", and the COMMIT re-raises
+ * the original error — so an expected conflict arrives at the client as a 500,
+ * and anything the handler meant to write afterwards is lost with it. Measured,
+ * not assumed.
+ *
+ * The cast is here rather than at the call sites. `Sql` is the top-level
+ * connection type and has no `savepoint`; the object a transaction callback
+ * actually receives is postgres.js's `TransactionSql`, which does, and
+ * `inTenantTransaction` widens it back to `Sql` so that every service takes one
+ * type. One cast in one place, with the reason attached, beats the same cast
+ * scattered wherever a savepoint is needed.
+ */
+export async function inSavepoint(tx: Sql, fn: (sp: Sql) => Promise<void>): Promise<void> {
+  const t = tx as unknown as { savepoint?: (f: (sp: Sql) => Promise<void>) => Promise<void> };
+  if (typeof t.savepoint !== 'function') {
+    // Not inside a transaction. Failing loudly beats running the body without
+    // the protection its caller is relying on.
+    throw new Error('inSavepoint was called outside a transaction.');
+  }
+  await t.savepoint(fn);
+}
+
+/**
  * Read the records as they stood on a past date.
  *
  * Separate from `inTenantTransaction` on purpose, and READ-ONLY by

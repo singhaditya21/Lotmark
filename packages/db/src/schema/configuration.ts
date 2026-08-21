@@ -142,12 +142,21 @@ export const roleAssignmentsTable = lotmark.table('role_assignments', {
 }));
 
 /**
- * Values for tenant-defined custom fields.
+ * Values for tenant-defined custom fields — append-only revisions.
  *
- * Held as one JSONB document per record rather than as an EAV table: the whole
- * document is read and written with its parent, it is never joined across
- * records, and JSONB gives GIN indexing for the cases where it must be searched.
- * EAV would turn every detail view into an N-row join for no benefit.
+ * Held as one JSONB document rather than as an EAV table: the whole document is
+ * read and written with its parent, it is never joined across records, and
+ * JSONB gives GIN indexing for the cases where it must be searched. EAV would
+ * turn every detail view into an N-row join for no benefit.
+ *
+ * One document per REVISION, not per record — the current document is the
+ * highest revision. 21 CFR 11 §11.10(e): an audit trail must record changes and
+ * must not obscure previously recorded information, and an in-place UPDATE
+ * obscures by definition. It matters concretely because `field.onCertificate`
+ * lets a custom value be printed on an issued certificate; if that value could
+ * be edited afterwards, the certificate would stop being explicable from the
+ * records. Same answer the rest of the schema gives — see `competenceRecords`,
+ * which supersede rather than edit, for the same reason.
  *
  * Validated on write against the field definitions in the ACTIVE config version.
  * Records keep values for fields later removed from configuration, because
@@ -159,11 +168,43 @@ export const customFieldValuesTable = lotmark.table('custom_field_values', {
   /** Which built-in entity, e.g. 'lot', 'study'. */
   entity: text('entity').notNull(),
   recordId: uuid('record_id').notNull(),
+
+  /** 1 for the first document; each save writes the next. */
+  revision: integer('revision').notNull().default(1),
+
   values: jsonb('values').$type<Record<string, unknown>>().notNull().default({}),
-  /** The config version whose field definitions these values were validated against. */
-  configVersionId: uuid('config_version_id').references(() => configVersionsTable.id),
+
+  /**
+   * The config version whose field definitions THIS revision was validated
+   * against. NOT NULL — a value whose governing rules are unanswerable cannot
+   * be checked by anybody later — and never restamped, which is what keeps an
+   * old revision explicable after the definitions have moved on.
+   */
+  configVersionId: uuid('config_version_id').notNull()
+    .references(() => configVersionsTable.id),
+
+  /**
+   * Who recorded it. No system fallback: scheduled work does not fill in forms,
+   * and if it ever needs to, that is a design conversation rather than a
+   * nullable column.
+   */
+  recordedBy: uuid('recorded_by').notNull().references(() => usersTable.id),
+
+  /** Optional note from the person saving, kept with the revision. */
+  reason: text('reason'),
+
   ...timestamps,
 }, (t) => ({
-  recordUnique: uniqueIndex('custom_field_values_record_unique').on(t.entity, t.recordId),
+  /**
+   * Tenant-scoped, unlike the index this replaced — which was UNIQUE
+   * (entity, record_id) with no tenant_id, the only one in the schema shaped
+   * that way. Under FORCED row-level security a collision could then be raised
+   * by a row the caller cannot see. It also carries the revision, which is what
+   * makes a concurrent edit a 409 rather than a silently discarded save.
+   */
+  revisionUnique: uniqueIndex('custom_field_values_revision_unique')
+    .on(t.tenantId, t.entity, t.recordId, t.revision),
+  currentIdx: index('custom_field_values_current_idx')
+    .on(t.tenantId, t.entity, t.recordId, t.revision),
   entityIdx: index('custom_field_values_entity_idx').on(t.tenantId, t.entity),
 }));

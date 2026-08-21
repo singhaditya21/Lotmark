@@ -27,6 +27,31 @@ export const configKeySchema = z.string().min(1).max(64)
 const key = configKeySchema;
 const label = z.string().min(1).max(120);
 
+/**
+ * The record types a tenant may extend with custom fields.
+ *
+ * `entity` on a field, a layout and a view used to be a free slug, so a field
+ * on entity `widgets` published cleanly and rendered nowhere — configuration
+ * that looks applied and does nothing, which is the failure this model exists
+ * to prevent.
+ *
+ * Written out rather than derived from the state machines, because the literal
+ * types are what make the per-entity table and permission maps exhaustively
+ * checked by the compiler: `StateMachine` types its `name` as `string`, so
+ * deriving this would turn every `Record<CustomFieldEntity, …>` into
+ * `Record<string, …>` and lose exactly the check worth having.
+ * `field-values.test.ts` asserts this list equals the machines' names, so it
+ * cannot drift from them either.
+ *
+ * Deliberately NOT applied to `numbering.entity`, whose vocabulary is larger:
+ * `certificate` is numbered and has no state machine of its own.
+ */
+export const CUSTOM_FIELD_ENTITIES = [
+  'project', 'study', 'property_value', 'lot', 'order', 'entitlement', 'capa',
+] as const;
+
+const customFieldEntity = z.enum(CUSTOM_FIELD_ENTITIES);
+
 /* ── A · Roles ───────────────────────────────────────────────────────────── */
 
 export const roleConfigSchema = z.object({
@@ -147,7 +172,7 @@ export type FieldType = z.infer<typeof fieldTypeSchema>;
 export const fieldConfigSchema = z
   .object({
     key,
-    entity: key,
+    entity: customFieldEntity,
     label,
     type: fieldTypeSchema,
     helpText: z.string().max(500).optional(),
@@ -192,7 +217,11 @@ export const picklistConfigSchema = z.object({
       retired: z.boolean().default(false),
       sortOrder: z.number().int().default(0),
     }))
-    .min(1),
+    .min(1)
+    // Two entries with the same stored value and different labels both parsed,
+    // so which label a record displayed depended on array order.
+    .refine((vs) => new Set(vs.map((v) => v.value)).size === vs.length,
+      'two values in this picklist are the same'),
 });
 export type PicklistConfig = z.infer<typeof picklistConfigSchema>;
 
@@ -200,7 +229,7 @@ export type PicklistConfig = z.infer<typeof picklistConfigSchema>;
 
 export const layoutConfigSchema = z.object({
   key,
-  entity: key,
+  entity: customFieldEntity,
   name: label,
   /** Restrict this layout to particular roles; empty means everyone. */
   roles: z.array(key).default([]),
@@ -209,11 +238,13 @@ export const layoutConfigSchema = z.object({
       title: label,
       columns: z.number().int().min(1).max(4).default(2),
       collapsed: z.boolean().default(false),
+      // `.min(1)`: a section with no fields renders as a heading above nothing.
+      // Only `sections` carried a minimum, so an empty one parsed happily.
       fields: z.array(z.object({
         field: key,
         span: z.number().int().min(1).max(4).default(1),
         readOnly: z.boolean().default(false),
-      })),
+      })).min(1, 'a section must place at least one field'),
     }))
     .min(1),
 });
@@ -221,7 +252,7 @@ export type LayoutConfig = z.infer<typeof layoutConfigSchema>;
 
 export const viewConfigSchema = z.object({
   key,
-  entity: key,
+  entity: customFieldEntity,
   name: label,
   roles: z.array(key).default([]),
   columns: z.array(z.object({

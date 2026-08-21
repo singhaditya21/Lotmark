@@ -18,6 +18,7 @@ Take the next free number from this table and add a row; do not take it from
 | 0022 | `commercial_surfaces` | 3 — orders, entitlements, dispatch, vault | 0017, 0020, 0021 |
 | 0023 | ~~`conformance_views`~~ | 6 — **withdrawn, never written** | — |
 | 0024 | `password_change` | Forced password change on first sign-in | — |
+| 0025 | `custom_field_values_live` | Form designer — make `field`/`picklist`/`layout` live | 0017 |
 
 ## Why those orderings, specifically
 
@@ -55,6 +56,13 @@ Take the next free number from this table and add a row; do not take it from
   appearing later would be indistinguishable from a renamed migration to anyone
   reading this table. Retiring a number costs nothing; reusing one costs the
   ability to trust the sequence.
+
+- **0025 after 0017.** It makes `custom_field_values` append-only and its
+  `config_version_id` NOT NULL. Every revision is stamped with the ACTIVE
+  configuration version, so the one-draft-per-tenant rule and the
+  risky-change-is-signed CHECK that 0017 added are what make that stamp mean
+  something. Safe to run as written only because the table is empty: it has
+  existed since 0000 and nothing has ever written to it.
 
 - **0024 stands alone.** It adds two columns to `users` and depends on nothing.
   It deliberately does NOT back-fill `password_changed_at`, and its default of

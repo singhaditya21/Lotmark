@@ -249,6 +249,191 @@
         }
       }
     },
+    "/api/v1/custom-fields/{entity}": {
+      "get": {
+        "operationId": "getCustomFieldsByEntity",
+        "summary": "The shape of the custom-field form for a record type",
+        "description": "Definitions only, no data. The permission required depends on the entity — see CUSTOM_FIELD_PERMISSIONS; project:read is named here as the commonest of them. Requires `project:read`.",
+        "tags": [
+          "Custom fields"
+        ],
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The entity."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/custom-fields/{entity}/{recordId}": {
+      "get": {
+        "operationId": "getCustomFieldsByEntityByRecordId",
+        "summary": "The form and what this record currently holds",
+        "description": "Returns the current revision number, which a save must be based on. 0 means nothing has been recorded yet. Requires `project:read`.",
+        "tags": [
+          "Custom fields"
+        ],
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The entity."
+          },
+          {
+            "name": "recordId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The recordId."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      },
+      "put": {
+        "operationId": "putCustomFieldsByEntityByRecordId",
+        "summary": "Record the next revision of a record’s custom fields",
+        "description": "Optimistic: basedOnRevision must be the revision the caller read, and a concurrent save is a 409 rather than a silent overwrite. The permission required depends on the entity. Requires `project:manage`.",
+        "tags": [
+          "Custom fields"
+        ],
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The entity."
+          },
+          {
+            "name": "recordId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The recordId."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/custom-fields/{entity}/{recordId}/history": {
+      "get": {
+        "operationId": "getCustomFieldsByEntityByRecordIdHistory",
+        "summary": "Every revision of a record’s custom fields",
+        "description": "Append-only: 21 CFR 11 §11.10(e) requires that a change does not obscure what it replaced. Requires `project:read`.",
+        "tags": [
+          "Custom fields"
+        ],
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The entity."
+          },
+          {
+            "name": "recordId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The recordId."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
     "/api/v1/auth/password": {
       "post": {
         "operationId": "postAuthPassword",

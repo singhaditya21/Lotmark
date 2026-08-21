@@ -15,6 +15,7 @@ import path from 'node:path';
 import { hashPassword, enrolmentUri } from '@lotmark/security';
 import {
   defaultRoles, defaultWorkflows, defaultSodConfig, defaultNumbering, defaultFlags,
+  fieldConfigSchema, picklistConfigSchema, layoutConfigSchema,
 } from '@lotmark/domain';
 import { createClient, ADMIN_URL, type Sql } from '../client';
 import { uuidFor } from './ids';
@@ -182,12 +183,92 @@ async function seedConfig(sql: Sql): Promise<string> {
       ? { ...n, template: 'IPRS{MAT}{SEQ}' }
       : n);
 
+  /**
+   * Custom fields IPC defined for itself — the form designer, with something in it.
+   *
+   * The product ships none of these: `field`, `picklist` and `layout` have no
+   * product default, because everything of these kinds is something a tenant
+   * invented. They are seeded here for the same reason the demonstration
+   * projects and lots are — so the feature can be seen working, and so the
+   * screens have something real to render.
+   *
+   * Parsed through the schemas rather than cast, so a seed that drifts from
+   * what the engine accepts fails here rather than at the first render.
+   */
+  const customFields = [
+    fieldConfigSchema.parse({
+      key: 'batch_origin', entity: 'lot', label: 'Batch origin',
+      type: 'text', required: true, maxLength: 120, sortOrder: 1,
+      helpText: 'Where the bulk material for this lot came from.',
+    }),
+    fieldConfigSchema.parse({
+      key: 'packaging', entity: 'lot', label: 'Packaging',
+      type: 'select', picklistKey: 'packaging', required: true, sortOrder: 2,
+      onCertificate: true,
+    }),
+    fieldConfigSchema.parse({
+      key: 'ampoules_filled', entity: 'lot', label: 'Ampoules filled',
+      type: 'integer', min: 1, max: 100000, sortOrder: 3,
+    }),
+    fieldConfigSchema.parse({
+      key: 'fill_notes', entity: 'lot', label: 'Filling notes',
+      type: 'textarea', maxLength: 2000, sortOrder: 4,
+    }),
+    fieldConfigSchema.parse({
+      key: 'root_cause_category', entity: 'capa', label: 'Root cause category',
+      type: 'select', picklistKey: 'root_cause', sortOrder: 1,
+    }),
+  ];
+
+  const picklists = [
+    picklistConfigSchema.parse({
+      key: 'packaging', name: 'Packaging',
+      values: [
+        { value: 'ampoule_2ml', label: '2 mL amber ampoule', sortOrder: 1 },
+        { value: 'vial_10ml', label: '10 mL screw-cap vial', sortOrder: 2 },
+        { value: 'sachet_1g', label: '1 g foil sachet', sortOrder: 3 },
+        // Retired: existing lots keep it and it is not offered again.
+        { value: 'bottle_50ml', label: '50 mL bottle (withdrawn 2024)', retired: true, sortOrder: 4 },
+      ],
+    }),
+    picklistConfigSchema.parse({
+      key: 'root_cause', name: 'Root cause category',
+      values: [
+        { value: 'method', label: 'Analytical method', sortOrder: 1 },
+        { value: 'equipment', label: 'Equipment', sortOrder: 2 },
+        { value: 'material', label: 'Starting material', sortOrder: 3 },
+        { value: 'human', label: 'Human factors', sortOrder: 4 },
+        { value: 'supplier', label: 'Supplier', sortOrder: 5 },
+      ],
+    }),
+  ];
+
+  const layouts = [
+    layoutConfigSchema.parse({
+      key: 'lot_production', entity: 'lot', name: 'Lot production detail',
+      sections: [
+        {
+          title: 'Origin and packaging', columns: 2,
+          fields: [{ field: 'batch_origin', span: 2 }, { field: 'packaging' },
+                   { field: 'ampoules_filled' }],
+        },
+        {
+          title: 'Filling', columns: 1, collapsed: false,
+          fields: [{ field: 'fill_notes', span: 1 }],
+        },
+      ],
+    }),
+  ];
+
   const entries: Array<[string, string, unknown]> = [
     ...defaultRoles().map((r) => ['role', r.key, r] as [string, string, unknown]),
     ...defaultWorkflows().map((w) => ['workflow', w.key, w] as [string, string, unknown]),
     ...defaultSodConfig().map((s) => ['sod', s.ruleId, s] as [string, string, unknown]),
     ...ipcNumbering.map((n) => ['numbering', n.key, n] as [string, string, unknown]),
     ...defaultFlags().map((f) => ['flag', f.key, f] as [string, string, unknown]),
+    ...picklists.map((l) => ['picklist', l.key, l] as [string, string, unknown]),
+    ...customFields.map((f) => ['field', f.key, f] as [string, string, unknown]),
+    ...layouts.map((l) => ['layout', l.key, l] as [string, string, unknown]),
   ];
   for (const [kind, key, payload] of entries) {
     // sql.json(), not JSON.stringify(...)::jsonb — postgres.js serialises the

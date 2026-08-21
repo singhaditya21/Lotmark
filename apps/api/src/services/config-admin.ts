@@ -2,7 +2,9 @@ import {
   diffConfig, parseConfigPayload, requiresSignatureToPublish, changesRequireSignature,
   effectivePermissionsOfRole, roleConfigSchema, isPermission, RETENTION_SCHEDULE,
   ALL_CONFIG_KINDS, CONFIG_RISK, hasProductDefault,
+  fieldConfigSchema, picklistConfigSchema, layoutConfigSchema, isSupportedFieldType,
   type ConfigKind, type ConfigChange, type RoleConfig,
+  type FieldConfig, type PicklistConfig, type LayoutConfig,
 } from '@lotmark/domain';
 import { createHash } from 'node:crypto';
 import type { Sql } from '../db';
@@ -353,6 +355,166 @@ export async function publicationProblems(
   for (const e of entries.filter((x) => x.kind === 'retention')) {
     if (!classIds.has(e.key)) {
       problems.push(`Retention override '${e.key}' does not name a class in the statutory schedule.`);
+    }
+  }
+
+  problems.push(...await customFieldProblems(tx, tenantId, entries));
+
+  return problems;
+}
+
+/**
+ * Whether the custom fields, picklists and layouts in this version hold together.
+ *
+ * Each payload has already been validated ALONE, when it was written. None of
+ * these checks can be made there: they are all about one entry agreeing with
+ * another, and a schema only ever sees itself. A layout naming a field that
+ * does not exist parses perfectly and renders a form with a hole in it.
+ *
+ * Split out rather than inlined because it is the only part of publication
+ * validation that reads the RECORDS as well as the configuration — the
+ * immutable-type check below has to know whether anything has been stored.
+ */
+async function customFieldProblems(
+  tx: Sql, tenantId: string, entries: readonly ConfigEntryRow[],
+): Promise<string[]> {
+  const problems: string[] = [];
+
+  const fields = new Map<string, FieldConfig>();
+  for (const e of entries.filter((x) => x.kind === 'field')) {
+    const parsed = fieldConfigSchema.safeParse(e.payload);
+    if (!parsed.success) {
+      problems.push(`Field '${e.key}' is not valid: ${parsed.error.issues[0]?.message ?? 'unknown'}`);
+      continue;
+    }
+    fields.set(e.key, parsed.data);
+  }
+
+  const picklists = new Map<string, PicklistConfig>();
+  for (const e of entries.filter((x) => x.kind === 'picklist')) {
+    const parsed = picklistConfigSchema.safeParse(e.payload);
+    if (!parsed.success) {
+      problems.push(`Picklist '${e.key}' is not valid: ${parsed.error.issues[0]?.message ?? 'unknown'}`);
+      continue;
+    }
+    picklists.set(e.key, parsed.data);
+  }
+
+  const layouts: LayoutConfig[] = [];
+  for (const e of entries.filter((x) => x.kind === 'layout')) {
+    const parsed = layoutConfigSchema.safeParse(e.payload);
+    if (!parsed.success) {
+      problems.push(`Layout '${e.key}' is not valid: ${parsed.error.issues[0]?.message ?? 'unknown'}`);
+      continue;
+    }
+    layouts.push(parsed.data);
+  }
+
+  for (const [key, f] of fields) {
+    /**
+     * A type nothing can store. `attachment` is in the type vocabulary and has
+     * no upload surface, so publishing one produces a control that accepts
+     * nothing — and the administrator finds out from a user, not from here.
+     */
+    if (!isSupportedFieldType(f.type)) {
+      problems.push(
+        `Field '${key}' is of type '${f.type}', which cannot yet be stored or rendered. ` +
+        'Choose another type, or remove the field.',
+      );
+    }
+    // Presence of `picklistKey` is checked by the schema; that it names
+    // something real cannot be, because the picklist is a different entry.
+    if (f.picklistKey && !picklists.has(f.picklistKey)) {
+      problems.push(
+        `Field '${key}' draws from picklist '${f.picklistKey}', which this version does not define.`,
+      );
+    }
+  }
+
+  for (const l of layouts) {
+    for (const section of l.sections) {
+      for (const placed of section.fields) {
+        const f = fields.get(placed.field);
+        if (!f) {
+          problems.push(
+            `Layout '${l.key}' places field '${placed.field}', which this version does not define.`,
+          );
+        } else if (f.entity !== l.entity) {
+          problems.push(
+            `Layout '${l.key}' is for ${l.entity} but places field '${placed.field}', ` +
+            `which belongs to ${f.entity}.`,
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * A required field that no layout places can never be filled in.
+   *
+   * Once a layout exists for an entity it is authoritative — that is the point
+   * of a layout. So a required field left out of it makes every save of that
+   * record fail, on a field the person cannot see. Only checked for entities
+   * that HAVE a layout: with none, every field is rendered.
+   */
+  const laidOut = new Set(layouts.map((l) => l.entity));
+  const placedByEntity = new Map<string, Set<string>>();
+  for (const l of layouts) {
+    const set = placedByEntity.get(l.entity) ?? new Set<string>();
+    for (const s of l.sections) {
+      for (const p of s.fields) if (!p.readOnly) set.add(p.field);
+    }
+    placedByEntity.set(l.entity, set);
+  }
+  for (const [key, f] of fields) {
+    if (!f.required || !laidOut.has(f.entity)) continue;
+    if (!placedByEntity.get(f.entity)?.has(key)) {
+      problems.push(
+        `Field '${key}' is required on ${f.entity} but no layout places it as writable. ` +
+        'Nobody would be able to fill it in, so no record of that kind could be saved.',
+      );
+    }
+  }
+
+  /**
+   * A field's type cannot change once values have been stored under it.
+   *
+   * `field.immutableType` has carried the reason since the schema was written —
+   * "changing its type would reinterpret stored data" — and nothing enforced
+   * it. A `text` field holding 'Pune' republished as `number` does not convert
+   * anything; it makes every existing document fail validation the next time
+   * somebody edits the record, on a value they did not touch.
+   *
+   * Compared against the ACTIVE version, because that is what the stored
+   * documents were validated against. Costs one query, and only when the draft
+   * contains fields at all.
+   */
+  if (fields.size > 0) {
+    const active = await activeVersion(tx, tenantId);
+    if (active) {
+      const previous = await entriesOf(tx, active.id);
+      const held = await tx`
+        SELECT entity, count(DISTINCT record_id)::int AS records
+        FROM lotmark.custom_field_values
+        WHERE tenant_id = ${tenantId}
+        GROUP BY entity`;
+      const withRecords = new Set(
+        held.map((r) => (r as { entity: string; records: number }).entity),
+      );
+
+      for (const e of previous.filter((x) => x.kind === 'field')) {
+        const before = fieldConfigSchema.safeParse(e.payload);
+        const after = fields.get(e.key);
+        if (!before.success || !after) continue;
+        if (before.data.type === after.type) continue;
+        if (!before.data.immutableType) continue;
+        if (!withRecords.has(before.data.entity)) continue;
+        problems.push(
+          `Field '${e.key}' changes type from '${before.data.type}' to '${after.type}', ` +
+          `and ${before.data.entity} records already hold values for it. ` +
+          'Add a new field instead — changing this one would reinterpret what is already stored.',
+        );
+      }
     }
   }
 

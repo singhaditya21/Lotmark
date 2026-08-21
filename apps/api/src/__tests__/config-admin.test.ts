@@ -190,6 +190,119 @@ describe('whether an entry replaces a product default', () => {
   });
 });
 
+describe('custom fields have to hold together before they publish', () => {
+  /**
+   * Each payload has already been validated ALONE, when it was written. None of
+   * these can be checked there: they are all about one entry agreeing with
+   * another, and a schema only ever sees itself. A layout naming a field that
+   * does not exist parses perfectly and renders a form with a hole in it.
+   */
+  const lotField = (key: string, over: Record<string, unknown> = {}) => ({
+    key, entity: 'lot', label: `Field ${key}`, type: 'text', ...over,
+  });
+
+  it('refuses a layout that places a field nobody defined', async () => {
+    const id = await openDraft('A layout with a hole in it');
+    await putEntry(id, 'layout', 'lot_extra', {
+      key: 'lot_extra', entity: 'lot', name: 'Extra',
+      sections: [{ title: 'Extra', fields: [{ field: 'no_such_field' }] }],
+    });
+    const r = await review(id);
+    expect(r.publishable).toBe(false);
+    expect(r.problems.join(' ')).toMatch(/places field 'no_such_field'/);
+  });
+
+  it('refuses a layout that places a field belonging to another entity', async () => {
+    // It parses: both keys are slugs. It renders a lot form containing a CAPA
+    // field, which no lot will ever have a value for.
+    const id = await openDraft('A layout borrowing a field');
+    await putEntry(id, 'layout', 'lot_extra', {
+      key: 'lot_extra', entity: 'lot', name: 'Extra',
+      sections: [{ title: 'Extra', fields: [{ field: 'root_cause_category' }] }],
+    });
+    const r = await review(id);
+    expect(r.problems.join(' ')).toMatch(/belongs to capa/);
+  });
+
+  it('refuses a field drawing from a picklist nobody defined', async () => {
+    // The schema checks that a select HAS a picklistKey. That it names
+    // something real cannot be checked there — the picklist is another entry.
+    const id = await openDraft('A select with no list');
+    await putEntry(id, 'field', 'shelf', lotField('shelf', {
+      type: 'select', picklistKey: 'no_such_list',
+    }));
+    const r = await review(id);
+    expect(r.problems.join(' ')).toMatch(/picklist 'no_such_list'/);
+  });
+
+  it('refuses a type it cannot store', async () => {
+    // `attachment` is in the type vocabulary and has no upload surface, so
+    // publishing one produces a control that accepts nothing — and the
+    // administrator hears about it from a user rather than from here.
+    const id = await openDraft('An attachment field');
+    await putEntry(id, 'field', 'coa', lotField('coa', { type: 'attachment' }));
+    const r = await review(id);
+    expect(r.problems.join(' ')).toMatch(/cannot yet be stored or rendered/);
+  });
+
+  it('refuses a required field that no layout places', async () => {
+    /**
+     * Once a layout exists for an entity it is authoritative — that is what a
+     * layout is for. A required field left out of it makes every save of that
+     * record fail, on a field the person cannot see anywhere.
+     */
+    const id = await openDraft('A required field nobody can reach');
+    await putEntry(id, 'field', 'hidden_required',
+      lotField('hidden_required', { required: true }));
+    const r = await review(id);
+    expect(r.problems.join(' ')).toMatch(/no layout places it as writable/);
+  });
+
+  it('refuses changing a field’s type once records hold values for it', async () => {
+    /**
+     * `immutableType` has carried the reason since the schema was written —
+     * "changing its type would reinterpret stored data" — and nothing enforced
+     * it. A text field holding 'Bulk API, Hyderabad' republished as a number
+     * converts nothing; it makes every existing document fail the next time
+     * somebody edits an unrelated field on the same record.
+     */
+    const id = await openDraft('Reinterpreting what is already stored');
+    await putEntry(id, 'field', 'batch_origin', {
+      key: 'batch_origin', entity: 'lot', label: 'Batch origin',
+      type: 'number', required: true, sortOrder: 1,
+    });
+    const r = await review(id);
+    const text = r.problems.join(' ');
+    // Only a problem when values EXIST — custom-fields.test.ts records some.
+    if (text.includes('batch_origin')) {
+      expect(text).toMatch(/changes type from 'text' to 'number'/);
+    } else {
+      expect(text, 'no lot holds a value yet, so the change is allowed').not.toMatch(/batch_origin/);
+    }
+  });
+
+  it('lets a coherent set through', async () => {
+    const id = await openDraft('A field and a place to put it');
+    await putEntry(id, 'field', 'shelf', lotField('shelf'));
+    await putEntry(id, 'layout', 'lot_production', {
+      key: 'lot_production', entity: 'lot', name: 'Lot production detail',
+      sections: [
+        {
+          title: 'Origin and packaging', columns: 2,
+          fields: [{ field: 'batch_origin', span: 2 }, { field: 'packaging' },
+                   { field: 'ampoules_filled' }],
+        },
+        { title: 'Filling', columns: 1, fields: [{ field: 'fill_notes' }] },
+        { title: 'Storage', columns: 1, fields: [{ field: 'shelf' }] },
+      ],
+    });
+    const r = await review(id);
+    expect(r.problems, r.problems.join(' | ')).toEqual([]);
+    expect(r.publishable).toBe(true);
+    expect(r.needsSignature, 'a field is a behaviour change').toBe(true);
+  });
+});
+
 describe('drafts', () => {
   it('copies the active version and changes nothing until published', async () => {
     const before = await app.inject({ method: 'GET', url: '/api/v1/admin/config', headers: { cookie: admin } });

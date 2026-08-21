@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import {
-  resolveAuthority, resolveRoleKinds, roleConfigSchema,
+  resolveAuthority, resolveRoleKinds, roleConfigSchema, assignmentActiveOn,
   type ResolvedAuthority, type RoleConfig, type RoleAssignment, type RoleKind,
 } from '@lotmark/domain';
 import { inTenantTransaction } from '../db';
@@ -36,6 +36,15 @@ export interface RequestContext {
    */
   readonly organisation: { id: string; kind: string; name: string };
   readonly teams: ReadonlyArray<{ id: string; key: string; name: string }>;
+  /**
+   * The role KEYS this person holds today, as distinct from `roleKinds`.
+   *
+   * `roleKinds` is which half of the product they belong in; this is which
+   * roles they actually hold — 'quality', 'techmgr'. Needed because a custom
+   * field layout can be restricted to particular roles, and because a layout
+   * chosen from the wrong list would show somebody a form built for another job.
+   */
+  readonly roleKeys: readonly string[];
   readonly mfaSatisfied: boolean;
   /**
    * The account still carries a password somebody else chose for it.
@@ -184,6 +193,10 @@ export async function requireSession(
           name: user.organisation_name,
         },
         teams: teamRows.map((t) => t as { id: string; key: string; name: string }),
+        // Deduplicated: the same role held on two teams is one role.
+        roleKeys: [...new Set(
+          assignments.filter((a) => assignmentActiveOn(a, today)).map((a) => a.roleKey),
+        )],
         mfaSatisfied: session.mfa_satisfied_at !== null,
         passwordChangeRequired: user.password_change_required,
         timeSource: tenant.time_source,
