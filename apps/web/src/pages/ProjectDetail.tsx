@@ -6,6 +6,9 @@ import {
 import { sig } from '../lib/format';
 import { SignAction } from '../components/SignAction';
 import { StepUp } from '../components/StepUp';
+import { NewStudy } from '../components/NewStudy';
+import { RecordResults } from '../components/RecordResults';
+import { Dialog, Field } from '../components/Dialog';
 import type { Meaning } from '../lib/meanings';
 
 type Pending =
@@ -19,6 +22,11 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
   const qc = useQueryClient();
   const [pending, setPending] = useState<Pending>(null);
   const [stepUpFor, setStepUpFor] = useState<string | null>(null);
+  const [newStudy, setNewStudy] = useState(false);
+  const [recordFor, setRecordFor] = useState<Study | null>(null);
+  const [newValue, setNewValue] = useState(false);
+  const [valueName, setValueName] = useState('Assay (as is)');
+  const [valueUnit, setValueUnit] = useState('% w/w');
   const [error, setError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
 
@@ -70,6 +78,14 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
       }
       setError(e instanceof ApiError ? e.problem.detail : 'The action could not be completed.');
     },
+  });
+
+  const createValue = useMutation({
+    mutationFn: () => api.post(`/projects/${project.id}/values`, {
+      propertyName: valueName, unit: valueUnit, coverageFactor: 2,
+    }),
+    onSuccess: () => { setNewValue(false); setError(null); refresh(); },
+    onError: (e) => setError(e instanceof ApiError ? e.problem.detail : 'Could not create the value.'),
   });
 
   const draftStudies = (studies.data?.studies ?? []).filter((s) => s.state === 'draft');
@@ -130,13 +146,19 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
       </div>
 
       <div className="card">
-        <div className="pad" style={{ paddingBottom: 0 }}>
-          <h2 style={{ marginTop: 0 }}>Studies</h2>
+        <div className="pad" style={{ paddingBottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ marginTop: 0, marginBottom: 0 }}>Studies</h2>
+          <button className="btn sm" onClick={() => setNewStudy(true)}>New study</button>
         </div>
         <div className="scroll">
           <table>
             <thead><tr><th>Code</th><th>Type</th><th>State</th><th>u</th><th>Signed</th><th /></tr></thead>
             <tbody>
+              {(studies.data?.studies ?? []).length === 0 && (
+                <tr><td colSpan={6} className="muted">
+                  No studies yet. A budget needs homogeneity, stability and characterisation.
+                </td></tr>
+              )}
               {(studies.data?.studies ?? []).map((s) => (
                 <tr key={s.id}>
                   <td className="mono">{s.code}</td>
@@ -146,9 +168,12 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
                   <td className="mono muted">{s.signedOn ?? '—'}</td>
                   <td>
                     {s.state === 'draft' && (
-                      <button className="btn sm" onClick={() => setPending({ kind: 'sign-study', id: s.id, code: s.code })}>
-                        Sign
-                      </button>
+                      <div className="row">
+                        <button className="btn ghost sm" onClick={() => setRecordFor(s)}>Measurements</button>
+                        <button className="btn sm" onClick={() => setPending({ kind: 'sign-study', id: s.id, code: s.code })}>
+                          Sign
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
@@ -159,13 +184,19 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
       </div>
 
       <div className="card">
-        <div className="pad" style={{ paddingBottom: 0 }}>
-          <h2 style={{ marginTop: 0 }}>Property values</h2>
+        <div className="pad" style={{ paddingBottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ marginTop: 0, marginBottom: 0 }}>Property values</h2>
+          <button className="btn sm" onClick={() => setNewValue(true)}>New value</button>
         </div>
         <div className="scroll">
           <table>
             <thead><tr><th>Code</th><th>Property</th><th>Value</th><th>U</th><th>State</th><th /></tr></thead>
             <tbody>
+              {(values.data?.values ?? []).length === 0 && (
+                <tr><td colSpan={6} className="muted">
+                  No property value yet. Create one once the three studies are signed.
+                </td></tr>
+              )}
               {(values.data?.values ?? []).map((v) => (
                 <tr key={v.id}>
                   <td className="mono">{v.code}</td>
@@ -249,6 +280,31 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
         onCancel={() => { setPending(null); setError(null); }}
         onSign={(meaning, reason) => pending && act.mutate({ p: pending, meaning, reason })}
       />
+
+      <NewStudy open={newStudy} projectId={project.id} onClose={() => setNewStudy(false)} />
+
+      {recordFor && (
+        <RecordResults open={recordFor !== null} study={recordFor} onClose={() => setRecordFor(null)} />
+      )}
+
+      <Dialog
+        open={newValue}
+        title="New property value"
+        lede="The value and its uncertainty are computed from the signed studies when you assign it. There is deliberately no field to type a number into."
+        onClose={() => setNewValue(false)}
+        footer={<>
+          <button className="btn" disabled={createValue.isPending || !valueName || !valueUnit}
+                  onClick={() => createValue.mutate()}>
+            {createValue.isPending ? 'Creating…' : 'Create value'}
+          </button>
+          <button className="btn ghost" onClick={() => setNewValue(false)}>Cancel</button>
+        </>}
+      >
+        <div className="grid2">
+          <Field label="Property"><input className="t" value={valueName} onChange={(e) => setValueName(e.target.value)} /></Field>
+          <Field label="Unit"><input className="t mono" value={valueUnit} onChange={(e) => setValueUnit(e.target.value)} /></Field>
+        </div>
+      </Dialog>
 
       <StepUp
         open={stepUpFor !== null}

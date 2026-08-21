@@ -8,7 +8,13 @@
 export interface Problem {
   type: string;
   title: string;
+  status: number;
   detail: string;
+  code: string;
+  /** The ledger entry that recorded this refusal, where one was written. */
+  auditSeq?: string;
+  /** Field-level detail, for inline display on a form. */
+  errors?: Array<{ field: string; message: string }>;
 }
 
 export class ApiError extends Error {
@@ -25,6 +31,11 @@ export class ApiError extends Error {
   get isForbidden(): boolean {
     return this.status === 403;
   }
+
+  /** Field-level errors, for rendering inline on a form. */
+  get fieldErrors(): Array<{ field: string; message: string }> {
+    return this.problem.errors ?? [];
+  }
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -35,12 +46,18 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   });
 
   if (!res.ok) {
-    let problem: Problem = { type: 'about:blank', title: String(res.status), detail: res.statusText };
+    let problem: Problem = {
+      type: 'about:blank', title: String(res.status), status: res.status,
+      detail: res.statusText, code: 'unknown',
+    };
     try {
       const body = await res.json();
       if (body && typeof body === 'object' && 'detail' in body) problem = body as Problem;
       else if (body && typeof body === 'object' && 'message' in body) {
-        problem = { type: 'about:blank', title: String(res.status), detail: String(body.message) };
+        problem = {
+          type: 'about:blank', title: String(res.status), status: res.status,
+          detail: String(body.message), code: 'unknown',
+        };
       }
     } catch { /* the body was not JSON; the status line is all we have */ }
     throw new ApiError(res.status, problem);
@@ -52,6 +69,8 @@ export const api = {
   get: <T>(path: string) => request<T>(path),
   post: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: 'POST', body: JSON.stringify(body ?? {}) }),
+  put: <T>(path: string, body?: unknown) =>
+    request<T>(path, { method: 'PUT', body: JSON.stringify(body ?? {}) }),
 };
 
 /* ── Shapes returned by the API ─────────────────────────────────────────── */

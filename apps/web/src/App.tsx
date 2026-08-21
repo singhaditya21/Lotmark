@@ -77,7 +77,7 @@ export function App() {
         ) : open ? (
           <ProjectDetail project={open} onBack={() => setOpen(null)} />
         ) : (
-          <Projects onOpen={setOpen} />
+          <Projects onOpen={setOpen} canCreate={held.has('project:manage')} />
         )}
       </main>
     </>

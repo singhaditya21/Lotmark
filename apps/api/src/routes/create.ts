@@ -143,8 +143,11 @@ export async function registerCreateRoutes(app: FastifyInstance): Promise<void> 
         VALUES (${ctx.tenantId}, ${code}, ${body.materialName}, ${body.casNumber ?? null},
                 ${body.sku}, 'design', ${ctx.userId}, ${teamId},
                 ${body.intakeQuantity ?? null}, ${body.targetUncertainty ?? null})
-        RETURNING id, code, stage`;
-      const project = row as { id: string; code: string; stage: string };
+        RETURNING id, code, stage, material_name, cas_number, sku`;
+      const project = row as {
+        id: string; code: string; stage: string;
+        material_name: string; cas_number: string | null; sku: string;
+      };
 
       await tx`
         INSERT INTO lotmark.state_transitions
@@ -159,7 +162,19 @@ export async function registerCreateRoutes(app: FastifyInstance): Promise<void> 
         changes: { code: project.code, material: body.materialName, sku: body.sku },
       });
 
-      return { status: 201 as const, body: { project: { ...project, material: body.materialName } } };
+      // The console navigates straight to the detail view on success, so the
+      // response must carry everything that view renders. Returning a partial
+      // object showed "CAS — · no team" on a project that had both.
+      return {
+        status: 201 as const,
+        body: {
+          project: {
+            id: project.id, code: project.code, stage: project.stage,
+            material: project.material_name, cas: project.cas_number,
+            sku: project.sku, team: (teamRow as { name: string }).name,
+          },
+        },
+      };
     });
 
     if (result.status === 403) {

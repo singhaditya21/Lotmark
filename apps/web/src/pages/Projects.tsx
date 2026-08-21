@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, type Project } from '../lib/api';
+import { NewProject } from '../components/NewProject';
 
-export function Projects({ onOpen }: { onOpen: (p: Project) => void }) {
+export function Projects({ onOpen, canCreate }: { onOpen: (p: Project) => void; canCreate: boolean }) {
+  const [creating, setCreating] = useState(false);
   const { data, isLoading, error } = useQuery({
     queryKey: ['projects'],
     queryFn: () => api.get<{ projects: Project[]; scope: string }>('/projects'),
@@ -14,7 +17,10 @@ export function Projects({ onOpen }: { onOpen: (p: Project) => void }) {
 
   return (
     <>
-      <h1>Projects</h1>
+      <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <h1>Projects</h1>
+        {canCreate && <button className="btn" onClick={() => setCreating(true)}>New project</button>}
+      </div>
       <p className="lede">
         {data?.scope === 'tenant'
           ? 'You hold visibility across the whole tenant.'
@@ -24,11 +30,22 @@ export function Projects({ onOpen }: { onOpen: (p: Project) => void }) {
       </p>
 
       {projects.length === 0 ? (
-        <div className="card pad">
-          <p className="muted" style={{ margin: 0 }}>
-            No projects are visible to you. This is a correct answer, not an
-            error — your role grants no project access in any team.
-          </p>
+        <div className="card empty">
+          {canCreate ? (
+            <>
+              <b>No projects yet</b>
+              Start one, and the studies, values and lots follow from it.
+              <div className="row" style={{ justifyContent: 'center', marginTop: 12 }}>
+                <button className="btn" onClick={() => setCreating(true)}>New project</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <b>Nothing to show you</b>
+              This is a correct answer, not an error — your role grants no
+              project access in any team.
+            </>
+          )}
         </div>
       ) : (
         <div className="card scroll">
@@ -50,6 +67,8 @@ export function Projects({ onOpen }: { onOpen: (p: Project) => void }) {
           </table>
         </div>
       )}
+
+      <NewProject open={creating} onClose={() => setCreating(false)} onCreated={(p) => { setCreating(false); onOpen(p); }} />
     </>
   );
 }

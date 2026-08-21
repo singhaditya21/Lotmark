@@ -107,3 +107,27 @@ dialog.modal .body { padding: 18px; }
 .ledger .e:last-child { border-bottom: 0; }
 .scroll { overflow-x: auto; }
 .spinner { color: var(--muted); padding: 20px; }
+
+/* ── Create forms ───────────────────────────────────────────────────────── */
+dialog.modal.wide{max-width:620px}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:0 14px}
+@media (max-width:560px){ .grid2{grid-template-columns:1fr} }
+label.f span em{font-style:normal}
+.field-error{display:block; color:var(--bad); font-size:12px; margin-top:4px}
+textarea.t{font-size:12.5px; line-height:1.55; resize:vertical}
+label.inline{display:flex; gap:8px; align-items:flex-start; font-size:13px; padding-top:2px}
+label.inline input{margin-top:3px}
+
+.picker{display:grid; gap:2px; max-height:190px; overflow-y:auto; border:1px solid var(--line); border-radius:7px; padding:5px}
+.pick{display:flex; gap:9px; align-items:center; padding:6px 8px; border-radius:5px; cursor:pointer; font-size:13px}
+.pick:hover{background:var(--line2)}
+.pick.on{background:var(--priT)}
+.pick .mono{min-width:52px; color:var(--muted)}
+
+.preview{border:1px solid var(--line); border-radius:7px; padding:10px 12px; margin-top:10px; background:var(--line2)}
+.preview .lab{font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin-bottom:6px}
+.preview table{font-size:12px}
+.preview th,.preview td{padding:3px 8px}
+
+.empty{padding:26px; text-align:center; color:var(--muted)}
+.empty b{display:block; color:var(--ink); font-size:15px; margin-bottom:5px}
