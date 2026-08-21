@@ -36,7 +36,7 @@ export function isSignatureMeaning(v: string): v is SignatureMeaning {
 }
 
 /** The kinds of record that can carry a signature. */
-export type SignableKind = 'study' | 'value' | 'certificate' | 'lot';
+export type SignableKind = 'study' | 'value' | 'certificate' | 'lot' | 'config_version';
 
 /**
  * The canonical material version.
@@ -80,11 +80,32 @@ export interface SignableLot {
   readonly expiryDate: string;
 }
 
+/**
+ * A configuration version being published.
+ *
+ * The material is the version's IDENTITY plus a digest of exactly what changed,
+ * not the whole configuration. Two reasons: the configuration can be large, and
+ * what the signer is attesting to is the CHANGE they reviewed — a signature
+ * over the whole document would still verify after an unrelated entry moved,
+ * and would fail to verify a change they did approve if anything else shifted.
+ *
+ * `changeDigest` is computed from the same diff shown on the approval screen,
+ * so the signature covers precisely what was on it.
+ */
+export interface SignableConfigVersion {
+  readonly id: string;
+  readonly versionNumber: number;
+  readonly basedOnVersionId: string | null;
+  readonly changeDigest: string;
+  readonly changeCount: number;
+}
+
 export type SignableRecord =
   | { kind: 'study'; record: SignableStudy }
   | { kind: 'value'; record: SignableValue }
   | { kind: 'certificate'; record: SignableCertificateIssue }
-  | { kind: 'lot'; record: SignableLot };
+  | { kind: 'lot'; record: SignableLot }
+  | { kind: 'config_version'; record: SignableConfigVersion };
 
 /** Escape field separators so no field can impersonate a boundary. */
 function field(value: string | number): string {
@@ -128,6 +149,13 @@ export function canonicalMaterial(signable: SignableRecord): string {
       const r = signable.record;
       return [
         v, 'lot', field(r.id), field(r.lotCode), field(r.projectId), field(r.expiryDate),
+      ].join('|');
+    }
+    case 'config_version': {
+      const r = signable.record;
+      return [
+        v, 'config_version', field(r.id), field(r.versionNumber),
+        field(r.basedOnVersionId ?? ''), field(r.changeDigest), field(r.changeCount),
       ].join('|');
     }
   }

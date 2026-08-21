@@ -8,6 +8,8 @@ import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { Audit } from './pages/Audit';
 import { Capa } from './pages/Capa';
+import { People } from './pages/People';
+import { Configuration } from './pages/Configuration';
 
 export function App() {
   const qc = useQueryClient();
@@ -86,6 +88,10 @@ export function App() {
           <Audit canVerify={held.has('audit:verify')} />
         ) : route === 'capa' ? (
           <Capa canManage={held.has('capa:manage')} />
+        ) : route === 'people' ? (
+          <People />
+        ) : route === 'configuration' ? (
+          <Configuration />
         ) : open ? (
           <ProjectDetail project={open} onBack={() => setOpen(null)}
                          canReissue={held.has('cert:reissue')} />

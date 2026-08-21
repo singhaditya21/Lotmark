@@ -1,0 +1,412 @@
+import {
+  diffConfig, parseConfigPayload, requiresSignatureToPublish, changesRequireSignature,
+  effectivePermissionsOfRole, roleConfigSchema, isPermission, RETENTION_SCHEDULE,
+  ALL_CONFIG_KINDS, CONFIG_RISK,
+  type ConfigKind, type ConfigChange, type RoleConfig,
+} from '@lotmark/domain';
+import { createHash } from 'node:crypto';
+import type { Sql } from '../db';
+
+/**
+ * Administering the configuration model.
+ *
+ * The model has been enforced since the first migration — entries are writable
+ * only on a draft, a published version is immutable, one version is active —
+ * and there has never been a way to use it. Every role, workflow and numbering
+ * template came from the seed, so "everything is configurable" described the
+ * schema and not the product.
+ *
+ * ── The rule everything else follows from ───────────────────────────────────
+ *
+ * A published version is NEVER edited. Editing means creating a new draft based
+ * on it and publishing that. Under GAMP 5 and 21 CFR Part 11 the validation
+ * evidence attests what the system does; if a tenant could change a workflow in
+ * place, the evidence would be stale the moment they did and records created
+ * yesterday would have been created under rules nobody can reconstruct.
+ *
+ * ── What is checked before a version can be published ───────────────────────
+ *
+ * A configuration that fails to resolve does not degrade gracefully: `session.ts`
+ * throws when no role parses, which means EVERY user is locked out, including
+ * the administrator who published it and would have to fix it. So publication
+ * validates the whole configuration first, and refuses rather than leaving a
+ * tenant nobody can sign in to.
+ */
+
+export interface ConfigVersionRow {
+  readonly id: string;
+  readonly version_number: number;
+  readonly status: 'draft' | 'active' | 'superseded';
+  readonly change_reason: string;
+  readonly based_on_version_id: string | null;
+  readonly created_by: string;
+  readonly created_at: string;
+  readonly published_by: string | null;
+  readonly published_at: string | null;
+  readonly signature_id: string | null;
+  readonly change_summary: ConfigChange[];
+}
+
+export interface ConfigEntryRow {
+  readonly id: string;
+  readonly kind: ConfigKind;
+  readonly key: string;
+  readonly payload: unknown;
+  readonly overrides_default: boolean;
+}
+
+export class ConfigAdminError extends Error {
+  constructor(message: string, readonly problems: readonly string[] = []) {
+    super(message);
+    this.name = 'ConfigAdminError';
+  }
+}
+
+/* ── Reading ──────────────────────────────────────────────────────────────── */
+
+export async function versionsOf(tx: Sql, tenantId: string): Promise<ConfigVersionRow[]> {
+  const rows = await tx`
+    SELECT id, version_number, status, change_reason, based_on_version_id,
+           created_by, created_at, published_by, published_at, signature_id, change_summary
+    FROM lotmark.config_versions
+    WHERE tenant_id = ${tenantId}
+    ORDER BY version_number DESC`;
+  return rows as unknown as ConfigVersionRow[];
+}
+
+export async function versionById(
+  tx: Sql, tenantId: string, versionId: string,
+): Promise<ConfigVersionRow | null> {
+  const [row] = await tx`
+    SELECT id, version_number, status, change_reason, based_on_version_id,
+           created_by, created_at, published_by, published_at, signature_id, change_summary
+    FROM lotmark.config_versions
+    WHERE tenant_id = ${tenantId} AND id = ${versionId} LIMIT 1`;
+  return (row as unknown as ConfigVersionRow | undefined) ?? null;
+}
+
+export async function activeVersion(tx: Sql, tenantId: string): Promise<ConfigVersionRow | null> {
+  const [row] = await tx`
+    SELECT id, version_number, status, change_reason, based_on_version_id,
+           created_by, created_at, published_by, published_at, signature_id, change_summary
+    FROM lotmark.config_versions
+    WHERE tenant_id = ${tenantId} AND status = 'active' LIMIT 1`;
+  return (row as unknown as ConfigVersionRow | undefined) ?? null;
+}
+
+export async function draftVersion(tx: Sql, tenantId: string): Promise<ConfigVersionRow | null> {
+  const [row] = await tx`
+    SELECT id, version_number, status, change_reason, based_on_version_id,
+           created_by, created_at, published_by, published_at, signature_id, change_summary
+    FROM lotmark.config_versions
+    WHERE tenant_id = ${tenantId} AND status = 'draft' LIMIT 1`;
+  return (row as unknown as ConfigVersionRow | undefined) ?? null;
+}
+
+export async function entriesOf(tx: Sql, versionId: string): Promise<ConfigEntryRow[]> {
+  const rows = await tx`
+    SELECT id, kind, key, payload, overrides_default
+    FROM lotmark.config_entries WHERE version_id = ${versionId}
+    ORDER BY kind, key`;
+  return rows as unknown as ConfigEntryRow[];
+}
+
+/* ── Editing ──────────────────────────────────────────────────────────────── */
+
+/**
+ * Open a draft by COPYING the active version's entries.
+ *
+ * A copy, not a reference. The draft has to be editable without the active
+ * version changing under the running system, and the diff needs a fixed
+ * baseline — `based_on_version_id` records which version that was, so
+ * `change_summary` is a derivation rather than a claim.
+ *
+ * One draft per tenant, enforced by a partial unique index in 0017: two open
+ * drafts are a fork, and whichever publishes second silently discards the
+ * other's changes while reporting success.
+ */
+export async function createDraft(
+  tx: Sql,
+  args: { tenantId: string; userId: string; changeReason: string },
+): Promise<ConfigVersionRow> {
+  const existing = await draftVersion(tx, args.tenantId);
+  if (existing) {
+    throw new ConfigAdminError(
+      `Version ${existing.version_number} is already open as a draft. ` +
+      'Publish or discard it before starting another — two open drafts are a fork, ' +
+      'and the second to publish would silently discard the first.',
+    );
+  }
+
+  const base = await activeVersion(tx, args.tenantId);
+  if (!base) throw new ConfigAdminError('This tenant has no active configuration to base a draft on.');
+
+  const [row] = await tx`
+    INSERT INTO lotmark.config_versions
+      (tenant_id, version_number, status, change_reason, based_on_version_id, created_by)
+    SELECT ${args.tenantId}, coalesce(max(version_number), 0) + 1, 'draft',
+           ${args.changeReason}, ${base.id}, ${args.userId}
+    FROM lotmark.config_versions WHERE tenant_id = ${args.tenantId}
+    RETURNING id, version_number, status, change_reason, based_on_version_id,
+              created_by, created_at, published_by, published_at, signature_id, change_summary`;
+  const draft = row as unknown as ConfigVersionRow;
+
+  await tx`
+    INSERT INTO lotmark.config_entries (tenant_id, version_id, kind, key, payload, overrides_default)
+    SELECT ${args.tenantId}, ${draft.id}, e.kind, e.key, e.payload, e.overrides_default
+    FROM lotmark.config_entries e WHERE e.version_id = ${base.id}`;
+
+  return draft;
+}
+
+/** Write one entry into a draft. The payload is validated against its kind. */
+export async function upsertEntry(
+  tx: Sql,
+  args: { tenantId: string; versionId: string; kind: ConfigKind; key: string; payload: unknown },
+): Promise<void> {
+  if (!ALL_CONFIG_KINDS.includes(args.kind)) {
+    throw new ConfigAdminError(`'${args.kind}' is not a configurable kind.`);
+  }
+  const parsed = parseConfigPayload(args.kind, args.payload);
+  if (!parsed.success) {
+    throw new ConfigAdminError(
+      `This ${args.kind} is not valid.`,
+      parsed.error.issues.map((i) => `${i.path.join('.') || args.kind}: ${i.message}`),
+    );
+  }
+
+  // The draft_only trigger refuses a write to a published version, so this is
+  // belt and braces — but it produces a message an administrator can act on
+  // rather than a trigger's exception.
+  const version = await versionById(tx, args.tenantId, args.versionId);
+  if (!version) throw new ConfigAdminError('No such configuration version.');
+  if (version.status !== 'draft') {
+    throw new ConfigAdminError(
+      `Version ${version.version_number} is ${version.status} and cannot be edited. ` +
+      'Open a new draft based on it instead — a published version is never edited, ' +
+      'which is what makes "under what rules was this issued" answerable later.',
+    );
+  }
+
+  await tx`
+    INSERT INTO lotmark.config_entries (tenant_id, version_id, kind, key, payload, overrides_default)
+    VALUES (${args.tenantId}, ${args.versionId}, ${args.kind}, ${args.key},
+            ${tx.json(parsed.data as never)}, true)
+    ON CONFLICT (version_id, kind, key)
+    DO UPDATE SET payload = ${tx.json(parsed.data as never)}, updated_at = now()`;
+}
+
+export async function removeEntry(
+  tx: Sql,
+  args: { tenantId: string; versionId: string; kind: ConfigKind; key: string },
+): Promise<void> {
+  const version = await versionById(tx, args.tenantId, args.versionId);
+  if (!version) throw new ConfigAdminError('No such configuration version.');
+  if (version.status !== 'draft') {
+    throw new ConfigAdminError(`Version ${version.version_number} is ${version.status} and cannot be edited.`);
+  }
+  await tx`
+    DELETE FROM lotmark.config_entries
+    WHERE version_id = ${args.versionId} AND kind = ${args.kind} AND key = ${args.key}`;
+}
+
+/* ── Reviewing ────────────────────────────────────────────────────────────── */
+
+/** What this draft changes, against the version it was based on. */
+export async function diffDraft(
+  tx: Sql, tenantId: string, draftId: string,
+): Promise<ConfigChange[]> {
+  const draft = await versionById(tx, tenantId, draftId);
+  if (!draft) throw new ConfigAdminError('No such configuration version.');
+  const baseId = draft.based_on_version_id;
+  const before = baseId ? await entriesOf(tx, baseId) : [];
+  const after = await entriesOf(tx, draftId);
+  return diffConfig(
+    before.map((e) => ({ kind: e.kind, key: e.key, payload: e.payload })),
+    after.map((e) => ({ kind: e.kind, key: e.key, payload: e.payload })),
+  );
+}
+
+/**
+ * A digest of exactly what changed.
+ *
+ * Signed alongside the version's identity, so the signature covers the diff the
+ * approver was shown rather than the configuration as a whole. A signature over
+ * the whole document would still verify after an unrelated entry moved.
+ */
+export function changeDigest(changes: readonly ConfigChange[]): string {
+  const canonical = [...changes]
+    .map((c) => `${c.kind}|${c.key}|${c.change}|${c.risk}`)
+    .sort()
+    .join('\n');
+  return createHash('sha256').update(canonical).digest('hex');
+}
+
+/**
+ * Everything wrong with a configuration, rather than the first thing wrong.
+ *
+ * ── Why this refuses instead of warning ─────────────────────────────────────
+ *
+ * A configuration that does not resolve does not degrade gracefully.
+ * `session.ts` throws when no role parses — deliberately, because proceeding
+ * would authorise nothing and look identical to a permissions bug. The
+ * consequence is that publishing a broken configuration locks out EVERY user of
+ * the tenant, including the administrator who published it and who would be the
+ * one to fix it.
+ */
+export async function publicationProblems(
+  tx: Sql, tenantId: string, versionId: string,
+): Promise<string[]> {
+  const entries = await entriesOf(tx, versionId);
+  const problems: string[] = [];
+
+  const roles = new Map<string, RoleConfig>();
+  for (const e of entries.filter((x) => x.kind === 'role')) {
+    const parsed = roleConfigSchema.safeParse(e.payload);
+    if (!parsed.success) {
+      problems.push(`Role '${e.key}' is not valid: ${parsed.error.issues[0]?.message ?? 'unknown'}`);
+      continue;
+    }
+    roles.set(e.key, parsed.data);
+  }
+
+  if (roles.size === 0) {
+    problems.push(
+      'This configuration defines no valid role. Publishing it would lock every user out ' +
+      'of the tenant, including you — sign-in resolves authority from the active version ' +
+      'and fails closed when none of it parses.',
+    );
+  }
+
+  for (const [key, role] of roles) {
+    // A permission the code does not enforce is a capability nothing checks.
+    for (const p of role.permissions) {
+      if (!isPermission(p)) {
+        problems.push(`Role '${key}' grants '${p}', which is not a permission this system enforces.`);
+      }
+    }
+    // Inheritance cycles throw inside the resolver, at sign-in, for everyone.
+    try {
+      effectivePermissionsOfRole(key, roles);
+    } catch (e) {
+      problems.push(e instanceof Error ? e.message : `Role '${key}' does not resolve.`);
+    }
+  }
+
+  /**
+   * Every role somebody actually holds must still exist.
+   *
+   * Removing a role from the configuration does not revoke the assignments
+   * naming it — `resolveRoleKinds` skips the unknown role and `resolveAuthority`
+   * throws on it. Either way the person silently loses everything, and the
+   * assignment stays in the table looking valid.
+   */
+  const assigned = await tx`
+    SELECT DISTINCT ra.role_key, count(*)::int AS holders
+    FROM lotmark.role_assignments ra
+    WHERE ra.tenant_id = ${tenantId} AND ra.revoked_at IS NULL
+    GROUP BY ra.role_key`;
+  for (const r of assigned) {
+    const row = r as { role_key: string; holders: number };
+    if (!roles.has(row.role_key)) {
+      problems.push(
+        `Role '${row.role_key}' is held by ${row.holders} ` +
+        `${row.holders === 1 ? 'person' : 'people'} but is not defined in this version. ` +
+        'Revoke those assignments first, or keep the role.',
+      );
+    }
+  }
+
+  /** A retention override must name a class that exists in the statutory schedule. */
+  const classIds = new Set(RETENTION_SCHEDULE.map((c) => c.id as string));
+  for (const e of entries.filter((x) => x.kind === 'retention')) {
+    if (!classIds.has(e.key)) {
+      problems.push(`Retention override '${e.key}' does not name a class in the statutory schedule.`);
+    }
+  }
+
+  return problems;
+}
+
+/**
+ * Publish a draft.
+ *
+ * Supersedes the active version and makes this one active, in one transaction:
+ * the partial unique index allows exactly one active version, so a two-step
+ * update would collide with itself.
+ */
+export async function publishDraft(
+  tx: Sql,
+  args: {
+    tenantId: string;
+    draftId: string;
+    userId: string;
+    /** The signature id, when the change requires one. */
+    signatureId: string | null;
+  },
+): Promise<{ changes: ConfigChange[]; needsSignature: boolean }> {
+  const draft = await versionById(tx, args.tenantId, args.draftId);
+  if (!draft) throw new ConfigAdminError('No such configuration version.');
+  if (draft.status !== 'draft') {
+    throw new ConfigAdminError(`Version ${draft.version_number} is already ${draft.status}.`);
+  }
+
+  const problems = await publicationProblems(tx, args.tenantId, args.draftId);
+  if (problems.length > 0) {
+    throw new ConfigAdminError('This configuration cannot be published.', problems);
+  }
+
+  const changes = await diffDraft(tx, args.tenantId, args.draftId);
+  if (changes.length === 0) {
+    throw new ConfigAdminError(
+      'This draft changes nothing. Publishing it would add a version to the history ' +
+      'that no record was created under.',
+    );
+  }
+
+  const needsSignature = changesRequireSignature(changes);
+  if (needsSignature && !args.signatureId) {
+    const risky = changes.filter((c) => c.risk !== 'presentation');
+    throw new ConfigAdminError(
+      'This version changes behaviour or security and must be signed.',
+      risky.map((c) => `${c.kind} '${c.key}' ${c.change} (${c.risk})`),
+    );
+  }
+
+  const active = await activeVersion(tx, args.tenantId);
+  if (active) {
+    await tx`
+      UPDATE lotmark.config_versions SET status = 'superseded', updated_at = now()
+      WHERE id = ${active.id}`;
+  }
+
+  await tx`
+    UPDATE lotmark.config_versions
+    SET status = 'active', published_by = ${args.userId}, published_at = now(),
+        signature_id = ${args.signatureId}, change_summary = ${tx.json(changes as never)},
+        updated_at = now()
+    WHERE id = ${args.draftId}`;
+
+  return { changes, needsSignature };
+}
+
+/** Discard a draft. Only a draft, and only in full. */
+export async function discardDraft(
+  tx: Sql, tenantId: string, draftId: string,
+): Promise<void> {
+  const draft = await versionById(tx, tenantId, draftId);
+  if (!draft) throw new ConfigAdminError('No such configuration version.');
+  if (draft.status !== 'draft') {
+    throw new ConfigAdminError(
+      `Version ${draft.version_number} is ${draft.status} and cannot be discarded. ` +
+      'Published configuration is part of the record of what the system did.',
+    );
+  }
+  await tx`DELETE FROM lotmark.config_entries WHERE version_id = ${draftId}`;
+  await tx`DELETE FROM lotmark.config_versions WHERE id = ${draftId}`;
+}
+
+/** Which kinds need a signature to publish — for the console to explain up front. */
+export const KIND_RISK = Object.fromEntries(
+  ALL_CONFIG_KINDS.map((k) => [k, { risk: CONFIG_RISK[k], signed: requiresSignatureToPublish(k) }]),
+) as Record<ConfigKind, { risk: string; signed: boolean }>;

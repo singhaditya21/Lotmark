@@ -299,29 +299,60 @@ describe('certificate issues', () => {
 });
 
 describe('configuration versioning', () => {
-  const draft = (tx: Sql, n: number, status = 'draft') =>
+  const draft = (tx: Sql, n: number, basedOn: string | null = null, status = 'draft') =>
     tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by,
-                                            published_by, published_at)
+                                            published_by, published_at, based_on_version_id)
        VALUES (${T}, ${n}, ${status}, 'initial', ${U1},
-               ${status === 'draft' ? null : U2}, ${status === 'draft' ? null : 'now()'})`;
+               ${status === 'draft' ? null : U2}, ${status === 'draft' ? null : 'now()'},
+               ${basedOn})`;
 
   it('allows exactly one ACTIVE version per tenant', async () => {
     await inRollback(async (tx) => {
-      await tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by, published_by, published_at)
-               VALUES (${T}, 1, 'active', 'initial', ${U1}, ${U2}, now())`;
+      const [first] = await tx`
+        INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by, published_by, published_at)
+        VALUES (${T}, 1, 'active', 'initial', ${U1}, ${U2}, now()) RETURNING id`;
       // A second active version would make "which rules apply" ambiguous.
-      await expect(tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by, published_by, published_at)
-                      VALUES (${T}, 2, 'active', 'second', ${U1}, ${U2}, now())`)
+      // `based_on_version_id` is supplied because 0017 requires every version
+      // after the first to name its baseline — without it the CHECK fires
+      // before the unique index, and this would pass for the wrong reason.
+      await expect(tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by, published_by, published_at, based_on_version_id)
+                      VALUES (${T}, 2, 'active', 'second', ${U1}, ${U2}, now(), ${(first as { id: string }).id})`)
         .rejects.toSatisfy(violates('config_versions_one_active_per_tenant'));
     });
   });
 
-  it('allows many drafts alongside one active version', async () => {
+  it('allows only ONE draft alongside the active version', async () => {
+    /**
+     * CHANGED in 0017, deliberately. This previously asserted that many drafts
+     * were allowed, which documented the absence of a constraint rather than a
+     * decision to permit them.
+     *
+     * Two open drafts are a fork. Both are based on the version that was active
+     * when they were created; whichever publishes second supersedes the first
+     * and silently discards its changes, while carrying a `change_summary` that
+     * describes a diff against a version no longer active — so the
+     * re-validation scope it implies covers the wrong things.
+     */
+    await inRollback(async (tx) => {
+      const [first] = await tx`
+        INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by, published_by, published_at)
+        VALUES (${T}, 1, 'active', 'initial', ${U1}, ${U2}, now()) RETURNING id`;
+      const base = (first as { id: string }).id;
+      await expect(draft(tx, 2, base)).resolves.toBeDefined();
+      await expect(draft(tx, 3, base))
+        .rejects.toSatisfy(violates('config_versions_one_draft_per_tenant'));
+    });
+  });
+
+  it('REJECTS a version after the first that names no baseline', async () => {
+    // Without a baseline the diff has no defined starting point, and
+    // `change_summary` becomes a claim rather than a derivation.
     await inRollback(async (tx) => {
       await tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, status, change_reason, created_by, published_by, published_at)
                VALUES (${T}, 1, 'active', 'initial', ${U1}, ${U2}, now())`;
-      await expect(draft(tx, 2)).resolves.toBeDefined();
-      await expect(draft(tx, 3)).resolves.toBeDefined();
+      await expect(tx`INSERT INTO lotmark.config_versions (tenant_id, version_number, change_reason, created_by)
+                      VALUES (${T}, 2, 'no baseline', ${U1})`)
+        .rejects.toSatisfy(violates('config_version_after_first_has_a_base'));
     });
   });
 

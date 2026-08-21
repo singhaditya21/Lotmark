@@ -57,6 +57,11 @@ export const SURFACES: readonly Surface[] = [
   { id: 'projects', label: 'Projects', half: 'producer', permission: 'project:read' },
   { id: 'capa', label: 'Complaints & CAPA', half: 'producer', permission: 'capa:manage' },
   { id: 'audit', label: 'Audit ledger', half: 'producer', permission: 'audit:read' },
+  // Administration. `user:manage` covers both, deliberately: roles are stored
+  // configuration, so a permission invented in code would be granted to nobody
+  // in any tenant that already exists and would gate these shut.
+  { id: 'people', label: 'People', half: 'producer', permission: 'user:manage' },
+  { id: 'configuration', label: 'Configuration', half: 'producer', permission: 'user:manage' },
 ];
 
 export interface Viewer {

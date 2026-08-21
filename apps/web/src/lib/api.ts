@@ -52,10 +52,17 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const headers: Record<string, string> = {
+    'content-type': 'application/json',
+    ...(init.headers as Record<string, string> | undefined),
+  };
+  // An empty content-type means "send none at all" — see api.del.
+  if (headers['content-type'] === '') delete headers['content-type'];
+
   const res = await fetch(`/api/v1${path}`, {
     ...init,
     credentials: 'same-origin',
-    headers: { 'content-type': 'application/json', ...init.headers },
+    headers,
   });
 
   if (!res.ok) {
@@ -84,6 +91,16 @@ export const api = {
     request<T>(path, { method: 'POST', body: JSON.stringify(body ?? {}) }),
   put: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: 'PUT', body: JSON.stringify(body ?? {}) }),
+  /**
+   * DELETE with no body, and NO content-type header.
+   *
+   * Fastify refuses a request that declares `application/json` and then sends
+   * nothing — `FST_ERR_CTP_EMPTY_JSON_BODY`, a 400 that looks like a routing
+   * fault. The header is stripped rather than the body faked, because sending
+   * `{}` would mean this client cannot tell "no body" from "an empty object".
+   */
+  del: <T>(path: string) =>
+    request<T>(path, { method: 'DELETE', headers: { 'content-type': '' } }),
 };
 
 /* ── Shapes returned by the API ─────────────────────────────────────────── */
@@ -288,4 +305,89 @@ export interface WithdrawResult {
   withdrawn: boolean;
   notified: NotifiedParty[];
   unreachable: NotifiedParty[];
+}
+
+/* ── Administration ─────────────────────────────────────────────────────── */
+
+export type ConfigRisk = 'security' | 'behaviour' | 'presentation';
+
+export interface ConfigChange {
+  kind: string;
+  key: string;
+  change: 'added' | 'removed' | 'modified';
+  risk: ConfigRisk;
+}
+
+export interface ConfigOverview {
+  versions: Array<{
+    id: string; number: number; status: 'draft' | 'active' | 'superseded';
+    reason: string; publishedAt: string | null; signed: boolean; changeCount: number;
+  }>;
+  activeId: string | null;
+  draftId: string | null;
+  /** Per kind: its risk class, and whether publishing a change to it needs signing. */
+  kinds: Record<string, { risk: ConfigRisk; signed: boolean }>;
+}
+
+export interface ConfigVersionDetail {
+  version: {
+    id: string; number: number; status: string; reason: string;
+    basedOn: string | null; publishedAt: string | null; signed: boolean;
+    changeSummary: ConfigChange[];
+  };
+  entries: Array<{ kind: string; key: string; payload: unknown; overridesDefault: boolean }>;
+}
+
+export interface ConfigReview {
+  changes: ConfigChange[];
+  /**
+   * Everything that would stop this being published, not just the first thing.
+   * An administrator fixing one problem at a time through a screen that reveals
+   * the next one is how a configuration change takes an afternoon.
+   */
+  problems: string[];
+  needsSignature: boolean;
+  publishable: boolean;
+}
+
+export interface PersonRow {
+  id: string; code: string; email: string; display_name: string;
+  deactivated_at: string | null; mfa_enrolled: boolean;
+  organisation_id: string; organisation_name: string; organisation_kind: string;
+}
+
+export interface AssignmentRow {
+  id: string; user_id: string; role_key: string; team_id: string | null;
+  valid_from: string | null; valid_to: string | null;
+  granted_reason: string | null; team_name: string | null;
+}
+
+export interface TeamRow {
+  id: string; key: string; name: string; description: string | null;
+  archived_at: string | null; members: number;
+}
+
+export interface CompetenceRow {
+  id: string; user_id: string; activity: string;
+  valid_from: string; valid_to: string; basis: string | null; code: string;
+}
+
+export interface Directory {
+  users: PersonRow[];
+  assignments: AssignmentRow[];
+  teams: TeamRow[];
+  memberships: Array<{ id: string; team_id: string; user_id: string; joined_on: string }>;
+  organisations: Array<{ id: string; name: string; kind: string }>;
+  competence: CompetenceRow[];
+  /** From the ACTIVE configuration, not from code — see admin-people.ts. */
+  roles: Array<{ key: string; name: string; kind: string; permissions: string[] }>;
+  competenceActivities: string[];
+}
+
+export interface NewUserResult {
+  userId: string;
+  /** Shown once, never recoverable, and deliberately not in the audit ledger. */
+  initialPassword: string;
+  enrolment: string;
+  note: string;
 }
