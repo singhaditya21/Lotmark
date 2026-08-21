@@ -142,3 +142,58 @@ describe('tenant isolation', () => {
     expect(rows.map((r) => (r as { relname: string }).relname)).toEqual([]);
   });
 });
+
+describe('function privileges', () => {
+  /**
+   * PostgreSQL grants EXECUTE on functions to PUBLIC by default, and
+   * ALTER DEFAULT PRIVILEGES did NOT reliably prevent it here — verified by
+   * creating a probe function after setting it and finding `=X/owner` on it
+   * anyway.
+   *
+   * A security property that depends on a mechanism nobody re-checks is not a
+   * property. This test IS the guarantee: a function added in a later migration
+   * without an explicit REVOKE fails here rather than silently reopening the
+   * hole, which is exactly how it stayed open the first time.
+   */
+  it('PUBLIC can execute nothing in the lotmark schema', async () => {
+    const rows = await sql`SELECT * FROM lotmark.functions_public_can_execute()`;
+    const offenders = rows.map((r) => {
+      const f = r as { function_name: string; is_security_definer: boolean };
+      return f.is_security_definer ? `${f.function_name} [SECURITY DEFINER]` : f.function_name;
+    });
+    expect(
+      offenders,
+      'add an explicit REVOKE EXECUTE ... FROM PUBLIC in the migration that creates these',
+    ).toEqual([]);
+  });
+
+  it('the application role can still execute what it needs', async () => {
+    // The counterpart risk: revoking too broadly and breaking the app. These
+    // are the functions the request path actually calls.
+    for (const fn of [
+      'lotmark.resolve_tenant(text)',
+      'lotmark.current_tenant()',
+      'lotmark.certificate_holders(uuid,integer)',
+      'lotmark.verify_audit_chain(uuid)',
+      'lotmark.effective_date()',
+      'lotmark.set_as_of(date)',
+    ]) {
+      const [row] = await sql`
+        SELECT has_function_privilege('lotmark_app', ${fn}, 'EXECUTE') AS ok`;
+      expect((row as { ok: boolean }).ok, fn).toBe(true);
+    }
+  });
+
+  it('the signer role can execute only what anchoring needs', async () => {
+    const [allowed] = await sql`
+      SELECT has_function_privilege('lotmark_signer', 'lotmark.all_tenants()', 'EXECUTE') AS ok`;
+    expect((allowed as { ok: boolean }).ok, 'all_tenants').toBe(true);
+
+    // And emphatically NOT the one that would let it create tenants — the
+    // specific escalation the PUBLIC grant would have handed it.
+    const [denied] = await sql`
+      SELECT has_function_privilege('lotmark_signer',
+        'lotmark.provision_tenant(uuid,text,text,text,text,text,text)', 'EXECUTE') AS ok`;
+    expect((denied as { ok: boolean }).ok, 'provision_tenant must be denied').toBe(false);
+  });
+});
