@@ -59,7 +59,15 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
     const ctx = await requireSession(app, req, reply);
     if (!ctx) return;
 
-    const out = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+    const out = await inTenantTransaction(db, {
+      tenantId: ctx.tenantId,
+      auditKey: cfg.LOTMARK_AUDIT_KEY,
+      auditKeyGeneration: cfg.LOTMARK_AUDIT_KEY_GENERATION,
+      // Reissue and withdrawal write notifications for holders across every
+      // customer organisation, so they act on the producer's side. Without it
+      // the 0022 policies fail closed and the notices reach nobody — see db.ts.
+      organisationKind: 'producer',
+    }, async (tx) => {
       const [certRow] = await tx`
         SELECT c.id, c.code, c.lot_id, l.lot_code, l.state AS lot_state, l.owner_team_id
         FROM lotmark.certificates c JOIN lotmark.lots l ON l.id = c.lot_id
@@ -170,7 +178,15 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
      * This is the rule the rest of the codebase already follows: the scope comes
      * from the LOADED RECORD, never from the request and never assumed.
      */
-    const owner = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+    const owner = await inTenantTransaction(db, {
+      tenantId: ctx.tenantId,
+      auditKey: cfg.LOTMARK_AUDIT_KEY,
+      auditKeyGeneration: cfg.LOTMARK_AUDIT_KEY_GENERATION,
+      // Reissue and withdrawal write notifications for holders across every
+      // customer organisation, so they act on the producer's side. Without it
+      // the 0022 policies fail closed and the notices reach nobody — see db.ts.
+      organisationKind: 'producer',
+    }, async (tx) => {
       const [row] = await tx`
         SELECT l.owner_team_id
         FROM lotmark.certificates c JOIN lotmark.lots l ON l.id = c.lot_id
@@ -203,7 +219,15 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
       scope: { kind: 'tenant' }, sodSettings: {}, onDate: ctx.today,
     }).allowed;
 
-    const rows = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+    const rows = await inTenantTransaction(db, {
+      tenantId: ctx.tenantId,
+      auditKey: cfg.LOTMARK_AUDIT_KEY,
+      auditKeyGeneration: cfg.LOTMARK_AUDIT_KEY_GENERATION,
+      // Reissue and withdrawal write notifications for holders across every
+      // customer organisation, so they act on the producer's side. Without it
+      // the 0022 policies fail closed and the notices reach nobody — see db.ts.
+      organisationKind: 'producer',
+    }, async (tx) => {
       const holders = (await tx`
         SELECT * FROM lotmark.certificate_holders(${req.params.id}, ${Number(req.params.n)})`
       ) as unknown as Array<Record<string, unknown> & { organisation_id: string; contact_user_id: string | null }>;
@@ -258,7 +282,15 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
     }
     const token = req.cookies[SESSION_COOKIE]!;
 
-    const result = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+    const result = await inTenantTransaction(db, {
+      tenantId: ctx.tenantId,
+      auditKey: cfg.LOTMARK_AUDIT_KEY,
+      auditKeyGeneration: cfg.LOTMARK_AUDIT_KEY_GENERATION,
+      // Reissue and withdrawal write notifications for holders across every
+      // customer organisation, so they act on the producer's side. Without it
+      // the 0022 policies fail closed and the notices reach nobody — see db.ts.
+      organisationKind: 'producer',
+    }, async (tx) => {
       const [certRow] = await tx`
         SELECT c.id, c.code, c.lot_id, l.project_id, l.owner_team_id
         FROM lotmark.certificates c JOIN lotmark.lots l ON l.id = c.lot_id
@@ -476,7 +508,15 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
       return sendProblem(reply, invalidRequest(parsed.error.issues[0]?.message ?? 'A reason is required.'));
     }
 
-    const result = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+    const result = await inTenantTransaction(db, {
+      tenantId: ctx.tenantId,
+      auditKey: cfg.LOTMARK_AUDIT_KEY,
+      auditKeyGeneration: cfg.LOTMARK_AUDIT_KEY_GENERATION,
+      // Reissue and withdrawal write notifications for holders across every
+      // customer organisation, so they act on the producer's side. Without it
+      // the 0022 policies fail closed and the notices reach nobody — see db.ts.
+      organisationKind: 'producer',
+    }, async (tx) => {
       const [row] = await tx`
         SELECT i.id, i.withdrawn, i.issue_number, c.id AS cert_id, c.code, l.id AS lot_id, l.owner_team_id
         FROM lotmark.certificate_issues i

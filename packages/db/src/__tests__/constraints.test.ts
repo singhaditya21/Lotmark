@@ -33,6 +33,15 @@ async function inRollback<T2>(fn: (tx: Sql) => Promise<T2>): Promise<T2> {
       // only way to create one without an existing tenant context.
       await tx`SELECT lotmark.provision_tenant(${T}, 't', 'T', 'T', 'ISO 17034', 'X-{SEQ}', 'local')`;
       await tx`SELECT set_config('lotmark.tenant_id', ${T}, true)`;
+      /**
+       * These fixtures act on the PRODUCER'S side.
+       *
+       * Migration 0022 added restrictive organisation policies that fail
+       * closed, so an insert into orders or vault_holdings with no
+       * organisation context is refused — which is the policy working. Real
+       * producer-side code says the same thing; see db.ts.
+       */
+      await tx`SELECT set_config('lotmark.organisation_kind', 'producer', true)`;
       await tx`INSERT INTO lotmark.organisations (id, tenant_id, code, name, kind)
                VALUES (${ORG}, ${T}, 'O', 'Org', 'producer')`;
       await tx`INSERT INTO lotmark.users (id, tenant_id, organisation_id, code, email, display_name, password_hash)

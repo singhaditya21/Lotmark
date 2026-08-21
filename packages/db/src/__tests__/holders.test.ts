@@ -38,6 +38,15 @@ async function inRollback<R>(fn: (tx: Sql) => Promise<R>): Promise<R> {
       await tx`SELECT set_config('lotmark.audit_key', 'k-for-tests-not-a-secret', true)`;
       await tx`SELECT lotmark.provision_tenant(${T}, 't', 'T', 'T', 'ISO 17034', 'X-{SEQ}', 'local')`;
       await tx`SELECT set_config('lotmark.tenant_id', ${T}, true)`;
+      /**
+       * These fixtures act on the PRODUCER'S side.
+       *
+       * Migration 0022 added restrictive organisation policies that fail
+       * closed, so an insert into orders or vault_holdings with no
+       * organisation context is refused — which is the policy working. Real
+       * producer-side code says the same thing; see db.ts.
+       */
+      await tx`SELECT set_config('lotmark.organisation_kind', 'producer', true)`;
       await tx`INSERT INTO lotmark.organisations (id, tenant_id, code, name, kind) VALUES
         (${PRODUCER}, ${T}, 'P', 'Producer', 'producer'),
         (${EARLY}, ${T}, 'E', 'Early Laboratory', 'customer'),
@@ -174,6 +183,105 @@ describe('a holding belongs to the issue current when it was acquired', () => {
       await vault(tx, LATE, '2026-09-01');
       expect(await holdersOf(tx, 1)).toEqual(['Early Laboratory']);
       expect(await holdersOf(tx, 2)).toEqual(['Late Laboratory']);
+    });
+  });
+});
+
+describe('organisation isolation — one customer must not see another', () => {
+  /**
+   * Verified before migration 0022 was written: two customer organisations both
+   * had orders, and no policy in the database mentioned an organisation. The
+   * comment on vault_holdings had claimed since 0000 that "a customer sees only
+   * their organisation's rows; RLS enforces it". It did not.
+   */
+  const asCustomer = (tx: Sql, org: string) =>
+    tx`SELECT set_config('lotmark.organisation_kind', 'customer', true),
+              set_config('lotmark.organisation_id', ${org}, true)`;
+
+  const order = (tx: Sql, org: string, code: string) =>
+    tx`INSERT INTO lotmark.orders (tenant_id, code, organisation_id, placed_by_user_id, state, placed_on)
+       VALUES (${T}, ${code}, ${org}, ${U1}, 'delivered', '2026-02-15')`;
+
+  it('shows a customer only their own orders', async () => {
+    await inRollback(async (tx) => {
+      await order(tx, EARLY, 'ORD-E');
+      await order(tx, LATE, 'ORD-L');
+
+      await asCustomer(tx, EARLY);
+      const rows = await tx`SELECT code FROM lotmark.orders ORDER BY code`;
+      expect(rows.map((r) => (r as { code: string }).code)).toEqual(['ORD-E']);
+    });
+  });
+
+  it('shows a customer only their own vault holdings', async () => {
+    await inRollback(async (tx) => {
+      await vault(tx, EARLY, '2026-02-01');
+      await vault(tx, LATE, '2026-09-01');
+
+      await asCustomer(tx, LATE);
+      const rows = await tx`
+        SELECT o.name FROM lotmark.vault_holdings v
+        JOIN lotmark.organisations o ON o.id = v.organisation_id`;
+      expect(rows.map((r) => (r as { name: string }).name)).toEqual(['Late Laboratory']);
+    });
+  });
+
+  it('refuses to let a customer write a row into another organisation', async () => {
+    // USING filters what is visible; WITH CHECK stops a row being written
+    // somewhere it should not be. A read-only policy would allow this.
+    await inRollback(async (tx) => {
+      await asCustomer(tx, EARLY);
+      await expect(order(tx, LATE, 'ORD-FORGED')).rejects.toThrow(/row-level security/);
+    });
+  });
+
+  it('shows NOTHING when no organisation context is set', async () => {
+    /**
+     * Failing closed, deliberately. The cost is that a producer-side reader
+     * which forgets to declare itself sees an empty list rather than an error —
+     * which is why the holder list below is a SECURITY DEFINER function and why
+     * this test exists next to it.
+     */
+    await inRollback(async (tx) => {
+      await order(tx, EARLY, 'ORD-E');
+      await tx`SELECT set_config('lotmark.organisation_kind', '', true)`;
+      const rows = await tx`SELECT code FROM lotmark.orders`;
+      expect(rows).toEqual([]);
+    });
+  });
+});
+
+describe('the holder list survives organisation isolation', () => {
+  it('is NOT emptied by the restrictive policies', async () => {
+    /**
+     * THE regression this file exists to prevent.
+     *
+     * `certificate_holders()` reads orders and vault_holdings ACROSS
+     * organisations — that is the whole point of it. Under the restrictive
+     * policies a caller without producer context would get an empty list, and
+     * an empty holder list is indistinguishable from "nobody holds this
+     * certificate". It is rendered on the withdrawal screen, to the person
+     * deciding whether to withdraw.
+     *
+     * The function is SECURITY DEFINER so the answer does not depend on the
+     * caller having remembered a session setting.
+     */
+    await inRollback(async (tx) => {
+      await vault(tx, EARLY, '2026-03-01');
+      await tx`INSERT INTO lotmark.orders (tenant_id, code, organisation_id, placed_by_user_id, state, placed_on, created_at)
+               VALUES (${T}, 'ORD-H', ${LATE}, ${U1}, 'delivered', '2026-02-20', '2026-02-20')`;
+      await tx`INSERT INTO lotmark.order_lines (tenant_id, order_id, lot_id, quantity, unit_price_minor)
+               SELECT ${T}, id, ${LOT}, 3, 5000 FROM lotmark.orders WHERE code = 'ORD-H'`;
+
+      // With NO organisation context at all — the state a scheduled job or a
+      // careless caller is in.
+      await tx`SELECT set_config('lotmark.organisation_kind', '', true)`;
+      await tx`SELECT set_config('lotmark.organisation_id', '', true)`;
+
+      const holders = await holdersOf(tx, 1);
+      expect(holders, 'both holders must still be found').toEqual(
+        ['Early Laboratory', 'Late Laboratory'],
+      );
     });
   });
 });

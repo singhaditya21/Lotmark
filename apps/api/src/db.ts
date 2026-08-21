@@ -49,6 +49,27 @@ export interface TenantTransactionArgs {
    * written under an earlier key. Never needed to write.
    */
   readonly auditKeys?: string | undefined;
+
+  /**
+   * WHO is acting, for organisation isolation — migration 0022.
+   *
+   * The producer and its customers share a tenant, so tenant isolation alone
+   * put every customer's orders in front of every other customer. The
+   * restrictive policies added in 0022 fail CLOSED: with no organisation
+   * context, `orders`, `order_lines`, `entitlements`, `shipments`,
+   * `logger_readings`, `vault_holdings` and `notifications` return NOTHING.
+   *
+   * So any transaction that touches those tables must say who it is acting as:
+   *
+   *   'producer' — a producer-side session or a scheduled job. Sees the whole
+   *                tenant's commercial data, which is the job.
+   *   'customer' — a laboratory's session. Must also set organisationId.
+   *
+   * Omitting this is not a security risk — it is a correctness one, and it
+   * shows up as an empty list rather than an error.
+   */
+  readonly organisationKind?: 'producer' | 'customer' | undefined;
+  readonly organisationId?: string | undefined;
 }
 
 export async function inTenantTransaction<T>(
@@ -64,6 +85,12 @@ export async function inTenantTransaction<T>(
     }
     if (args.auditKeys) {
       await tx`SELECT set_config('lotmark.audit_keys', ${args.auditKeys}, true)`;
+    }
+    if (args.organisationKind) {
+      await tx`SELECT set_config('lotmark.organisation_kind', ${args.organisationKind}, true)`;
+    }
+    if (args.organisationId) {
+      await tx`SELECT set_config('lotmark.organisation_id', ${args.organisationId}, true)`;
     }
     return fn(tx as unknown as Sql);
   }) as Promise<T>;

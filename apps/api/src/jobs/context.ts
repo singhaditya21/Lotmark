@@ -114,7 +114,21 @@ export async function forEachTenant(
 
     try {
       const itemsProcessed = await inTenantTransaction(
-        sql, { tenantId: tenant.id, auditKey: args.auditKey },
+        sql,
+        {
+          tenantId: tenant.id,
+          auditKey: args.auditKey,
+          /**
+           * A job acts on the PRODUCER'S side.
+           *
+           * Without this the organisation policies from 0022 fail closed and
+           * the entitlement-lapse job sees no entitlements, the expiry-notice
+           * job addresses nobody, and both report success having done nothing.
+           * A job that silently stops is precisely what the job_runs record
+           * exists to make visible, and this would have slipped under it.
+           */
+          organisationKind: 'producer',
+        },
         (tx) => work(tx, tenant),
       );
       outcomes.push({
