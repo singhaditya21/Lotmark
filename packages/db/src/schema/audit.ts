@@ -1,4 +1,4 @@
-import { bigserial, index, jsonb, text, timestamp, uuid, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigint, bigserial, index, jsonb, text, timestamp, uuid, uniqueIndex } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 import { lotmark } from './_shared';
 import { tenantsTable } from './tenancy';
@@ -91,9 +91,9 @@ export const auditCheckpointsTable = lotmark.table('audit_checkpoints', {
   id: uuid('id').primaryKey().defaultRandom(),
   tenantId: uuid('tenant_id').notNull().references(() => tenantsTable.id, { onDelete: 'restrict' }),
   /** The ledger seq this checkpoint covers up to, inclusive. */
-  throughSeq: text('through_seq').notNull(),
+  throughSeq: bigint('through_seq', { mode: 'bigint' }).notNull(),
   headHash: text('head_hash').notNull(),
-  entryCount: text('entry_count').notNull(),
+  entryCount: bigint('entry_count', { mode: 'bigint' }).notNull(),
   takenAt: timestamp('taken_at', { withTimezone: true, mode: 'string' })
     .notNull().default(sql`now()`),
   /** Set once this checkpoint has been copied somewhere the database cannot reach. */
@@ -143,12 +143,20 @@ export const signaturesTable = lotmark.table('signatures', {
    */
   competenceRecordId: uuid('competence_record_id'),
   competenceActivity: text('competence_activity'),
+  /**
+   * Deliberately `text`, not `date`, unlike every other date in the schema.
+   *
+   * These are a FROZEN COPY of what the competence record said at the instant
+   * of signing — evidence, not a queryable date. Storing them as `date` invites
+   * a driver, a migration or a timezone setting to reinterpret them later, and
+   * the one thing this snapshot must never do is change its meaning.
+   */
   competenceValidFrom: text('competence_valid_from'),
   competenceValidTo: text('competence_valid_to'),
   competenceCheckedOn: text('competence_checked_on'),
 
   /** The ledger entry recording this signing. */
-  auditSeq: text('audit_seq'),
+  auditSeq: bigint('audit_seq', { mode: 'bigint' }),
 }, (t) => ({
   subjectIdx: index('signatures_subject_idx').on(t.subjectKind, t.subjectId),
   signerIdx: index('signatures_signer_idx').on(t.signerUserId),

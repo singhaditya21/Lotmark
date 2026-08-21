@@ -49,7 +49,7 @@ export const ROLES = {
     kind: 'producer',
     permissions: [
       'catalogue:manage', 'order:read_all', 'entitlement:decide',
-      'pii:contact', 'audit:read',
+      'order:refund', 'pii:contact', 'audit:read',
     ],
   },
   dispatch: {

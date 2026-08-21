@@ -10,7 +10,10 @@
 import { describe, it, expect } from 'vitest';
 import { PERMISSIONS, ALL_PERMISSIONS, COMPETENCE_GATED, isPermission } from '../permissions';
 import { ROLES, ALL_ROLES, undefinedGrants, permissionsOf, kindOf } from '../roles';
-import { SOD_RULES, defaultSodSettings, findSodViolation, isSodEnabled } from '../sod';
+import {
+  SOD_RULES, defaultSodSettings, findSodViolation, findThresholdViolation,
+  isSodEnabled, sodRuleByProvenance, PENDING_SOD_RULES,
+} from '../sod';
 import { ALL_MACHINES, canTransition, assertTransition, IllegalTransitionError, VALUE_MACHINE } from '../state-machines';
 import { RETENTION_SCHEDULE } from '../retention';
 import { canonicalMaterial, signaturePayload, ALL_SIGNATURE_MEANINGS, isBasisValid } from '../signatures';
@@ -66,26 +69,28 @@ describe('segregation of duties', () => {
   it('blocks the assigner of a value from authorising it (SoD-1)', () => {
     const settings = defaultSodSettings();
     const value = { assignedBy: 'u-ravi' };
-    expect(findSodViolation('value:authorise', value, 'u-ravi', settings)?.id).toBe('SoD-1');
+    expect(findSodViolation('value:authorise', value, 'u-ravi', settings)?.rule.id)
+      .toBe('value-assigner-may-not-authorise');
     expect(findSodViolation('value:authorise', value, 'u-asha', settings)).toBeNull();
   });
 
   it('blocks deciding a claim you raised (SoD-2)', () => {
     const settings = defaultSodSettings();
     const claim = { raisedBy: 'u-suresh' };
-    expect(findSodViolation('entitlement:decide', claim, 'u-suresh', settings)?.id).toBe('SoD-2');
+    expect(findSodViolation('entitlement:decide', claim, 'u-suresh', settings)?.rule.id)
+      .toBe('claim-raiser-may-not-decide');
     expect(findSodViolation('entitlement:decide', claim, 'u-arjun', settings)).toBeNull();
   });
 
   it('a disabled rule does not fire', () => {
-    const settings = { ...defaultSodSettings(), 'SoD-1': false };
+    const settings = { ...defaultSodSettings(), 'value-assigner-may-not-authorise': false };
     expect(findSodViolation('value:authorise', { assignedBy: 'u-ravi' }, 'u-ravi', settings)).toBeNull();
   });
 
-  it('SoD-3 and SoD-4 are off by default, matching the prototype', () => {
+  it('the two rules the prototype shipped disabled are still off by default', () => {
     const settings = defaultSodSettings();
-    expect(isSodEnabled(settings, 'SoD-3')).toBe(false);
-    expect(isSodEnabled(settings, 'SoD-4')).toBe(false);
+    expect(isSodEnabled(settings, 'value-assigner-may-not-issue-certificate')).toBe(false);
+    expect(isSodEnabled(settings, 'lot-creator-may-not-release')).toBe(false);
   });
 
   it('a null record can never violate a rule', () => {
@@ -239,5 +244,97 @@ describe('retention schedule', () => {
   it('only customer contact data is freely erasable under DPDP', () => {
     const erasable = RETENTION_SCHEDULE.filter((r) => !r.erasureRefusable).map((r) => r.id);
     expect(erasable).toEqual(['customer_contact_data']);
+  });
+});
+
+describe('segregation register — union of the wireframe and the prototype', () => {
+  // The decisive property of the union decision: an assessor reading EITHER
+  // artefact can look up the number they see and land on the right rule.
+  it('resolves every wireframe rule number to exactly one rule', () => {
+    const expected: Record<string, string> = {
+      'SoD-1': 'value-assigner-may-not-authorise',
+      'SoD-2': 'value-assigner-may-not-issue-certificate',
+      'SoD-3': 'claim-raiser-may-not-decide',
+      'SoD-4': 'refund-above-threshold-needs-second-approver',
+      'SoD-5': 'study-signer-must-hold-competence',
+    };
+    for (const [label, id] of Object.entries(expected)) {
+      expect(sodRuleByProvenance('wireframe', label)?.id, `wireframe ${label}`).toBe(id);
+    }
+  });
+
+  it('resolves every prototype rule number to exactly one rule', () => {
+    const expected: Record<string, string> = {
+      'SoD-1': 'value-assigner-may-not-authorise',
+      'SoD-2': 'claim-raiser-may-not-decide',
+      'SoD-3': 'value-assigner-may-not-issue-certificate',
+      'SoD-4': 'lot-creator-may-not-release',
+    };
+    for (const [label, id] of Object.entries(expected)) {
+      expect(sodRuleByProvenance('prototype', label)?.id, `prototype ${label}`).toBe(id);
+    }
+  });
+
+  it('the artefacts genuinely disagree — same number, different rule', () => {
+    // Guards the reason semantic ids exist. If this ever stops being true the
+    // indirection can be simplified; until then it must not be.
+    expect(sodRuleByProvenance('wireframe', 'SoD-2')?.id)
+      .not.toBe(sodRuleByProvenance('prototype', 'SoD-2')?.id);
+    expect(sodRuleByProvenance('wireframe', 'SoD-4')?.id)
+      .not.toBe(sodRuleByProvenance('prototype', 'SoD-4')?.id);
+  });
+
+  it('no provenance label maps to two rules within one source', () => {
+    for (const source of ['wireframe', 'prototype'] as const) {
+      const labels = SOD_RULES.map((r) => r.provenance[source]).filter(Boolean);
+      expect(new Set(labels).size, `${source} labels`).toBe(labels.length);
+    }
+  });
+
+  it('rule ids are unique and every rule carries at least one provenance', () => {
+    const ids = SOD_RULES.map((r) => r.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const r of SOD_RULES) {
+      const named = Object.values(r.provenance).filter(Boolean).length;
+      expect(named, `${r.id} provenance`).toBeGreaterThan(0);
+    }
+  });
+
+  it('declares the refund rule as pending rather than omitting it', () => {
+    expect(PENDING_SOD_RULES.map((r) => r.id))
+      .toEqual(['refund-above-threshold-needs-second-approver']);
+  });
+});
+
+describe('threshold-approval rules', () => {
+  const settings = defaultSodSettings();
+
+  it('does not fire below the threshold', () => {
+    expect(findThresholdViolation('order:refund', 4_999_99, ['u-arjun'], settings)).toBeNull();
+  });
+
+  it('is inert while the rule is pending-subject', () => {
+    // Refunds are not modelled yet. The rule is visible in the register but
+    // must not block anything, or it would block an unimplemented path.
+    expect(findThresholdViolation('order:refund', 50_000_00, ['u-arjun'], settings)).toBeNull();
+  });
+
+  it('counts DISTINCT approvers once the subject exists', () => {
+    // Simulate the enforced future by evaluating the rule shape directly.
+    const rule = SOD_RULES.find((r) => r.kind === 'threshold-approval');
+    expect(rule).toBeDefined();
+    if (rule?.kind !== 'threshold-approval') throw new Error('shape changed');
+    expect(rule.approversRequired).toBe(2);
+    expect(new Set(['u-arjun', 'u-arjun']).size).toBeLessThan(rule.approversRequired);
+    expect(new Set(['u-arjun', 'u-neha']).size).toBe(rule.approversRequired);
+  });
+});
+
+describe('competence-gate rules', () => {
+  it('name an activity that is a real permission', () => {
+    for (const r of SOD_RULES) {
+      if (r.kind !== 'competence-gate') continue;
+      expect(isPermission(r.activity), `${r.id} activity`).toBe(true);
+    }
   });
 });

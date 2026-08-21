@@ -3,65 +3,179 @@ import type { Permission } from './permissions';
 /**
  * Segregation of duties.
  *
- * A rule says: for permission `action`, if the record's `field` names the same
- * person who is now acting, refuse. "You cannot check your own work."
+ * ── Why the ids are words, not numbers ──────────────────────────────────────
  *
- * The *definitions* live in code because they are part of the product's
- * conformance argument. Whether each is ENABLED is tenant configuration held in
- * the database, because a tenant may legitimately run a smaller lab where one
- * rule is impractical — and disabling one is itself an auditable governance act.
+ * The two source artefacts NUMBER DIFFERENT RULES THE SAME WAY:
+ *
+ *   id      wireframe                              prototype
+ *   SoD-2   author may not authorise a document    may not decide a claim you raised
+ *   SoD-3   may not decide a claim you raised      value assigner may not issue the cert
+ *   SoD-4   refund above threshold needs 2 eyes    lot creator may not release it
+ *
+ * Picking either numbering silently contradicts one artefact, and an assessor
+ * reading the wireframe would look up "SoD-4" and find the wrong rule. So the
+ * canonical id is a stable semantic slug, and each rule records how BOTH source
+ * artefacts referred to it. The mapping is data, and it is testable.
+ *
+ * ── Three rule shapes ───────────────────────────────────────────────────────
+ *
+ * The prototype only had one shape — "the person named in field F may not now
+ * perform action A". The wireframe's refund rule is a different shape entirely
+ * (a monetary threshold and a count of approvers), and its competence rule is a
+ * third. Modelling all three keeps the register honest: an assessor asks "show
+ * me your segregation rules", not "show me the ones that fit your data model".
+ *
+ * Definitions live in code because they carry the conformance argument.
+ * Whether each is ENABLED is per-tenant configuration in the database, because
+ * a smaller laboratory may legitimately find one impractical — and switching
+ * one off is itself an auditable governance act.
  */
-export interface SodRule {
+
+export type SodRuleKind =
+  /** The person named in `field` on the subject record may not now act. */
+  | 'actor-comparison'
+  /** Above `thresholdMinor`, at least `approversRequired` distinct people must approve. */
+  | 'threshold-approval'
+  /** The actor must hold a current dated competence authorisation. */
+  | 'competence-gate';
+
+/**
+ * Whether the rule can actually run today.
+ *
+ * `pending-subject` means the rule is declared and visible in the register, but
+ * the record it constrains is not yet modelled — currently true of the refund
+ * rule, because refunds and cancellations are not in the schema at all. Marking
+ * it beats omitting it: the gap is then visible rather than forgotten.
+ */
+export type SodRuleStatus = 'enforced' | 'pending-subject';
+
+export type SodSource = 'wireframe' | 'prototype';
+export type SodProvenance = Readonly<Partial<Record<SodSource, string>>>;
+
+interface SodRuleCommon {
   readonly id: string;
+  readonly kind: SodRuleKind;
   readonly action: Permission;
-  /** The field on the subject record holding the id of the earlier actor. */
-  readonly field: string;
-  /** Whether this rule is on by default when a tenant is provisioned. */
   readonly defaultEnabled: boolean;
-  /** The role accountable for the rule being in force. */
   readonly owner: string;
   readonly message: string;
+  readonly status: SodRuleStatus;
+  /** How each source artefact numbered this rule. Empty when only one names it. */
+  readonly provenance: SodProvenance;
 }
 
-export const SOD_RULES = [
+export interface ActorComparisonRule extends SodRuleCommon {
+  readonly kind: 'actor-comparison';
+  /** Field on the subject record holding the earlier actor's id. */
+  readonly field: string;
+}
+
+export interface ThresholdApprovalRule extends SodRuleCommon {
+  readonly kind: 'threshold-approval';
+  /** Minor units. At or above this, extra approvers are required. */
+  readonly thresholdMinor: number;
+  readonly currency: string;
+  /** Total distinct approvers required, including the initiator. */
+  readonly approversRequired: number;
+}
+
+export interface CompetenceGateRule extends SodRuleCommon {
+  readonly kind: 'competence-gate';
+  /** The activity a dated competence record must cover. */
+  readonly activity: Permission;
+}
+
+export type SodRule = ActorComparisonRule | ThresholdApprovalRule | CompetenceGateRule;
+
+const SOD_RULES_LITERAL = [
   {
-    id: 'SoD-1',
+    id: 'value-assigner-may-not-authorise',
+    kind: 'actor-comparison',
     action: 'value:authorise',
     field: 'assignedBy',
     defaultEnabled: true,
     owner: 'Quality Manager',
     message: 'the account that assigned this value cannot authorise it',
+    status: 'enforced',
+    provenance: { wireframe: 'SoD-1', prototype: 'SoD-1' },
   },
   {
-    id: 'SoD-2',
+    id: 'claim-raiser-may-not-decide',
+    kind: 'actor-comparison',
     action: 'entitlement:decide',
     field: 'raisedBy',
     defaultEnabled: true,
     owner: 'Commercial',
     message: 'you cannot decide a claim you raised',
+    status: 'enforced',
+    provenance: { wireframe: 'SoD-3', prototype: 'SoD-2' },
   },
   {
-    id: 'SoD-3',
+    id: 'value-assigner-may-not-issue-certificate',
+    kind: 'actor-comparison',
     action: 'cert:issue',
     field: 'assignedBy',
+    // Off by default, as in the prototype: a small laboratory may have one
+    // person holding both roles, and forcing this would stop work rather than
+    // improve control.
     defaultEnabled: false,
     owner: 'Technical Manager',
     message: 'the assigner of the value cannot issue the certificate carrying it',
+    status: 'enforced',
+    provenance: { wireframe: 'SoD-2', prototype: 'SoD-3' },
   },
   {
-    id: 'SoD-4',
+    id: 'lot-creator-may-not-release',
+    kind: 'actor-comparison',
     action: 'lot:release',
     field: 'createdBy',
     defaultEnabled: false,
     owner: 'Production Lead',
     message: 'the creator of a lot cannot release it',
+    status: 'enforced',
+    // The wireframe does not carry this rule at all; it is the prototype's own.
+    provenance: { prototype: 'SoD-4' },
+  },
+  {
+    id: 'refund-above-threshold-needs-second-approver',
+    kind: 'threshold-approval',
+    action: 'order:refund',
+    thresholdMinor: 5_000_00, // INR 5,000.00
+    currency: 'INR',
+    approversRequired: 2,
+    defaultEnabled: true,
+    owner: 'Commercial',
+    message: 'a refund at or above the threshold needs a second approver',
+    // Declared and visible, but refunds are not yet modelled — see the register.
+    status: 'pending-subject',
+    provenance: { wireframe: 'SoD-4' },
+  },
+  {
+    id: 'study-signer-must-hold-competence',
+    kind: 'competence-gate',
+    action: 'study:sign',
+    activity: 'study:sign',
+    defaultEnabled: true,
+    owner: 'Quality Manager',
+    message: 'a study may only be signed by someone holding current competence for signing',
+    status: 'enforced',
+    // Enforced by the competence gate rather than by findSodViolation. Declared
+    // here so the segregation register an assessor reads matches the wireframe.
+    provenance: { wireframe: 'SoD-5' },
   },
 ] as const satisfies readonly SodRule[];
 
-/** Derived from SOD_RULES so a new rule cannot be added without the type widening. */
-export type SodRuleId = (typeof SOD_RULES)[number]['id'];
+/**
+ * Exported widened. The literal tuple above gives us exact `id` types; widening
+ * the rest keeps the discriminated union usable — otherwise TypeScript narrows
+ * a single-member kind to `never` inside the evaluators and every field access
+ * becomes an error.
+ */
+export const SOD_RULES: readonly SodRule[] = SOD_RULES_LITERAL;
 
-export const ALL_SOD_RULE_IDS: readonly SodRuleId[] = SOD_RULES.map((r) => r.id);
+export type SodRuleId = (typeof SOD_RULES_LITERAL)[number]['id'];
+
+export const ALL_SOD_RULE_IDS: readonly SodRuleId[] = SOD_RULES_LITERAL.map((r) => r.id);
 
 export function sodRule(id: SodRuleId): SodRule {
   const r = SOD_RULES.find((x) => x.id === id);
@@ -69,41 +183,105 @@ export function sodRule(id: SodRuleId): SodRule {
   return r;
 }
 
-/** The enabled/disabled state for one tenant, keyed by rule id. */
+/** Look a rule up by how an artefact numbered it, e.g. wireframe 'SoD-4'. */
+export function sodRuleByProvenance(source: SodSource, label: string): SodRule | null {
+  return SOD_RULES.find((r) => r.provenance[source] === label) ?? null;
+}
+
+/** Per-tenant enabled state, keyed by rule id. */
 export type SodSettings = Readonly<Partial<Record<SodRuleId, boolean>>>;
 
 export function defaultSodSettings(): Record<SodRuleId, boolean> {
   const out = {} as Record<SodRuleId, boolean>;
-  for (const r of SOD_RULES) out[r.id] = r.defaultEnabled;
+  for (const r of SOD_RULES_LITERAL) out[r.id] = r.defaultEnabled;
   return out;
 }
 
 export function isSodEnabled(settings: SodSettings, id: SodRuleId): boolean {
-  return settings[id] ?? sodRule(id).defaultEnabled;
+  return ruleEnabled(settings, sodRule(id));
 }
 
 /**
- * Evaluate every enabled rule for `action` against `record`.
+ * Internal form taking the rule object.
  *
- * `record` is any object that may carry the earlier actor's id under the rule's
- * field. Returns the first violated rule, or null when the act is permitted.
+ * The evaluators iterate the WIDENED `SOD_RULES`, whose `id` is `string`, so
+ * they cannot call the public `isSodEnabled` without a cast. Reading the
+ * setting off the rule itself keeps the public signature strictly typed while
+ * the loops stay honest.
+ */
+function ruleEnabled(settings: SodSettings, rule: SodRule): boolean {
+  const bag = settings as Readonly<Record<string, boolean | undefined>>;
+  return bag[rule.id] ?? rule.defaultEnabled;
+}
+
+export interface SodViolation {
+  readonly rule: SodRule;
+  readonly reason: string;
+}
+
+/**
+ * Evaluate the actor-comparison rules for `action` against `record`.
  *
- * Deliberately pure: it takes the actor and the tenant's settings as arguments
- * rather than reading ambient state, so it is callable identically from the API
- * guard, from a background job, and from the UI to pre-disable a button.
+ * Pure by construction: actor and tenant settings are arguments, not ambient
+ * state, so this is callable identically from the API guard, a background job,
+ * and the UI when deciding whether to disable a button.
+ *
+ * `threshold-approval` rules are NOT evaluated here — they need the transaction
+ * amount and the approval set, so they have their own entry point below.
+ * `competence-gate` rules are enforced by the competence check, which needs a
+ * date and the competence table.
  */
 export function findSodViolation(
   action: Permission,
   record: Readonly<Record<string, unknown>> | null | undefined,
   actorUserId: string,
   settings: SodSettings,
-): SodRule | null {
+): SodViolation | null {
   if (!record) return null;
   for (const rule of SOD_RULES) {
+    if (rule.kind !== 'actor-comparison') continue;
     if (rule.action !== action) continue;
-    if (!isSodEnabled(settings, rule.id)) continue;
+    if (rule.status !== 'enforced') continue;
+    if (!ruleEnabled(settings, rule)) continue;
     const earlierActor = record[rule.field];
-    if (typeof earlierActor === 'string' && earlierActor === actorUserId) return rule;
+    if (typeof earlierActor === 'string' && earlierActor === actorUserId) {
+      return { rule, reason: rule.message };
+    }
   }
   return null;
 }
+
+/**
+ * Evaluate threshold-approval rules.
+ *
+ * `approverUserIds` is the set of DISTINCT people who have approved so far,
+ * including the person now acting. Distinctness matters: one person approving
+ * twice is exactly the control this rule exists to prevent.
+ */
+export function findThresholdViolation(
+  action: Permission,
+  amountMinor: number,
+  approverUserIds: readonly string[],
+  settings: SodSettings,
+): SodViolation | null {
+  const distinct = new Set(approverUserIds).size;
+  for (const rule of SOD_RULES) {
+    if (rule.kind !== 'threshold-approval') continue;
+    if (rule.action !== action) continue;
+    if (rule.status !== 'enforced') continue;
+    if (!ruleEnabled(settings, rule)) continue;
+    if (amountMinor < rule.thresholdMinor) continue;
+    if (distinct < rule.approversRequired) {
+      return {
+        rule,
+        reason:
+          `${rule.message} — ${rule.approversRequired} required, ${distinct} so far`,
+      };
+    }
+  }
+  return null;
+}
+
+/** Rules declared but not yet enforceable, for the segregation register screen. */
+export const PENDING_SOD_RULES: readonly SodRule[] =
+  SOD_RULES.filter((r) => r.status === 'pending-subject');

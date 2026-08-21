@@ -24,6 +24,7 @@ export const PERMISSIONS = {
   'order:read_own': 'View own orders',
   'order:read_all': 'View all orders',
   'order:advance': 'Advance dispatch',
+  'order:refund': 'Approve a refund or cancellation',
   'entitlement:claim': 'Claim a price tier',
   'entitlement:decide': 'Decide a tier claim',
   'equipment:manage': 'Manage equipment and calibration',

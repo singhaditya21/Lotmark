@@ -1,4 +1,4 @@
-import { pgSchema, timestamp, text, integer } from 'drizzle-orm/pg-core';
+import { pgSchema, timestamp, text, integer, date } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
 /**
@@ -45,15 +45,26 @@ export const timestamps = {
 export const version = () => integer('version').notNull().default(1);
 
 /**
- * A calendar date held as text in ISO `YYYY-MM-DD` form.
+ * A calendar date: a real Postgres `date`, surfaced to TypeScript as an ISO
+ * `YYYY-MM-DD` string.
  *
- * Deliberate: the whole domain compares dates lexically (competence intervals,
- * calibration coverage, "as at" queries) and a date here is a CALENDAR fact —
- * the day a person was authorised — not an instant. Storing it as `date` and
- * letting a driver convert through a JS Date reintroduces timezone drift that
- * has, in this domain, moved a signature across a competence boundary.
+ * Two requirements pull in opposite directions and this satisfies both.
+ *
+ * The domain compares dates LEXICALLY everywhere — competence intervals,
+ * calibration coverage, "as at" queries — and these are calendar facts (the day
+ * a person was authorised), not instants. Round-tripping through a JS `Date`
+ * reintroduces timezone drift, and in this domain that drift can move a
+ * signature across a competence boundary. `mode: 'string'` keeps the driver
+ * from ever constructing a `Date`, so the lexical comparisons stay exact.
+ *
+ * But the column must ALSO be a real `date`, not `text`, because the database
+ * has to enforce that two competence windows for the same person and activity
+ * cannot overlap. That is an `EXCLUDE USING gist (... daterange(...) WITH &&)`
+ * constraint, and it cannot be written against text.
+ *
+ * An earlier revision used `text` and could express only the first requirement.
  */
-export const isoDate = (name: string) => text(name);
+export const isoDate = (name: string) => date(name, { mode: 'string' });
 
 /** Who did it — a user id, or the literal 'system' for scheduled jobs. */
 export const actorRef = (name: string) => text(name);

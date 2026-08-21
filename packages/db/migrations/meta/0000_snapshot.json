@@ -1,5 +1,5 @@
 {
-  "id": "2302c707-45f4-4783-a82e-07c873193763",
+  "id": "f2a81d6c-0625-4ad9-b3b0-5941ea3a737f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -323,13 +323,13 @@
         },
         "valid_from": {
           "name": "valid_from",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
         "valid_to": {
           "name": "valid_to",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
@@ -887,7 +887,7 @@
         },
         "through_seq": {
           "name": "through_seq",
-          "type": "text",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
@@ -899,7 +899,7 @@
         },
         "entry_count": {
           "name": "entry_count",
-          "type": "text",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
@@ -1339,7 +1339,7 @@
         },
         "audit_seq": {
           "name": "audit_seq",
-          "type": "text",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
         }
@@ -1443,13 +1443,13 @@
         },
         "valid_from": {
           "name": "valid_from",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
         "valid_to": {
           "name": "valid_to",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
@@ -1684,7 +1684,7 @@
         },
         "expiry_date": {
           "name": "expiry_date",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
@@ -1948,7 +1948,7 @@
         },
         "performed_on": {
           "name": "performed_on",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": false
         },
@@ -2519,13 +2519,13 @@
         },
         "signed_on": {
           "name": "signed_on",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": false
         },
         "shelf_life_to": {
           "name": "shelf_life_to",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": false
         },
@@ -3295,7 +3295,7 @@
         },
         "raised_on": {
           "name": "raised_on",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
@@ -3332,7 +3332,7 @@
         },
         "revalidation_due": {
           "name": "revalidation_due",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": false
         },
@@ -3882,7 +3882,7 @@
         },
         "placed_on": {
           "name": "placed_on",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
@@ -4365,13 +4365,13 @@
         },
         "raised_on": {
           "name": "raised_on",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
         "due_on": {
           "name": "due_on",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": false
         },
@@ -4634,13 +4634,13 @@
         },
         "from_date": {
           "name": "from_date",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
         "to_date": {
           "name": "to_date",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
@@ -5133,7 +5133,7 @@
         },
         "checked_on": {
           "name": "checked_on",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
@@ -5151,7 +5151,7 @@
         },
         "next_due_on": {
           "name": "next_due_on",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
@@ -5313,7 +5313,7 @@
         },
         "accreditation_valid_to": {
           "name": "accreditation_valid_to",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
