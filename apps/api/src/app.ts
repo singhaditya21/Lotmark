@@ -17,6 +17,7 @@ import { registerAdminConfigRoutes } from './routes/admin-config';
 import { registerAdminPeopleRoutes } from './routes/admin-people';
 import { registerOpsRoutes } from './routes/ops';
 import { registerCommerceRoutes } from './routes/commerce';
+import { registerConformanceRoutes } from './routes/conformance';
 import { KeyProvider } from './services/keys';
 import { createCustody } from './services/custody';
 import { DocumentStore } from './services/documents';
@@ -131,6 +132,7 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
   await app.register(registerAdminPeopleRoutes, { prefix: '/api/v1' });
   await app.register(registerOpsRoutes, { prefix: '/api/v1' });
   await app.register(registerCommerceRoutes, { prefix: '/api/v1' });
+  await app.register(registerConformanceRoutes, { prefix: '/api/v1' });
   // Unauthenticated, deliberately: an auditor holding a printed certificate
   // must not need an account with the producer whose certificate is in question.
   await app.register(registerPublicRoutes, { prefix: '' });

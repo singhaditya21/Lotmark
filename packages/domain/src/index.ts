@@ -5,3 +5,4 @@ export * from './signatures';
 export * from './state-machines';
 export * from './retention';
 export * from './config';
+export * from './conformance';

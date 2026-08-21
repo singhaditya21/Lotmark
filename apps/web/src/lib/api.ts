@@ -554,3 +554,38 @@ export interface VaultView {
   organisation: string;
   verifyOrigin: string;
 }
+
+/* ── Conformance ────────────────────────────────────────────────────────── */
+
+export type RequirementStatus = 'enforced' | 'partial' | 'declared' | 'not_implemented';
+
+export interface LiveEvidence {
+  key: string;
+  summary: string;
+  figures: Record<string, string | number | null>;
+  /** Whether the RECORDS support the claim right now. */
+  satisfied: boolean;
+}
+
+export interface ConformanceRequirement {
+  id: string;
+  clause: string;
+  statement: string;
+  status: RequirementStatus;
+  note?: string;
+  code: string[];
+  tests: Array<{ file: string; named: string }>;
+  evidence: LiveEvidence | null;
+}
+
+export interface ClauseView {
+  clause: string;
+  requirements: ConformanceRequirement[];
+  /** The weakest status among them — a clause is only as good as its worst part. */
+  status: RequirementStatus;
+}
+
+export interface ConformanceView {
+  clauses: ClauseView[];
+  summary: { clauses: number; enforced: number; weaker: number };
+}

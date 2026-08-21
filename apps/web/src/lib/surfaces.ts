@@ -68,6 +68,7 @@ export const SURFACES: readonly Surface[] = [
   { id: 'catalogue', label: 'Catalogue', half: 'producer', permission: 'catalogue:manage' },
   { id: 'tiers', label: 'Price tiers', half: 'producer', permission: 'entitlement:decide' },
   { id: 'audit', label: 'Audit ledger', half: 'producer', permission: 'audit:read' },
+  { id: 'conformance', label: 'Conformance', half: 'producer', permission: 'conformance:read' },
   { id: 'people', label: 'People', half: 'producer', permission: 'user:manage' },
   { id: 'configuration', label: 'Configuration', half: 'producer', permission: 'user:manage' },
   // Operational health sits behind `audit:read` because it IS what the system

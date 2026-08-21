@@ -41,6 +41,10 @@
       "description": "Configuration versions, users, roles, teams and competence."
     },
     {
+      "name": "Conformance",
+      "description": "Clause conformance evidenced from the records, and the assessment pack."
+    },
+    {
       "name": "Operations",
       "description": "Scheduled job health and disaster-recovery drills."
     }
@@ -2347,6 +2351,64 @@
         "description": "ISO 17034 6.3. Requires `user:manage`.",
         "tags": [
           "Administration"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/conformance": {
+      "get": {
+        "operationId": "getConformance",
+        "summary": "Clause-by-clause conformance, evidenced from the records",
+        "description": "Reports what the RECORDS show, not what the specification claims. A clause takes the status of its weakest requirement. Requires `conformance:read`.",
+        "tags": [
+          "Conformance"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/conformance/pack": {
+      "post": {
+        "operationId": "postConformancePack",
+        "summary": "Assemble and sign the assessment pack",
+        "description": "A separate act from reading, and audited: a pack leaves the building. Signed, digested per section, and reproducible for a given database state. Requires `audit:export`.",
+        "tags": [
+          "Conformance"
         ],
         "security": [
           {

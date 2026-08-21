@@ -11,6 +11,7 @@ import { Capa } from './pages/Capa';
 import { People } from './pages/People';
 import { Configuration } from './pages/Configuration';
 import { Operations } from './pages/Operations';
+import { Conformance } from './pages/Conformance';
 import { JobHealthBanner } from './components/JobHealthBanner';
 import { Catalogue } from './pages/Catalogue';
 import { Orders } from './pages/Orders';
@@ -109,6 +110,8 @@ export function App() {
           <Configuration />
         ) : route === 'operations' ? (
           <Operations />
+        ) : route === 'conformance' ? (
+          <Conformance canExport={held.has('audit:export')} />
         ) : route === 'catalogue' || route === 'shop' ? (
           // One screen for both halves: the same material, different verbs.
           <Catalogue />

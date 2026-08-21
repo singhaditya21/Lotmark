@@ -20,7 +20,10 @@
     "dr:backup": "tsx scripts/dr-drill.mts --backup-only",
     "dr:drill": "tsx scripts/dr-drill.mts",
     "dr:sabotage": "tsx scripts/dr-drill.mts --sabotage",
-    "openapi": "tsx scripts/openapi.mts"
+    "openapi": "tsx scripts/openapi.mts",
+    "iq": "tsx scripts/validation.mts --iq",
+    "pq": "tsx scripts/validation.mts",
+    "rtm": "tsx scripts/validation.mts --rtm"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.1",

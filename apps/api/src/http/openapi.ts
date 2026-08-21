@@ -53,6 +53,7 @@ const TAG_DESCRIPTIONS: Record<string, string> = {
   Quality: 'Complaints, CAPAs and the audit ledger.',
   Commerce: 'Catalogue, orders, dispatch, price tiers and the laboratory vault.',
   Administration: 'Configuration versions, users, roles, teams and competence.',
+  Conformance: 'Clause conformance evidenced from the records, and the assessment pack.',
   Operations: 'Scheduled job health and disaster-recovery drills.',
 };
 

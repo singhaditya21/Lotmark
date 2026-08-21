@@ -228,6 +228,16 @@ export const OPERATIONS: readonly Operation[] = [
   op('POST', '/api/v1/admin/competence', 'Administration',
     'Record a competence authorisation', 'user:manage', 'ISO 17034 6.3.'),
 
+  /* ── Conformance ──────────────────────────────────────────────────────── */
+  op('GET', '/api/v1/conformance', 'Conformance',
+    'Clause-by-clause conformance, evidenced from the records', 'conformance:read',
+    'Reports what the RECORDS show, not what the specification claims. A clause ' +
+    'takes the status of its weakest requirement.'),
+  op('POST', '/api/v1/conformance/pack', 'Conformance',
+    'Assemble and sign the assessment pack', 'audit:export',
+    'A separate act from reading, and audited: a pack leaves the building. ' +
+    'Signed, digested per section, and reproducible for a given database state.'),
+
   /* ── Operations ───────────────────────────────────────────────────────── */
   op('GET', '/api/v1/ops', 'Operations',
     'Scheduled job health and disaster-recovery drills', 'audit:read',
