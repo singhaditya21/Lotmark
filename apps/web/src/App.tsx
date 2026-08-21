@@ -84,7 +84,8 @@ export function App() {
         ) : route === 'capa' ? (
           <Capa canManage={held.has('capa:manage')} />
         ) : open ? (
-          <ProjectDetail project={open} onBack={() => setOpen(null)} />
+          <ProjectDetail project={open} onBack={() => setOpen(null)}
+                         canReissue={held.has('cert:reissue')} />
         ) : (
           <Projects onOpen={setOpen} canCreate={held.has('project:manage')} />
         )}

@@ -23,9 +23,22 @@ export class ApiError extends Error {
     this.name = 'ApiError';
   }
 
-  /** The server is asking for a step-up before this act may proceed. */
+  /**
+   * The server is asking for a step-up before this act may proceed.
+   *
+   * Branches on `code`, NOT on `title`. The server builds a problem's title by
+   * humanising its code, so this compared 'Step up required' against
+   * 'step_up_required' and was therefore always false — which meant the console
+   * never opened the re-authentication dialog for ANY signed act. Signing a
+   * study, assigning a value, authorising one and issuing a certificate all
+   * dead-ended the first time in a session, showing the user a red message
+   * telling them to re-enter credentials with nothing to enter them into.
+   *
+   * `code` exists precisely so a client can branch without parsing prose. This
+   * is what happens when it parses the prose instead.
+   */
   get needsStepUp(): boolean {
-    return this.status === 401 && this.problem.title === 'step_up_required';
+    return this.status === 401 && this.problem.code === 'step_up_required';
   }
 
   get isForbidden(): boolean {
@@ -103,6 +116,8 @@ export interface Lot {
   id: string; lot_code: string; state: string; expiry_date: string;
   stock_units: number; storage_condition: string; cold_chain: boolean;
   supersedes: string | null; certificate_code: string | null;
+  /** Needed to open the issue history; a UI must never derive an id from a code. */
+  certificate_id: string | null;
 }
 
 export interface BudgetComponent {
@@ -159,4 +174,93 @@ export interface AuditEntry {
 
 export interface ChainResult {
   ok: boolean; entries: number; brokenAt: number | null; reason: string | null;
+}
+
+/* ── Certificates ───────────────────────────────────────────────────────── */
+
+export interface CertificateIssue {
+  number: number;
+  issuedAt: string;
+  issuedBy: string | null;
+  reissueReason: string | null;
+  withdrawn: boolean;
+  withdrawnAt: string | null;
+  withdrawnReason: string | null;
+  propertyName: string;
+  assignedValue: number;
+  expandedUncertainty: number;
+  coverageFactor: number;
+  unit: string;
+  documentSha256: string | null;
+  verificationToken: string | null;
+}
+
+export interface CertificateDetail {
+  certificate: { id: string; code: string; lotId: string; lotCode: string; lotState: string };
+  /**
+   * The highest issue that has not been withdrawn, or null.
+   *
+   * Null is a real state, not an error: withdrawing the latest issue leaves a
+   * certificate with nothing current, which is precisely what a holder needs
+   * to be told and is different from the document merely being superseded.
+   */
+  currentIssue: number | null;
+  issues: CertificateIssue[];
+}
+
+export interface Holder {
+  organisationId: string;
+  organisation: string;
+  quantity: number;
+  basis: string;
+  /**
+   * Whether a notice would actually reach somebody.
+   *
+   * Computed by the server using the same function that addresses the notices —
+   * an organisation with no named contact is still reachable if anyone there
+   * has an active account. Deriving this in the browser from "is there a
+   * contact" reported laboratories as unreachable that were about to be
+   * notified perfectly well.
+   */
+  reachable: boolean;
+  contactUserId?: string;
+}
+
+export interface HoldersResponse {
+  holders: Holder[];
+  /** Holders nobody could be addressed at — the ones needing another channel. */
+  unreachableCount: number;
+  /** False when the caller lacks 'pii:contact'; the list is still complete. */
+  contactsVisible: boolean;
+}
+
+/**
+ * Notification outcomes are reported as TWO lists and never as one total.
+ *
+ * A withdrawal notice that reached nobody, counted as delivered, is exactly the
+ * failure the withdrawal exists to prevent. The server keeps them apart; so
+ * does every screen that renders them.
+ */
+export interface NotifiedParty {
+  organisation: string;
+  basis: string;
+  quantity?: number;
+}
+
+export interface ReissueResult {
+  certificate: string;
+  issue: { number: number; previous: number };
+  changed: string[];
+  changeSummary: string;
+  document: { sha256: string; verifyUrl: string };
+  notified: NotifiedParty[];
+  unreachable: NotifiedParty[];
+}
+
+export interface WithdrawResult {
+  certificate: string;
+  issue: number;
+  withdrawn: boolean;
+  notified: NotifiedParty[];
+  unreachable: NotifiedParty[];
 }

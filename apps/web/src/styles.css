@@ -59,6 +59,9 @@ tbody tr.click:hover { background: var(--line2); }
 .chip {
   display: inline-block; padding: 1px 8px; border-radius: 20px;
   font-size: 11.5px; font-weight: 600; border: 1px solid transparent;
+  /* A pill that wraps draws its border through the middle of its own text.
+     Status labels are short by construction, so never break them. */
+  white-space: nowrap;
 }
 .chip.ok   { background: var(--okT);   color: var(--ok);   border-color: var(--ok); }
 .chip.bad  { background: var(--badT);  color: var(--bad);  border-color: var(--bad); }
@@ -89,6 +92,14 @@ input.t:focus, select.t:focus, textarea.t:focus { outline: 2px solid var(--pri);
 .note.deny { border-left-color: var(--bad); background: var(--badT); color: var(--bad); }
 .note.okbox { border-left-color: var(--ok); background: var(--okT); color: var(--ok); }
 .note.info { border-left-color: var(--pri); background: var(--priT); }
+.note.warn { border-left-color: var(--warn); background: var(--warnT); }
+
+/* A list that reads as prose rather than as a bulleted menu. Used where the
+   items are facts being reported — notified and unreachable holders — and the
+   default marker and indent would make them look like navigation. */
+ul.plain { list-style: none; padding: 0; margin: 8px 0 0; font-size: 13px; }
+ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line2); }
+ul.plain li:last-child { border-bottom: none; }
 
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; }
 .kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 11px 13px; }

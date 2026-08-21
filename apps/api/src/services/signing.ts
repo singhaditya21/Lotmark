@@ -38,6 +38,64 @@ export type SigningErrorCode =
   | 'competence_basis_invalid'
   | 'already_signed';
 
+/**
+ * A signing refusal that must DISCARD the record it was going to sign.
+ *
+ * ── The defect this exists to prevent ───────────────────────────────────────
+ *
+ * The record-creating routes insert their row and then sign it, both inside one
+ * transaction. When signing was refused they caught `SigningError` and
+ * RETURNED a status object from inside the transaction callback — and returning
+ * resolves the callback, which COMMITS. Only throwing rolls back.
+ *
+ * So a reissue that hit the ordinary step-up prompt — the one every user meets
+ * on their first signing of a session — committed a new certificate issue with
+ * no signature, no rendered PDF and no verification token. That issue then
+ * became the CURRENT one, superseding a real signed document with a phantom
+ * that a holder verifying the certificate would find nothing behind. Every
+ * retry made another. The same shape applied to releasing a lot and to issuing
+ * a certificate.
+ *
+ * Throwing this instead rolls the whole thing back. The refusal is still
+ * recorded — see `recordSigningRefusal`, which writes it on a FRESH
+ * transaction, because an audit entry written inside the doomed one would roll
+ * back with it and the evidence that a control fired would be lost.
+ */
+export class SigningRejection extends Error {
+  constructor(
+    readonly httpStatus: 401 | 409,
+    readonly code: SigningErrorCode,
+    message: string,
+    /** What was being signed, for the refusal record. */
+    readonly subject: { readonly table: string; readonly label: string },
+  ) {
+    super(message);
+    this.name = 'SigningRejection';
+  }
+}
+
+/**
+ * Re-throw a signing failure so its transaction rolls back.
+ *
+ * Called from the catch around `applySignature`. Anything that is not a
+ * SigningError is re-thrown untouched — an unexpected failure must not be
+ * quietly turned into a tidy 409.
+ */
+export function rejectSigning(
+  e: unknown,
+  subject: { readonly table: string; readonly label: string },
+): never {
+  if (e instanceof SigningError) {
+    throw new SigningRejection(
+      e.code === 'step_up_required' ? 401 : 409,
+      e.code,
+      e.message,
+      subject,
+    );
+  }
+  throw e;
+}
+
 export interface SignatureRecord {
   readonly id: string;
   readonly signatureValue: string;

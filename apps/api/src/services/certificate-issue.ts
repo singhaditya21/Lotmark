@@ -144,6 +144,33 @@ export interface NotificationOutcome {
  * another as seen — the prototype keyed on (order, certificate) and did exactly
  * that.
  */
+/**
+ * Who a notice for this holder would actually be addressed to.
+ *
+ * Extracted so that the screen PREVIEWING a reissue and the code SENDING it
+ * cannot disagree. The rule is not simply "does the holder have a named
+ * contact": an organisation with no contact on the order is still reachable if
+ * anyone there has an active account. A preview that used the narrower rule
+ * would tell the operator that laboratories are unreachable when they are
+ * about to be told perfectly well — and on this screen a wrong reachability
+ * count is the number somebody acts on.
+ *
+ * Returns null only when there is genuinely nobody to address.
+ */
+export async function resolveRecipient(
+  tx: Sql,
+  tenantId: string,
+  holder: { organisation_id: string; contact_user_id: string | null },
+): Promise<string | null> {
+  if (holder.contact_user_id) return holder.contact_user_id;
+  const [row] = await tx`
+    SELECT id FROM lotmark.users
+    WHERE tenant_id = ${tenantId} AND organisation_id = ${holder.organisation_id}
+      AND deactivated_at IS NULL
+    ORDER BY created_at LIMIT 1`;
+  return (row as { id: string } | undefined)?.id ?? null;
+}
+
 export async function notifyHolders(
   tx: Sql,
   args: {
@@ -159,12 +186,10 @@ export async function notifyHolders(
   const unreachable: Holder[] = [];
 
   for (const h of holders) {
-    const [recipient] = await tx`
-      SELECT id FROM lotmark.users
-      WHERE tenant_id = ${args.tenantId} AND organisation_id = ${h.organisation_id}
-        AND deactivated_at IS NULL
-      ORDER BY created_at LIMIT 1`;
-    const recipientId = h.contact_user_id ?? (recipient as { id: string } | undefined)?.id ?? null;
+    // The SAME resolution the preview screen uses. Two copies of this rule
+    // would drift, and the drift would show up as an operator being told a
+    // laboratory is unreachable moments before it is successfully notified.
+    const recipientId = await resolveRecipient(tx, args.tenantId, h);
 
     /**
      * A holder with nobody to address still gets a row.

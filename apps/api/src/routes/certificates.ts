@@ -5,10 +5,11 @@ import { inTenantTransaction } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
-import { applySignature, SigningError } from '../services/signing';
+import { applySignature, rejectSigning, SigningRejection } from '../services/signing';
+import { refuseSigning } from '../services/signing-refusal';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
-import { renderAndStoreIssue, notifyHolders } from '../services/certificate-issue';
-import { sendProblem, notFound, conflict, unprocessable, invalidRequest, forbidden, stepUpRequired } from '../http/problem';
+import { renderAndStoreIssue, notifyHolders, resolveRecipient } from '../services/certificate-issue';
+import { sendProblem, notFound, conflict, unprocessable, invalidRequest, forbidden, sessionExpired } from '../http/problem';
 
 const reissueBody = z.object({
   meaning: z.string().refine(isSignatureMeaning),
@@ -40,21 +41,209 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
     timeSource: ctx.timeSource, region: ctx.region,
   });
 
+  /* ── The issue history ────────────────────────────────────────────────── */
+
+  /**
+   * A certificate and every issue of it.
+   *
+   * Gated on `project:read` against the OWNING TEAM, taken from the loaded lot
+   * rather than from the request. Reading a certificate's history is reading
+   * the project's record; it is not a separate privilege.
+   *
+   * Issue 1 stays here forever. That is the point of a reissue never
+   * overwriting: "what did the certificate say when we tested against it" has
+   * to remain answerable years later, and this endpoint is how the console
+   * shows it.
+   */
+  app.get<{ Params: { id: string } }>('/certificates/:id', async (req, reply) => {
+    const ctx = await requireSession(app, req, reply);
+    if (!ctx) return;
+
+    const out = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+      const [certRow] = await tx`
+        SELECT c.id, c.code, c.lot_id, l.lot_code, l.state AS lot_state, l.owner_team_id
+        FROM lotmark.certificates c JOIN lotmark.lots l ON l.id = c.lot_id
+        WHERE c.tenant_id = ${ctx.tenantId} AND c.id = ${req.params.id} LIMIT 1`;
+      const cert = certRow as {
+        id: string; code: string; lot_id: string; lot_code: string;
+        lot_state: string; owner_team_id: string | null;
+      } | undefined;
+      if (!cert) return null;
+
+      const verdict = decide({
+        authority: ctx.authority, permission: 'project:read',
+        scope: cert.owner_team_id ? { kind: 'team', teamId: cert.owner_team_id } : { kind: 'tenant' },
+        sodSettings: {}, onDate: ctx.today,
+      });
+      if (!verdict.allowed) return { forbidden: verdict };
+
+      const rows = await tx`
+        SELECT i.issue_number, i.issued_at, i.reissue_reason,
+               i.withdrawn, i.withdrawn_at, i.withdrawn_reason,
+               i.property_name, i.assigned_value, i.expanded_uncertainty,
+               i.coverage_factor, i.unit, i.document_sha256, i.verification_token,
+               u.display_name AS issued_by
+        FROM lotmark.certificate_issues i
+        LEFT JOIN lotmark.users u ON u.id = i.issued_by_user_id
+        WHERE i.certificate_id = ${cert.id}
+        ORDER BY i.issue_number`;
+
+      const issues = rows.map((r) => r as Record<string, unknown>);
+      // The current issue is the highest-numbered one that has not been
+      // withdrawn. A withdrawn latest issue leaves the certificate with NO
+      // current issue, which is a distinct state from "superseded" and the one
+      // a holder most needs to see.
+      const latest = issues.at(-1);
+      const current = latest && latest['withdrawn'] !== true
+        ? Number(latest['issue_number']) : null;
+
+      return {
+        certificate: {
+          id: cert.id, code: cert.code,
+          lotId: cert.lot_id, lotCode: cert.lot_code, lotState: cert.lot_state,
+        },
+        currentIssue: current,
+        issues: issues.map((i) => ({
+          number: Number(i['issue_number']),
+          issuedAt: i['issued_at'],
+          issuedBy: i['issued_by'],
+          reissueReason: i['reissue_reason'],
+          withdrawn: i['withdrawn'] === true,
+          withdrawnAt: i['withdrawn_at'],
+          withdrawnReason: i['withdrawn_reason'],
+          propertyName: i['property_name'],
+          assignedValue: i['assigned_value'],
+          expandedUncertainty: i['expanded_uncertainty'],
+          coverageFactor: i['coverage_factor'],
+          unit: i['unit'],
+          documentSha256: i['document_sha256'],
+          verificationToken: i['verification_token'],
+        })),
+      };
+    });
+
+    if (!out) return sendProblem(reply, notFound('No such certificate.'));
+    if ('forbidden' in out) return sendProblem(reply, forbidden(out.forbidden.reason, out.forbidden.message));
+    return reply.send(out);
+  });
+
   /* ── Holders of an issue ──────────────────────────────────────────────── */
 
+  /**
+   * Who holds this issue.
+   *
+   * ── Why two permissions are accepted ────────────────────────────────────
+   *
+   * This required `order:read_all`, which the Technical Manager does not hold —
+   * so the one person authorised to reissue or withdraw a certificate could not
+   * see who would be told. Asking somebody to withdraw a document without
+   * showing them who is relying on it is asking them to act blind on the
+   * product's most consequential path.
+   *
+   * Holding `cert:reissue` is therefore sufficient. That is not a widening of
+   * commercial visibility: it is the recognition that the holder list is part
+   * of the reissue act, not part of the order book.
+   *
+   * ── Why contact details are separate ────────────────────────────────────
+   *
+   * `contact_user_id` identifies a PERSON at the holding organisation, and
+   * seeing it is `pii:contact` — a permission the Technical Manager also does
+   * not hold, and does not need. She needs to know WHICH LABORATORIES are
+   * affected in order to judge the impact; she does not need to know who works
+   * there. The previous version returned the raw function rows, so anyone
+   * reaching this endpoint got the contact whether or not they were entitled
+   * to it.
+   */
   app.get<{ Params: { id: string; n: string } }>('/certificates/:id/issues/:n/holders', async (req, reply) => {
     const ctx = await requireSession(app, req, reply);
     if (!ctx) return;
 
-    const verdict = decide({
+    /**
+     * The owning team, loaded before anything is decided.
+     *
+     * The first version of this asked for `cert:reissue` at TENANT scope and
+     * refused the Technical Manager, whose authority is granted on the Organics
+     * Section rather than across the producer — so the screen told her she was
+     * not permitted to see holders of a certificate she is permitted to
+     * withdraw. `can()` was right; the question was wrong.
+     *
+     * This is the rule the rest of the codebase already follows: the scope comes
+     * from the LOADED RECORD, never from the request and never assumed.
+     */
+    const owner = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+      const [row] = await tx`
+        SELECT l.owner_team_id
+        FROM lotmark.certificates c JOIN lotmark.lots l ON l.id = c.lot_id
+        WHERE c.tenant_id = ${ctx.tenantId} AND c.id = ${req.params.id} LIMIT 1`;
+      return row as { owner_team_id: string | null } | undefined;
+    });
+    if (!owner) return sendProblem(reply, notFound('No such certificate.'));
+
+    const certScope: AuthScope = owner.owner_team_id
+      ? { kind: 'team', teamId: owner.owner_team_id } : { kind: 'tenant' };
+
+    const asReissuer = decide({
+      authority: ctx.authority, permission: 'cert:reissue',
+      scope: certScope, sodSettings: {}, onDate: ctx.today,
+    });
+    // Commercial visibility is tenant-wide by nature: the order book is not
+    // owned by the laboratory section that made the material.
+    const asCommercial = decide({
       authority: ctx.authority, permission: 'order:read_all',
       scope: { kind: 'tenant' }, sodSettings: {}, onDate: ctx.today,
     });
-    if (!verdict.allowed) return sendProblem(reply, forbidden(verdict.reason, verdict.message));
+    if (!asReissuer.allowed && !asCommercial.allowed) {
+      // Report the commercial denial: it is the one that names the permission
+      // most callers of this endpoint are expected to hold.
+      return sendProblem(reply, forbidden(asCommercial.reason, asCommercial.message));
+    }
 
-    const holders = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, (tx) =>
-      tx`SELECT * FROM lotmark.certificate_holders(${req.params.id}, ${Number(req.params.n)})`);
-    return reply.send({ holders });
+    const maySeeContacts = decide({
+      authority: ctx.authority, permission: 'pii:contact',
+      scope: { kind: 'tenant' }, sodSettings: {}, onDate: ctx.today,
+    }).allowed;
+
+    const rows = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+      const holders = (await tx`
+        SELECT * FROM lotmark.certificate_holders(${req.params.id}, ${Number(req.params.n)})`
+      ) as unknown as Array<Record<string, unknown> & { organisation_id: string; contact_user_id: string | null }>;
+
+      // Reachability comes from the code that actually addresses the notices,
+      // not from a second guess at the same rule.
+      const reachable = new Map<string, boolean>();
+      for (const h of holders) {
+        reachable.set(h.organisation_id, (await resolveRecipient(tx, ctx.tenantId, h)) !== null);
+      }
+
+      if (maySeeContacts && holders.length > 0) {
+        // Reading contact details is itself an auditable act under DPDP.
+        await recordAudit(tx, auditOf(ctx), {
+          kind: 'PII', action: 'Certificate holder contacts read',
+          detail: `${holders.length} holder(s) of issue #${req.params.n}`,
+          subjectTable: 'certificates', subjectId: req.params.id,
+        });
+      }
+      return holders.map((h) => ({
+        organisationId: h.organisation_id,
+        organisation: h['organisation_name'] as string,
+        quantity: Number(h['quantity']),
+        basis: h['basis'] as string,
+        /**
+         * Whether a notice would actually reach somebody — computed by the
+         * same function that sends them, never inferred from whether a named
+         * contact happens to be recorded.
+         */
+        reachable: reachable.get(h.organisation_id) === true,
+        // Present only when the caller is entitled to it.
+        ...(maySeeContacts ? { contactUserId: h.contact_user_id } : {}),
+      }));
+    });
+
+    return reply.send({
+      holders: rows,
+      unreachableCount: rows.filter((h) => !h.reachable).length,
+      contactsVisible: maySeeContacts,
+    });
   });
 
   /* ── Reissue ──────────────────────────────────────────────────────────── */
@@ -178,10 +367,16 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
           key, timeSource: ctx.timeSource, region: ctx.region,
         });
       } catch (e) {
-        if (e instanceof SigningError) {
-          return { status: e.code === 'step_up_required' ? 401 as const : 409 as const, message: e.message };
-        }
-        throw e;
+        /**
+         * THROWS, never returns.
+         *
+         * Returning a status object from inside the transaction callback
+         * resolves it, and postgres.js COMMITS a callback that resolves. That
+         * committed the record inserted moments earlier without its signature —
+         * see SigningRejection for what that produced. Throwing rolls it back;
+         * the refusal is recorded afterwards, outside the dead transaction.
+         */
+        rejectSigning(e, { table: 'certificate_issues', label: `${cert.code} issue #${issueNumber}` });
       }
 
       const rendered = await renderAndStoreIssue(tx, documents, {
@@ -241,14 +436,31 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
           unreachable: notice.unreachable.map((h) => ({ organisation: h.organisation_name, basis: h.basis })),
         },
       };
+    }).catch((e: unknown) => {
+      // The transaction has already rolled back by the time this runs.
+      if (e instanceof SigningRejection) return { status: 'refused' as const, rejection: e };
+      throw e;
     });
+
+    if (result.status === 'refused') {
+      return refuseSigning({
+        db, auditKey: cfg.LOTMARK_AUDIT_KEY, audit: auditOf(ctx),
+        rejection: result.rejection, reply,
+      });
+    }
 
     switch (result.status) {
       case 404: return sendProblem(reply, notFound('No such certificate.'));
       case 403: return sendProblem(reply, forbidden(result.verdict.reason, result.verdict.message));
-      case 409: return sendProblem(reply, conflict(result.message));
       case 422: return sendProblem(reply, unprocessable(result.message));
-      case 401: return sendProblem(reply, stepUpRequired(result.message));
+      // There is deliberately no 409 arm: the only conflict this route could
+      // raise came from the signing step, which now throws so its transaction
+      // rolls back. The compiler proves it — adding one back would not type.
+      case 401:
+        // An ENDED session, not a step-up. Reporting it as a step-up sent the
+        // console to a re-authentication dialog whose own request would then
+        // fail, telling the user the wrong thing twice.
+        return sendProblem(reply, sessionExpired(result.message));
       default: return reply.send(result.body);
     }
   });

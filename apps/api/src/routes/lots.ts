@@ -8,7 +8,8 @@ import { inTenantTransaction, type Sql } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
-import { applySignature, SigningError } from '../services/signing';
+import { applySignature, rejectSigning, SigningRejection } from '../services/signing';
+import { refuseSigning } from '../services/signing-refusal';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
 import { nextCode } from '../services/numbering';
 import { signPayload } from '@lotmark/security';
@@ -174,10 +175,13 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
           key, timeSource: ctx.timeSource, region: ctx.region,
         });
       } catch (e) {
-        if (e instanceof SigningError) {
-          return { status: e.code === 'step_up_required' ? 401 as const : 409 as const, message: e.message };
-        }
-        throw e;
+        /**
+         * THROWS, never returns. Returning here resolved the transaction
+         * callback, and a resolved callback COMMITS — which persisted the row
+         * inserted moments earlier with no signature against it. See
+         * SigningRejection.
+         */
+        rejectSigning(e, { table: 'lots', label: `lot ${lotCode}` });
       }
 
       if (previous) {
@@ -218,8 +222,18 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
           signature: { id: signature.id, signedAt: signature.signedAt, keyVersion: key.keyVersion },
         },
       };
+    }).catch((e: unknown) => {
+      // Rolled back already; convert to a value the responder can narrow on.
+      if (e instanceof SigningRejection) return { status: 'refused' as const, rejection: e };
+      throw e;
     });
 
+    if (result.status === 'refused') {
+      return refuseSigning({
+        db, auditKey: cfg.LOTMARK_AUDIT_KEY, audit: auditCtxOf(ctx),
+        rejection: result.rejection, reply,
+      });
+    }
     return respond(reply, result, 'No such project.');
   });
 
@@ -337,10 +351,13 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
           key, timeSource: ctx.timeSource, region: ctx.region,
         });
       } catch (e) {
-        if (e instanceof SigningError) {
-          return { status: e.code === 'step_up_required' ? 401 as const : 409 as const, message: e.message };
-        }
-        throw e;
+        /**
+         * THROWS, never returns. Returning here resolved the transaction
+         * callback, and a resolved callback COMMITS — which persisted the row
+         * inserted moments earlier with no signature against it. See
+         * SigningRejection.
+         */
+        rejectSigning(e, { table: 'certificate_issues', label: `${cert.code} issue #${issueNumber}` });
       }
 
       /* ── Render the document, in the SAME transaction ──────────────────
@@ -461,8 +478,18 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
           },
         },
       };
+    }).catch((e: unknown) => {
+      // Rolled back already; convert to a value the responder can narrow on.
+      if (e instanceof SigningRejection) return { status: 'refused' as const, rejection: e };
+      throw e;
     });
 
+    if (result.status === 'refused') {
+      return refuseSigning({
+        db, auditKey: cfg.LOTMARK_AUDIT_KEY, audit: auditCtxOf(ctx),
+        rejection: result.rejection, reply,
+      });
+    }
     return respond(reply, result, 'No such lot.');
   });
 
@@ -518,7 +545,11 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
     const rows = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, (tx) =>
       tx`SELECT l.id, l.lot_code, l.state, l.expiry_date, l.stock_units, l.storage_condition,
                 l.cold_chain, prev.lot_code AS supersedes,
-                c.code AS certificate_code
+                c.code AS certificate_code,
+                -- The id, not just the code: the console needs it to open the
+                -- issue history, and deriving an id from a display code is how
+                -- a UI ends up guessing at identifiers.
+                c.id AS certificate_id
          FROM lotmark.lots l
          LEFT JOIN lotmark.lots prev ON prev.id = l.previous_lot_id
          LEFT JOIN lotmark.certificates c ON c.lot_id = l.id
@@ -530,11 +561,22 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
 
 type StepResult =
   | { status: 200; body: unknown }
+  /** A signing refusal whose transaction has already rolled back. */
+  | { status: 'refused'; rejection: SigningRejection }
   | { status: 404 }
   | { status: 403; verdict: { reason: string; message: string } }
   | { status: 409 | 422 | 401; message: string };
 
-function respond(reply: FastifyReply, result: StepResult, missingMessage: string) {
+/**
+ * Every outcome EXCEPT a signing refusal, which the caller has already handled.
+ *
+ * Excluding it in the type rather than adding an arm here is deliberate: a
+ * refusal needs the database to record it, which this function does not have,
+ * and a `default` arm would have silently sent the rejection object as a 200.
+ */
+type RespondableResult = Exclude<StepResult, { status: 'refused' }>;
+
+function respond(reply: FastifyReply, result: RespondableResult, missingMessage: string) {
   switch (result.status) {
     // `missingMessage`, not `notFound` — the latter shadows the imported helper.
     case 404: return sendProblem(reply, notFound(missingMessage));

@@ -9,6 +9,7 @@ import { StepUp } from '../components/StepUp';
 import { NewStudy } from '../components/NewStudy';
 import { RecordResults } from '../components/RecordResults';
 import { Dialog, Field } from '../components/Dialog';
+import { CertificatePanel } from '../components/CertificatePanel';
 import type { Meaning } from '../lib/meanings';
 
 type Pending =
@@ -18,12 +19,20 @@ type Pending =
   | { kind: 'certificate'; id: string; code: string }
   | null;
 
-export function ProjectDetail({ project, onBack }: { project: Project; onBack: () => void }) {
+export function ProjectDetail({
+  project, onBack, canReissue,
+}: {
+  project: Project;
+  onBack: () => void;
+  /** Whether to offer reissue and withdrawal. The server re-checks regardless. */
+  canReissue: boolean;
+}) {
   const qc = useQueryClient();
   const [pending, setPending] = useState<Pending>(null);
   const [stepUpFor, setStepUpFor] = useState<string | null>(null);
   const [newStudy, setNewStudy] = useState(false);
   const [recordFor, setRecordFor] = useState<Study | null>(null);
+  const [certFor, setCertFor] = useState<string | null>(null);
   const [newValue, setNewValue] = useState(false);
   const [valueName, setValueName] = useState('Assay (as is)');
   const [valueUnit, setValueUnit] = useState('% w/w');
@@ -263,6 +272,11 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
                         Issue certificate
                       </button>
                     )}
+                    {l.certificate_id && (
+                      <button className="btn ghost sm" onClick={() => setCertFor(l.certificate_id)}>
+                        Issues &amp; reissue
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -282,6 +296,14 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
       />
 
       <NewStudy open={newStudy} projectId={project.id} onClose={() => setNewStudy(false)} />
+
+      {certFor && (
+        <CertificatePanel
+          certificateId={certFor}
+          canReissue={canReissue}
+          onClose={() => setCertFor(null)}
+        />
+      )}
 
       {recordFor && (
         <RecordResults open={recordFor !== null} study={recordFor} onClose={() => setRecordFor(null)} />
