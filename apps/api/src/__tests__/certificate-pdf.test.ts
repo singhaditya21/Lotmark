@@ -103,16 +103,31 @@ describe('document structure', () => {
     }
   });
 
-  it('names subsetted fonts — with the tag convention PDF/A still wants', async () => {
+  it('names subsetted fonts with the six-letter prefix PDF/A requires', async () => {
     const text = Buffer.from(await renderCertificate(SNAPSHOT)).toString('latin1');
     const names = [...text.matchAll(/\/BaseFont\s*\/([^\s/\]>]+)/g)].map((m) => m[1]!);
     expect(names.length).toBeGreaterThan(0);
-    expect(names.every((n) => n.startsWith('DejaVu'))).toBe(true);
-    // Documented gap, asserted so it cannot be forgotten: PDF/A wants a
-    // six-letter subset prefix (ABCDEF+DejaVuSerif). pdf-lib emits a numeric
-    // suffix instead. When that is fixed, this expectation flips.
-    expect(names.some((n) => /^[A-Z]{6}\+/.test(n)),
-      'subset prefixes are a known PDF/A gap').toBe(false);
+    // PDF 32000-1 clause 9.6.4: six uppercase letters, a plus, then the base
+    // name. pdf-lib emits `DejaVuSerif-1733` on its own; the renderer rewrites
+    // it. This assertion previously pinned the GAP — it now pins the fix.
+    for (const n of names) {
+      expect(n, `${n} must carry a subset prefix`).toMatch(/^[A-Z]{6}\+DejaVu/);
+    }
+    // Distinct typefaces must get distinct tags, or two subsets that are not
+    // interchangeable become indistinguishable to a reader merging documents.
+    const tags = new Set(names.map((n) => n.slice(0, 6)));
+    expect(tags.size, 'each typeface needs its own tag').toBe(new Set(names).size);
+  });
+
+  it('derives subset tags from content, never randomly', async () => {
+    // A random tag would be the one thing left in the file that varies between
+    // two renders of the same certificate — quietly undoing the property the
+    // rest of the renderer exists to protect.
+    const tagsOf = async () => {
+      const text = Buffer.from(await renderCertificate(SNAPSHOT)).toString('latin1');
+      return [...text.matchAll(/\/BaseFont\s*\/([A-Z]{6})\+/g)].map((m) => m[1]!).sort();
+    };
+    expect(await tagsOf()).toEqual(await tagsOf());
   });
 
   it('carries XMP metadata', async () => {

@@ -10,7 +10,8 @@
     "test": "vitest run",
     "worker": "tsx src/worker.ts",
     "job": "tsx src/worker.ts",
-    "anchor": "tsx src/signer.ts"
+    "anchor": "tsx src/signer.ts",
+    "pdfa": "tsx scripts/verapdf-gate.mts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.1",

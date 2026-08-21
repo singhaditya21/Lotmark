@@ -2,8 +2,9 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PDFDocument, PDFName, PDFString, PDFHexString, rgb, type PDFFont } from 'pdf-lib';
+import { PDFDocument, PDFName, PDFString, PDFHexString, PDFDict, rgb, type PDFFont } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
+import { srgbProfile, ICC_DESCRIPTION, ICC_COMPONENTS } from './icc';
 
 /**
  * Certificate rendering.
@@ -26,31 +27,41 @@ import fontkit from '@pdf-lib/fontkit';
  * varies with the browser build, so a certificate would stop reproducing the
  * moment the container was rebuilt.
  *
- * ── What this is NOT, stated plainly ────────────────────────────────────────
+ * ── The PDF/A-2b claim, and its exact limits ────────────────────────────────
  *
- * PDF/A-2b requires an OutputIntent with an embedded ICC profile, and
- * conformance must be VERIFIED by a validator such as veraPDF. Neither an ICC
- * profile nor veraPDF is present on this machine, so this renderer DOES NOT
- * CLAIM PDF/A.
+ * This renderer now emits the structure PDF/A-2b requires: an sRGB OutputIntent
+ * with an embedded ICC profile (see ./icc.ts, which GENERATES the profile so it
+ * is auditable source rather than an unexplained binary), fully embedded and
+ * subsetted CIDFontType2 fonts carrying six-letter subset prefixes, XMP
+ * metadata declaring pdfaid:part 2 / conformance B, a stable content-derived
+ * document ID, and pinned dates. The base-14 fonts PDF/A forbids are not used
+ * at all.
  *
- * What it does provide: fully embedded, subsetted CIDFontType2 fonts (the
- * base-14 fonts PDF/A forbids are not used at all), XMP metadata carrying the
- * reproducibility triple, a stable content-derived document ID, and pinned
- * dates.
+ * What is checked, and by what, is stated honestly:
  *
- * Three things stand between this and a PDF/A-2b claim, recorded so nobody
- * has to rediscover them:
- *   1. an sRGB OutputIntent with an embedded ICC profile;
- *   2. six-letter subset prefixes on subsetted font names — pdf-lib emits
- *      `DejaVuSerif-6235` where PDF/A wants `ABCDEF+DejaVuSerif`;
- *   3. a veraPDF gate in CI, because an unverified conformance claim is worth
- *      less than an honest absence of one.
+ *   - ./pdfa.ts verifies the structural requirements this codebase can verify
+ *     itself, and the certificate test suite gates on it. That covers the
+ *     clauses about fonts, colour, metadata, identifiers and forbidden
+ *     features — it does NOT cover the whole of PDF/A-2b.
+ *   - A veraPDF gate is wired in scripts/verapdf-gate.mjs. There is no Java on
+ *     this machine, so it cannot run here; it SKIPS LOUDLY and reports that the
+ *     claim is unverified rather than printing a pass it did not earn.
+ *
+ * So: the document is built to PDF/A-2b and passes every check available here.
+ * It is not veraPDF-verified, and nothing in this repository says it is.
  *
  * The renderer version below is part of the reproducibility triple. Change any
  * layout or content decision in this file and it must be incremented, because
  * the bytes will change and the old certificates must still be explicable.
  */
-export const RENDERER_VERSION = 'lotmark-pdf-1';
+/**
+ * Incremented from `lotmark-pdf-1` when the OutputIntent, the subset prefixes
+ * and the PDF/A identification were added. The bytes changed, so the version
+ * had to — issues rendered under the old version keep their recorded
+ * `renderer_version` and stay explicable, which is the whole reason this
+ * string is stored on every issue rather than assumed.
+ */
+export const RENDERER_VERSION = 'lotmark-pdf-2';
 export const TEMPLATE_KEY = 'certificate.default';
 export const TEMPLATE_VERSION = '1';
 
@@ -263,7 +274,7 @@ export async function renderCertificate(s: CertificateSnapshot): Promise<Uint8Ar
         7.5, mono, MUTED);
 
   /* ── Determinism ──────────────────────────────────────────────────────── */
-  pdf.setTitle(`${s.certificateCode} issue ${s.issueNumber} — ${s.materialName}`);
+  pdf.setTitle(documentTitle(s));
   pdf.setAuthor(s.producerName);
   pdf.setSubject(`Certificate of analysis for lot ${s.lotCode}`);
   pdf.setProducer(`Lotmark ${RENDERER_VERSION}`);
@@ -287,7 +298,111 @@ export async function renderCertificate(s: CertificateSnapshot): Promise<Uint8Ar
   // XMP metadata. PDF/A requires it; it is correct to carry regardless.
   attachXmp(pdf, s);
 
+  // The colour space the document is prepared for, with the profile embedded.
+  attachOutputIntent(pdf);
+
+  /**
+   * Fonts are subsetted lazily — pdf-lib builds the font dictionaries during
+   * save(), not during embedFont(). Flushing first materialises them so their
+   * names can be corrected below. flush() is idempotent, so the save() that
+   * follows does not embed a second time.
+   */
+  await pdf.flush();
+  applySubsetPrefixes(pdf, snapshotDigest(s));
+
   return pdf.save({ useObjectStreams: false });
+}
+
+/**
+ * The sRGB OutputIntent — PDF/A-2b clause 6.2.2.
+ *
+ * Without this a reader has no way to know what the colours in the file MEAN,
+ * which is the difference between a PDF that happens to survive and one that
+ * can be rendered faithfully in twenty years. The subtype is `GTS_PDFA1` for
+ * every PDF/A part, not just part 1 — the identifier was never renamed.
+ */
+function attachOutputIntent(pdf: PDFDocument): void {
+  const profile = srgbProfile();
+  const stream = pdf.context.stream(profile, {
+    // The component count. A reader uses this to interpret the profile without
+    // parsing it; disagreeing with the profile's own colour space is a
+    // conformance failure, so it is derived from the same module.
+    N: ICC_COMPONENTS,
+    Length: profile.length,
+  });
+
+  const intent = pdf.context.obj({
+    Type: 'OutputIntent',
+    S: 'GTS_PDFA1',
+    OutputConditionIdentifier: PDFString.of(ICC_DESCRIPTION),
+    Info: PDFString.of(ICC_DESCRIPTION),
+    RegistryName: PDFString.of('http://www.color.org'),
+    DestOutputProfile: pdf.context.register(stream),
+  });
+
+  pdf.catalog.set(PDFName.of('OutputIntents'), pdf.context.obj([intent]));
+}
+
+/**
+ * Six-letter subset prefixes on embedded font names — PDF 32000-1 clause 9.6.4.
+ *
+ * pdf-lib names a subset `DejaVuSerif-1733`, appending a numeric suffix. The
+ * PDF specification says a subsetted font's name must be the base name
+ * preceded by six uppercase letters and a plus sign: `ABCDEF+DejaVuSerif`. The
+ * tag exists so two different subsets of the same typeface, in different files
+ * that later get merged, cannot be mistaken for each other.
+ *
+ * The tag is derived from the content digest rather than generated randomly.
+ * A random tag would be the one remaining thing in this file that varies
+ * between two renders of the same certificate, which would quietly undo the
+ * property everything else here exists to protect.
+ *
+ * All three places a font names itself must agree — the Type0 font, its
+ * descendant CIDFont, and the FontDescriptor — or readers disagree about which
+ * subset is which.
+ */
+function applySubsetPrefixes(pdf: PDFDocument, seed: string): void {
+  const renamed = new Map<string, string>();
+
+  const rename = (raw: string): string => {
+    // Strip pdf-lib's numeric suffix to recover the real base name.
+    const base = raw.replace(/^\//, '').replace(/-\d+$/, '');
+    const existing = renamed.get(base);
+    if (existing) return existing;
+    const digest = createHash('sha256').update(`${seed}|${base}`).digest();
+    let tag = '';
+    for (let i = 0; i < 6; i++) tag += String.fromCharCode(65 + (digest[i]! % 26));
+    const full = `${tag}+${base}`;
+    renamed.set(base, full);
+    return full;
+  };
+
+  for (const [, obj] of pdf.context.enumerateIndirectObjects()) {
+    if (!(obj instanceof PDFDict)) continue;
+    const type = obj.get(PDFName.of('Type'))?.toString();
+
+    if (type === '/Font') {
+      const current = obj.get(PDFName.of('BaseFont'))?.toString();
+      if (current) obj.set(PDFName.of('BaseFont'), PDFName.of(rename(current)));
+    } else if (type === '/FontDescriptor') {
+      const current = obj.get(PDFName.of('FontName'))?.toString();
+      if (current) obj.set(PDFName.of('FontName'), PDFName.of(rename(current)));
+    }
+  }
+}
+
+/**
+ * The document title, in ONE place.
+ *
+ * PDF/A-2b 6.7.3 requires the information dictionary and the XMP packet to
+ * agree. They are two copies of the same fact written by two different pieces
+ * of this file, and they had drifted: the dictionary said
+ * "CRT-2051 issue 1 — Paracetamol" while XMP said "CRT-2051 issue 1". Deriving
+ * both from here is what stops it happening again; the conformance check in
+ * ./pdfa.ts is what noticed.
+ */
+function documentTitle(s: CertificateSnapshot): string {
+  return `${s.certificateCode} issue ${s.issueNumber} — ${s.materialName}`;
 }
 
 function attachXmp(pdf: PDFDocument, s: CertificateSnapshot): void {
@@ -299,8 +414,14 @@ function attachXmp(pdf: PDFDocument, s: CertificateSnapshot): void {
         xmlns:dc="http://purl.org/dc/elements/1.1/"
         xmlns:xmp="http://ns.adobe.com/xap/1.0/"
         xmlns:pdf="http://ns.adobe.com/pdf/1.3/"
+        xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/"
         xmlns:lotmark="https://lotmark.local/ns/1.0/">
-      <dc:title><rdf:Alt><rdf:li xml:lang="x-default">${esc(s.certificateCode)} issue ${s.issueNumber}</rdf:li></rdf:Alt></dc:title>
+      <!-- PDF/A identification. Without this a file can meet every structural
+           requirement of the standard and still not BE a PDF/A file, because
+           conforming readers identify it from here and nowhere else. -->
+      <pdfaid:part>2</pdfaid:part>
+      <pdfaid:conformance>B</pdfaid:conformance>
+      <dc:title><rdf:Alt><rdf:li xml:lang="x-default">${esc(documentTitle(s))}</rdf:li></rdf:Alt></dc:title>
       <dc:creator><rdf:Seq><rdf:li>${esc(s.producerName)}</rdf:li></rdf:Seq></dc:creator>
       <dc:description><rdf:Alt><rdf:li xml:lang="x-default">Certificate of analysis for lot ${esc(s.lotCode)}</rdf:li></rdf:Alt></dc:description>
       <xmp:CreateDate>${iso}</xmp:CreateDate>
@@ -322,8 +443,22 @@ function attachXmp(pdf: PDFDocument, s: CertificateSnapshot): void {
 </x:xmpmeta>
 <?xpacket end="w"?>`;
 
-  const stream = pdf.context.stream(xmp, {
-    Type: 'Metadata', Subtype: 'XML', Length: xmp.length,
+  /**
+   * Encoded to UTF-8 BYTES, not handed over as a JavaScript string.
+   *
+   * pdf-lib converts a string to a stream by truncating each character to a
+   * single byte. Every character above U+00FF is therefore silently corrupted —
+   * the em-dash in the title arrived as 0x14, and a material name carrying any
+   * non-Latin-1 character would have been mangled the same way, in the one part
+   * of the document a machine is expected to read.
+   *
+   * XMP is defined as UTF-8, and `Length` must be the byte count rather than
+   * the string length, which differ the moment any character needs more than
+   * one byte.
+   */
+  const packet = Buffer.from(xmp, 'utf8');
+  const stream = pdf.context.stream(packet, {
+    Type: 'Metadata', Subtype: 'XML', Length: packet.length,
   });
   pdf.catalog.set(PDFName.of('Metadata'), pdf.context.register(stream));
   // Marked as tagged is a PDF/UA prerequisite; declared honestly as false
