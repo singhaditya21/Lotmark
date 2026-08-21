@@ -323,7 +323,21 @@ async function pq(): Promise<boolean> {
   const catalogue = await meera('/catalogue');
   const item = (catalogue.body?.['items'] as Array<Record<string, unknown>> | undefined)
     ?.find((i) => i['id'] === lot!['id'] && Number(i['stock_units']) > 0);
-  if (!record('the lot is on the catalogue with stock', Boolean(item))) return false;
+  /**
+   * PRECONDITION, stated as one.
+   *
+   * This protocol ends by WITHDRAWING the certificate it sold, which is the
+   * point — it exercises the recall path. The consequence is that it needs a
+   * known starting state, like any protocol that changes what it measures, and
+   * a second run finds the lot it wants already off the catalogue.
+   *
+   * That is fine and it is normal. Failing with "the lot is on the catalogue
+   * with stock" and nothing else is not: it reads as a defect in the product
+   * rather than a protocol run against the wrong state.
+   */
+  if (!record('the lot is on the catalogue with stock', Boolean(item),
+    item ? '' : 'PRECONDITION NOT MET — this protocol withdraws the lot it sells, so it '
+      + 'needs a fresh demonstration database. Run: pnpm db:seed')) return false;
 
   const placed = await meera('/orders', {
     method: 'POST', body: JSON.stringify({ lines: [{ lotId: item!['id'], quantity: 1 }] }),

@@ -57,7 +57,7 @@ beforeAll(async () => {
   await app.ready();
   sunil = await signIn('sunil@producer.example');
   ravi = await signIn('ravi@producer.example');
-  ({ lotId, supersededLotId } = await lotsInSunilsSection());
+  ({ lotId, supersededLotId } = await lotsForSunil());
 });
 afterAll(async () => { await app.close(); });
 
@@ -91,29 +91,51 @@ function asTenant<T>(fn: (tx: Sql, tenantId: string) => Promise<T>): Promise<T> 
 }
 
 /**
- * Lots belonging to the team Sunil actually leads.
+ * Lots of our own, in the team Sunil actually leads.
  *
- * Not "the first lot": authority here is SCOPED, and Sunil holds `prodlead` on
- * Organics Section and nowhere else. A test that grabbed any lot would have
- * been refused on an Inorganics one — correctly — and would have looked like a
- * bug in the feature rather than a bug in the test. Which is what happened.
+ * Created rather than borrowed, and both lessons are in that sentence.
+ *
+ * Authority here is SCOPED: Sunil holds `prodlead` on Organics Section and
+ * nowhere else, so a fixture that grabbed any lot was refused on an Inorganics
+ * one — correctly — and looked like a bug in the feature rather than in the
+ * test. That is why the project is chosen by his role assignment.
+ *
+ * And the seed's own lots are not ours to rely on: the PQ protocol withdraws
+ * one as part of the business process it exercises, so "a lot Sunil can still
+ * edit" stopped existing the moment `pnpm pq` ran and this file stopped
+ * loading. Depending on demonstration data that another tool deliberately
+ * mutates is a fixture that works until somebody does their job.
  */
-const lotsInSunilsSection = () => asTenant(async (tx) => {
-  const rows = await tx`
-    SELECT l.id, l.state
-    FROM lotmark.lots l
-    JOIN lotmark.projects p ON p.id = l.project_id
+const STAMP = Date.now().toString(36);
+
+const lotsForSunil = () => asTenant(async (tx, tenantId) => {
+  const [proj] = await tx`
+    SELECT p.id
+    FROM lotmark.projects p
     JOIN lotmark.teams t ON t.id = p.owner_team_id
     JOIN lotmark.role_assignments ra ON ra.team_id = t.id AND ra.revoked_at IS NULL
     JOIN lotmark.users u ON u.id = ra.user_id
     WHERE u.email = 'sunil@producer.example' AND ra.role_key = 'prodlead'
-    ORDER BY l.lot_code`;
-  const all = [...rows] as Array<{ id: string; state: string }>;
-  const live = all.find((l) => l.state !== 'superseded' && l.state !== 'withdrawn');
-  const dead = all.find((l) => l.state === 'superseded' || l.state === 'withdrawn');
-  expect(live, 'the seed must leave Sunil a lot he can still edit').toBeDefined();
-  expect(dead, 'and one that has been superseded').toBeDefined();
-  return { lotId: live!.id, supersededLotId: dead!.id };
+    LIMIT 1`;
+  expect(proj, 'Sunil must lead a project somewhere').toBeDefined();
+  const projectId = (proj as { id: string }).id;
+
+  const make = async (state: string, suffix: string) => {
+    const [row] = await tx`
+      INSERT INTO lotmark.lots
+        (tenant_id, project_id, lot_code, expiry_date, state, stock_units,
+         storage_condition, cold_chain, unit_price_minor, owner_team_id)
+      SELECT ${tenantId}, ${projectId}, ${`RMP-CF-${STAMP}-${suffix}`}, '2030-01-01',
+             ${state}, 10, '2-8C', false, 100, p.owner_team_id
+      FROM lotmark.projects p WHERE p.id = ${projectId}
+      RETURNING id`;
+    return (row as { id: string }).id;
+  };
+
+  return {
+    lotId: await make('released', 'live'),
+    supersededLotId: await make('superseded', 'dead'),
+  };
 });
 
 const readForm = (cookie: string, entity = 'lot'): Promise<LightMyRequestResponse> =>
