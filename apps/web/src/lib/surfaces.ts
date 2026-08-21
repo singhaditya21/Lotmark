@@ -54,18 +54,39 @@ export interface Surface {
  * instead of being shown nothing.
  */
 export const SURFACES: readonly Surface[] = [
+  /**
+   * Order matters: the FIRST section a person can open is where they land.
+   *
+   * So it runs roughly by how central the work is, not alphabetically and not
+   * by when it was built. Commercial and Dispatch both hold `audit:read`, and
+   * listing the ledger before their order book sent them to a page they rarely
+   * need — correct, and not what they came for.
+   */
   { id: 'projects', label: 'Projects', half: 'producer', permission: 'project:read' },
   { id: 'capa', label: 'Complaints & CAPA', half: 'producer', permission: 'capa:manage' },
+  { id: 'orders', label: 'Orders & dispatch', half: 'producer', permission: 'order:read_all' },
+  { id: 'catalogue', label: 'Catalogue', half: 'producer', permission: 'catalogue:manage' },
+  { id: 'tiers', label: 'Price tiers', half: 'producer', permission: 'entitlement:decide' },
   { id: 'audit', label: 'Audit ledger', half: 'producer', permission: 'audit:read' },
-  // Administration. `user:manage` covers both, deliberately: roles are stored
-  // configuration, so a permission invented in code would be granted to nobody
-  // in any tenant that already exists and would gate these shut.
   { id: 'people', label: 'People', half: 'producer', permission: 'user:manage' },
   { id: 'configuration', label: 'Configuration', half: 'producer', permission: 'user:manage' },
   // Operational health sits behind `audit:read` because it IS what the system
   // did, in the half nobody watches — and the Quality Manager who reads the
   // ledger is who most needs to know the CAPA-raising job stopped on Tuesday.
   { id: 'operations', label: 'Operations', half: 'producer', permission: 'audit:read' },
+
+  /**
+   * ── The laboratory's half ────────────────────────────────────────────────
+   *
+   * These rows are what made `whyNoSurface` stop saying "the laboratory half of
+   * Lotmark is not part of this release" — the sentence deleted itself once
+   * there was something here, which is exactly what deriving it from this table
+   * was for.
+   */
+  { id: 'shop', label: 'Catalogue', half: 'customer', permission: 'order:create' },
+  { id: 'my-orders', label: 'My orders', half: 'customer', permission: 'order:read_own' },
+  { id: 'vault', label: 'Certificate vault', half: 'customer', permission: 'vault:use' },
+  { id: 'my-tiers', label: 'Price tiers', half: 'customer', permission: 'entitlement:claim' },
 ];
 
 export interface Viewer {

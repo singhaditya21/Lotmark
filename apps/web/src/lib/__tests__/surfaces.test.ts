@@ -47,18 +47,38 @@ describe('every persona lands somewhere that makes sense', () => {
     for (const role of ['commercial', 'dispatch'] as const) {
       const viewer = producer(PERSONA[role]);
       expect(visibleSurfaces(viewer).map((s) => s.id), role).not.toContain('projects');
-      expect(resolveRoute(viewer, null), `${role} should land on the audit ledger`).toBe('audit');
+      // They land on the order book, which is what they came for — not the
+      // audit ledger, which they also hold and rarely need.
+      expect(resolveRoute(viewer, null), `${role} should land on orders`).toBe('orders');
     }
   });
 
-  it('sends both laboratory customers to an explanation, not a blank page', () => {
+  it('lands both laboratory customers in their own half', () => {
+    /**
+     * CHANGED when the storefront landed.
+     *
+     * This used to assert that both customers reached the Access page with
+     * reason 'half_not_built', which was the honest answer while their half of
+     * the product did not exist. It does now, so the assertion moved with it —
+     * and the sentence on the Access page claiming the half is unbuilt stopped
+     * being produced on its own, which is what deriving it from SURFACES was
+     * for.
+     */
     for (const role of ['labqm', 'labbuyer'] as const) {
       const viewer = customer(PERSONA[role]);
-      expect(visibleSurfaces(viewer), role).toEqual([]);
-      expect(resolveRoute(viewer, null), role).toBeNull();
-      // And the reason must be the honest one: nothing is built for them yet,
-      // which no administrator can grant their way out of.
-      expect(whyNoSurface(viewer), role).toBe('half_not_built');
+      const visible = visibleSurfaces(viewer);
+      expect(visible.length, role).toBeGreaterThan(0);
+      expect(visible.every((s) => s.half === 'customer'), role).toBe(true);
+      expect(resolveRoute(viewer, null), role).not.toBeNull();
+    }
+  });
+
+  it('never shows a customer a producer section', () => {
+    for (const role of ['labqm', 'labbuyer'] as const) {
+      const ids = visibleSurfaces(customer(PERSONA[role])).map((s) => s.id);
+      for (const producerOnly of ['projects', 'capa', 'audit', 'people', 'configuration', 'orders']) {
+        expect(ids, `${role} must not see ${producerOnly}`).not.toContain(producerOnly);
+      }
     }
   });
 
@@ -85,18 +105,28 @@ describe('choosing which section to show', () => {
     expect(resolveRoute(producer(PERSONA.scientist), 'capa')).toBe('projects');
   });
 
-  it('returns null rather than defaulting into somebody else’s section', () => {
-    expect(resolveRoute(customer(PERSONA.labqm), 'projects')).toBeNull();
+  it('never falls back into the other half', () => {
+    // A stale request for a producer section must land on one of THEIR
+    // sections, never on the producer's.
+    const landed = resolveRoute(customer(PERSONA.labqm), 'projects');
+    expect(landed).not.toBe('projects');
+    expect(SURFACES.find((s) => s.id === landed)?.half).toBe('customer');
+  });
+
+  it('still returns null when a viewer holds nothing at all', () => {
+    // The Access page depends on this staying a real outcome rather than
+    // becoming unreachable now that both halves have sections.
+    expect(resolveRoute({ held: new Set(), roleKinds: ['customer'] }, null)).toBeNull();
   });
 });
 
 describe('explaining an empty account', () => {
-  it('tells apart the three reasons, because the action differs for each', () => {
+  it('tells apart the reasons, because the action differs for each', () => {
     expect(whyNoSurface({ held: new Set(), roleKinds: [] })).toBe('no_role');
-    expect(whyNoSurface(customer(PERSONA.labqm))).toBe('half_not_built');
-    // A producer role holding none of the section permissions: an
-    // administrator CAN fix this one.
+    // Holding a role but none of the section permissions: an administrator CAN
+    // fix this one, in either half.
     expect(whyNoSurface(producer(['pii:contact']))).toBe('no_permissions');
+    expect(whyNoSurface(customer([]))).toBe('no_permissions');
   });
 
   it('names permissions worth asking for, without repeating any', () => {
@@ -105,28 +135,26 @@ describe('explaining an empty account', () => {
     expect(new Set(asks).size).toBe(asks.length);
   });
 
-  it('stops saying "not built" as soon as a section for that half exists', () => {
+  it('has stopped saying "not built", because the storefront now exists', () => {
     /**
-     * The reason `whyNoSurface` is derived from SURFACES rather than written as
-     * fixed copy. The Access page tells a laboratory user that their half of
-     * the product does not exist yet — true today, and a lie the moment the
-     * storefront lands. Nobody remembers to delete that sentence, so it has to
-     * delete itself.
+     * The reason `whyNoSurface` was derived from SURFACES rather than written
+     * as fixed copy: the Access page told a laboratory user that their half of
+     * the product did not exist yet, which was true when it was written and a
+     * lie the moment the storefront landed. Nobody remembers to delete a
+     * sentence like that, so it had to delete itself.
      *
-     * This simulates the storefront arriving.
+     * It has. This test used to SIMULATE the storefront arriving; it now
+     * asserts the real thing, and that the claim is no longer reachable for a
+     * viewer whose half has sections.
      */
-    const withStorefront: Surface[] = [
-      ...SURFACES,
-      { id: 'vault', label: 'Certificate vault', half: 'customer', permission: 'vault:use' },
-    ];
-    const viewer = customer(PERSONA.labqm);
-    const forTheirHalf = withStorefront.filter((s) => viewer.roleKinds.includes(s.half));
-    expect(forTheirHalf.length).toBeGreaterThan(0);
-    // With that row present the reason is no longer 'half_not_built', and the
-    // sentence claiming the half does not exist is no longer rendered.
-    const wouldBe = forTheirHalf.length === 0 ? 'half_not_built' : 'no_permissions';
-    expect(wouldBe).toBe('no_permissions');
-    // Sanity: today, without it, the honest answer really is 'half_not_built'.
-    expect(whyNoSurface(viewer)).toBe('half_not_built');
+    expect(SURFACES.some((s) => s.half === 'customer'),
+      'the customer half has sections').toBe(true);
+    expect(whyNoSurface(customer([])),
+      'so "not built" is no longer the answer for a customer').toBe('no_permissions');
+
+    // It remains reachable for a half that genuinely has nothing, which is what
+    // the branch is for.
+    const halves = new Set<Surface['half']>(SURFACES.map((s) => s.half));
+    expect(halves.size, 'both halves are built').toBe(2);
   });
 });

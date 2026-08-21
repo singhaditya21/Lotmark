@@ -12,6 +12,10 @@ import { People } from './pages/People';
 import { Configuration } from './pages/Configuration';
 import { Operations } from './pages/Operations';
 import { JobHealthBanner } from './components/JobHealthBanner';
+import { Catalogue } from './pages/Catalogue';
+import { Orders } from './pages/Orders';
+import { Vault } from './pages/Vault';
+import { Entitlements } from './pages/Entitlements';
 
 export function App() {
   const qc = useQueryClient();
@@ -105,6 +109,15 @@ export function App() {
           <Configuration />
         ) : route === 'operations' ? (
           <Operations />
+        ) : route === 'catalogue' || route === 'shop' ? (
+          // One screen for both halves: the same material, different verbs.
+          <Catalogue />
+        ) : route === 'orders' || route === 'my-orders' ? (
+          <Orders />
+        ) : route === 'tiers' || route === 'my-tiers' ? (
+          <Entitlements />
+        ) : route === 'vault' ? (
+          <Vault />
         ) : open ? (
           <ProjectDetail project={open} onBack={() => setOpen(null)}
                          canReissue={held.has('cert:reissue')} />

@@ -173,3 +173,8 @@ label.inline input{margin-top:3px}
 .capa-detail dd{margin:0}
 .capa-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;
               border-top:1px solid var(--line2);padding-top:11px}
+
+/* A row whose certificate has been withdrawn. Tinted rather than struck
+   through: the material is still on the shelf and the row still has to be
+   readable — what has changed is whether it may be relied on. */
+tr.bad-row { background: var(--badT); }

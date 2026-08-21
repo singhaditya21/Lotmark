@@ -6,6 +6,11 @@
  * evidence rather than by reading the role definitions.
  *
  *   node apps/api/scripts/persona-probe.mjs
+ *
+ * NOTE: sign-in is rate limited to ten attempts a minute per IP. Nine accounts
+ * fit inside that; running the probe twice in quick succession does not, and
+ * the second run reports every persona as a sign-in failure. That is the
+ * limiter working — wait a minute rather than raising the limit.
  */
 import { createHmac } from 'node:crypto';
 
@@ -17,7 +22,17 @@ const PASSWORD = 'demo-password-1234';
 const SURFACES = [
   { id: 'projects', label: 'Projects', half: 'producer', permission: 'project:read' },
   { id: 'capa', label: 'Complaints & CAPA', half: 'producer', permission: 'capa:manage' },
+  { id: 'orders', label: 'Orders & dispatch', half: 'producer', permission: 'order:read_all' },
+  { id: 'catalogue', label: 'Catalogue', half: 'producer', permission: 'catalogue:manage' },
+  { id: 'tiers', label: 'Price tiers', half: 'producer', permission: 'entitlement:decide' },
   { id: 'audit', label: 'Audit ledger', half: 'producer', permission: 'audit:read' },
+  { id: 'people', label: 'People', half: 'producer', permission: 'user:manage' },
+  { id: 'configuration', label: 'Configuration', half: 'producer', permission: 'user:manage' },
+  { id: 'operations', label: 'Operations', half: 'producer', permission: 'audit:read' },
+  { id: 'shop', label: 'Catalogue', half: 'customer', permission: 'order:create' },
+  { id: 'my-orders', label: 'My orders', half: 'customer', permission: 'order:read_own' },
+  { id: 'vault', label: 'Certificate vault', half: 'customer', permission: 'vault:use' },
+  { id: 'my-tiers', label: 'Price tiers', half: 'customer', permission: 'entitlement:claim' },
 ];
 
 function b32(s) {
@@ -35,6 +50,12 @@ function totp() {
   const o = m[m.length - 1] & 15;
   return String(((m[o] & 127) << 24 | (m[o + 1] & 255) << 16 | (m[o + 2] & 255) << 8 | (m[o + 3] & 255)) % 1e6).padStart(6, '0');
 }
+/** Sleep until the next TOTP window begins. */
+function waitForFreshWindow() {
+  const msLeft = (30 - (Math.floor(Date.now() / 1000) % 30)) * 1000 + 500;
+  return new Promise((r) => setTimeout(r, msLeft));
+}
+
 function session() {
   let cookie = '';
   return async (path, init = {}) => {
@@ -67,11 +88,24 @@ console.log('─'.repeat(88));
 
 let emptyScreens = 0;
 for (const [email, role] of PEOPLE) {
-  const call = session();
+    const call = session();
   const first = await call('/auth/sign-in', { method: 'POST', body: JSON.stringify({ email, password: PASSWORD }) });
   if (first.body?.secondFactorRequired) {
-    await call('/auth/second-factor', { method: 'POST', body: JSON.stringify({ code: totp(), attempt: 1 }) });
+    /**
+     * Every demonstration account shares one authenticator secret, so the same
+     * six digits are valid for all of them at once — and the replay cache
+     * (correctly) refuses a code it has already seen. That is the security
+     * control working, not a fault: it just means this probe has to wait for a
+     * fresh window between accounts rather than hammering nine sign-ins
+     * through the same thirty seconds.
+     */
+    let second = await call('/auth/second-factor', { method: 'POST', body: JSON.stringify({ code: totp(), attempt: 1 }) });
+    if (second.status !== 200) {
+      await waitForFreshWindow();
+      second = await call('/auth/second-factor', { method: 'POST', body: JSON.stringify({ code: totp(), attempt: 2 }) });
+    }
   }
+
   const me = await call('/auth/me');
   if (me.status !== 200) { console.log(`${role.padEnd(21)} SIGN-IN FAILED ${me.status}`); continue; }
 

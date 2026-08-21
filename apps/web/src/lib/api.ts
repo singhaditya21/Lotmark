@@ -431,3 +431,126 @@ export interface OpsReport {
   /** What these checks cannot see, stated rather than implied. */
   limits: string[];
 }
+
+/* ── Commerce ───────────────────────────────────────────────────────────── */
+
+export interface CatalogueItem {
+  id: string;
+  lot_code: string;
+  expiry_date: string;
+  stock_units: number;
+  storage_condition: string;
+  cold_chain: boolean;
+  unit_price_minor: number;
+  tierable: boolean;
+  material_name: string;
+  cas_number: string | null;
+  sku: string;
+  certificate_code: string | null;
+  assigned_value: number | null;
+  expanded_uncertainty: number | null;
+  unit: string | null;
+  property_name: string | null;
+}
+
+export interface Catalogue {
+  items: CatalogueItem[];
+  canManage: boolean;
+  canOrder: boolean;
+}
+
+export interface OrderRow {
+  id: string;
+  code: string;
+  state: string;
+  placed_on: string;
+  total_minor: number;
+  currency: string;
+  courier: string | null;
+  tracking_reference: string | null;
+  organisation_name: string;
+}
+
+export interface OrderLine {
+  order_id: string;
+  quantity: number;
+  unit_price_minor: number;
+  lot_code: string;
+  material_name: string;
+}
+
+export interface ShipmentRow {
+  id: string;
+  order_id: string;
+  code: string;
+  temperature_class: string;
+  dispatched_at: string | null;
+  delivered_at: string | null;
+  readings: number;
+  excursions: number;
+}
+
+export interface OrdersView {
+  orders: OrderRow[];
+  lines: OrderLine[];
+  shipments: ShipmentRow[];
+  /** 'all' for the producer, 'own' for a laboratory. */
+  scope: 'all' | 'own';
+  canAdvance: boolean;
+  /** From the declared state machine, so the console never offers a 409. */
+  transitions: Array<{ from: string; to: string; action: string }>;
+}
+
+export interface EntitlementRow {
+  id: string;
+  code: string;
+  state: string;
+  raised_on: string;
+  supporting_document: string;
+  decision_note: string | null;
+  decided_at: string | null;
+  revalidation_due: string | null;
+  organisation_name: string;
+  raised_by_name: string | null;
+}
+
+export interface EntitlementsView {
+  claims: EntitlementRow[];
+  canDecide: boolean;
+  canClaim: boolean;
+  /**
+   * True, and stated rather than implied: an approved tier is RECORDED and
+   * changes no price. No tier price list exists in the product.
+   */
+  tierHasNoPriceEffect: boolean;
+}
+
+export interface VaultHolding {
+  id: string;
+  quantity: number;
+  storage_location: string | null;
+  source: string;
+  acquired_on: string;
+  acquired_on_basis: string;
+  lot_code: string;
+  expiry_date: string;
+  storage_condition: string;
+  lot_state: string;
+  material_name: string;
+  cas_number: string | null;
+  certificate_id: string | null;
+  certificate_code: string | null;
+  issue_number: number | null;
+  withdrawn: boolean | null;
+  verification_token: string | null;
+  assigned_value: number | null;
+  expanded_uncertainty: number | null;
+  unit: string | null;
+  property_name: string | null;
+}
+
+export interface VaultView {
+  holdings: VaultHolding[];
+  organisation: string;
+  verifyOrigin: string;
+}

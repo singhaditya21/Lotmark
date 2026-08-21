@@ -488,7 +488,41 @@ async function primeCounters(sql: Sql) {
               VALUES (${TENANT}, ${entity}, 'all', ${start})
               ON CONFLICT (tenant_id, entity, scope) DO UPDATE SET next_value = ${start}`;
   }
-  console.log(`counters: primed past the seeded records`);
+
+  /**
+   * The YEARLY scopes too.
+   *
+   * `capa` and `order` reset yearly, so `nextCode` looks for a counter scoped
+   * to the current year and creates it at `startAt` — which is 1 — if it is
+   * missing. That renders NCR-0001 behind the seeded NCR-0231 and collides
+   * outright on the 231st CAPA of the year.
+   *
+   * Migration 0021 primes these, and a re-seed truncates the table and undoes
+   * it. Priming here as well is what stops the bug coming back every time
+   * somebody runs `pnpm db:seed` — the migration fixes an existing database,
+   * this fixes a fresh one.
+   */
+  await sql`
+    INSERT INTO lotmark.numbering_counters (tenant_id, entity, scope, next_value)
+    SELECT ${TENANT}, e.entity, to_char(current_date, 'YYYY'), e.high + 1
+    FROM (
+      -- The trailing digits, matched rather than stripped. A non-digit regex
+      -- class needs a backslash, and a backslash inside a template literal is
+      -- eaten before Postgres ever sees it — the expression then quietly means
+      -- "remove the letter D", which leaves 'NCR-0231' intact and fails the
+      -- cast. Matching avoids the escape entirely.
+      SELECT 'capa'::text AS entity,
+             coalesce(max(nullif(substring(code from '[0-9]+$'), ''))::bigint, 0) AS high
+      FROM lotmark.capa WHERE tenant_id = ${TENANT}
+      UNION ALL
+      SELECT 'order',
+             coalesce(max(nullif(substring(code from '[0-9]+$'), ''))::bigint, 0)
+      FROM lotmark.orders WHERE tenant_id = ${TENANT}
+    ) e
+    ON CONFLICT (tenant_id, entity, scope) DO UPDATE
+      SET next_value = GREATEST(lotmark.numbering_counters.next_value, EXCLUDED.next_value)`;
+
+  console.log(`counters: primed past the seeded records, including this year's scopes`);
 }
 
 /**
