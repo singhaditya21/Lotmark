@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, type Capa, type CapaState } from '../lib/api';
-import { CAPA_STATE_LABEL, CAPA_STEP_PROMPT } from '../lib/capa';
+import { CAPA_STATE_LABEL, CAPA_STEP_PROMPT, missingToClose } from '../lib/capa';
 import { Dialog, Field } from './Dialog';
 
 /**
@@ -62,12 +62,12 @@ export function CapaTransition({
 
   if (!capa || !to) return null;
 
-  // Everything the server will require before it accepts a close.
+  // Everything the server will require before it accepts a close. Shared with
+  // the tests, so the fields this dialog OFFERS cannot drift out of step with
+  // the fields it demands — which is precisely how the close path became a
+  // dead end.
   const missing = closing
-    ? [
-        !rootCause.trim() ? 'a root cause' : null,
-        !corrective.trim() ? 'a corrective action' : null,
-      ].filter(Boolean) as string[]
+    ? missingToClose({ rootCause, correctiveAction: corrective })
     : [];
   const blocked = reason.trim().length === 0 || missing.length > 0;
 

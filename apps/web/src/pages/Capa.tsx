@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, type Capa as CapaRow, type CapaState, type CapaWorkflow } from '../lib/api';
-import { CAPA_STATE_LABEL, SEVERITY_TONE, isOpen, daysUntil } from '../lib/capa';
+import { CAPA_STATE_LABEL, SEVERITY_TONE, isOpen, daysUntil, dueLabel } from '../lib/capa';
 import { when } from '../lib/format';
 import { CapaTransition } from '../components/CapaTransition';
 
@@ -76,8 +76,10 @@ export function Capa({ canManage }: { canManage: boolean }) {
       ) : (
         <div className="capa-list">
           {shown.map((c) => {
-            const due = daysUntil(c.due_on);
-            const late = due !== null && due < 0 && isOpen(c.state);
+            // The rule lives in lib/capa and is pinned by tests; it was wrong
+            // while it lived inline here and nothing could catch it.
+            const label = dueLabel(c.state, c.due_on);
+            const late = label?.overdue ?? false;
             return (
               <article className={`capa ${late ? 'late' : ''}`} key={c.id}>
                 <div className="capa-head">
@@ -87,17 +89,8 @@ export function Capa({ canManage }: { canManage: boolean }) {
                   {c.team && <span className="muted">· {c.team}</span>}
                   <span className="capa-when muted">
                     raised {c.raised_on}
-                    {/* Due-date urgency is only shown while the CAPA is OPEN.
-                        On a closed one it is not actionable, and the previous
-                        version fell through to the wrong branch and rendered
-                        "due in -8 days". */}
-                    {isOpen(c.state) && due !== null && (
-                      <span className={late ? 'overdue' : ''}>
-                        {' · '}{late
-                          ? `${Math.abs(due)} day${Math.abs(due) === 1 ? '' : 's'} overdue`
-                          : due === 0 ? 'due today'
-                          : `due in ${due} day${due === 1 ? '' : 's'}`}
-                      </span>
+                    {label && (
+                      <span className={label.overdue ? 'overdue' : ''}>{' · '}{label.text}</span>
                     )}
                   </span>
                 </div>
