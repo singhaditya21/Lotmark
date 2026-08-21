@@ -187,10 +187,14 @@ export async function registerAdminPeopleRoutes(app: FastifyInstance): Promise<v
      * out of the audit ledger: it records that an account was created and by
      * whom, which is the auditable fact. The credential is not.
      *
-     * LIMITATION, stated rather than hidden: there is no forced password change
-     * on first sign-in yet, so the initial password remains valid until the
-     * person changes it, and there is no screen for that either. Until there
-     * is, treat this as a demonstration-grade enrolment.
+     * The account is created owing a password change. Until it is paid, the
+     * session may ask who it is, replace the password and sign out; every other
+     * route refuses it. So the issued password is a one-time enrolment
+     * credential rather than a standing one — 21 CFR 11 §11.300(b) and (d).
+     *
+     * The obligation is recorded on the row rather than inferred from the
+     * absence of a change, so an account imported from elsewhere is not
+     * mistaken for one that was provisioned here. See migration 0024.
      */
     const initialPassword = randomBytes(18).toString('base64url');
     const totpSecret = generateSecret();
@@ -210,10 +214,10 @@ export async function registerAdminPeopleRoutes(app: FastifyInstance): Promise<v
       const [row] = await t`
         INSERT INTO lotmark.users
           (tenant_id, organisation_id, code, email, display_name, password_hash,
-           totp_secret_encrypted, mfa_required)
+           totp_secret_encrypted, mfa_required, password_change_required)
         VALUES (${ctx.tenantId}, ${parsed.data.organisationId}, ${parsed.data.code},
                 ${parsed.data.email}, ${parsed.data.displayName},
-                ${await hashPassword(initialPassword)}, ${totpSecret}, true)
+                ${await hashPassword(initialPassword)}, ${totpSecret}, true, true)
         RETURNING id`;
       const userId = (row as { id: string }).id;
 
@@ -242,7 +246,9 @@ export async function registerAdminPeopleRoutes(app: FastifyInstance): Promise<v
       }),
       note:
         'This password and authenticator secret are shown once and cannot be recovered. ' +
-        'The account holds no role yet, so it can sign in and will see nothing until one is granted.',
+        'It is an enrolment credential: the account must replace it on first sign-in before ' +
+        'it can do anything else. The account holds no role yet, so it will see nothing ' +
+        'until one is granted.',
     });
   });
 

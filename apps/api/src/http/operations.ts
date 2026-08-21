@@ -108,6 +108,10 @@ export const OPERATIONS: readonly Operation[] = [
     'Re-authenticate to open a signing window',
     '21 CFR 11 §11.200(a)(1): the first signing of a session needs both ' +
     'components. Subsequent signings within the window may use one.'),
+  sessionOp('POST', '/api/v1/auth/password', 'Authentication', 'Replace your own password',
+    'Requires the current password as well as the session. Reachable while the account still '
+    + 'owes a password change — it is the only route that can clear that state. Ends every other '
+    + 'session the user holds.'),
   sessionOp('POST', '/api/v1/auth/sign-out', 'Authentication', 'End the session'),
   sessionOp('GET', '/api/v1/auth/me', 'Authentication',
     'The signed-in person, their teams, permissions and half of the product',

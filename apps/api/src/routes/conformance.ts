@@ -39,7 +39,11 @@ export async function registerConformanceRoutes(app: FastifyInstance): Promise<v
     });
     if (!verdict.allowed) return sendProblem(reply, forbidden(verdict.reason, verdict.message));
 
-    const clauses = await inTenantTransaction(db, args(ctx.tenantId),
+    // Read-only and many queries, so the same snapshot argument applies as for
+    // the pack: a screen whose clauses disagree with each other is worse than
+    // one that is a moment out of date.
+    const clauses = await inTenantTransaction(
+      db, { ...args(ctx.tenantId), isolation: 'repeatable read' },
       (tx) => conformanceView(tx, ctx.tenantId));
 
     return reply.send({
@@ -69,29 +73,44 @@ export async function registerConformanceRoutes(app: FastifyInstance): Promise<v
     });
     if (!verdict.allowed) return sendProblem(reply, forbidden(verdict.reason, verdict.message));
 
-    const pack = await inTenantTransaction(db, args(ctx.tenantId), async (tx) => {
-      const key = await keys.active(tx, ctx.tenantId, (m) => app.log.info(m));
-      const built = await buildAssessmentPack(tx, ctx.tenantId, (payload) => ({
-        signature: signPayload(payload, key.privateKey),
-        keyVersion: key.keyVersion,
-        custody: key.custody,
-      }));
-
-      await recordAudit(tx, {
-        tenantId: ctx.tenantId, actorUserId: ctx.userId, actorLabel: ctx.displayName,
-        actorRoleId: '—', sessionId: ctx.sessionId,
-        timeSource: ctx.timeSource, region: ctx.region,
-      }, {
-        kind: 'GOVERNANCE', action: 'Assessment pack exported',
-        detail:
-          `${built.requirements.length} requirement(s), ` +
-          `${Object.keys(built.sections).length} section(s), ` +
-          `digest ${built.manifest.packDigest.slice(0, 16)}…`,
-        changes: { packDigest: built.manifest.packDigest, keyVersion: built.manifest.keyVersion },
+    /**
+     * TWO transactions, and the split is the point.
+     *
+     * The pack is assembled at REPEATABLE READ so that every section reads the
+     * same snapshot. Under the default READ COMMITTED each statement takes a
+     * fresh one, so a pack could count certificates before a record landed and
+     * the audit chain after it — an export that disagrees with itself, signed,
+     * and handed to an assessor.
+     *
+     * The audit entry is written on a SEPARATE, ordinary transaction. Appending
+     * to the ledger touches a row every writer touches, and doing that under
+     * REPEATABLE READ turns an ordinary concurrent act into a serialization
+     * failure. The export is recorded after the pack exists and before it is
+     * returned, so an export that could not be recorded is not an export.
+     */
+    const pack = await inTenantTransaction(
+      db, { ...args(ctx.tenantId), isolation: 'repeatable read' },
+      async (tx) => {
+        const key = await keys.active(tx, ctx.tenantId, (m) => app.log.info(m));
+        return buildAssessmentPack(tx, ctx.tenantId, (payload) => ({
+          signature: signPayload(payload, key.privateKey),
+          keyVersion: key.keyVersion,
+          custody: key.custody,
+        }));
       });
 
-      return built;
-    });
+    await inTenantTransaction(db, args(ctx.tenantId), (tx) => recordAudit(tx, {
+      tenantId: ctx.tenantId, actorUserId: ctx.userId, actorLabel: ctx.displayName,
+      actorRoleId: '—', sessionId: ctx.sessionId,
+      timeSource: ctx.timeSource, region: ctx.region,
+    }, {
+      kind: 'GOVERNANCE', action: 'Assessment pack exported',
+      detail:
+        `${pack.requirements.length} requirement(s), ` +
+        `${Object.keys(pack.sections).length} section(s), ` +
+        `digest ${pack.manifest.packDigest.slice(0, 16)}…`,
+      changes: { packDigest: pack.manifest.packDigest, keyVersion: pack.manifest.keyVersion },
+    }));
 
     return reply
       .header('content-disposition',

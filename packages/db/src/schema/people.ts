@@ -22,6 +22,26 @@ export const usersTable = lotmark.table('users', {
    */
   passwordHash: text('password_hash').notNull(),
 
+  /**
+   * An issued password is a shared secret until the holder replaces it.
+   *
+   * Set true when an administrator provisions an account with a password they
+   * chose. Such a session may authenticate, see who it is and sign out — and
+   * nothing else — until the password is replaced. 21 CFR 11 §11.300(b) and (d).
+   *
+   * Enforced centrally in `requireSession`, for the same reason the second
+   * factor is: a per-route check is a check a new route can forget.
+   */
+  passwordChangeRequired: boolean('password_change_required').notNull().default(false),
+
+  /**
+   * When the holder last set their OWN password. NULL means never.
+   *
+   * Not back-filled from `created_at` — that would assert a change that did not
+   * happen, on precisely the accounts where the question matters.
+   */
+  passwordChangedAt: timestamp('password_changed_at', { withTimezone: true, mode: 'string' }),
+
   /** Base32 TOTP secret, encrypted at rest. Null until the user enrols. */
   totpSecretEncrypted: text('totp_secret_encrypted'),
   mfaEnrolledAt: timestamp('mfa_enrolled_at', { withTimezone: true, mode: 'string' }),

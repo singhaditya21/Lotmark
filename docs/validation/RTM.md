@@ -8,7 +8,7 @@ The source is `packages/domain/src/conformance.ts`, and every citation below is 
 
 | Status | Count | Meaning |
 |---|---|---|
-| enforced | 23 | the code refuses the thing |
+| enforced | 24 | the code refuses the thing |
 | partial | 3 | enforced on some paths; the gap is stated |
 | declared | 1 | written down, nothing checks it |
 | not implemented | 0 | absent, and recorded as absent |
@@ -132,6 +132,20 @@ Signing keys are held so that a compromise of the records does not forge them.
 | Implemented by | `apps/api/src/services/custody.ts` |
 | Demonstrated by | `apps/api/src/__tests__/custody.test.ts` — "custody" |
 | Live evidence | `custody` on the conformance view |
+
+## 21 CFR 11 §11.300(b)
+
+### REQ-CREDENTIAL-ISSUANCE — enforced
+
+A password issued to somebody by an administrator is an enrolment credential, not a standing one: the account must replace it before it can act.
+
+> The gate is in requireSession, beside the second-factor gate and after it — so a route added tomorrow cannot forget it, and so the person replacing the credential is the one holding the authenticator. Not yet PERIODIC: §11.300(b) also contemplates password aging, and nothing here expires a password the holder chose.
+
+| | |
+|---|---|
+| Implemented by | `apps/api/src/plugins/session.ts`<br>`apps/api/src/routes/auth.ts`<br>`packages/db/migrations/0024_password_change.sql` |
+| Demonstrated by | `apps/api/src/__tests__/password-change.test.ts` — "refused BEFORE the permission check"<br>`apps/api/src/__tests__/password-change.test.ts` — "has not passed the second factor" |
+| Live evidence | `credentials` on the conformance view |
 
 ## 21 CFR 11 §11.50
 

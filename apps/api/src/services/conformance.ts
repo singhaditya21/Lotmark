@@ -236,6 +236,28 @@ export async function liveEvidence(tx: Sql, tenantId: string): Promise<Map<strin
     satisfied: cf.active === 1,
   });
 
+  const [credentials] = await tx`
+    SELECT count(*)::int AS accounts,
+           count(*) FILTER (WHERE password_change_required)::int AS owing,
+           count(*) FILTER (WHERE password_changed_at IS NOT NULL)::int AS self_chosen
+    FROM lotmark.users
+    WHERE tenant_id = ${tenantId} AND deactivated_at IS NULL`;
+  const cr = credentials as { accounts: number; owing: number; self_chosen: number };
+  add({
+    key: 'credentials',
+    summary: cr.owing === 0
+      ? `no account is holding an issued password (${cr.accounts} active)`
+      : `${cr.owing} of ${cr.accounts} account(s) still hold the password they were issued`,
+    figures: { accounts: cr.accounts, owing: cr.owing, selfChosen: cr.self_chosen },
+    /**
+     * Reports the RECORDS, not the control. An account provisioned five minutes
+     * ago legitimately owes a change and will show here until it is paid —
+     * which is the honest reading, because at this instant somebody can
+     * authenticate with a credential two people know.
+     */
+    satisfied: cr.owing === 0,
+  });
+
   const [coldchain] = await tx`
     SELECT count(*)::int AS shipments,
            coalesce(sum((SELECT count(*) FROM lotmark.logger_readings r

@@ -73,13 +73,54 @@ async function tenantId(): Promise<string> {
   return (row as { id: string }).id;
 }
 
+/**
+ * REPEATABLE READ, exactly as the export route uses.
+ *
+ * Not a test convenience. Under the default READ COMMITTED every STATEMENT
+ * takes a fresh snapshot, so being inside one transaction does not stop two
+ * reads disagreeing — and the whole suite runs in parallel against one
+ * database, which is what surfaced it. The claim under test is about identical
+ * RECORDS, so the records must hold still while both packs are built.
+ */
 const inTenant = <T>(fn: (tx: never) => Promise<T>): Promise<T> =>
   tenantId().then((t) => inTenantTransaction(app.db, {
     tenantId: t,
     auditKey: app.cfg.LOTMARK_AUDIT_KEY,
     auditKeyGeneration: app.cfg.LOTMARK_AUDIT_KEY_GENERATION,
     organisationKind: 'producer',
+    isolation: 'repeatable read',
   }, fn as never));
+
+describe('the snapshot the pack is read from', () => {
+  /**
+   * Everything above rests on `isolation: 'repeatable read'` actually reaching
+   * PostgreSQL. It is passed as a string appended to BEGIN, so a typo or a
+   * driver that quietly ignored the option would leave the plumbing looking
+   * right and doing nothing — and the only symptom would be a digest test that
+   * fails once a month under load.
+   *
+   * So the level is asked for directly, and the default is asserted too: if the
+   * database were globally REPEATABLE READ, the first assertion would pass
+   * while proving nothing about our code.
+   */
+  it('is REPEATABLE READ when asked for, and READ COMMITTED when not', async () => {
+    const t = await tenantId();
+    const base = {
+      tenantId: t,
+      auditKey: app.cfg.LOTMARK_AUDIT_KEY,
+      auditKeyGeneration: app.cfg.LOTMARK_AUDIT_KEY_GENERATION,
+      organisationKind: 'producer' as const,
+    };
+    const levelOf = (extra: { isolation?: 'repeatable read' }) =>
+      inTenantTransaction(app.db, { ...base, ...extra }, async (tx) => {
+        const [row] = await tx`SHOW transaction_isolation`;
+        return (row as { transaction_isolation: string }).transaction_isolation;
+      });
+
+    expect(await levelOf({ isolation: 'repeatable read' })).toBe('repeatable read');
+    expect(await levelOf({}), 'the option must be what changes it').toBe('read committed');
+  });
+});
 
 describe('who may see conformance, and who may export it', () => {
   it('gives the Quality Manager the view', async () => {
@@ -184,11 +225,20 @@ describe('the assessment pack', () => {
      * would make two exports of identical records differ, and the digest would
      * then prove nothing about the records — which is the only thing it is for.
      *
-     * BOTH packs are built inside ONE transaction, so they read the same
-     * snapshot. Built in two, this failed as soon as the suite ran in parallel:
-     * another test file placed an order between them, the digest changed, and
-     * the test was right to notice. The claim being made is about identical
-     * records, so identical records are what it has to compare.
+     * BOTH packs are built inside ONE REPEATABLE READ transaction, so they read
+     * the same snapshot. Neither half of that is optional, and each was learned
+     * the hard way:
+     *
+     *   · built in two transactions, this failed as soon as the suite ran in
+     *     parallel — another file placed an order between them;
+     *   · built in one transaction at the DEFAULT isolation, it failed again
+     *     when a concurrent file created a user, because READ COMMITTED takes a
+     *     fresh snapshot per STATEMENT, not per transaction.
+     *
+     * The claim being made is about identical records, so identical records are
+     * what it has to compare. The export route reads at the same level for the
+     * same reason — a signed pack that disagrees with itself is worse than no
+     * pack.
      */
     const [a, b] = await inTenant(async (tx) => {
       const t = await tenantId();

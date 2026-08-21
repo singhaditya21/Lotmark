@@ -5,7 +5,10 @@ import {
 } from '@lotmark/domain';
 import { inTenantTransaction } from '../db';
 import { SESSION_COOKIE, hashToken, loadLiveSession } from '../services/sessions';
-import { notAuthenticated, notProvisioned, secondFactorRequired, sendProblem, sessionExpired } from '../http/problem';
+import {
+  notAuthenticated, notProvisioned, passwordChangeRequired, secondFactorRequired,
+  sendProblem, sessionExpired,
+} from '../http/problem';
 
 /**
  * The authenticated request context.
@@ -34,6 +37,15 @@ export interface RequestContext {
   readonly organisation: { id: string; kind: string; name: string };
   readonly teams: ReadonlyArray<{ id: string; key: string; name: string }>;
   readonly mfaSatisfied: boolean;
+  /**
+   * The account still carries a password somebody else chose for it.
+   *
+   * Carried on the context rather than checked at each route, so the gate below
+   * is the only place that decides — and so `/auth/me` can TELL the console,
+   * which is what lets it show the change-password screen instead of a shell
+   * full of controls that would all return 403.
+   */
+  readonly passwordChangeRequired: boolean;
   readonly timeSource: string;
   readonly region: string;
   readonly today: string;
@@ -46,10 +58,23 @@ export interface RequestContext {
  * route that forgets to call it has no context at all and cannot accidentally
  * act as somebody. A hook that silently does nothing on some paths fails open.
  */
+export interface SessionOptions {
+  /**
+   * Let the request through even though the account owes a password change.
+   *
+   * Opt-IN, and named for what it permits rather than what it skips, because
+   * the default has to be the safe one: a route added tomorrow that forgets
+   * this option is gated, not exempt. Exactly three callers pass it — asking
+   * who you are, changing the password, and signing out — and each says why.
+   */
+  readonly allowPasswordChangePending?: boolean;
+}
+
 export async function requireSession(
   app: FastifyInstance,
   req: FastifyRequest,
   reply: FastifyReply,
+  options: SessionOptions = {},
 ): Promise<RequestContext | null> {
   const token = req.cookies[SESSION_COOKIE];
   if (!token) {
@@ -74,13 +99,14 @@ export async function requireSession(
       if (!session) return null;
 
       const [userRow] = await tx`
-        SELECT u.id, u.display_name, u.email,
+        SELECT u.id, u.display_name, u.email, u.password_change_required,
                o.id AS organisation_id, o.kind AS organisation_kind, o.name AS organisation_name
         FROM lotmark.users u
         JOIN lotmark.organisations o ON o.id = u.organisation_id
         WHERE u.id = ${session.user_id} LIMIT 1`;
       const user = userRow as {
         id: string; display_name: string; email: string;
+        password_change_required: boolean;
         organisation_id: string; organisation_kind: string; organisation_name: string;
       } | undefined;
       if (!user) return null;
@@ -159,6 +185,7 @@ export async function requireSession(
         },
         teams: teamRows.map((t) => t as { id: string; key: string; name: string }),
         mfaSatisfied: session.mfa_satisfied_at !== null,
+        passwordChangeRequired: user.password_change_required,
         timeSource: tenant.time_source,
         region: tenant.region,
         today,
@@ -179,6 +206,23 @@ export async function requireSession(
    */
   if (!ctx.mfaSatisfied) {
     await sendProblem(reply, secondFactorRequired('Complete the second factor to continue.'));
+    return null;
+  }
+
+  /**
+   * An account provisioned with a password somebody else chose may authenticate
+   * and may replace that password. It may not yet act.
+   *
+   * AFTER the second-factor gate, not before, and the order is the control. If
+   * the password alone let you reach the change screen, then whoever learned
+   * the issued password — the administrator who generated it, anyone who saw
+   * the channel it travelled through — could set a new one and take the account
+   * before its owner ever signed in. Demanding the second factor first means
+   * the person replacing the password is the person holding the authenticator.
+   */
+  if (ctx.passwordChangeRequired && options.allowPasswordChangePending !== true) {
+    await sendProblem(reply, passwordChangeRequired(
+      'This account is still using the password it was issued. Set your own password to continue.'));
     return null;
   }
 

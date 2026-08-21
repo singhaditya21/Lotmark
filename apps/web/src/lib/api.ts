@@ -122,6 +122,15 @@ export interface Me {
   permissions: string[];
   permissionsByTeam: Record<string, string[]>;
   secondFactorSatisfied: boolean;
+  /**
+   * The account is still using the password it was issued.
+   *
+   * Unlike `permissions`, this is not advisory. Every route except this one,
+   * signing out and changing the password is already refusing the session with
+   * a 403; the console showing the change screen agrees with the server rather
+   * than anticipating it.
+   */
+  passwordChangeRequired: boolean;
 }
 
 export interface Project {

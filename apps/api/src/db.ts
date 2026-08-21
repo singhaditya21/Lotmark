@@ -70,6 +70,28 @@ export interface TenantTransactionArgs {
    */
   readonly organisationKind?: 'producer' | 'customer' | undefined;
   readonly organisationId?: string | undefined;
+
+  /**
+   * Read every statement from ONE snapshot.
+   *
+   * PostgreSQL's default is READ COMMITTED, where each STATEMENT takes a fresh
+   * snapshot. Being inside a transaction is therefore not enough to see a
+   * consistent picture: two queries a millisecond apart can disagree, and a
+   * report assembled from a dozen of them can contradict itself — a
+   * certificates section counted before a record landed, an audit chain counted
+   * after it.
+   *
+   * Found by the assessment pack's own reproducibility test, which builds two
+   * packs inside one transaction and requires identical digests. It failed as
+   * soon as a concurrent test created a user, and it was right to: the claim
+   * being made is about the records, so the records have to hold still.
+   *
+   * Use for multi-query READS that must agree with each other. NOT for ordinary
+   * write paths — under REPEATABLE READ a write that collides with a concurrent
+   * one raises a serialization failure instead of waiting, and the audit chain's
+   * head row is exactly the kind of row every writer touches.
+   */
+  readonly isolation?: 'repeatable read' | undefined;
 }
 
 export async function inTenantTransaction<T>(
@@ -77,7 +99,12 @@ export async function inTenantTransaction<T>(
   args: TenantTransactionArgs,
   fn: (tx: Sql) => Promise<T>,
 ): Promise<T> {
-  return sql.begin(async (tx) => {
+  /**
+   * The level goes on BEGIN, not in a SET afterwards. `SET TRANSACTION` has to
+   * precede every query in the transaction, and the `set_config` calls below
+   * are queries — so a SET would arrive too late and be rejected.
+   */
+  const body = async (tx: Sql): Promise<T> => {
     await tx`SELECT set_config('lotmark.tenant_id', ${args.tenantId}, true)`;
     await tx`SELECT set_config('lotmark.audit_key', ${args.auditKey}, true)`;
     if (args.auditKeyGeneration) {
@@ -93,7 +120,11 @@ export async function inTenantTransaction<T>(
       await tx`SELECT set_config('lotmark.organisation_id', ${args.organisationId}, true)`;
     }
     return fn(tx as unknown as Sql);
-  }) as Promise<T>;
+  };
+
+  return (args.isolation
+    ? sql.begin(`isolation level ${args.isolation}`, body as never)
+    : sql.begin(body as never)) as Promise<T>;
 }
 
 /**

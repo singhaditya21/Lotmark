@@ -16,7 +16,8 @@ Take the next free number from this table and add a row; do not take it from
 | 0020 | `acquired_on_not_null` | 13 — `vault_holdings.acquired_on` | 0019 |
 | 0021 | `ops_observability` | 10, 11 — DR drill records, job health | — |
 | 0022 | `commercial_surfaces` | 3 — orders, entitlements, dispatch, vault | 0017, 0020, 0021 |
-| 0023 | `conformance_views` | 6 — conformance view and assessment pack | all of the above |
+| 0023 | ~~`conformance_views`~~ | 6 — **withdrawn, never written** | — |
+| 0024 | `password_change` | Forced password change on first sign-in | — |
 
 ## Why those orderings, specifically
 
@@ -46,4 +47,15 @@ Take the next free number from this table and add a row; do not take it from
   contradict the immutability rule the whole model rests on, and would leave
   entries no `change_summary` in any version accounts for.
 
-- **0023 last.** Its clause views must be written against the final schema.
+- **0023 was withdrawn.** It was allocated for SQL views backing the conformance
+  screen. The screen was built instead from `packages/domain/src/conformance.ts`
+  plus live queries in `apps/api/src/services/conformance.ts`, so no migration
+  was needed and none was written. The number is retired rather than reused:
+  `migrate.ts` keys its checksums on the FILENAME, and a `0023_something_else`
+  appearing later would be indistinguishable from a renamed migration to anyone
+  reading this table. Retiring a number costs nothing; reusing one costs the
+  ability to trust the sequence.
+
+- **0024 stands alone.** It adds two columns to `users` and depends on nothing.
+  It deliberately does NOT back-fill `password_changed_at`, and its default of
+  `false` means deploying it locks nobody out — see the file's own header.

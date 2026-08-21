@@ -249,6 +249,32 @@
         }
       }
     },
+    "/api/v1/auth/password": {
+      "post": {
+        "operationId": "postAuthPassword",
+        "summary": "Replace your own password",
+        "description": "Requires the current password as well as the session. Reachable while the account still owes a password change — it is the only route that can clear that state. Ends every other session the user holds.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          }
+        }
+      }
+    },
     "/api/v1/auth/sign-out": {
       "post": {
         "operationId": "postAuthSignOut",

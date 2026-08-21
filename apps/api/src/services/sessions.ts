@@ -111,6 +111,32 @@ export async function revokeAllForUser(tx: Sql, userId: string, reason: string):
  * Is this session inside its continuous signing window?
  * §11.200(a)(1)(ii) — outside it, all identification components are required again.
  */
+/**
+ * Revoke every other live session this user holds, keeping the caller's own.
+ *
+ * Used when a credential changes. Sessions minted under the OLD password must
+ * not survive it: if the reason for the change is that somebody else knows the
+ * password, leaving their session alive means the change accomplished nothing.
+ *
+ * The current session is kept deliberately. Revoking it too would sign the user
+ * out at the exact moment they did the right thing, and the most likely
+ * response to that is to assume the change failed and try again.
+ *
+ * Returns how many were ended, so the caller can tell the user — "you were
+ * signed out of 2 other places" is information somebody can act on.
+ */
+export async function revokeOtherSessions(
+  tx: Sql, userId: string, keepSessionId: string, reason: string,
+): Promise<number> {
+  const rows = await tx`UPDATE lotmark.sessions
+                        SET revoked_at = now(), revoked_reason = ${reason}
+                        WHERE user_id = ${userId}
+                          AND id <> ${keepSessionId}
+                          AND revoked_at IS NULL
+                        RETURNING id`;
+  return rows.length;
+}
+
 export function signingWindowOpen(session: SessionRow, windowMinutes: number): boolean {
   if (!session.signing_unlocked_at) return false;
   const opened = Date.parse(session.signing_unlocked_at);

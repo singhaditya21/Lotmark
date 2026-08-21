@@ -297,10 +297,10 @@ export function People() {
           <Field label="Authenticator enrolment">
             <input className="t mono" readOnly value={created.enrolment} />
           </Field>
-          <div className="note warn">
-            There is no forced password change on first sign-in yet, and no screen
-            for the person to change it themselves. Until there is, treat this as
-            demonstration-grade enrolment.
+          <div className="note info">
+            This is an <b>enrolment</b> credential, not a standing one. The account
+            can sign in and must then set its own password before it can do
+            anything else — until it does, every other screen refuses it.
           </div>
         </Dialog>
       )}

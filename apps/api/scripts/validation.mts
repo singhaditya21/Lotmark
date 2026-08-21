@@ -119,6 +119,22 @@ async function iq(): Promise<boolean> {
     record('signing key custody configured', true,
       `${cfg.SIGNING_KEY_CUSTODY} — printed on every certificate this key signs`);
 
+    /**
+     * Read-only, and deliberately in IQ rather than PQ: this is a statement
+     * about the system as installed, not about a transaction it can perform.
+     * An account still holding the password an administrator chose for it is a
+     * credential at least two people know — 21 CFR 11 §11.300(b) and (d).
+     */
+    const [issued] = await sql`
+      SELECT count(*)::int AS owing,
+             coalesce(string_agg(email, ', ' ORDER BY email), '') AS who
+      FROM lotmark.users
+      WHERE deactivated_at IS NULL AND password_change_required`;
+    const iss = issued as { owing: number; who: string };
+    record('no active account is still holding the password it was issued',
+      iss.owing === 0,
+      iss.owing === 0 ? 'none outstanding' : `${iss.owing} outstanding — ${iss.who}`);
+
     return checks.every((c) => c.ok);
   } finally {
     await sql.end();
@@ -204,10 +220,10 @@ function base32(secret: string): Buffer {
   for (let i = 0; i < out.length; i++) out[i] = parseInt(bits.slice(i * 8, i * 8 + 8), 2);
   return out;
 }
-function totp(): string {
+function totp(secret: string = TOTP_SECRET): string {
   const counter = Buffer.alloc(8);
   counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 1000 / 30)));
-  const mac = createHmac('sha1', base32(TOTP_SECRET)).update(counter).digest();
+  const mac = createHmac('sha1', base32(secret)).update(counter).digest();
   const o = mac[mac.length - 1]! & 15;
   const code = ((mac[o]! & 127) << 24) | ((mac[o + 1]! & 255) << 16)
     | ((mac[o + 2]! & 255) << 8) | (mac[o + 3]! & 255);
@@ -231,24 +247,37 @@ function session() {
   };
 }
 
-async function signIn(email: string) {
+/**
+ * Password and second factor, and nothing more.
+ *
+ * Separate from `signIn` because a newly enrolled account has its own password
+ * and its own authenticator secret, and because it CANNOT step up — the
+ * password gate refuses that route until the issued credential is replaced,
+ * which is one of the things the protocol checks.
+ */
+async function authenticate(email: string, password: string, secret: string) {
   const call = session();
   const first = await call('/auth/sign-in', {
-    method: 'POST', body: JSON.stringify({ email, password: PASSWORD }),
+    method: 'POST', body: JSON.stringify({ email, password }),
   });
   if (first.body?.['secondFactorRequired']) {
     let second = await call('/auth/second-factor', {
-      method: 'POST', body: JSON.stringify({ code: totp(), attempt: 1 }),
+      method: 'POST', body: JSON.stringify({ code: totp(secret), attempt: 1 }),
     });
     if (second.status !== 200) {
-      // Every demonstration account shares one authenticator secret, so the
+      // The demonstration accounts share one authenticator secret, so the
       // replay cache refuses a code already used. Wait for the next window.
       await freshWindow();
       second = await call('/auth/second-factor', {
-        method: 'POST', body: JSON.stringify({ code: totp(), attempt: 2 }),
+        method: 'POST', body: JSON.stringify({ code: totp(secret), attempt: 2 }),
       });
     }
   }
+  return call;
+}
+
+async function signIn(email: string) {
+  const call = await authenticate(email, PASSWORD, TOTP_SECRET);
   await call('/auth/step-up', {
     method: 'POST', body: JSON.stringify({ password: PASSWORD, code: totp() }),
   });
@@ -350,6 +379,85 @@ async function pq(): Promise<boolean> {
   } else {
     record('the holding laboratory sees the withdrawal in its own vault', true,
       'no vault holding for this lot; the order path covered it');
+  }
+
+  /* ── Enrolling a person, and the credential they were issued ──────────── */
+
+  /**
+   * The personnel half of the process, end to end: an administrator provisions
+   * an account, the person completes enrolment, replaces the credential they
+   * were given, and the account is closed again.
+   *
+   * The account is DEACTIVATED at the end rather than left behind. A validation
+   * protocol that accumulates live accounts every time it runs is itself a
+   * finding, and deactivation is the real close-out — a user is never deleted,
+   * being referenced by the ledger.
+   */
+  const admin = await authenticate('admin@producer.example', PASSWORD, TOTP_SECRET);
+  const directory = await admin('/admin/people');
+  const producerOrg = (directory.body?.['organisations'] as Array<Record<string, unknown>> | undefined)
+    ?.find((o) => o['kind'] === 'producer');
+
+  if (record('an administrator can read the people directory', Boolean(producerOrg))) {
+    const stamp = Date.now().toString(36);
+    const created = await admin('/admin/users', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: `pq-${stamp}@producer.example`,
+        displayName: `PQ Enrolment ${stamp}`,
+        code: `pq-${stamp}`,
+        organisationId: producerOrg!['id'],
+      }),
+    });
+    const issuedPassword = String(created.body?.['initialPassword'] ?? '');
+    const enrolment = String(created.body?.['enrolment'] ?? '');
+    const issuedSecret = enrolment ? new URL(enrolment).searchParams.get('secret') ?? '' : '';
+
+    if (record('an administrator can provision an account', created.status === 200,
+      `${created.status} · credential shown once`)) {
+      const person = await authenticate(
+        `pq-${stamp}@producer.example`, issuedPassword, issuedSecret);
+
+      const before = await person('/auth/me');
+      record('the new account authenticates, and is told it owes a password change',
+        before.status === 200 && before.body?.['passwordChangeRequired'] === true);
+
+      const blocked = await person('/projects');
+      record('the issued credential authenticates but does not authorise',
+        blocked.status === 403 && blocked.body?.['code'] === 'password_change_required',
+        `${blocked.status} ${String(blocked.body?.['code'] ?? '')}`);
+
+      const chosen = `pq-chosen-${stamp}-passphrase`;
+      const changed = await person('/auth/password', {
+        method: 'POST',
+        body: JSON.stringify({ currentPassword: issuedPassword, newPassword: chosen }),
+      });
+      record('the person can replace it, and only with the current one in hand',
+        changed.status === 200, `${changed.status}`);
+
+      const after = await person('/auth/me');
+      record('the obligation is cleared once, not repeatedly',
+        after.status === 200 && after.body?.['passwordChangeRequired'] === false);
+
+      const stale = await authenticate(
+        `pq-${stamp}@producer.example`, issuedPassword, issuedSecret);
+      const staleMe = await stale('/auth/me');
+      record('the issued password no longer authenticates', staleMe.status === 401,
+        `${staleMe.status}`);
+
+      /**
+       * `{}` rather than no body at all. `session()` sends
+       * `content-type: application/json` on every call, and Fastify refuses a
+       * JSON content type with an empty body — a 400 that reads exactly like a
+       * permissions failure and is not one.
+       */
+      const closed = await admin(`/admin/users/${String(created.body?.['userId'])}/deactivate`,
+        { method: 'POST', body: JSON.stringify({}) });
+      record('the account is closed by deactivation, never deletion', closed.status === 200,
+        closed.status === 200
+          ? 'the ledger keeps referring to it'
+          : `${closed.status} ${String(closed.body?.['detail'] ?? '')}`);
+    }
   }
 
   return checks.every((c) => c.ok);

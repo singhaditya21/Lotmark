@@ -70,6 +70,19 @@ export const sessionExpired = (detail = 'Your session has ended. Sign in again.'
 export const secondFactorRequired = (detail = 'Complete the second factor to continue.') =>
   problem({ code: 'second_factor_required', status: 401, detail });
 
+/**
+ * The session is real and the second factor is satisfied; the account simply
+ * may not act until its issued password is replaced.
+ *
+ * 403 rather than 401 on purpose. 401 means "authenticate", and the console
+ * answers a 401 by showing the sign-in screen — which would send the user round
+ * a loop they cannot leave, because signing in again lands them in the same
+ * state. This is an authenticated caller who is not permitted, which is 403.
+ */
+export const passwordChangeRequired = (
+  detail = 'Set your own password before continuing.',
+) => problem({ code: 'password_change_required', status: 403, detail });
+
 export const stepUpRequired = (detail: string, auditSeq?: string | bigint | null | undefined) =>
   problem({ code: 'step_up_required', status: 401, detail, auditSeq });
 

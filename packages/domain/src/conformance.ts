@@ -255,6 +255,31 @@ export const REQUIREMENTS: readonly Requirement[] = [
       'organisation\'s data.',
   },
   {
+    id: 'REQ-CREDENTIAL-ISSUANCE',
+    clause: '21 CFR 11 §11.300(b)',
+    statement:
+      'A password issued to somebody by an administrator is an enrolment ' +
+      'credential, not a standing one: the account must replace it before it ' +
+      'can act.',
+    status: 'enforced',
+    code: [
+      'apps/api/src/plugins/session.ts',
+      'apps/api/src/routes/auth.ts',
+      'packages/db/migrations/0024_password_change.sql',
+    ],
+    tests: [
+      { file: 'apps/api/src/__tests__/password-change.test.ts', named: 'refused BEFORE the permission check' },
+      { file: 'apps/api/src/__tests__/password-change.test.ts', named: 'has not passed the second factor' },
+    ],
+    live: 'credentials',
+    note:
+      'The gate is in requireSession, beside the second-factor gate and after ' +
+      'it — so a route added tomorrow cannot forget it, and so the person ' +
+      'replacing the credential is the one holding the authenticator. Not yet ' +
+      'PERIODIC: §11.300(b) also contemplates password aging, and nothing here ' +
+      'expires a password the holder chose.',
+  },
+  {
     id: 'REQ-AUTHORITY',
     clause: '21 CFR 11 §11.10(g)',
     statement:
