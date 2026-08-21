@@ -1,0 +1,443 @@
+<title>Lotmark Go-Live Tiers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ── Tokens. Light is the bare :root; both dark paths redefine only tokens. ── */
+:root{
+  --paper:#F7F6F2; --panel:#FFFDFA; --sunk:#EFEDE7;
+  --ink:#16181C; --ink-2:#4A4E57; --ink-3:#797E88;
+  --rule:#DCD9D1; --rule-2:#E9E6DF;
+  --cobalt:#1B4E8F; --cobalt-soft:#E4EBF4; --cobalt-line:#B8CBE2;
+  --amber:#8A5610; --amber-soft:#F6EEE1;
+  --sage:#2F5F44; --sage-soft:#E5EEE8;
+  --crimson:#8C1F25; --crimson-soft:#F6E7E7;
+  --band:#1B4E8F;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#101214; --panel:#171A1E; --sunk:#1D2126;
+    --ink:#E9E7E2; --ink-2:#AFB4BC; --ink-3:#7C828C;
+    --rule:#2B3037; --rule-2:#22262B;
+    --cobalt:#7FA9DE; --cobalt-soft:#16232F; --cobalt-line:#2C4258;
+    --amber:#D6A05A; --amber-soft:#2A2013;
+    --sage:#79C098; --sage-soft:#152318;
+    --crimson:#E58C8C; --crimson-soft:#2A1618;
+    --band:#7FA9DE;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101214; --panel:#171A1E; --sunk:#1D2126;
+  --ink:#E9E7E2; --ink-2:#AFB4BC; --ink-3:#7C828C;
+  --rule:#2B3037; --rule-2:#22262B;
+  --cobalt:#7FA9DE; --cobalt-soft:#16232F; --cobalt-line:#2C4258;
+  --amber:#D6A05A; --amber-soft:#2A2013;
+  --sage:#79C098; --sage-soft:#152318;
+  --crimson:#E58C8C; --crimson-soft:#2A1618;
+  --band:#7FA9DE;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Source Serif 4",Georgia,serif; font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px; margin:0 auto; padding:0 28px 96px}
+.col{max-width:68ch}
+
+/* ── Type roles ─────────────────────────────────────────────────────────── */
+h1,h2,h3,.lab,.fig,th,.tier-name{font-family:Archivo,"Helvetica Neue",sans-serif}
+.mono,.num,code{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+
+.lab{
+  font-size:11px; font-weight:600; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink-3);
+}
+
+/* ── Masthead ───────────────────────────────────────────────────────────── */
+header.mast{border-bottom:2px solid var(--ink); padding:52px 0 22px; margin-bottom:34px}
+header.mast h1{
+  font-size:clamp(34px,5.4vw,54px); font-weight:700; letter-spacing:-.026em;
+  line-height:1.04; margin:12px 0 14px; text-wrap:balance;
+}
+.standfirst{font-size:19px; color:var(--ink-2); margin:0; max-width:60ch; text-wrap:balance}
+.meta{
+  display:flex; flex-wrap:wrap; gap:8px 26px; margin-top:22px;
+  font-size:12px; color:var(--ink-3);
+}
+.meta b{color:var(--ink-2); font-weight:500}
+
+/* ── Sections ───────────────────────────────────────────────────────────── */
+section{margin-top:56px; scroll-margin-top:20px}
+h2{
+  font-size:13px; font-weight:700; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--ink); margin:0 0 6px; display:flex; align-items:baseline; gap:12px;
+}
+h2 .n{
+  color:var(--cobalt); font-variant-numeric:tabular-nums;
+  font-family:"IBM Plex Mono",monospace; font-weight:600;
+}
+h2::after{content:""; flex:1; height:1px; background:var(--rule); margin-left:4px}
+h3{font-size:17px; font-weight:600; letter-spacing:-.01em; margin:30px 0 8px}
+p{margin:0 0 14px}
+.deck{color:var(--ink-2); margin-bottom:22px; max-width:66ch}
+strong{font-weight:600}
+em{font-style:italic; color:var(--ink-2)}
+
+/* ── Tolerance bands: a range is what the estimate honestly is ──────────── */
+.scale{background:var(--panel); border:1px solid var(--rule); padding:26px 28px 20px; margin:22px 0}
+.band-row{display:grid; grid-template-columns:132px 1fr 128px; gap:18px; align-items:center; padding:11px 0}
+.band-row + .band-row{border-top:1px solid var(--rule-2)}
+.band-name{font-family:Archivo,sans-serif; font-size:13px; font-weight:600}
+.band-name small{display:block; font-weight:400; color:var(--ink-3); font-size:11px; letter-spacing:.04em}
+.track{position:relative; height:26px; background:var(--sunk); border-radius:2px}
+.band{
+  position:absolute; top:0; bottom:0; background:var(--band); opacity:.86; border-radius:2px;
+}
+.band.t2{opacity:.6} .band.t3{opacity:.36}
+.tick{position:absolute; top:-7px; bottom:-7px; width:1px; background:var(--crimson)}
+.tick span{
+  position:absolute; left:6px; top:-4px; font-size:10px; letter-spacing:.06em;
+  color:var(--crimson); white-space:nowrap; font-family:"IBM Plex Mono",monospace;
+}
+.band-val{
+  text-align:right; font-family:"IBM Plex Mono",monospace; font-size:13px;
+  font-variant-numeric:tabular-nums; font-weight:500;
+}
+.band-val small{display:block; color:var(--ink-3); font-size:10.5px; font-weight:400}
+.scale-foot{
+  display:flex; justify-content:space-between; font-size:10.5px; color:var(--ink-3);
+  font-family:"IBM Plex Mono",monospace; border-top:1px solid var(--rule-2);
+  padding-top:9px; margin-top:12px;
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+.scroll{overflow-x:auto; margin:20px 0; border:1px solid var(--rule); background:var(--panel)}
+table{width:100%; border-collapse:collapse; font-size:14px}
+th,td{text-align:left; padding:12px 15px; vertical-align:top; border-bottom:1px solid var(--rule-2)}
+thead th{
+  font-size:10.5px; font-weight:600; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--ink-3); background:var(--sunk); border-bottom:1px solid var(--rule);
+  position:sticky; top:0;
+}
+tbody tr:last-child td{border-bottom:0}
+td.num,th.num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; white-space:nowrap}
+
+/* ── Tier comparison ────────────────────────────────────────────────────── */
+.tiers{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--rule); border:1px solid var(--rule); margin:22px 0}
+.tier{background:var(--panel); padding:22px 20px; display:flex; flex-direction:column; gap:14px}
+.tier-head{border-bottom:1px solid var(--rule-2); padding-bottom:13px}
+.tier-key{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+  letter-spacing:.1em; color:var(--cobalt);
+}
+.tier-name{font-size:19px; font-weight:700; letter-spacing:-.015em; margin:3px 0 5px}
+.tier-for{font-size:13px; color:var(--ink-2); line-height:1.5}
+.tier dl{margin:0; display:grid; gap:12px}
+.tier dt{font-size:10.5px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); font-family:Archivo,sans-serif}
+.tier dd{margin:3px 0 0; font-size:13.5px; line-height:1.52}
+.tier dd.figure{font-family:"IBM Plex Mono",monospace; font-size:17px; font-weight:600; font-variant-numeric:tabular-nums}
+.tier dd.figure small{display:block; font-family:"Source Serif 4",serif; font-size:12.5px; font-weight:400; color:var(--ink-3); margin-top:2px}
+.cannot{color:var(--ink-2); font-size:12.5px}
+
+/* ── State pills ────────────────────────────────────────────────────────── */
+.pill{
+  display:inline-block; padding:1px 8px; border-radius:2px; font-size:10.5px;
+  font-weight:600; letter-spacing:.07em; text-transform:uppercase;
+  font-family:Archivo,sans-serif; white-space:nowrap;
+}
+.pill.done{background:var(--sage-soft); color:var(--sage)}
+.pill.gap{background:var(--crimson-soft); color:var(--crimson)}
+.pill.part{background:var(--amber-soft); color:var(--amber)}
+
+/* ── Callout ────────────────────────────────────────────────────────────── */
+.note{
+  border-left:3px solid var(--cobalt); background:var(--cobalt-soft);
+  padding:15px 19px; margin:22px 0; font-size:14.5px;
+}
+.note.warn{border-left-color:var(--crimson); background:var(--crimson-soft)}
+.note .lab{margin-bottom:5px; display:block}
+
+/* ── Wave list ──────────────────────────────────────────────────────────── */
+.wave{margin-top:26px}
+.wave-head{display:flex; align-items:baseline; gap:12px; margin-bottom:4px}
+.wave-head .lab{color:var(--cobalt)}
+.wave-note{font-size:13.5px; color:var(--ink-2); margin:0 0 12px}
+
+footer{margin-top:64px; padding-top:22px; border-top:1px solid var(--rule); font-size:12.5px; color:var(--ink-3)}
+
+@media (max-width:820px){
+  .tiers{grid-template-columns:1fr}
+  .band-row{grid-template-columns:1fr; gap:7px}
+  .band-val{text-align:left}
+  .wrap{padding:0 18px 64px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <span class="lab">Lotmark · scope and cost decision</span>
+  <h1>Three roads to a live system</h1>
+  <p class="standfirst">The domain core is built and it is the hard part. What is missing is the ability to <em>operate</em> it. Three go-live bars, what each buys, and what each honestly costs.</p>
+  <div class="meta">
+    <span><b>21 August 2026</b></span>
+    <span>Basis · <b>verified code state</b>, architecture document, estimate workbook</span>
+    <span><b>223</b> tests passing · <b>43</b> tables · <b>19</b> routes</span>
+  </div>
+</header>
+
+<section class="col">
+  <h2><span class="n">01</span> Where we actually are</h2>
+  <p class="deck">Two sentences, no inflation.</p>
+  <p><strong>The domain core is real.</strong> Seven state machines, 29 permissions, six segregation-of-duties rules, the ISO&nbsp;Guide&nbsp;35 statistics engine golden-tested at <em>exact</em> float equality, Ed25519 signatures bound to length-prefixed canonical material, an HMAC-chained append-only ledger, and row-level security forced on all 43 tables. Against 21&nbsp;CFR&nbsp;11, clause 11.10(g) authority checks and clause 11.70 signature–record binding are the strongest things in the build, and they are genuinely done.</p>
+  <p><strong>What is absent is the ability to operate the system.</strong> Of 19 routes, the only <code>POST</code>s are the four auth routes plus five signing acts. There is no <code>POST /projects</code>, no <code>POST /studies</code>, no way to enter a measurement. Every project, study and raw result in the system originates in the seed file. There is no PDF pipeline, so nothing the product exists to produce can leave the building. There are no background jobs, so the ledger is never anchored.</p>
+</section>
+
+<section>
+  <div class="col"><h2><span class="n">02</span> The state of each area</h2></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Area</th><th>Built and working</th><th>Verified gap</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="pill done">solid</span><br><strong>Domain model</strong></td>
+          <td>43 tables, 7 applied migrations, 7 state machines, 29 permissions, 6 SoD rules, retention schedule</td>
+          <td>26 tables named in the architecture absent — <code>uncertainty_component</code>, <code>denial_ledger</code>, <code>certificate_template</code>, <code>blob</code>, <code>notification_outbox</code></td>
+        </tr>
+        <tr>
+          <td><span class="pill done">solid</span><br><strong>Statistics</strong></td>
+          <td>ANOVA, regression, consensus, budget combination — golden-tested at exact float equality</td>
+          <td>No effective degrees of freedom, no Welch–Satterthwaite; <em>k</em> is a caller-supplied parameter; consensus is unweighted with no outlier handling</td>
+        </tr>
+        <tr>
+          <td><span class="pill done">solid</span><br><strong>Security</strong></td>
+          <td>Argon2id, TOTP with replay cache, Ed25519, server-side sessions, DB-backed lockouts, <strong>RLS forced on 43/43 tables with a non-superuser role</strong></td>
+          <td><code>generation</code> column absent; ledger policies not yet generation-agnostic; key custody is <code>dev_file</code> — the API can read the key that signs its own anchors</td>
+        </tr>
+        <tr>
+          <td><span class="pill part">partial</span><br><strong>Audit</strong></td>
+          <td>HMAC-SHA256 chain, append-only triggers at two independent layers, chain verification</td>
+          <td>Checkpoints unsigned and stored <em>inside the database they notarise</em> — the tamper-evidence argument is circular until anchors are signed externally</td>
+        </tr>
+        <tr>
+          <td><span class="pill part">partial</span><br><strong>Workflow</strong></td>
+          <td>Five signing acts, each with permission, competence, SoD, step-up and state machine enforced</td>
+          <td>No create or edit path for <em>anything</em>. No reissue, withdrawal, recall, CAPA, order or dispatch</td>
+        </tr>
+        <tr>
+          <td><span class="pill gap">absent</span><br><strong>Certificates</strong></td>
+          <td>Tables with per-issue uniqueness, withdrawal and reissue columns</td>
+          <td><strong>No PDF pipeline at all.</strong> No template model, blob store, document signature, QR or verification page. The withdrawal columns are read and written by nothing</td>
+        </tr>
+        <tr>
+          <td><span class="pill gap">absent</span><br><strong>Validation</strong></td>
+          <td>223 tests — the raw material of an OQ pack</td>
+          <td>No requirements traceability matrix, no IQ/OQ/PQ, no validation plan. The architecture prices this at ≥120 person-days and none of it exists</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2><span class="n">03</span> Effort, as a tolerance band</h2>
+    <p class="deck">Every figure below is a range, because that is what the estimate honestly is. Bands show <strong>cumulative</strong> effort — the total to reach each bar from today.</p>
+  </div>
+
+  <div class="scale">
+    <div class="band-row">
+      <div class="band-name">T1 Internal pilot<small>reach alone</small></div>
+      <div class="track"><div class="band" style="left:29.3%;width:6.9%"></div>
+        <div class="tick" style="left:93.1%"><span>workbook P80 · 1,676</span></div></div>
+      <div class="band-val">528 – 652<small>person-days</small></div>
+    </div>
+    <div class="band-row">
+      <div class="band-name">+ T2 First customer<small>cumulative</small></div>
+      <div class="track"><div class="band t2" style="left:29.3%;width:39.1%"></div>
+        <div class="tick" style="left:93.1%"></div></div>
+      <div class="band-val">981 – 1,232<small>person-days</small></div>
+    </div>
+    <div class="band-row">
+      <div class="band-name">+ T3 IPC government<small>cumulative</small></div>
+      <div class="track"><div class="band t3" style="left:29.3%;width:68.4%"></div>
+        <div class="tick" style="left:93.1%"></div></div>
+      <div class="band-val">1,458 – 1,759<small>person-days</small></div>
+    </div>
+    <div class="scale-foot"><span>0 PD</span><span>900</span><span>1,800 PD</span></div>
+  </div>
+
+  <div class="col">
+    <div class="note">
+      <span class="lab">Why this reconciles</span>
+      The workbook prices this product at <strong>1,676 person-days (P80)</strong>. All three tiers plus validation land at 1,458–1,759 — a difference of 177–338&nbsp;PD, which matches the credit for work already delivered almost exactly. The tiering is not a discount; it is the same total, sequenced so that each bar is separately fundable and separately abandonable.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="col"><h2><span class="n">04</span> The ten-second comparison</h2></div>
+  <div class="tiers">
+
+    <article class="tier">
+      <div class="tier-head">
+        <div class="tier-key">T1</div>
+        <div class="tier-name">Internal pilot</div>
+        <p class="tier-for">One design-partner producer, real materials, producer staff only. Runs <em>alongside</em> the paper QMS. The artefact that wins the deal.</p>
+      </div>
+      <dl>
+        <dt>What you can do</dt>
+        <dd>Run one producer's full lifecycle end to end: create a project, enter measurements, compute a budget, authorise a value, release a lot, issue a signed PDF/A certificate, recall a lot, verify the ledger, and restore a backup and detect a truncation.</dd>
+        <dt>What you cannot claim</dt>
+        <dd class="cannot">Not the record of record. No DPDP, CERT-In, penetration test, accessibility certification or HSM. The signature timestamp is a <em>development</em> timestamp and must be named as one. Traceability is a statement, not a chain.</dd>
+        <dt>Effort</dt>
+        <dd class="figure">528 – 652 PD<small>₹0.80–0.99 Cr mid-tier</small></dd>
+        <dt>Elapsed</dt>
+        <dd class="figure">3.6 – 4.4 mo<small>at the workbook's ramp · 13–17 mo for two engineers</small></dd>
+      </dl>
+    </article>
+
+    <article class="tier">
+      <div class="tier-head">
+        <div class="tier-key">T2</div>
+        <div class="tier-name">First real customer</div>
+        <p class="tier-for">Certificates enter paying laboratories' GMP files. The bar at which a mistake reaches someone else's regulator.</p>
+      </div>
+      <dl>
+        <dt>Adds</dt>
+        <dd>Sell and dispatch material; reissue, withdraw and notify <em>every</em> holder; cold-chain evidence; a live ISO 17034 conformance view; a signed IQ/OQ/PQ bundle; a clean penetration test.</dd>
+        <dt>What you cannot claim</dt>
+        <dd class="cannot">Not GIGW-conformant. No STQC certification, empanelled audit, Consent Manager interoperability, per-tenant encryption keys, HSM, Hindi, mobile, traceability-as-data or analytics.</dd>
+        <dt>Effort</dt>
+        <dd class="figure">453 – 580 PD<small>₹0.69–0.88 Cr · plus ₹12–28 lakh audit pass-through</small></dd>
+        <dt>Elapsed</dt>
+        <dd class="figure">3.1 – 3.9 mo<small>at the workbook's ramp · 11–14 mo for two engineers</small></dd>
+      </dl>
+    </article>
+
+    <article class="tier">
+      <div class="tier-head">
+        <div class="tier-key">T3</div>
+        <div class="tier-name">IPC government</div>
+        <p class="tier-for">A public-sector Indian deployment. Separable — it can be dropped whole without invalidating a single certificate T2 issued.</p>
+      </div>
+      <dl>
+        <dt>Adds</dt>
+        <dd>Provision a second tenant from scratch; bilingual certificates; the template designer; a public API; the customer portal and vault; field applications; STQC-certified surfaces.</dd>
+        <dt>What you cannot claim</dt>
+        <dd class="cannot">—</dd>
+        <dt>Effort</dt>
+        <dd class="figure">477 – 527 PD<small>₹0.72–0.80 Cr · plus ₹8–18 lakh STQC, ₹5–14 lakh accessibility</small></dd>
+        <dt>Elapsed</dt>
+        <dd class="figure">3.2 – 3.6 mo<small>at the workbook's ramp · 11–13 mo for two engineers</small></dd>
+      </dl>
+    </article>
+
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2><span class="n">05</span> The T1 blockers, in build order</h2>
+    <p class="deck">Seventeen blockers. The order is <strong>dependency-derived, not priority-derived</strong> — which is why the cheapest items come first and the most visible one comes late.</p>
+  </div>
+
+  <div class="wave">
+    <div class="wave-head"><span class="lab">Wave 0</span><span class="wave-note" style="margin:0">Days, not weeks. Precedes everything.</span></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Blocker</th><th>Why it blocks</th><th class="num">PD</th><th>If deferred</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Migration runner with checksum refusal</strong></td>
+              <td>The migrate script is a literal <code>psql -f</code> chain. No <code>schema_migrations</code> table, no checksum, no way to apply a new migration to a database that has already run the others except by editing a line.</td>
+              <td class="num">2–4</td>
+              <td>This is precisely how RLS shipped unnoticed. A system whose schema state cannot be asserted cannot carry an installation record.</td></tr>
+          <tr><td><strong>Collapse the error model</strong></td>
+              <td><code>problem()</code> is duplicated verbatim in <strong>six files</strong>, each missing the status, code and <code>auditSeq</code> the standard requires.</td>
+              <td class="num">2–3</td>
+              <td>Trivial at 19 error sites; a week of tedium at 80. Cheapest item on the list, and it only gets more expensive.</td></tr>
+          <tr><td><strong><code>correlation_id</code> into the ledger hash payload</strong></td>
+              <td>The payload is fixed by a database function. Adding a field later means old entries verify under the old function and new ones under the new.</td>
+              <td class="num">1–2</td>
+              <td>A versioned hash payload in the one table that must verify for ten years. Add the column now even if nothing reads it.</td></tr>
+          <tr><td><strong>Typst → PDF/A spike</strong></td>
+              <td>The renderer may refuse the accessibility profile. It is a pure function from snapshot to bytes and can be proven in total isolation, off the critical path.</td>
+              <td class="num">3–5</td>
+              <td>Finding out at week 20 forces an unbudgeted second renderer or a public scope reduction. <strong>Spike it in week one.</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="wave">
+    <div class="wave-head"><span class="lab">Wave 1</span><span class="wave-note" style="margin:0">The stop-the-world table sweep, done once.</span></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Blocker</th><th>Why it blocks</th><th class="num">PD</th><th>If deferred</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill done">mostly done</span> <strong>Row-level security</strong></td>
+              <td>Policies, the non-superuser role, the bootstrap read and the catalog-driven assertion all landed this week. What remains is the <code>generation</code> column and the generation-agnostic ledger policy shape.</td>
+              <td class="num">6–10</td>
+              <td><em>Was 39–44.</em> The discovery that a superuser bypasses RLS unconditionally — so the policies would have been inert in development and first exercised in production — is exactly the class of finding that gets more expensive the later it lands.</td></tr>
+          <tr><td><strong>As-of machinery, in the same migration</strong></td>
+              <td>The point-in-time setting, the read-only trigger on every business table, and the rule that as-of can never exceed now.</td>
+              <td class="num">8–12</td>
+              <td><strong>The least obvious insight here:</strong> both this and RLS are "attach one thing to all 43 tables." Two sweeps six months apart cost more than twice one sweep, because the second must re-verify the first, and a table missed by either fails silently.</td></tr>
+          <tr><td><strong>Write the 13 conformance predicates as failing SQL — now</strong></td>
+              <td>Zero SQL views exist. Writing them before the data's schema freezes forces each clause to name the data it needs.</td>
+              <td class="num">5–8</td>
+              <td>Built last, you discover which clauses <em>cannot</em> be computed from the data you chose to store.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="note warn">
+      <span class="lab">A gap in the blocker list, stated plainly</span>
+      The seventeen blockers account for <strong>254–371 PD of T1's 528–652</strong>. The remainder is user interface, the console build-out, test authoring and review cycles — priced inside the workbook's module base but not itemised here. No frontend effort is sized in this section, yet T1's whole premise is that a producer <em>operates</em> the system, and today that is four React views.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2><span class="n">06</span> What gets more expensive by waiting</h2>
+    <p class="deck">Two items dominate. Both are cheap now for the same structural reason: they are properties of <em>how everything else is written</em>, not features that sit beside it.</p>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Item</th><th class="num">Now</th><th class="num">Later</th><th>Why the multiplier is real</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Computer system validation</strong></td>
+            <td class="num">30–60 PD</td>
+            <td class="num">120–260 PD</td>
+            <td>Requirements become <em>data</em>, cross-referenced from test tags, API operations and migration headers, with the build failing on any uncovered requirement. That is a property of how tests and migrations are written, not a document authored afterwards. At 6–11% of T1 it is plannable; at 70% of a single-engineer budget it is not — <strong>which is what the tiering fixes</strong>.</td></tr>
+        <tr><td><strong>Table-wide sweeps</strong><br><span class="cannot">RLS, as-of, generation</span></td>
+            <td class="num">14–22 PD</td>
+            <td class="num">×2.5</td>
+            <td>Cost is proportional to tables × routes, and both are about to triple: 43→~60 tables, 19→70+ routes. A policy-less table returns <em>everything</em> rather than erroring, so the failure is silent.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="col">
+  <h2><span class="n">07</span> Recommendation</h2>
+  <p><strong>Aim at T1, and put it in front of the client as a priced, self-contained deliverable.</strong> 528–652 person-days, ₹0.80–0.99 Cr at mid-tier rates, 3.6–4.4 months at the workbook's own staffing ramp. It is the smallest thing that is honestly demonstrable on real materials, and it produces the artefact that wins the next conversation.</p>
+  <p>Then offer <strong>T2 as a priced option, not a commitment</strong> — contingent on a named design partner, because certificates entering someone else's GMP files is a decision about liability before it is a decision about software. And hold <strong>T3 as a clearly separable programme</strong> that can be dropped whole without invalidating a single certificate T2 issued.</p>
+  <div class="note">
+    <span class="lab">What the decision actually hinges on</span>
+    Not the feature list — the three tiers share most of it. It hinges on <strong>who the certificate is for</strong>. A certificate nobody outside the building relies on is a T1 problem. A certificate in a customer's GMP file is a T2 problem and carries validation with it. A certificate issued by a government pharmacopoeial authority is a T3 problem and carries certification, audit and residency with it. Everything else follows from that one answer.
+  </div>
+</section>
+
+<footer>
+  Figures trace to the estimate workbook (Product Build P80, Team &amp; Rate Card, Scenarios &amp; Cost) and the architecture document's phase table. Ranges are stated rather than point estimates because the underlying model is three-point. Corrected against the working tree on 21 August 2026 — an earlier draft was written while row-level security was still in flight and understated its completion.
+</footer>
+
+</div>

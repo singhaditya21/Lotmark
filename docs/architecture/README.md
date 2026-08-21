@@ -2,6 +2,9 @@
 
 | Document | What it is |
 |---|---|
+| `MVP1-TIERS.md` | The MVP 1 definition: three go-live tiers (internal pilot, first real customer, IPC government) with features, evidence, effort and cost. Corrected against the working tree. |
+| `MVP1-CRITIQUE.md` | Adversarial review of the above. Caught a stale RLS section, three count errors and an arithmetic slip of 40 person-days. |
+| `mvp1-tiers.html` | The same, as a published decision page. |
 | `ARCHITECTURE.md` | The architecture decision document (v1.0). 15 sections, 15 decisions to confirm, 12 open questions. |
 | `ARCHITECTURE-CRITIQUE.md` | An adversarial completeness review of the above. 7 P0 errors, 12 P1 omissions, 15 P2 items — plus an explicit list of what is complete and must not be re-opened. |
 
