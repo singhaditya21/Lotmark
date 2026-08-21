@@ -86,6 +86,15 @@ async function signIn(email: string): Promise<string> {
   return cookie;
 }
 
+/** Open a signing session, so the successful path can be exercised too. */
+async function stepUp(cookie: string): Promise<void> {
+  const res = await app.inject({
+    method: 'POST', url: '/api/v1/auth/step-up',
+    headers: { cookie }, payload: { password: PASSWORD, code: currentTotp() },
+  });
+  expect(res.statusCode, `step-up: ${res.body}`).toBe(200);
+}
+
 async function tenantId(): Promise<string> {
   const [row] = await app.db`SELECT * FROM lotmark.resolve_tenant(NULL)`;
   return (row as { id: string }).id;
@@ -226,5 +235,58 @@ describe('rejectSigning', () => {
     // turn a bug into a message telling the user to try again.
     const boom = new TypeError('something else went wrong');
     expect(() => rejectSigning(boom, { table: 't', label: 'l' })).toThrow(boom);
+  });
+});
+
+
+describe('a reissue that succeeds records the custody the key is actually held under', () => {
+  it('writes the configured custody class onto the issue it renders', async () => {
+    /**
+     * The certificate PRINTS this. It is the product's own statement about how
+     * well the signing key is protected, and the one value most relied upon to
+     * be honest — so it is asserted as a RELATIONSHIP rather than against a
+     * literal: whatever class this machine is configured for is the class the
+     * document must claim. A test pinned to 'dev_file' would pass on a laptop
+     * and say nothing about a deployment.
+     */
+    const cookie = await signIn('asha@producer.example');
+    const cert = await findCertificate(cookie);
+    if (!cert) throw new Error('No certificate in the seeded data; run pnpm db:setup.');
+
+    await stepUp(cookie);
+
+    const before = await issueCount(cert.id);
+    const done = await app.inject({
+      method: 'POST', url: `/api/v1/certificates/${cert.id}/reissue`,
+      headers: { cookie },
+      payload: { meaning: 'approval', reason: 'Exercising the successful signing path.' },
+    });
+    expect(done.statusCode, done.body).toBe(200);
+    expect(await issueCount(cert.id), 'a successful reissue DOES create an issue').toBe(before + 1);
+
+    const tenant = await tenantId();
+    const recorded = await inTenantTransaction(
+      app.db, { tenantId: tenant, auditKey: app.cfg.LOTMARK_AUDIT_KEY },
+      async (tx) => {
+        const [row] = await tx`
+          SELECT i.data_snapshot ->> 'keyCustody' AS snapshot_custody,
+                 i.document_sha256, i.renderer_version,
+                 k.custody AS key_custody
+          FROM lotmark.certificate_issues i
+          JOIN lotmark.signing_keys k
+            ON k.tenant_id = i.tenant_id AND k.key_version = i.document_key_version
+          WHERE i.certificate_id = ${cert.id}
+          ORDER BY i.issue_number DESC LIMIT 1`;
+        return row as {
+          snapshot_custody: string; document_sha256: string | null;
+          renderer_version: string; key_custody: string;
+        };
+      },
+    );
+
+    expect(recorded.snapshot_custody, 'the document must not overclaim its key custody')
+      .toBe(recorded.key_custody);
+    expect(recorded.document_sha256, 'a signed issue must have a rendered document').not.toBeNull();
+    expect(recorded.renderer_version).toBe('lotmark-pdf-2');
   });
 });

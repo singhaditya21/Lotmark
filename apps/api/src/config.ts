@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PRODUCTION_GRADE, IMPLEMENTED, ALL_CUSTODY_CLASSES, type CustodyClass } from './services/custody';
 
 /**
  * Runtime configuration.
@@ -45,6 +46,17 @@ const schema = z.object({
    * signatures.
    */
   SIGNING_KEY_DIR: z.string().default('.keys'),
+
+  /**
+   * How the private signing key is held — see services/custody.ts.
+   *
+   * This value is PRINTED ON EVERY CERTIFICATE the key signs, so it is checked
+   * at boot rather than trusted: a class that this build cannot construct, or
+   * that is not fit for production, stops the process instead of quietly
+   * putting a claim on a document.
+   */
+  SIGNING_KEY_CUSTODY: z.enum(['dev_file', 'env', 'keychain', 'kms', 'hsm']).default('dev_file'),
+  KEYCHAIN_SERVICE: z.string().default('lotmark.signing-key'),
 
   /**
    * The OWNER connection, used only by the scheduler.
@@ -95,6 +107,38 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     // every deployment forgeable by anyone who read this file.
     throw new Error('LOTMARK_AUDIT_KEY must be set to a real secret outside development.');
   }
+
+  const custody = cfg.SIGNING_KEY_CUSTODY as CustodyClass;
+
+  /**
+   * A custody class the build cannot construct is refused everywhere, not just
+   * in production. Selecting `hsm` on a machine with no HSM must fail loudly at
+   * boot; the alternative is discovering it when a certificate has already been
+   * issued claiming hardware protection it never had.
+   */
+  if (!IMPLEMENTED[custody]) {
+    const usable = ALL_CUSTODY_CLASSES.filter((c) => IMPLEMENTED[c]);
+    throw new Error(
+      `SIGNING_KEY_CUSTODY='${custody}' is not implemented in this build` +
+      (custody === 'keychain' ? ` (it needs macOS; this is ${process.platform})` : '') +
+      `. Available here: ${usable.join(', ')}.`,
+    );
+  }
+
+  /**
+   * The guard that matters. A development key file surviving into production
+   * would mean every signature was backed by a file on a server disk, while the
+   * certificate footer said so in small print that nobody reads.
+   */
+  if (cfg.NODE_ENV === 'production' && !PRODUCTION_GRADE[custody]) {
+    throw new Error(
+      `SIGNING_KEY_CUSTODY='${custody}' is not fit for production. ` +
+      'Use env custody with a secrets manager, or implement the kms or hsm adapter. ' +
+      'This value is printed on every certificate; running production on it would ' +
+      'be an accurate statement of a bad situation rather than a good one.',
+    );
+  }
+
   return cfg;
 }
 

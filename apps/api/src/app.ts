@@ -14,6 +14,7 @@ import { registerPublicRoutes } from './routes/public';
 import { registerCertificateRoutes } from './routes/certificates';
 import { registerCapaRoutes } from './routes/capa';
 import { KeyProvider } from './services/keys';
+import { createCustody } from './services/custody';
 import { DocumentStore } from './services/documents';
 
 declare module 'fastify' {
@@ -39,7 +40,13 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
 
   app.decorate('cfg', cfg);
   app.decorate('db', createDb(cfg));
-  app.decorate('keys', new KeyProvider(cfg.SIGNING_KEY_DIR));
+  app.decorate('keys', new KeyProvider(
+    (kind) => createCustody(kind, {
+      keyDir: cfg.SIGNING_KEY_DIR,
+      keychainService: cfg.KEYCHAIN_SERVICE,
+    }),
+    cfg.SIGNING_KEY_CUSTODY,
+  ));
   app.decorate('documents', new DocumentStore(cfg.DOCUMENT_DIR));
 
   await app.register(helmet, {

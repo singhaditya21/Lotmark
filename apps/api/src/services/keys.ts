@@ -1,11 +1,10 @@
-import { mkdirSync, readFileSync, writeFileSync, existsSync, chmodSync } from 'node:fs';
-import path from 'node:path';
 import type { KeyObject } from 'node:crypto';
 import {
   generateSigningKeyPair, loadPrivateKey, loadPublicKey,
   publicKeyFingerprint, publicKeyOf,
 } from '@lotmark/security';
 import type { Sql } from '../db';
+import type { KeyCustody, CustodyClass } from './custody';
 
 /**
  * Signing key custody.
@@ -14,13 +13,13 @@ import type { Sql } from '../db';
  * Postgres must not thereby be able to forge signatures, or the §11.70 argument
  * collapses — every signature would be reproducible by whoever holds the data.
  *
- * On localhost the key lives in a mode-0600 file under `.keys/`, which is
- * gitignored. That is `dev_file` custody and it is reported as such wherever a
- * signature is displayed, so nobody mistakes a laptop for a hardware module.
- * The `custody` column exists precisely so that upgrading to KMS or an HSM is a
- * recorded fact about each key rather than a claim in a document.
+ * WHERE it lives is decided by a KeyCustody provider — see ./custody.ts — and
+ * the class is reported wherever a signature is displayed, so nobody mistakes a
+ * laptop for a hardware module. The `custody` column exists precisely so that
+ * moving to a KMS or an HSM is a recorded fact about each key rather than a
+ * claim in a document, and migration 0018 makes each move an auditable event.
  */
-export type Custody = 'dev_file' | 'env' | 'kms' | 'hsm';
+export type Custody = CustodyClass;
 
 /**
  * What a key is FOR.
@@ -51,7 +50,32 @@ export interface ActiveKey {
 export class KeyProvider {
   private cache = new Map<string, ActiveKey>();
 
-  constructor(private readonly keyDir: string) {}
+  /**
+   * ── Where a key lives is a fact about the KEY, not about this process ──────
+   *
+   * `signing_keys.custody` records where each key is actually held, and it is
+   * the value printed on every certificate that key signs. So the provider
+   * reads a registered key through the class the DATABASE names, and
+   * `mintUnder` decides only what class a brand-new key is created in.
+   *
+   * The first version of this required the configured class to match the
+   * registered one and refused otherwise. That check is gone because it is no
+   * longer needed: reading through the registered class makes it impossible to
+   * print one custody class while having read the key from another. An
+   * invariant that holds by construction beats one enforced by comparison —
+   * and the comparison version meant moving a key to the Keychain broke every
+   * process that had not also had its configuration changed, including the
+   * test suite.
+   */
+  constructor(
+    private readonly custodyFor: (kind: CustodyClass) => KeyCustody,
+    private readonly mintUnder: CustodyClass,
+  ) {}
+
+  /** The class NEW keys are minted under. */
+  get mintingCustody(): CustodyClass {
+    return this.mintUnder;
+  }
 
   /**
    * Load the tenant's current key, generating one on first use in development.
@@ -76,14 +100,17 @@ export class KeyProvider {
       | undefined;
 
     if (registered) {
-      const pem = this.readPrivate(tenantId, registered.key_version);
+      // Read through the class the DATABASE names for this key, not the one
+      // this process would mint under. See the constructor.
+      const custody = this.custodyFor(registered.custody);
+      const pem = custody.read(tenantId, registered.key_version);
       if (!pem) {
         // The database says a key is active but the private half is missing.
         // Failing loudly beats quietly minting a new one: signatures made under
         // the registered key would silently stop being reproducible.
         throw new Error(
           `Signing key ${registered.key_version} is registered for tenant ${tenantId} ` +
-          `but its private half is not present in ${this.keyDir}. ` +
+          `but its private half is not present in ${custody.describe}. ` +
           `Restore it, or retire the key with a stated reason before issuing a new one.`,
         );
       }
@@ -108,7 +135,8 @@ export class KeyProvider {
     // key and an anchor key can never collide on key_version, which remains
     // unique per tenant.
     const kp = generateSigningKeyPair(RECORD_KEY_VERSION);
-    this.writePrivate(tenantId, kp.keyVersion, kp.privateKeyPem);
+    const minting = this.custodyFor(this.mintUnder);
+    minting.write(tenantId, kp.keyVersion, kp.privateKeyPem);
     const fingerprint = publicKeyFingerprint(kp.publicKeyPem);
 
     await sql`
@@ -116,16 +144,19 @@ export class KeyProvider {
         (tenant_id, key_version, algorithm, public_key_pem, fingerprint, custody,
          purpose, activated_at)
       VALUES (${tenantId}, ${kp.keyVersion}, 'ed25519', ${kp.publicKeyPem},
-              ${fingerprint}, 'dev_file', 'record', now())`;
+              ${fingerprint}, ${this.mintUnder}, 'record', now())`;
 
-    log?.(`minted signing key ${kp.keyVersion} for tenant ${tenantId} (fingerprint ${fingerprint}, custody dev_file)`);
+    log?.(
+      `minted signing key ${kp.keyVersion} for tenant ${tenantId} ` +
+      `(fingerprint ${fingerprint}, custody ${this.mintUnder}: ${minting.describe})`,
+    );
 
     const key: ActiveKey = {
       keyVersion: kp.keyVersion,
       privateKey: loadPrivateKey(kp.privateKeyPem),
       publicKeyPem: kp.publicKeyPem,
       fingerprint,
-      custody: 'dev_file',
+      custody: this.mintUnder,
     };
     this.cache.set(tenantId, key);
     return key;
@@ -142,19 +173,4 @@ export class KeyProvider {
     return found ? loadPublicKey(found.public_key_pem) : null;
   }
 
-  private keyPath(tenantId: string, version: string): string {
-    return path.join(this.keyDir, `${tenantId}.${version}.pem`);
-  }
-
-  private readPrivate(tenantId: string, version: string): string | null {
-    const p = this.keyPath(tenantId, version);
-    return existsSync(p) ? readFileSync(p, 'utf8') : null;
-  }
-
-  private writePrivate(tenantId: string, version: string, pem: string): void {
-    mkdirSync(this.keyDir, { recursive: true, mode: 0o700 });
-    const p = this.keyPath(tenantId, version);
-    writeFileSync(p, pem, { mode: 0o600 });
-    chmodSync(p, 0o600);
-  }
 }
