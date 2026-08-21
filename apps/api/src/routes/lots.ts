@@ -11,6 +11,12 @@ import { recordAudit } from '../services/audit';
 import { applySignature, SigningError } from '../services/signing';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
 import { nextCode } from '../services/numbering';
+import { signPayload } from '@lotmark/security';
+import { mintVerificationToken } from '../services/documents';
+import {
+  renderCertificate, snapshotDigest, RENDERER_VERSION, TEMPLATE_KEY, TEMPLATE_VERSION,
+  type CertificateSnapshot,
+} from '../services/certificate-pdf';
 import { conflict, forbidden, invalidRequest, notFound, sendProblem, stepUpRequired, unprocessable } from '../http/problem';
 
 const releaseBody = z.object({
@@ -27,7 +33,7 @@ const issueBody = z.object({
 });
 
 export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
-  const { cfg, db, keys } = app;
+  const { cfg, db, keys, documents } = app;
 
   async function competenceBasis(
     tx: Sql, tenantId: string, userId: string, activity: Permission, onDate: string,
@@ -337,12 +343,102 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
         throw e;
       }
 
+      /* ── Render the document, in the SAME transaction ──────────────────
+       *
+       * A certificate row without its document is a promise the system cannot
+       * keep, and a document whose row rolled back is an artefact attesting to
+       * something that never happened. Both are worse than the whole issuance
+       * failing, so they succeed or fail together.
+       */
+      const [projectRow] = await tx`
+        SELECT p.material_name, p.cas_number, t.name AS producer_name,
+               t.conformance_frame, o.accreditation
+        FROM lotmark.projects p
+        JOIN lotmark.tenants t ON t.id = p.tenant_id
+        LEFT JOIN lotmark.organisations o ON o.tenant_id = t.id AND o.kind = 'producer'
+        WHERE p.id = ${lot.project_id} LIMIT 1`;
+      const meta = projectRow as {
+        material_name: string; cas_number: string | null; producer_name: string;
+        conformance_frame: string; accreditation: string | null;
+      };
+
+      const [lotDetail] = await tx`
+        SELECT l.expiry_date, l.storage_condition, prev.lot_code AS previous_lot_code
+        FROM lotmark.lots l
+        LEFT JOIN lotmark.lots prev ON prev.id = l.previous_lot_id
+        WHERE l.id = ${lot.id}`;
+      const detail = lotDetail as {
+        expiry_date: string; storage_condition: string; previous_lot_code: string | null;
+      };
+
+      const [pvRow] = await tx`
+        SELECT components FROM lotmark.property_values
+        WHERE tenant_id = ${ctx.tenantId} AND project_id = ${lot.project_id} AND state = 'authorised'
+        ORDER BY authorised_at DESC LIMIT 1`;
+      const components = ((pvRow as { components: Array<{ symbol: string; value: number; basis: string }> } | undefined)
+        ?.components ?? []).map((c) => ({ symbol: c.symbol, value: c.value, basis: c.basis }));
+
+      const verificationToken = mintVerificationToken();
+
+      const snapshot: CertificateSnapshot = {
+        producerName: meta.producer_name,
+        producerAccreditation: meta.accreditation,
+        certificateCode: cert.code,
+        issueNumber,
+        issuedAt: signature.signedAt,
+        lotCode: lot.lot_code,
+        previousLotCode: detail.previous_lot_code,
+        materialName: meta.material_name,
+        casNumber: meta.cas_number,
+        propertyName: value.property_name,
+        assignedValue: value.assigned_value,
+        expandedUncertainty: value.expanded_uncertainty,
+        coverageFactor: value.coverage_factor,
+        unit: value.unit,
+        expiryDate: detail.expiry_date,
+        storageCondition: detail.storage_condition,
+        transportCondition: null,
+        components,
+        issuedByName: ctx.displayName,
+        signedAt: signature.signedAt,
+        signatureMeaning: signature.meaning,
+        keyVersion: key.keyVersion,
+        keyCustody: key.custody,
+        verificationToken,
+        reissueReason: issueNumber > 1 ? (parsed.data.reason ?? 'Reissued') : null,
+        conformanceFrame: meta.conformance_frame,
+      };
+
+      const pdf = await renderCertificate(snapshot);
+      const stored = documents.put(pdf);
+      // The signature is over the PDF BYTES, so a verifier needs only the file
+      // and the public key — no database, no account, no cooperation from us.
+      const documentSignature = signPayload(
+        Buffer.from(pdf).toString('base64'), key.privateKey,
+      );
+
+      await tx`
+        UPDATE lotmark.certificate_issues
+        SET document_sha256 = ${stored.sha256}, document_path = ${stored.relativePath},
+            document_bytes = ${stored.bytes},
+            data_snapshot = ${tx.json(snapshot as never)},
+            data_snapshot_digest = ${snapshotDigest(snapshot)},
+            template_key = ${TEMPLATE_KEY}, template_version = ${TEMPLATE_VERSION},
+            renderer_version = ${RENDERER_VERSION},
+            document_signature = ${documentSignature},
+            document_key_version = ${key.keyVersion},
+            rendered_at = now(), verification_token = ${verificationToken}
+        WHERE id = ${issueId}`;
+
       await recordAudit(tx, auditCtxOf(ctx), {
         kind: 'CERTIFICATE', action: issueNumber === 1 ? 'Certificate issued' : 'Certificate reissued',
         detail: `${cert.code} issue #${issueNumber} for ${lot.lot_code} · ` +
           `${value.assigned_value.toPrecision(7)} ± ${value.expanded_uncertainty.toPrecision(4)} ${value.unit} (k=${value.coverage_factor})`,
         subjectTable: 'certificate_issues', subjectId: issueId,
-        changes: { certificate: cert.code, issueNumber, value: value.assigned_value },
+        changes: {
+          certificate: cert.code, issueNumber, value: value.assigned_value,
+          documentSha256: stored.sha256, documentBytes: stored.bytes,
+        },
       });
 
       return {
@@ -357,11 +453,62 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
             property: value.property_name, unit: value.unit,
           },
           signature: { id: signature.id, signedAt: signature.signedAt, keyVersion: key.keyVersion },
+          document: {
+            sha256: stored.sha256, bytes: stored.bytes,
+            verificationToken,
+            url: `/api/v1/certificates/${cert.id}/issues/${issueNumber}/pdf`,
+            verifyUrl: `${cfg.PUBLIC_ORIGIN}/verify/${verificationToken}`,
+          },
         },
       };
     });
 
     return respond(reply, result, 'No such lot.');
+  });
+
+  /** Download a certificate issue as a PDF. */
+  app.get<{ Params: { id: string; n: string } }>('/certificates/:id/issues/:n/pdf', async (req, reply) => {
+    const ctx = await requireSession(app, req, reply);
+    if (!ctx) return;
+
+    const found = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+      const [row] = await tx`
+        SELECT i.document_sha256, i.withdrawn, c.code, l.owner_team_id
+        FROM lotmark.certificate_issues i
+        JOIN lotmark.certificates c ON c.id = i.certificate_id
+        JOIN lotmark.lots l ON l.id = c.lot_id
+        WHERE i.tenant_id = ${ctx.tenantId} AND i.certificate_id = ${req.params.id}
+          AND i.issue_number = ${Number(req.params.n)}`;
+      const issue = row as {
+        document_sha256: string | null; withdrawn: boolean; code: string; owner_team_id: string | null;
+      } | undefined;
+      if (!issue) return null;
+
+      const verdict = decide({
+        authority: ctx.authority, permission: 'project:read',
+        scope: issue.owner_team_id ? { kind: 'team', teamId: issue.owner_team_id } : { kind: 'tenant' },
+        sodSettings: {}, onDate: ctx.today,
+      });
+      if (!verdict.allowed) return { forbidden: verdict };
+      return issue;
+    });
+
+    if (!found) return sendProblem(reply, notFound('No such certificate issue.'));
+    if ('forbidden' in found) {
+      return sendProblem(reply, forbidden(found.forbidden.reason, found.forbidden.message));
+    }
+    if (!found.document_sha256) {
+      return sendProblem(reply, conflict('This issue has no rendered document.'));
+    }
+
+    const bytes = documents.get(found.document_sha256);
+    return reply
+      .header('content-type', 'application/pdf')
+      .header('content-disposition',
+              `inline; filename="${found.code}-issue-${req.params.n}.pdf"`)
+      // The digest is published so a caller can verify what it received.
+      .header('x-document-sha256', found.document_sha256)
+      .send(Buffer.from(bytes));
   });
 
   /** Lots for a project, newest first. */

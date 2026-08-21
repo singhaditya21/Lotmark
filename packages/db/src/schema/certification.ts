@@ -1,5 +1,5 @@
 import {
-  boolean, doublePrecision, index, integer, text, timestamp, uuid, uniqueIndex,
+  boolean, doublePrecision, index, integer, jsonb, text, timestamp, uuid, uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { lotmark, timestamps, version } from './_shared';
 import { tenantsTable } from './tenancy';
@@ -61,9 +61,35 @@ export const certificateIssuesTable = lotmark.table('certificate_issues', {
   withdrawnReason: text('withdrawn_reason'),
   withdrawnByUserId: uuid('withdrawn_by_user_id').references(() => usersTable.id),
 
-  /** Rendered PDF, content-addressed. Null until the render job completes. */
+  /**
+   * The rendered document and everything needed to REPRODUCE it.
+   *
+   * A certificate issued today must render byte-identical in five years, or
+   * "here is the document we issued" is not a checkable claim. That needs all
+   * three of the frozen inputs, the template version and the renderer version —
+   * any one of them changing changes the bytes.
+   *
+   * A CHECK constraint requires the whole provenance or none of it: a
+   * half-recorded one is worse than none, because it looks reproducible.
+   */
   documentSha256: text('document_sha256'),
   documentPath: text('document_path'),
+  documentBytes: integer('document_bytes'),
+  dataSnapshot: jsonb('data_snapshot').$type<Record<string, unknown>>(),
+  dataSnapshotDigest: text('data_snapshot_digest'),
+  templateKey: text('template_key'),
+  templateVersion: text('template_version'),
+  rendererVersion: text('renderer_version'),
+  /** Ed25519 over the PDF bytes — verifiable with the public key alone. */
+  documentSignature: text('document_signature'),
+  documentKeyVersion: text('document_key_version'),
+  renderedAt: timestamp('rendered_at', { withTimezone: true, mode: 'string' }),
+  /**
+   * Opaque public handle. The certificate code is unique per TENANT, not
+   * globally, so it cannot address a public URL; a token can, and reveals no
+   * tenant, customer or sequence.
+   */
+  verificationToken: text('verification_token'),
 
   ...timestamps,
 }, (t) => ({

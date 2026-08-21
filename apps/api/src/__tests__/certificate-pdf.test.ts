@@ -1,0 +1,143 @@
+import { describe, it, expect } from 'vitest';
+import { createHash } from 'node:crypto';
+import {
+  renderCertificate, snapshotDigest, RENDERER_VERSION, TEMPLATE_KEY,
+  type CertificateSnapshot,
+} from '../services/certificate-pdf';
+
+const SNAPSHOT: CertificateSnapshot = {
+  producerName: 'Indian Pharmacopoeia Commission',
+  producerAccreditation: 'NABL RMP-0042',
+  certificateCode: 'CRT-2051', issueNumber: 1,
+  issuedAt: '2026-08-21T09:15:00Z',
+  lotCode: 'IPRSPARA0004', previousLotCode: 'IPRSPARA0003',
+  materialName: 'Paracetamol', casNumber: '103-90-2',
+  propertyName: 'Assay (as is)',
+  assignedValue: 99.6734, expandedUncertainty: 0.5335, coverageFactor: 2, unit: '% w/w',
+  expiryDate: '2028-03-31', storageCondition: '2–8 °C', transportCondition: 'Chilled 72 h',
+  components: [
+    { symbol: 'u(bb)', value: 0.1014595978, basis: '6 units × 2 replicates, one-way ANOVA' },
+    { symbol: 'u(lts)', value: 0.1744840726, basis: '6 timepoints over 28 months' },
+    { symbol: 'u(char)', value: 0.1744060205, basis: '5 laboratories, s = 0.390' },
+  ],
+  issuedByName: 'Dr. Asha Pillai',
+  signedAt: '2026-08-21T09:15:00Z', signatureMeaning: 'approval',
+  keyVersion: 'v1', keyCustody: 'dev_file',
+  verificationToken: 'k3nQ8vRtY2wPzL9mA4xB6dF1',
+  reissueReason: null,
+  conformanceFrame: 'ISO 17034 + GIGW 3.0 + DPDP',
+};
+
+const sha = (b: Uint8Array) => createHash('sha256').update(b).digest('hex');
+
+describe('the certificate renders deterministically', () => {
+  it('produces byte-identical output for the same snapshot', async () => {
+    // THE property. A certificate states a value somebody relies on for years;
+    // "here is the document we issued" only means something if re-rendering the
+    // same inputs reproduces it exactly.
+    const a = await renderCertificate(SNAPSHOT);
+    const b = await renderCertificate(SNAPSHOT);
+    expect(sha(a)).toBe(sha(b));
+  });
+
+  it('does not vary with the wall clock', async () => {
+    // PDF stamps CreationDate from `now` by default, and pdf-lib generates a
+    // random document ID. Both are pinned to the issue; if either regressed,
+    // two renders seconds apart would differ.
+    const a = await renderCertificate(SNAPSHOT);
+    await new Promise((r) => setTimeout(r, 1100));
+    const b = await renderCertificate(SNAPSHOT);
+    expect(sha(a)).toBe(sha(b));
+  });
+
+  it('changes when ANY certified figure changes', async () => {
+    const base = sha(await renderCertificate(SNAPSHOT));
+    for (const [label, mutation] of [
+      ['assigned value', { assignedValue: 99.6735 }],
+      ['uncertainty', { expandedUncertainty: 0.5336 }],
+      ['coverage factor', { coverageFactor: 3 }],
+      ['lot code', { lotCode: 'IPRSPARA0005' }],
+      ['issue number', { issueNumber: 2 }],
+      ['signer', { issuedByName: 'Somebody Else' }],
+      ['expiry', { expiryDate: '2028-04-01' }],
+    ] as const) {
+      const mutated = sha(await renderCertificate({ ...SNAPSHOT, ...mutation }));
+      expect(mutated, `${label} must change the document`).not.toBe(base);
+    }
+  });
+
+  it('carries a stable document ID derived from content, not chance', async () => {
+    const bytes = await renderCertificate(SNAPSHOT);
+    const text = Buffer.from(bytes).toString('latin1');
+    const ids = [...text.matchAll(/\/ID\s*\[\s*<([0-9a-fA-F]+)>\s*<([0-9a-fA-F]+)>/g)];
+    expect(ids.length, 'a document ID must be present').toBeGreaterThan(0);
+    expect(ids[0]![1]).toBe(ids[0]![2]);
+    expect(ids[0]![1]).toHaveLength(32);
+  });
+});
+
+describe('the snapshot digest is canonical', () => {
+  it('ignores key order', () => {
+    // Rebuild with keys in reverse insertion order. (An earlier version of this
+    // test passed a sorted key ARRAY to JSON.stringify, which acts as a FILTER
+    // and silently dropped every nested key — the test was wrong, not the code.)
+    const reordered = Object.fromEntries(
+      Object.entries(SNAPSHOT).reverse(),
+    ) as unknown as CertificateSnapshot;
+    expect(snapshotDigest(reordered)).toBe(snapshotDigest(SNAPSHOT));
+  });
+
+  it('changes when a value changes', () => {
+    expect(snapshotDigest({ ...SNAPSHOT, assignedValue: 99.6735 }))
+      .not.toBe(snapshotDigest(SNAPSHOT));
+  });
+});
+
+describe('document structure', () => {
+  it('embeds its fonts — the base-14 fonts PDF/A forbids are not used', async () => {
+    const text = Buffer.from(await renderCertificate(SNAPSHOT)).toString('latin1');
+    expect(text, 'the font programme must be embedded').toMatch(/\/FontFile2/);
+    expect(text, 'composite fonts, so the full glyph set is available').toMatch(/\/CIDFontType2/);
+    for (const base14 of ['/Helvetica', '/Times-Roman', '/Courier']) {
+      expect(text, `${base14} must not appear`).not.toContain(base14);
+    }
+  });
+
+  it('names subsetted fonts — with the tag convention PDF/A still wants', async () => {
+    const text = Buffer.from(await renderCertificate(SNAPSHOT)).toString('latin1');
+    const names = [...text.matchAll(/\/BaseFont\s*\/([^\s/\]>]+)/g)].map((m) => m[1]!);
+    expect(names.length).toBeGreaterThan(0);
+    expect(names.every((n) => n.startsWith('DejaVu'))).toBe(true);
+    // Documented gap, asserted so it cannot be forgotten: PDF/A wants a
+    // six-letter subset prefix (ABCDEF+DejaVuSerif). pdf-lib emits a numeric
+    // suffix instead. When that is fixed, this expectation flips.
+    expect(names.some((n) => /^[A-Z]{6}\+/.test(n)),
+      'subset prefixes are a known PDF/A gap').toBe(false);
+  });
+
+  it('carries XMP metadata', async () => {
+    const text = Buffer.from(await renderCertificate(SNAPSHOT)).toString('latin1');
+    expect(text).toContain('<x:xmpmeta');
+    expect(text).toContain('xmp:CreateDate>2026-08-21T09:15:00Z');
+    expect(text).toContain(RENDERER_VERSION);
+  });
+
+  it('carries the reproducibility triple in machine-readable metadata', async () => {
+    // Page text is encoded through font subsets and cannot be parsed, so the
+    // provenance has to live in XMP for a verifier to read it without OCR.
+    const text = Buffer.from(await renderCertificate(SNAPSHOT)).toString('latin1');
+    expect(text).toContain(`<lotmark:templateKey>${TEMPLATE_KEY}`);
+    expect(text).toContain(`<lotmark:rendererVersion>${RENDERER_VERSION}`);
+    expect(text).toContain(`<lotmark:snapshotDigest>${snapshotDigest(SNAPSHOT)}`);
+    // The custody class is published so nobody mistakes a development key for
+    // a hardware module.
+    expect(text).toContain('<lotmark:keyCustody>dev_file');
+  });
+
+  it('is a real PDF of plausible size', async () => {
+    const bytes = await renderCertificate(SNAPSHOT);
+    expect(Buffer.from(bytes.subarray(0, 5)).toString()).toBe('%PDF-');
+    expect(bytes.byteLength).toBeGreaterThan(8_000);
+    expect(bytes.byteLength).toBeLessThan(400_000);
+  });
+});

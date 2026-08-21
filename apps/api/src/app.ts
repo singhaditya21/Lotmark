@@ -10,13 +10,16 @@ import { registerWorkflowRoutes } from './routes/workflow';
 import { registerValueRoutes } from './routes/values';
 import { registerLotRoutes } from './routes/lots';
 import { registerCreateRoutes } from './routes/create';
+import { registerPublicRoutes } from './routes/public';
 import { KeyProvider } from './services/keys';
+import { DocumentStore } from './services/documents';
 
 declare module 'fastify' {
   interface FastifyInstance {
     cfg: AppConfig;
     db: Sql;
     keys: KeyProvider;
+    documents: DocumentStore;
   }
 }
 
@@ -35,10 +38,22 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
   app.decorate('cfg', cfg);
   app.decorate('db', createDb(cfg));
   app.decorate('keys', new KeyProvider(cfg.SIGNING_KEY_DIR));
+  app.decorate('documents', new DocumentStore(cfg.DOCUMENT_DIR));
 
   await app.register(helmet, {
-    // The API serves JSON only; a restrictive default CSP is right and cheap.
-    contentSecurityPolicy: { directives: { defaultSrc: ["'none'"], frameAncestors: ["'none'"] } },
+    // The API serves JSON, plus one server-rendered HTML page at /verify/:token.
+    // That page carries inline styles and nothing else — no script, no external
+    // origin — so the policy allows exactly that and nothing more.
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'none'"],
+        styleSrc: ["'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:'],
+        frameAncestors: ["'none'"],
+        baseUri: ["'none'"],
+        formAction: ["'none'"],
+      },
+    },
   });
 
   await app.register(cookie, {
@@ -71,6 +86,9 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
   await app.register(registerValueRoutes, { prefix: '/api/v1' });
   await app.register(registerLotRoutes, { prefix: '/api/v1' });
   await app.register(registerCreateRoutes, { prefix: '/api/v1' });
+  // Unauthenticated, deliberately: an auditor holding a printed certificate
+  // must not need an account with the producer whose certificate is in question.
+  await app.register(registerPublicRoutes, { prefix: '' });
 
   app.addHook('onClose', async () => { await app.db.end(); });
   return app;

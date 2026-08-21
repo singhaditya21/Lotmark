@@ -64,6 +64,31 @@ deliberately published).
 | `packages/db` | Drizzle schema, hand-written migrations, seed |
 | `apps/api` | Fastify API |
 
+## Certificates
+
+A certificate is a real document, not a database row:
+
+```bash
+# after issuing, the response carries the download and verification URLs
+curl -s localhost:4000/verify/<token>            # public page, no account needed
+node apps/api/scripts/verify-certificate.mjs \
+     <cert.pdf> <public-key.pem> <signature>     # no database, no imports
+```
+
+Rendering is **deterministic** — the same issue renders byte-identical, because
+the dates come from the issue rather than the wall clock and the document ID is
+derived from a content digest. That is what makes "here is the document we
+issued" a checkable claim rather than a figure of speech.
+
+The Ed25519 signature is over the PDF bytes, so a customer's auditor verifies it
+with the public key alone — no account, no database, no cooperation from the
+producer.
+
+**Not claimed: PDF/A.** That needs an sRGB OutputIntent, six-letter font subset
+prefixes, and a veraPDF gate in CI. Fonts are fully embedded and XMP metadata
+carries the provenance, but an unverified conformance claim is worth less than
+an honest absence of one. See the header of `certificate-pdf.ts`.
+
 ## Documents
 
 - [`docs/architecture/`](docs/architecture) — the architecture decision document, its adversarial critique, and [the low-code design](docs/architecture/LOW-CODE.md)

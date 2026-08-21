@@ -46,6 +46,12 @@ const schema = z.object({
    */
   SIGNING_KEY_DIR: z.string().default('.keys'),
 
+  /** Where rendered certificates are stored, content-addressed by digest. */
+  DOCUMENT_DIR: z.string().default('.documents'),
+
+  /** The origin printed on certificates for the public verification page. */
+  PUBLIC_ORIGIN: z.string().default('http://localhost:5173'),
+
   /** Where the console is served from in development, for CORS and cookies. */
   WEB_ORIGIN: z.string().default('http://localhost:5173'),
 });
