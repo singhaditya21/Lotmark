@@ -8,6 +8,7 @@ import { inTenantTransaction, type Sql } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
+import { tenantSod } from '../services/sod';
 import { machineForEntity } from '../services/workflows';
 import { applySignature, rejectSigning, SigningRejection } from '../services/signing';
 import { refuseSigning } from '../services/signing-refusal';
@@ -100,13 +101,22 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
       const scope: AuthScope = project.owner_team_id
         ? { kind: 'team', teamId: project.owner_team_id } : { kind: 'tenant' };
       const basis = await competenceBasis(tx, ctx.tenantId, ctx.userId, 'lot:release', ctx.today);
+      const sod = await tenantSod(tx, ctx.tenantId, (m) => app.log.warn(m));
 
       const verdict = decide({
         authority: ctx.authority, permission: 'lot:release', scope,
-        // SoD-4 (off by default) reads createdBy; carried so enabling the rule
-        // needs no code change.
-        record: { createdBy: value.assigned_by },
-        sodSettings: defaultSodSettings(), onDate: ctx.today,
+        /**
+         * No `record`, deliberately.
+         *
+         * This used to pass `{ createdBy: value.assigned_by }` — the VALUE'S
+         * assigner under the lot creator's name — so enabling SoD-4 would have
+         * enforced something other than what the rule says. And it cannot be
+         * enforced as written anyway: this route creates the lot it releases,
+         * so the creator is always the releaser. The rule is now marked
+         * pending-subject in the register with that reason, and passing a
+         * record that misnames a person is worse than passing none.
+         */
+        sodSettings: sod.settings, sodThresholds: sod.thresholds, onDate: ctx.today,
         competenceFor: () => basis, requiresSignature: alwaysSigned('lot:release'),
       });
       if (!verdict.allowed) {
@@ -291,12 +301,14 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
       const scope: AuthScope = lot.owner_team_id
         ? { kind: 'team', teamId: lot.owner_team_id } : { kind: 'tenant' };
       const basis = await competenceBasis(tx, ctx.tenantId, ctx.userId, 'cert:issue', ctx.today);
+      const certSod = await tenantSod(tx, ctx.tenantId, (m) => app.log.warn(m));
 
       const verdict = decide({
         authority: ctx.authority, permission: 'cert:issue', scope,
-        // SoD-3 (off by default) reads assignedBy.
+        // SoD-3 (off by default) reads assignedBy — and whether it is off is
+        // now the tenant's answer rather than the product's.
         record: { assignedBy: value.assigned_by },
-        sodSettings: defaultSodSettings(), onDate: ctx.today,
+        sodSettings: certSod.settings, sodThresholds: certSod.thresholds, onDate: ctx.today,
         requiresCompetence: 'cert:issue', competenceFor: () => basis,
         // Issuing a certificate is not a move through any machine, so there is
         // no transition to read a rule off. The floor answers it.

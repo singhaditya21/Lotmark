@@ -132,7 +132,24 @@ const SOD_RULES_LITERAL = [
     defaultEnabled: false,
     owner: 'Production Lead',
     message: 'the creator of a lot cannot release it',
-    status: 'enforced',
+    /**
+     * PENDING-SUBJECT, not enforced, and the distinction is the point.
+     *
+     * There is one path that releases a lot — `POST /projects/:id/release-lot`
+     * — and it CREATES the lot in the same request. So the creator is always
+     * the releaser, and enabling this rule would refuse every release rather
+     * than separate two duties. A rule that can only ever say no is not a
+     * control.
+     *
+     * The route carried `record: { createdBy: value.assigned_by }`, which is
+     * the value's assigner wearing the lot creator's name — so enabling the
+     * rule would have enforced something other than what it says, which is
+     * worse than not enforcing it. Marking it beats quietly approximating it:
+     * the gap is visible in the register an assessor reads, and it becomes
+     * enforceable the day a lot can be created in one act and released in
+     * another.
+     */
+    status: 'pending-subject',
     // The wireframe does not carry this rule at all; it is the prototype's own.
     provenance: { prototype: 'SoD-4' },
   },
@@ -258,24 +275,54 @@ export function findSodViolation(
  * including the person now acting. Distinctness matters: one person approving
  * twice is exactly the control this rule exists to prevent.
  */
+/**
+ * A tenant's own threshold and approver count for a threshold rule.
+ *
+ * `sodConfigSchema` has carried these since it was written and nothing read
+ * them: the evaluator used the figures in the code, so a tenant that set its
+ * refund threshold to a lakh got the product's five thousand.
+ */
+/**
+ * NOTE ON REACH: no threshold rule is `enforced` today — the only one is the
+ * refund rule, and refunds are not in the schema — so the override below is
+ * resolved, carried and never consulted. It is here because the configuration
+ * has always offered the figures and using the code's instead would be the same
+ * quiet lie the rest of this work has been removing; the day refunds are
+ * modelled it is already right rather than newly remembered.
+ */
+export type SodThresholds = Readonly<Partial<Record<SodRuleId, {
+  readonly thresholdMinor: number;
+  readonly approversRequired: number;
+}>>>;
+
 export function findThresholdViolation(
   action: Permission,
   amountMinor: number,
   approverUserIds: readonly string[],
   settings: SodSettings,
+  thresholds: SodThresholds = {},
 ): SodViolation | null {
   const distinct = new Set(approverUserIds).size;
+  const bag = thresholds as Readonly<Record<string, {
+    thresholdMinor: number; approversRequired: number;
+  } | undefined>>;
+
   for (const rule of SOD_RULES) {
     if (rule.kind !== 'threshold-approval') continue;
     if (rule.action !== action) continue;
     if (rule.status !== 'enforced') continue;
     if (!ruleEnabled(settings, rule)) continue;
-    if (amountMinor < rule.thresholdMinor) continue;
-    if (distinct < rule.approversRequired) {
+
+    // The tenant's figures where it set them, the product's where it did not.
+    const over = bag[rule.id];
+    const threshold = over?.thresholdMinor ?? rule.thresholdMinor;
+    const required = over?.approversRequired ?? rule.approversRequired;
+
+    if (amountMinor < threshold) continue;
+    if (distinct < required) {
       return {
         rule,
-        reason:
-          `${rule.message} — ${rule.approversRequired} required, ${distinct} so far`,
+        reason: `${rule.message} — ${required} required, ${distinct} so far`,
       };
     }
   }

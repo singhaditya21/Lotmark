@@ -12,6 +12,7 @@ import { inTenantTransaction, type Sql } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
+import { tenantSod } from '../services/sod';
 import { applySignature, verifyStoredSignature, SigningError } from '../services/signing';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
 import { conflict, forbidden, invalidRequest, notFound, sendProblem, stepUpRequired, unprocessable } from '../http/problem';
@@ -97,6 +98,7 @@ export async function registerWorkflowRoutes(app: FastifyInstance): Promise<void
       const scope: AuthScope = study.owner_team_id
         ? { kind: 'team', teamId: study.owner_team_id }
         : { kind: 'tenant' };
+      const sod = await tenantSod(tx, ctx.tenantId, (m) => app.log.warn(m));
 
       const basis = await competenceBasis(tx, ctx.tenantId, ctx.userId, 'study:sign', ctx.today);
 
@@ -105,7 +107,7 @@ export async function registerWorkflowRoutes(app: FastifyInstance): Promise<void
         permission: 'study:sign',
         scope,
         record: study as unknown as Record<string, unknown>,
-        sodSettings: defaultSodSettings(),
+        sodSettings: sod.settings, sodThresholds: sod.thresholds,
         onDate: ctx.today,
         requiresCompetence: 'study:sign',
         competenceFor: () => basis,

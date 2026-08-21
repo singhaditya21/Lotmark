@@ -1,5 +1,8 @@
 import { createHash } from 'node:crypto';
-import { REQUIREMENTS, byClause, type Requirement, type RequirementStatus } from '@lotmark/domain';
+import {
+  REQUIREMENTS, byClause, SOD_RULES,
+  type Requirement, type RequirementStatus,
+} from '@lotmark/domain';
 import type { Sql } from '../db';
 
 /**
@@ -263,6 +266,39 @@ export async function liveEvidence(tx: Sql, tenantId: string): Promise<Map<strin
      * authenticate with a credential two people know.
      */
     satisfied: cr.owing === 0,
+  });
+
+  /**
+   * What the tenant has actually decided about segregation.
+   *
+   * A register that says "six rules" tells an assessor nothing; which are ON
+   * here, today, is the question they ask. Read from the active configuration,
+   * which is what the guard reads.
+   */
+  const sodRows = await tx`
+    SELECT e.key, e.payload
+    FROM lotmark.config_entries e
+    JOIN lotmark.config_versions v ON v.id = e.version_id
+    WHERE v.tenant_id = ${tenantId} AND v.status = 'active' AND e.kind = 'sod'`;
+  const decided = sodRows.map((r) => r as { key: string; payload: { enabled?: boolean } });
+  const on = decided.filter((r) => r.payload?.enabled === true);
+  const enforceable = SOD_RULES.filter((r) => r.status === 'enforced').length;
+  add({
+    key: 'segregation',
+    summary: `${on.length} of ${decided.length} configured rule(s) on; `
+      + `${SOD_RULES.length - enforceable} declared without an enforceable subject`,
+    figures: {
+      configured: decided.length,
+      enabled: on.length,
+      enforceable,
+      declaredOnly: SOD_RULES.length - enforceable,
+    },
+    /**
+     * Satisfied when the tenant has actually decided — an unconfigured register
+     * falls back to product defaults, which is a defensible position and not a
+     * decision anybody made.
+     */
+    satisfied: decided.length === SOD_RULES.length,
   });
 
   const [coldchain] = await tx`

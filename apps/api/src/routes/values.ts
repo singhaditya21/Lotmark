@@ -5,7 +5,7 @@ import {
   shelfLifeMonthsBetween, expandedUncertainty, type UncertaintyComponent,
 } from '@lotmark/stats';
 import {
-  isSignatureMeaning, defaultSodSettings, assertTransition, signatureRequired,
+  isSignatureMeaning, assertTransition, signatureRequired,
   reasonRequired,
   type SignatureMeaning, type CompetenceBasis, type AuthScope, type Permission,
 } from '@lotmark/domain';
@@ -13,6 +13,7 @@ import { inTenantTransaction, type Sql } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
+import { tenantSod } from '../services/sod';
 import { machineForEntity } from '../services/workflows';
 import { applySignature, SigningError } from '../services/signing';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
@@ -183,6 +184,7 @@ export async function registerValueRoutes(app: FastifyInstance): Promise<void> {
        * longer carries its own opinion about it.
        */
       const needsSignature = signatureRequired(move);
+      const sod = await tenantSod(tx, ctx.tenantId, (m) => app.log.warn(m));
 
       /**
        * A reason, when the move asks for one — `assigned → draft` does, because
@@ -210,7 +212,10 @@ export async function registerValueRoutes(app: FastifyInstance): Promise<void> {
         scope,
         // SoD-1 reads assignedBy from here.
         record: { assignedBy: value.assigned_by },
-        sodSettings: defaultSodSettings(),
+        // The TENANT'S rules, not the product's. A laboratory that switched
+        // SoD-1 off did so as an audited governance act, and until now that act
+        // changed nothing.
+        sodSettings: sod.settings, sodThresholds: sod.thresholds,
         onDate: ctx.today,
         requiresCompetence: step.permission,
         competenceFor: () => basis,

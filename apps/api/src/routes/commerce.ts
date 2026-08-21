@@ -9,6 +9,7 @@ import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
 import { machineForEntity } from '../services/workflows';
+import { tenantSod } from '../services/sod';
 import { nextCode } from '../services/numbering';
 import {
   sendProblem, notFound, conflict, unprocessable, invalidRequest, forbidden,
@@ -489,6 +490,7 @@ export async function registerCommerceRoutes(app: FastifyInstance): Promise<void
         { id: string; code: string; state: string; raised_by: string } | undefined;
       if (!claim) return { status: 404 as const };
 
+      const sod = await tenantSod(t, ctx.tenantId, (m) => app.log.warn(m));
       const to = parsed.data.approve ? 'approved' : 'rejected';
       const machine = await machineForEntity(
         t, ctx.tenantId, 'entitlement', (m) => app.log.warn(m));
@@ -510,7 +512,7 @@ export async function registerCommerceRoutes(app: FastifyInstance): Promise<void
         authority: ctx.authority, permission: 'entitlement:decide',
         scope: { kind: 'tenant' },
         record: { raisedBy: claim.raised_by },
-        sodSettings: defaultSodSettings(), onDate: ctx.today,
+        sodSettings: sod.settings, sodThresholds: sod.thresholds, onDate: ctx.today,
       });
       if (!verdict.allowed) {
         await recordAudit(t, auditOf(ctx), {

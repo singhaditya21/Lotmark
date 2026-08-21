@@ -300,9 +300,21 @@ describe('segregation register — union of the wireframe and the prototype', ()
     }
   });
 
-  it('declares the refund rule as pending rather than omitting it', () => {
-    expect(PENDING_SOD_RULES.map((r) => r.id))
-      .toEqual(['refund-above-threshold-needs-second-approver']);
+  it('declares a rule whose subject is not modelled rather than omitting it', () => {
+    /**
+     * Two now, and the second is the more interesting.
+     *
+     * Refunds are not in the schema at all. The lot rule is subtler: the ONLY
+     * path that releases a lot creates it in the same request, so the creator
+     * is always the releaser and enabling the rule would refuse every release
+     * rather than separate two duties. A rule that can only ever say no is not
+     * a control, and the route had been feeding it the value's assigner under
+     * the name `createdBy` — enforcing something other than what it says.
+     */
+    expect(PENDING_SOD_RULES.map((r) => r.id).sort()).toEqual([
+      'lot-creator-may-not-release',
+      'refund-above-threshold-needs-second-approver',
+    ]);
   });
 });
 

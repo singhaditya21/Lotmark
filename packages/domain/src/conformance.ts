@@ -326,11 +326,27 @@ export const REQUIREMENTS: readonly Requirement[] = [
       'Authority checks ensure only authorised individuals use the system, sign a ' +
       'record, or perform the operation at hand.',
     status: 'enforced',
-    code: ['apps/api/src/services/guard.ts', 'packages/domain/src/sod.ts'],
-    tests: [{ file: 'apps/api/src/__tests__/guard.test.ts', named: 'segregation' }],
+    code: [
+      'apps/api/src/services/guard.ts',
+      'packages/domain/src/sod.ts',
+      'apps/api/src/services/sod.ts',
+    ],
+    tests: [
+      { file: 'apps/api/src/__tests__/guard.test.ts', named: 'segregation' },
+      { file: 'apps/api/src/__tests__/sod.test.ts', named: 'turns a rule ON when the tenant says so' },
+    ],
+    live: 'segregation',
     note:
       'The decision point is called by the SERVICE, never by route middleware, ' +
-      'so a job, a CLI or a future mobile API reaches the same check.',
+      'so a job, a CLI or a future mobile API reaches the same check. ' +
+      'Segregation of duties is part of it: the rules live in code because they ' +
+      'carry the conformance argument, and whether each is ENABLED is the ' +
+      'tenant\u2019s — a signed, audited configuration change that now takes ' +
+      'effect, having been read by nothing until this. Two rules are declared ' +
+      'and NOT enforced, and say so in the register: the refund threshold, ' +
+      'because refunds are not modelled at all, and lot-creator-may-not-release, ' +
+      'because the only path that releases a lot creates it in the same request ' +
+      'so the rule could only ever refuse every release.',
   },
   {
     id: 'REQ-SIG-MANIFEST',

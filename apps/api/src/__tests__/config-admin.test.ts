@@ -598,6 +598,36 @@ describe('configuration is what the machine is, not a description of it', () => 
   });
 });
 
+describe('segregation settings have to name a rule that exists', () => {
+  it('refuses a setting for a rule this system does not have', async () => {
+    /**
+     * The rules live in code because they carry the conformance argument an
+     * assessor is shown; only whether each is ENABLED is configuration. So an
+     * entry naming a rule that does not exist is a decision about nothing — it
+     * publishes, it reads as a control in the register, and it changes nothing.
+     */
+    const id = await openDraft('A rule we invented');
+    await putEntry(id, 'sod', 'invented', { ruleId: 'invented', enabled: true });
+    const r = await review(id);
+    expect(r.publishable).toBe(false);
+    expect(r.problems.join(' ')).toMatch(/which this system does not have/);
+    // And it says which rules ARE known, so the author can fix it.
+    expect(r.problems.join(' ')).toMatch(/value-assigner-may-not-authorise/);
+  });
+
+  it('refuses half a threshold', async () => {
+    // One figure alone silently leaves the other at the product's, which reads
+    // as a decision that was made and was not.
+    const id = await openDraft('Half a threshold');
+    await putEntry(id, 'sod', 'refund-above-threshold-needs-second-approver', {
+      ruleId: 'refund-above-threshold-needs-second-approver',
+      enabled: true, thresholdMinor: 100_000_00,
+    });
+    const r = await review(id);
+    expect(r.problems.join(' ')).toMatch(/Give both or neither/);
+  });
+});
+
 describe('drafts', () => {
   it('copies the active version and changes nothing until published', async () => {
     const before = await app.inject({ method: 'GET', url: '/api/v1/admin/config', headers: { cookie: admin } });

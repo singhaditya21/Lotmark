@@ -4,6 +4,7 @@ import {
   ALL_CONFIG_KINDS, CONFIG_RISK, hasProductDefault,
   fieldConfigSchema, picklistConfigSchema, layoutConfigSchema, isSupportedFieldType,
   workflowConfigSchema, statesTheDatabaseRefuses, ENTITY_RECORD, alwaysSigned,
+  sodConfigSchema, SOD_RULES,
   guardProblems,
   type ConfigKind, type ConfigChange, type RoleConfig,
   type FieldConfig, type PicklistConfig, type LayoutConfig, type WorkflowConfig,
@@ -362,6 +363,40 @@ export async function publicationProblems(
 
   problems.push(...await customFieldProblems(tx, tenantId, entries));
   problems.push(...await workflowProblems(tx, tenantId, entries));
+
+  /**
+   * A segregation setting must name a rule this system has.
+   *
+   * The rules live in code because they carry the conformance argument an
+   * assessor is shown; only whether each is ENABLED is configuration. So an
+   * entry naming `sod-7` is a decision about nothing — it publishes, it reads
+   * as a control in the register, and it changes no behaviour at all.
+   */
+  const knownRules = new Set(SOD_RULES.map((r) => r.id as string));
+  for (const e of entries.filter((x) => x.kind === 'sod')) {
+    const parsed = sodConfigSchema.safeParse(e.payload);
+    if (!parsed.success) {
+      problems.push(`Segregation rule '${e.key}' is not valid: ${parsed.error.issues[0]?.message ?? 'unknown'}`);
+      continue;
+    }
+    if (!knownRules.has(parsed.data.ruleId)) {
+      problems.push(
+        `Segregation setting '${e.key}' names rule '${parsed.data.ruleId}', which this system ` +
+        'does not have. It would publish and enforce nothing. ' +
+        `Known rules: ${[...knownRules].sort().join(', ')}.`,
+      );
+    }
+    // A threshold rule needs both figures or neither: one alone is half a rule,
+    // and the half that is missing silently keeps the product's number.
+    const hasThreshold = parsed.data.thresholdMinor !== undefined;
+    const hasApprovers = parsed.data.approversRequired !== undefined;
+    if (hasThreshold !== hasApprovers) {
+      problems.push(
+        `Segregation setting '${e.key}' gives ${hasThreshold ? 'a threshold but no approver count' : 'an approver count but no threshold'}. ` +
+        'Give both or neither — one alone leaves the other at the product default without saying so.',
+      );
+    }
+  }
 
   return problems;
 }

@@ -1,7 +1,7 @@
 import {
   can, findSodViolation, findThresholdViolation, isBasisValid,
   type Permission, type AuthScope, type ResolvedAuthority,
-  type SodSettings, type CompetenceBasis, type SodViolation,
+  type SodSettings, type SodThresholds, type CompetenceBasis, type SodViolation,
 } from '@lotmark/domain';
 
 /**
@@ -52,7 +52,29 @@ export interface GuardRequest {
   readonly scope: AuthScope;
   /** The record being acted on; SoD rules read the earlier actor from it. */
   readonly record?: Readonly<Record<string, unknown>> | null;
+  /**
+   * Which segregation rules run.
+   *
+   * An absent entry falls back to the rule's `defaultEnabled`, so passing `{}`
+   * and passing `defaultSodSettings()` are IDENTICAL — worth saying, because
+   * both appear across the routes and a reader cannot otherwise tell whether
+   * the difference matters. It never did.
+   *
+   * What matters is passing the TENANT'S settings, from `tenantSod()`, at any
+   * call that also supplies a `record` or an `amountMinor`. Everywhere else no
+   * rule can fire — `findSodViolation` returns null without a record — so the
+   * argument is inert and the extra query would buy nothing.
+   */
   readonly sodSettings: SodSettings;
+  /**
+   * The tenant's own figures for a threshold rule, where it set any.
+   *
+   * Separate from `sodSettings` because they answer different questions —
+   * whether a rule runs, and what numbers it runs with — and collapsing them
+   * would make the common case (enabled/disabled) carry a shape it does not
+   * need.
+   */
+  readonly sodThresholds?: SodThresholds | undefined;
   /** The date the act is evaluated against — normally today, or an as-at date. */
   readonly onDate: string;
   /**
@@ -94,6 +116,7 @@ export function decide(req: GuardRequest): Verdict {
       req.amountMinor,
       req.approverUserIds ?? [req.authority.userId],
       req.sodSettings,
+      req.sodThresholds ?? {},
     );
     if (threshold) return denySod(threshold, req.permission);
   }

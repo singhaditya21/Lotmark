@@ -114,12 +114,13 @@ Operational system checks enforce permitted sequencing of steps and events, and 
 
 Authority checks ensure only authorised individuals use the system, sign a record, or perform the operation at hand.
 
-> The decision point is called by the SERVICE, never by route middleware, so a job, a CLI or a future mobile API reaches the same check.
+> The decision point is called by the SERVICE, never by route middleware, so a job, a CLI or a future mobile API reaches the same check. Segregation of duties is part of it: the rules live in code because they carry the conformance argument, and whether each is ENABLED is the tenant’s — a signed, audited configuration change that now takes effect, having been read by nothing until this. Two rules are declared and NOT enforced, and say so in the register: the refund threshold, because refunds are not modelled at all, and lot-creator-may-not-release, because the only path that releases a lot creates it in the same request so the rule could only ever refuse every release.
 
 | | |
 |---|---|
-| Implemented by | `apps/api/src/services/guard.ts`<br>`packages/domain/src/sod.ts` |
-| Demonstrated by | `apps/api/src/__tests__/guard.test.ts` — "segregation" |
+| Implemented by | `apps/api/src/services/guard.ts`<br>`packages/domain/src/sod.ts`<br>`apps/api/src/services/sod.ts` |
+| Demonstrated by | `apps/api/src/__tests__/guard.test.ts` — "segregation"<br>`apps/api/src/__tests__/sod.test.ts` — "turns a rule ON when the tenant says so" |
+| Live evidence | `segregation` on the conformance view |
 
 ## 21 CFR 11 §11.200(a)(1)
 
