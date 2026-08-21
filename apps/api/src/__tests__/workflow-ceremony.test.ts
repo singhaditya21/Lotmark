@@ -95,17 +95,20 @@ function asTenant<T>(fn: (tx: Sql, tenantId: string) => Promise<T>): Promise<T> 
 let made = 0;
 /** Distinct per run: a CAPA cannot be deleted, and its code is unique per tenant. */
 const STAMP = Date.now().toString(36);
-async function aCapa(state: string): Promise<{ id: string; code: string }> {
+async function aCapa(
+  state: string, over: { severity?: string; preventive?: string | null } = {},
+): Promise<{ id: string; code: string }> {
   const n = ++made;
   return asTenant(async (tx, tenantId) => {
     const [team] = await tx`SELECT id FROM lotmark.teams LIMIT 1`;
     const [row] = await tx`
       INSERT INTO lotmark.capa
         (tenant_id, code, source, severity, state, raised_on, owner_team_id,
-         root_cause, corrective_action)
-      VALUES (${tenantId}, ${`NCR-SIG-${STAMP}-${n}`}, 'Signature test', 'Minor',
+         root_cause, corrective_action, preventive_action)
+      VALUES (${tenantId}, ${`NCR-SIG-${STAMP}-${n}`}, 'Ceremony test',
+              ${over.severity ?? 'Minor'},
               ${state}, current_date, ${(team as { id: string }).id},
-              'Method drift', 'Method revised')
+              'Method drift', 'Method revised', ${over.preventive ?? null})
       RETURNING id, code`;
     return row as unknown as { id: string; code: string };
   });
@@ -269,5 +272,86 @@ describe('a reason the move asks for', () => {
     const detail = res.json<{ detail: string }>().detail;
     expect(detail, 'the missing reason is the first thing to fix').toMatch(/must state why/);
     expect(detail).not.toMatch(/must be signed/);
+  });
+});
+
+describe('a condition the tenant wrote', () => {
+  /**
+   * The seeded tenant will not close a MAJOR nonconformity without something to
+   * stop it happening again:
+   *
+   *   record.severity != 'Major' or record.preventive_action is not empty
+   *
+   * A rule the product cannot know and the tenant does, expressed against two
+   * facts about the record being closed and nothing else.
+   */
+  const close = (id: string, extra: Record<string, unknown> = {}) =>
+    move(id, { to: 'closed', reason: 'Verified effective', meaning: 'approval', ...extra });
+
+  it('refuses the move when the condition does not hold, quoting it', async () => {
+    const capa = await aCapa('effectiveness', { severity: 'Major', preventive: null });
+    const res = await close(capa.id);
+    expect(res.statusCode, res.body).toBe(422);
+    const detail = res.json<{ detail: string }>().detail;
+    expect(detail).toMatch(/does not meet a condition/);
+    // Quoted, so the person can see WHICH rule and take it to whoever wrote it.
+    expect(detail).toMatch(/preventive_action is not empty/);
+  });
+
+  it('lets it through when the condition holds', async () => {
+    const capa = await aCapa('effectiveness', { severity: 'Major', preventive: 'Method requalified' });
+    expect((await stepUp()).statusCode).toBe(200);
+    const res = await close(capa.id);
+    expect(res.statusCode, res.body).toBe(200);
+    expect(await stateOf(capa.id)).toBe('closed');
+  });
+
+  it('does not apply where the condition says it should not', async () => {
+    // A Minor nonconformity satisfies the left arm of the `or`, so the rule is
+    // not a blanket requirement dressed up as a condition.
+    const capa = await aCapa('effectiveness', { severity: 'Minor', preventive: null });
+    expect((await stepUp()).statusCode).toBe(200);
+    const res = await close(capa.id);
+    expect(res.statusCode, res.body).toBe(200);
+  });
+
+  it('sees the value being supplied in THIS request, not just the stored one', async () => {
+    /**
+     * Otherwise the rule is unsatisfiable in the obvious way: a person would
+     * have to save the preventive action in one move and close in a later one,
+     * and the move that needs it is the move that carries it.
+     */
+    const capa = await aCapa('effectiveness', { severity: 'Major', preventive: null });
+    expect((await stepUp()).statusCode).toBe(200);
+    const res = await close(capa.id, { preventiveAction: 'Second analyst added' });
+    expect(res.statusCode, res.body).toBe(200);
+  });
+
+  it('is checked before the signature, like the reason', async () => {
+    // Same argument: being sent to re-authenticate and only then told the
+    // condition failed spends a step-up on a mistake already made.
+    const capa = await aCapa('effectiveness', { severity: 'Major', preventive: null });
+    const res = await move(capa.id, { to: 'closed', reason: 'Effective' });
+    expect(res.statusCode, res.body).toBe(422);
+    expect(res.json<{ detail: string }>().detail).toMatch(/does not meet a condition/);
+  });
+});
+
+describe('the hint the designer shows', () => {
+  it('names the same entities the server will accept a guard about', async () => {
+    /**
+     * `apps/web/src/lib/guard-facts.ts` is a COPY, because the console has no
+     * dependency on @lotmark/domain and taking one for a hint would pull the
+     * domain into the browser bundle. Copying is safe here because the list is
+     * not a control — publication decides from the server's own — but a MISSING
+     * entity shows an author no hints at all, so the keys are checked.
+     */
+    const { readFileSync } = await import('node:fs');
+    const { GUARD_FACTS } = await import('@lotmark/domain');
+    const src = readFileSync(
+      new URL('../../../web/src/lib/guard-facts.ts', import.meta.url), 'utf8');
+    for (const entity of Object.keys(GUARD_FACTS)) {
+      expect(src, `the console shows no facts for ${entity}`).toContain(`${entity}:`);
+    }
   });
 });

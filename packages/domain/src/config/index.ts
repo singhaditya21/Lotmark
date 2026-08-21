@@ -4,3 +4,4 @@ export * from './resolve';
 export * from './defaults';
 export * from './field-values';
 export * from './workflows';
+export * from './guards';

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   assertTransition, canTransition, nextStates, IllegalTransitionError,
   defaultSodSettings, signatureRequired, meaningsFor, reasonRequired, isSignatureMeaning,
+  parseGuard, evaluateGuard,
   type AuthScope, type SignatureMeaning,
 } from '@lotmark/domain';
 import { inTenantTransaction } from '../db';
@@ -10,6 +11,7 @@ import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
 import { recordAudit } from '../services/audit';
 import { machineForEntity } from '../services/workflows';
+import { currentCustomValues } from '../services/custom-fields';
 import { applySignature, rejectSigning, SigningRejection } from '../services/signing';
 import { refuseSigning } from '../services/signing-refusal';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
@@ -128,12 +130,14 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
     try {
       result = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
       const [row] = await tx`
-        SELECT id, code, state, source, owner_team_id, root_cause, corrective_action
+        SELECT id, code, state, source, severity, owner_team_id,
+               root_cause, corrective_action, preventive_action, effectiveness_check
         FROM lotmark.capa
         WHERE tenant_id = ${ctx.tenantId} AND id = ${req.params.id} FOR UPDATE`;
       const capa = row as {
-        id: string; code: string; state: string; source: string;
+        id: string; code: string; state: string; source: string; severity: string;
         owner_team_id: string | null; root_cause: string | null; corrective_action: string | null;
+        preventive_action: string | null; effectiveness_check: string | null;
       } | undefined;
       if (!capa) return { status: 404 as const };
 
@@ -183,7 +187,69 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
        * what the system did.
        */
       const step = canTransition(machine, capa.state as string, body.to)!;
+
+      /**
+       * The values as they WILL be after this move, not as they were.
+       *
+       * A guard asking "is there a preventive action" must see the one being
+       * supplied in this very request, or the rule is unsatisfiable: the person
+       * would have to save the field in one move and satisfy the condition in a
+       * later one that no longer needs it.
+       */
+      const rootCauseNow = body.rootCause ?? capa.root_cause;
+      const correctiveNow = body.correctiveAction ?? capa.corrective_action;
       const needsSignature = signatureRequired(step);
+
+      /**
+       * Guards, evaluated against facts THIS route builds.
+       *
+       * The object below is the whole world a guard can see. It is not a query
+       * interface and not the record — it is a handful of values chosen here,
+       * in code, which is what makes "a guard cannot read anything else" a
+       * property of the system rather than a promise about an expression
+       * language.
+       *
+       * A guard that cannot be evaluated REFUSES the move. Publication reads
+       * every guard first, so reaching this with a broken one means the entry
+       * arrived another way, and the safe reading of a rule nobody can apply is
+       * that the move is not allowed.
+       *
+       * Checked before the reason and the signature. There is no point asking
+       * somebody to justify and then attest a move that is not permitted at
+       * all, and a step-up spent on a refusal is a step-up they have to repeat.
+       */
+      for (const expression of step.guards ?? []) {
+        const facts = {
+          record: {
+            severity: capa.severity,
+            source: capa.source,
+            root_cause: rootCauseNow,
+            corrective_action: correctiveNow,
+            preventive_action: body.preventiveAction ?? capa.preventive_action,
+            effectiveness_check: body.effectivenessCheck ?? capa.effectiveness_check,
+          },
+          custom: await currentCustomValues(tx, 'capa', capa.id),
+        };
+
+        let holds: boolean;
+        try {
+          holds = evaluateGuard(parseGuard(expression), facts);
+        } catch (e) {
+          return {
+            status: 422 as const,
+            message: `A condition on this move could not be applied, so the move is refused: `
+              + `${e instanceof Error ? e.message : 'the condition could not be read'}. `
+              + 'An administrator can correct it under Flow designer.',
+          };
+        }
+        if (!holds) {
+          return {
+            status: 422 as const,
+            message: `${capa.code} does not meet a condition this move requires: `
+              + `${expression}.`,
+          };
+        }
+      }
 
       /**
        * A reason, when the move asks for one.
@@ -225,8 +291,8 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
        * Closing one on the strength of "it stopped happening" is how the same
        * nonconformity returns next quarter with a new number.
        */
-      const rootCause = body.rootCause ?? capa.root_cause;
-      const corrective = body.correctiveAction ?? capa.corrective_action;
+      const rootCause = rootCauseNow;
+      const corrective = correctiveNow;
       if (body.to === 'closed' && (!rootCause || !corrective)) {
         return {
           status: 422 as const,

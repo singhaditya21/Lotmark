@@ -4,6 +4,7 @@ import {
   ALL_CONFIG_KINDS, CONFIG_RISK, hasProductDefault,
   fieldConfigSchema, picklistConfigSchema, layoutConfigSchema, isSupportedFieldType,
   workflowConfigSchema, statesTheDatabaseRefuses, ENTITY_RECORD, alwaysSigned,
+  guardProblems,
   type ConfigKind, type ConfigChange, type RoleConfig,
   type FieldConfig, type PicklistConfig, type LayoutConfig, type WorkflowConfig,
 } from '@lotmark/domain';
@@ -436,6 +437,31 @@ async function workflowProblems(
           `Workflow '${wf.key}' asks for a signature on ${t.from} → ${t.to} but offers no ` +
           'meaning for the signer to choose. A signature manifests a meaning.',
         );
+      }
+    }
+
+    /**
+     * Guards, checked here rather than discovered at the move.
+     *
+     * A guard that does not parse, or names a fact the entity does not offer,
+     * REFUSES the transition at runtime — failing closed is the only safe
+     * reading of a rule nobody can evaluate. That is the right behaviour and a
+     * terrible way to find out, so publication reads every guard first, against
+     * the entity's vocabulary and the custom fields THIS version declares.
+     */
+    const customKeys = entries
+      .filter((e) => e.kind === 'field')
+      .map((e) => fieldConfigSchema.safeParse(e.payload))
+      .filter((r) => r.success && r.data.entity === wf.entity)
+      .map((r) => (r as { data: FieldConfig }).data.key);
+
+    for (const t of wf.transitions) {
+      for (const g of t.guards) {
+        for (const problem of guardProblems(g, wf.entity, customKeys)) {
+          problems.push(
+            `Workflow '${wf.key}', the guard on ${t.from} → ${t.to}: ${problem.message}`,
+          );
+        }
       }
     }
 

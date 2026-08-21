@@ -5,6 +5,7 @@ import {
 } from '../lib/api';
 import { Dialog, Field } from '../components/Dialog';
 import { ALL_MEANINGS } from '../lib/meanings';
+import { GUARD_FACTS } from '../lib/guard-facts';
 
 /**
  * The flow designer.
@@ -382,6 +383,7 @@ export function FlowDesigner() {
         <MoveDialog
           value={editing.value}
           states={workflow.states}
+          entity={entity}
           busy={save.isPending}
           onCancel={() => setEditing(null)}
           onSave={(t) => patch({
@@ -458,10 +460,11 @@ const PERMISSIONS = [
 ] as const;
 
 function MoveDialog({
-  value, states, busy, onSave, onCancel,
+  value, states, entity, busy, onSave, onCancel,
 }: {
   value: TransitionPayload;
   states: Array<{ key: string; name: string }>;
+  entity: string;
   busy: boolean;
   onSave: (t: TransitionPayload) => void;
   onCancel: () => void;
@@ -550,6 +553,60 @@ function MoveDialog({
           <span>Kept on the transition and shown in the ledger.</span>
         </label>
       </Field>
+
+      <Field label="Conditions"
+             hint="all must hold, or the move is refused; checked before the reason and the signature">
+        <div className="picker" style={{ maxHeight: 150 }}>
+          {t.guards.length === 0 ? (
+            <span className="muted" style={{ fontSize: 12.5, padding: '4px 8px' }}>
+              No conditions. The move is permitted whenever the state allows it.
+            </span>
+          ) : t.guards.map((g, i) => (
+            <div key={i} className="row" style={{ gap: 6, padding: '3px 0' }}>
+              <input className="t mono" style={{ flex: 1, fontSize: 12 }} value={g}
+                     onChange={(e) => set({
+                       guards: t.guards.map((q, n) => (n === i ? e.target.value : q)),
+                     })} />
+              <button className="btn ghost sm"
+                      onClick={() => set({ guards: t.guards.filter((_, n) => n !== i) })}>
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      </Field>
+
+      <div className="row">
+        <button className="btn ghost sm"
+                onClick={() => set({ guards: [...t.guards, ''] })}>
+          Add a condition
+        </button>
+      </div>
+
+      {/*
+        The vocabulary, shown rather than documented elsewhere. A condition
+        naming something absent is refused at publication, and being told what
+        IS available at the moment of writing beats being told afterwards.
+      */}
+      <div className="note">
+        A condition reads facts about the record being moved and nothing else — not the
+        database, not other records, not the clock, and not who is acting. Available on{' '}
+        <b>{entity.replace(/_/g, ' ')}</b>:{' '}
+        {(GUARD_FACTS[entity] ?? []).map((f) => (
+          <span key={f} className="mono" style={{ fontSize: 11.5 }}>record.{f} </span>
+        ))}
+        and <span className="mono" style={{ fontSize: 11.5 }}>custom.&lt;field&gt;</span> for any
+        custom field on it.
+        <div style={{ marginTop: 6 }}>
+          Compare with <span className="mono">== != &lt; &lt;= &gt; &gt;=</span>, combine with{' '}
+          <span className="mono">and or not</span> and brackets, and ask whether something was
+          filled in with <span className="mono">is empty</span> /{' '}
+          <span className="mono">is not empty</span>. For example:{' '}
+          <span className="mono" style={{ fontSize: 11.5 }}>
+            record.severity != 'Major' or record.preventive_action is not empty
+          </span>
+        </div>
+      </div>
 
       {/* Enforced — `assertSystemTransition` refuses a job any move without it. */}
       <Field label="Scheduled work may make this move">

@@ -285,15 +285,18 @@ export const REQUIREMENTS: readonly Requirement[] = [
     statement:
       'Operational system checks enforce permitted sequencing of steps and ' +
       'events, and the permitted sequence is the tenant\u2019s to declare.',
-    status: 'partial',
+    status: 'enforced',
     code: [
       'packages/domain/src/state-machines.ts',
       'packages/domain/src/config/workflows.ts',
+      'packages/domain/src/config/guards.ts',
       'apps/api/src/services/workflows.ts',
     ],
     tests: [
       { file: 'packages/domain/src/__tests__/workflows.test.ts', named: 'round trip is lossless' },
       { file: 'apps/api/src/__tests__/config-admin.test.ts', named: 'nowhere to go' },
+      { file: 'packages/domain/src/__tests__/guards.test.ts', named: 'reads nothing but the facts it was handed' },
+      { file: 'apps/api/src/__tests__/workflow-ceremony.test.ts', named: 'does not meet a condition' },
     ],
     note:
       'Every lifecycle is an explicit transition table, and the table now comes ' +
@@ -308,10 +311,13 @@ export const REQUIREMENTS: readonly Requirement[] = [
       'move back rather than leaving it unsigned. Configuration can only ADD a ' +
       'signature — `ALWAYS_SIGNED` is a floor publication refuses to lower, ' +
       'whereas `requiresReason` is a DEFAULT a tenant may waive, and is enforced ' +
-      'where it stands: the move is refused without one, and it is checked ' +
-      'before the signature so a missing reason does not cost a step-up. ' +
-      'PARTIAL for one remaining reason — `guards` is recorded and evaluated by ' +
-      'nothing, and the designer offers no control for it.',
+      'where it stands. `guards` are evaluated too: a small language with no ' +
+      'execution, reading only a facts object the route builds — not the ' +
+      'database, not other records, not the clock, not the actor — and failing ' +
+      'CLOSED, since the safe reading of a rule nobody can apply is that the ' +
+      'move is not allowed. Every guard is parsed and checked against the ' +
+      'entity\u2019s vocabulary at publication, so a broken one is a sentence ' +
+      'at review rather than a refusal at the move.',
   },
   {
     id: 'REQ-AUTHORITY',

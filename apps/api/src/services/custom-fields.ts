@@ -139,6 +139,20 @@ export async function currentRevision(
   return rows.length === 0 ? null : rowToRevision(rows[0]);
 }
 
+/**
+ * The current document as PLAIN values, for a guard to read.
+ *
+ * `{}` when nothing has been recorded, so a guard asking about a custom field
+ * on a record that has none sees an absent value rather than an error — absent
+ * and empty are the same question to somebody writing a rule.
+ */
+export async function currentCustomValues(
+  tx: Sql, entity: string, recordId: string,
+): Promise<Record<string, unknown>> {
+  const current = await currentRevision(tx, entity, recordId);
+  return current?.values ?? {};
+}
+
 /** Every revision, oldest first — the trail §11.10(e) asks for. */
 export async function revisionHistory(
   tx: Sql, entity: string, recordId: string,

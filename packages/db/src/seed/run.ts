@@ -275,7 +275,21 @@ async function seedConfig(sql: Sql): Promise<string> {
   const workflows = defaultWorkflows().map((w) => (w.entity !== 'capa' ? w : {
     ...w,
     transitions: w.transitions.map((t) => (t.from === 'effectiveness' && t.to === 'closed'
-      ? { ...t, requiresSignature: true, signatureMeanings: ['approval', 'responsibility'] as const }
+      ? {
+        ...t,
+        requiresSignature: true,
+        signatureMeanings: ['approval', 'responsibility'] as const,
+        /**
+         * IPC's own rule: a MAJOR nonconformity does not close on a corrective
+         * action alone. Something has to stop it happening again, and the
+         * quality manual says so.
+         *
+         * This is what a guard is for — a condition the product cannot know and
+         * the tenant does. It reads two facts about the record being closed and
+         * nothing else, which is the whole of what a guard can see.
+         */
+        guards: ["record.severity != 'Major' or record.preventive_action is not empty"],
+      }
       : t)),
   }));
 

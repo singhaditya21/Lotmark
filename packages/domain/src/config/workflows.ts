@@ -75,6 +75,7 @@ export function machineFromConfig(
       requiresSignature: t.requiresSignature,
       signatureMeanings: t.signatureMeanings,
       requiresReason: t.requiresReason,
+      guards: t.guards,
     });
   }
 

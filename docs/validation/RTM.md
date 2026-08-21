@@ -8,8 +8,8 @@ The source is `packages/domain/src/conformance.ts`, and every citation below is 
 
 | Status | Count | Meaning |
 |---|---|---|
-| enforced | 24 | the code refuses the thing |
-| partial | 4 | enforced on some paths; the gap is stated |
+| enforced | 25 | the code refuses the thing |
+| partial | 3 | enforced on some paths; the gap is stated |
 | declared | 1 | written down, nothing checks it |
 | not implemented | 0 | absent, and recorded as absent |
 
@@ -97,16 +97,16 @@ A secure, computer-generated, time-stamped audit trail records operator entries 
 
 ## 21 CFR 11 §11.10(f)
 
-### REQ-SEQUENCING — partial
+### REQ-SEQUENCING — enforced
 
 Operational system checks enforce permitted sequencing of steps and events, and the permitted sequence is the tenant’s to declare.
 
-> Every lifecycle is an explicit transition table, and the table now comes from the ACTIVE configuration with the code machine as the fallback. One machine governs every record of an entity at a time, so publication refuses a change that would leave records in a state the new machine does not have. NOT yet extensible for studies: `studies.state` carries a CHECK listing its two states, and publication refuses a third rather than letting the INSERT fail. A transition’s `requiresSignature`, `signatureMeanings` and `systemInitiated` are ENFORCED: a move a tenant marked as signed is refused without one, and a refused signing rolls the move back rather than leaving it unsigned. Configuration can only ADD a signature — `ALWAYS_SIGNED` is a floor publication refuses to lower, whereas `requiresReason` is a DEFAULT a tenant may waive, and is enforced where it stands: the move is refused without one, and it is checked before the signature so a missing reason does not cost a step-up. PARTIAL for one remaining reason — `guards` is recorded and evaluated by nothing, and the designer offers no control for it.
+> Every lifecycle is an explicit transition table, and the table now comes from the ACTIVE configuration with the code machine as the fallback. One machine governs every record of an entity at a time, so publication refuses a change that would leave records in a state the new machine does not have. NOT yet extensible for studies: `studies.state` carries a CHECK listing its two states, and publication refuses a third rather than letting the INSERT fail. A transition’s `requiresSignature`, `signatureMeanings` and `systemInitiated` are ENFORCED: a move a tenant marked as signed is refused without one, and a refused signing rolls the move back rather than leaving it unsigned. Configuration can only ADD a signature — `ALWAYS_SIGNED` is a floor publication refuses to lower, whereas `requiresReason` is a DEFAULT a tenant may waive, and is enforced where it stands. `guards` are evaluated too: a small language with no execution, reading only a facts object the route builds — not the database, not other records, not the clock, not the actor — and failing CLOSED, since the safe reading of a rule nobody can apply is that the move is not allowed. Every guard is parsed and checked against the entity’s vocabulary at publication, so a broken one is a sentence at review rather than a refusal at the move.
 
 | | |
 |---|---|
-| Implemented by | `packages/domain/src/state-machines.ts`<br>`packages/domain/src/config/workflows.ts`<br>`apps/api/src/services/workflows.ts` |
-| Demonstrated by | `packages/domain/src/__tests__/workflows.test.ts` — "round trip is lossless"<br>`apps/api/src/__tests__/config-admin.test.ts` — "nowhere to go" |
+| Implemented by | `packages/domain/src/state-machines.ts`<br>`packages/domain/src/config/workflows.ts`<br>`packages/domain/src/config/guards.ts`<br>`apps/api/src/services/workflows.ts` |
+| Demonstrated by | `packages/domain/src/__tests__/workflows.test.ts` — "round trip is lossless"<br>`apps/api/src/__tests__/config-admin.test.ts` — "nowhere to go"<br>`packages/domain/src/__tests__/guards.test.ts` — "reads nothing but the facts it was handed"<br>`apps/api/src/__tests__/workflow-ceremony.test.ts` — "does not meet a condition" |
 
 ## 21 CFR 11 §11.10(g)
 

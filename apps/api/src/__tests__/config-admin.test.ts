@@ -384,6 +384,60 @@ describe('a workflow has to be able to govern the records that exist', () => {
     expect(r.problems.join(' ')).toMatch(/the database cannot store/);
   });
 
+  it('refuses a condition that does not parse', async () => {
+    /**
+     * A guard that cannot be read REFUSES the move at runtime — failing closed
+     * is the only safe reading of a rule nobody can apply. That is right and a
+     * terrible way to find out, so publication reads every one first.
+     */
+    const id = await openDraft('A condition with a typo');
+    await putEntry(id, 'workflow', 'capa', capaWorkflow({
+      transitions: CAPA_TRANSITIONS.map((t) => (t.to === 'closed' && t.from === 'effectiveness'
+        ? { ...t, guards: ["record.severity =="] } : t)),
+    }));
+    const r = await review(id);
+    expect(r.publishable).toBe(false);
+    expect(r.problems.join(' ')).toMatch(/the guard on effectiveness → closed/);
+  });
+
+  it('refuses a condition naming a fact the entity does not have', async () => {
+    // And says what IS available, so the author can fix it without guessing.
+    const id = await openDraft('A condition about nothing');
+    await putEntry(id, 'workflow', 'capa', capaWorkflow({
+      transitions: CAPA_TRANSITIONS.map((t) => (t.to === 'closed' && t.from === 'effectiveness'
+        ? { ...t, guards: ["record.invented == 1"] } : t)),
+    }));
+    const r = await review(id);
+    expect(r.publishable).toBe(false);
+    const text = r.problems.join(' ');
+    expect(text).toMatch(/'record.invented' is not something a guard on capa can read/);
+    expect(text).toMatch(/record\.severity/);
+  });
+
+  it('accepts a condition about a custom field the same version declares', async () => {
+    const id = await openDraft('A condition about our own field');
+    await putEntry(id, 'field', 'root_cause_category', {
+      key: 'root_cause_category', entity: 'capa', label: 'Root cause category',
+      type: 'select', picklistKey: 'root_cause', sortOrder: 1,
+    });
+    await putEntry(id, 'workflow', 'capa', capaWorkflow({
+      transitions: CAPA_TRANSITIONS.map((t) => (t.to === 'closed' && t.from === 'effectiveness'
+        ? { ...t, guards: ["custom.root_cause_category is not empty"] } : t)),
+    }));
+    const r = await review(id);
+    expect(r.problems.filter((x) => x.includes('guard')), r.problems.join(' | ')).toEqual([]);
+  });
+
+  it('refuses a condition about a custom field it does not', async () => {
+    const id = await openDraft('A condition about a field we removed');
+    await putEntry(id, 'workflow', 'capa', capaWorkflow({
+      transitions: CAPA_TRANSITIONS.map((t) => (t.to === 'closed' && t.from === 'effectiveness'
+        ? { ...t, guards: ["custom.never_defined is not empty"] } : t)),
+    }));
+    const r = await review(id);
+    expect(r.problems.join(' ')).toMatch(/'custom.never_defined' is not something/);
+  });
+
   it('accepts a workflow that keeps every state in use', async () => {
     // Adding a transition takes nothing away, so nothing can be stranded.
     const id = await openDraft('A shortcut through CAPA');

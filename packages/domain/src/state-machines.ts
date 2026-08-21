@@ -45,6 +45,14 @@ export interface Transition<S extends string> {
   readonly requiresSignature?: boolean;
   readonly signatureMeanings?: readonly string[];
   readonly requiresReason?: boolean;
+  /**
+   * Conditions that must all hold before the move is permitted.
+   *
+   * Absent on the built-in machines: the product ships no guards, and a rule
+   * that conditions a lifecycle is exactly the kind of thing a tenant knows and
+   * the product does not.
+   */
+  readonly guards?: readonly string[];
 }
 
 /**
