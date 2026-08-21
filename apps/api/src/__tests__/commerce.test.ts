@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createHmac } from 'node:crypto';
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, LightMyRequestResponse } from 'fastify';
 import { buildApp } from '../app';
 import { inTenantTransaction } from '../db';
 
@@ -69,9 +69,11 @@ async function signIn(email: string): Promise<string> {
   return cookie;
 }
 
-const get = (who: string, url: string) =>
+type Injected = Promise<LightMyRequestResponse>;
+
+const get = (who: string, url: string): Injected =>
   app.inject({ method: 'GET', url: `/api/v1${url}`, headers: { cookie: cookies[who]! } });
-const post = (who: string, url: string, payload: unknown = {}) =>
+const post = (who: string, url: string, payload: Record<string, unknown> = {}): Injected =>
   app.inject({ method: 'POST', url: `/api/v1${url}`, headers: { cookie: cookies[who]! }, payload });
 
 const MEERA = 'meera@genpharm.example';

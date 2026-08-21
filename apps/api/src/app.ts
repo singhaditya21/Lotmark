@@ -20,6 +20,7 @@ import { registerCommerceRoutes } from './routes/commerce';
 import { KeyProvider } from './services/keys';
 import { createCustody } from './services/custody';
 import { DocumentStore } from './services/documents';
+import type { RegisteredRoute } from './http/operations';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -27,6 +28,8 @@ declare module 'fastify' {
     db: Sql;
     keys: KeyProvider;
     documents: DocumentStore;
+    /** Every route Fastify actually registered — see the onRoute hook below. */
+    routeTable: RegisteredRoute[];
   }
 }
 
@@ -40,6 +43,29 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
     // the security ledger and drives rate limiting. Only trust it behind a
     // proxy that actually sets it.
     trustProxy: false,
+  });
+
+  /**
+   * What was ACTUALLY registered.
+   *
+   * Collected from Fastify itself rather than from a list somebody maintains,
+   * because the whole value of the API description is that it cannot quietly
+   * disagree with the server. A route added without a matching operation fails
+   * the completeness test in openapi.test.ts; that test is the deliverable, and
+   * the generated document is a by-product of it.
+   *
+   * Registered BEFORE any routes, since onRoute only sees what follows it.
+   */
+  const routeTable: RegisteredRoute[] = [];
+  app.decorate('routeTable', routeTable);
+  app.addHook('onRoute', (route) => {
+    const methods = Array.isArray(route.method) ? route.method : [route.method];
+    for (const method of methods) {
+      // HEAD is generated automatically for every GET and describes nothing of
+      // its own; OPTIONS likewise.
+      if (method === 'HEAD' || method === 'OPTIONS') continue;
+      routeTable.push({ method, url: route.url });
+    }
   });
 
   app.decorate('cfg', cfg);

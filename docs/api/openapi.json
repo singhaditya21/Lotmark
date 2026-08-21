@@ -1,0 +1,2402 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Lotmark",
+    "version": "1",
+    "description": "ISO 17034 reference material producer platform.\n\nErrors are RFC 9457 problem details. The `code` field is the machine-readable one; `title` is that code humanised for display and must not be branched on. Where a refusal was recorded, `auditSeq` points at the ledger entry.\n\nThis document is generated from a registry that a test compares against the routes the server actually registered, in both directions. It cannot describe an endpoint that does not exist, and an endpoint cannot exist without appearing here."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Local development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Public",
+      "description": "Reachable without a session, each for a stated reason."
+    },
+    {
+      "name": "Authentication",
+      "description": "Establishing and elevating a session."
+    },
+    {
+      "name": "Production",
+      "description": "Projects, studies, property values and lots."
+    },
+    {
+      "name": "Certificates",
+      "description": "Issuing, reissuing and withdrawing certificates."
+    },
+    {
+      "name": "Quality",
+      "description": "Complaints, CAPAs and the audit ledger."
+    },
+    {
+      "name": "Commerce",
+      "description": "Catalogue, orders, dispatch, price tiers and the laboratory vault."
+    },
+    {
+      "name": "Administration",
+      "description": "Configuration versions, users, roles, teams and competence."
+    },
+    {
+      "name": "Operations",
+      "description": "Scheduled job health and disaster-recovery drills."
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "lotmark_session",
+        "description": "An opaque server-side session. Cookies rather than a bearer token because this domain needs IMMEDIATE revocation — a locked account, an idle timeout, a withdrawn competence — and a stateless token cannot be withdrawn before it expires."
+      }
+    },
+    "schemas": {
+      "Problem": {
+        "type": "object",
+        "description": "RFC 9457 problem details. `type` is `https://lotmark.local/problems/{code}`.",
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "code"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "description": "For display. Do not branch on it."
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "description": "The machine-readable classification."
+          },
+          "auditSeq": {
+            "type": "string",
+            "description": "The ledger entry recording this refusal."
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Liveness, and whether the database answers",
+        "description": "Unauthenticated by design, and says nothing about the data.",
+        "tags": [
+          "Public"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          }
+        }
+      }
+    },
+    "/verify/{token}": {
+      "get": {
+        "operationId": "getVerifyByToken",
+        "summary": "Verify a certificate issue from the address printed on it",
+        "description": "Unauthenticated DELIBERATELY: an auditor holding a printed certificate must not need an account with the producer whose certificate is in question.",
+        "tags": [
+          "Public"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The token."
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          }
+        }
+      }
+    },
+    "/api/v1/ops/alive": {
+      "get": {
+        "operationId": "getOpsAlive",
+        "summary": "Liveness and readiness in one place",
+        "description": "Deliberately thin. A health endpoint that leaks tenant counts is a reconnaissance endpoint.",
+        "tags": [
+          "Public"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          }
+        }
+      }
+    },
+    "/api/v1/auth/sign-in": {
+      "post": {
+        "operationId": "postAuthSignIn",
+        "summary": "Password authentication",
+        "description": "Rate limited to ten attempts a minute per IP. A session created here authorises nothing until the second factor is satisfied.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          }
+        }
+      }
+    },
+    "/api/v1/auth/second-factor": {
+      "post": {
+        "operationId": "postAuthSecondFactor",
+        "summary": "Satisfy the second factor",
+        "description": "Needs the partial session from sign-in — a cookie that exists and authorises nothing.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          }
+        }
+      }
+    },
+    "/api/v1/auth/step-up": {
+      "post": {
+        "operationId": "postAuthStepUp",
+        "summary": "Re-authenticate to open a signing window",
+        "description": "21 CFR 11 §11.200(a)(1): the first signing of a session needs both components. Subsequent signings within the window may use one.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          }
+        }
+      }
+    },
+    "/api/v1/auth/sign-out": {
+      "post": {
+        "operationId": "postAuthSignOut",
+        "summary": "End the session",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "getAuthMe",
+        "summary": "The signed-in person, their teams, permissions and half of the product",
+        "description": "Permissions are advisory, for hiding controls. Every act is re-decided server-side.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          }
+        }
+      }
+    },
+    "/api/v1/projects": {
+      "get": {
+        "operationId": "getProjects",
+        "summary": "Projects visible to the caller",
+        "description": "Filtered by the teams the caller holds project:read in, derived from the same authority object the guard uses. Requires `project:read`.",
+        "tags": [
+          "Production"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      },
+      "post": {
+        "operationId": "postProjects",
+        "summary": "Create a project",
+        "description": "Requires `project:manage`.",
+        "tags": [
+          "Production"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}/budget": {
+      "get": {
+        "operationId": "getProjectsByIdBudget",
+        "summary": "The uncertainty budget, recomputed from raw measurements",
+        "description": "Nothing here reads a stored summary. ISO Guide 35. Requires `project:read`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}/studies": {
+      "get": {
+        "operationId": "getProjectsByIdStudies",
+        "summary": "Studies and their state",
+        "description": "Requires `project:read`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      },
+      "post": {
+        "operationId": "postProjectsByIdStudies",
+        "summary": "Create a study",
+        "description": "Requires `project:manage`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}/values": {
+      "get": {
+        "operationId": "getProjectsByIdValues",
+        "summary": "Property values",
+        "description": "Requires `project:read`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      },
+      "post": {
+        "operationId": "postProjectsByIdValues",
+        "summary": "Create a property value",
+        "description": "Requires `value:assign`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}/as-of": {
+      "get": {
+        "operationId": "getProjectsByIdAsOf",
+        "summary": "The register as it stood on a past date",
+        "description": "Authorisation is evaluated against TODAY, never the as-of date: reading history is a present-tense act. Requires `project:read`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}/lots": {
+      "get": {
+        "operationId": "getProjectsByIdLots",
+        "summary": "The lot register",
+        "description": "Requires `project:read`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}/release-lot": {
+      "post": {
+        "operationId": "postProjectsByIdReleaseLot",
+        "summary": "Release a lot, signed",
+        "description": "Requires `lot:release`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/studies/{id}/results": {
+      "put": {
+        "operationId": "putStudiesByIdResults",
+        "summary": "Record measurements",
+        "description": "Requires `study:run`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/studies/{id}/sign": {
+      "post": {
+        "operationId": "postStudiesByIdSign",
+        "summary": "Sign a study and freeze its uncertainty",
+        "description": "Competence-gated: ISO 17034 6.3. The basis is frozen onto the signature. Requires `study:sign`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/studies/{id}/signature": {
+      "get": {
+        "operationId": "getStudiesByIdSignature",
+        "summary": "The signature on a study",
+        "description": "Requires `project:read`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/values/{id}/assign": {
+      "post": {
+        "operationId": "postValuesByIdAssign",
+        "summary": "Assign a property value",
+        "description": "Requires `value:assign`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/values/{id}/authorise": {
+      "post": {
+        "operationId": "postValuesByIdAuthorise",
+        "summary": "Authorise a property value",
+        "description": "Segregation of duties: the person who assigned it cannot authorise it. Requires `value:authorise`.",
+        "tags": [
+          "Production"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/equipment": {
+      "get": {
+        "operationId": "getEquipment",
+        "summary": "Equipment and calibration",
+        "description": "Requires `project:read`.",
+        "tags": [
+          "Production"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/teams": {
+      "get": {
+        "operationId": "getTeams",
+        "summary": "Teams in the tenant",
+        "description": "Requires `project:read`.",
+        "tags": [
+          "Production"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/lots/{id}/certificate": {
+      "post": {
+        "operationId": "postLotsByIdCertificate",
+        "summary": "Issue a certificate",
+        "description": "Requires `cert:issue`.",
+        "tags": [
+          "Certificates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/certificates/{id}": {
+      "get": {
+        "operationId": "getCertificatesById",
+        "summary": "A certificate and every issue of it",
+        "description": "Issue 1 stays here forever. A reissue never overwrites. Requires `project:read`.",
+        "tags": [
+          "Certificates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/certificates/{id}/issues/{n}/pdf": {
+      "get": {
+        "operationId": "getCertificatesByIdIssuesByNPdf",
+        "summary": "The rendered PDF for an issue",
+        "description": "Requires `project:read`.",
+        "tags": [
+          "Certificates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          },
+          {
+            "name": "n",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The issue number."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/certificates/{id}/issues/{n}/holders": {
+      "get": {
+        "operationId": "getCertificatesByIdIssuesByNHolders",
+        "summary": "Who holds an issue",
+        "description": "Also open to order:read_all. Contact identities need pii:contact and reading them is audited. Requires `cert:reissue`.",
+        "tags": [
+          "Certificates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          },
+          {
+            "name": "n",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The issue number."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/certificates/{id}/reissue": {
+      "post": {
+        "operationId": "postCertificatesByIdReissue",
+        "summary": "Reissue, and notify holders",
+        "description": "Signed and competence-gated. A refused signing rolls the whole thing back. Requires `cert:reissue`.",
+        "tags": [
+          "Certificates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/certificates/{id}/issues/{n}/withdraw": {
+      "post": {
+        "operationId": "postCertificatesByIdIssuesByNWithdraw",
+        "summary": "Withdraw an issue and notify holders",
+        "description": "Also removes the lot from the catalogue. Unsigned server-side — see docs/architecture/DIVERGENCES.md. Requires `cert:reissue`.",
+        "tags": [
+          "Certificates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          },
+          {
+            "name": "n",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The issue number."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/capa": {
+      "get": {
+        "operationId": "getCapa",
+        "summary": "Complaints and CAPAs",
+        "description": "Requires `capa:manage`.",
+        "tags": [
+          "Quality"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/capa/workflow": {
+      "get": {
+        "operationId": "getCapaWorkflow",
+        "summary": "The declared CAPA state machine",
+        "description": "The console renders transitions from this rather than deciding for itself. Requires `capa:manage`.",
+        "tags": [
+          "Quality"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/capa/{id}/transition": {
+      "post": {
+        "operationId": "postCapaByIdTransition",
+        "summary": "Move a CAPA to its next state",
+        "description": "Requires `capa:manage`.",
+        "tags": [
+          "Quality"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/audit": {
+      "get": {
+        "operationId": "getAudit",
+        "summary": "The audit ledger, newest first",
+        "description": "Requires `audit:read`.",
+        "tags": [
+          "Quality"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/audit/verify": {
+      "post": {
+        "operationId": "postAuditVerify",
+        "summary": "Verify the hash chain",
+        "description": "Reports UNVERIFIED separately from BROKEN: not holding a retired generation key is not evidence of tampering. Requires `audit:verify`.",
+        "tags": [
+          "Quality"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/catalogue": {
+      "get": {
+        "operationId": "getCatalogue",
+        "summary": "Released lots available to buy",
+        "description": "Also open to catalogue:manage and order:read_all. A withdrawn lot is absent. Requires `order:create`.",
+        "tags": [
+          "Commerce"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/catalogue/{id}": {
+      "put": {
+        "operationId": "putCatalogueById",
+        "summary": "Set a lot price and tier eligibility",
+        "description": "Requires `catalogue:manage`.",
+        "tags": [
+          "Commerce"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/orders": {
+      "get": {
+        "operationId": "getOrders",
+        "summary": "Orders, with their lines and shipments",
+        "description": "Also open to order:read_own. Which rows exist is decided by row-level security on the organisation, not by a WHERE clause. Requires `order:read_all`.",
+        "tags": [
+          "Commerce"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      },
+      "post": {
+        "operationId": "postOrders",
+        "summary": "Place an order",
+        "description": "Stock and lot state are re-read under a row lock inside the transaction. Requires `order:create`.",
+        "tags": [
+          "Commerce"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}/advance": {
+      "post": {
+        "operationId": "postOrdersByIdAdvance",
+        "summary": "Advance an order",
+        "description": "Requires `order:advance`.",
+        "tags": [
+          "Commerce"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}/shipment": {
+      "post": {
+        "operationId": "postOrdersByIdShipment",
+        "summary": "Create a shipment",
+        "description": "Requires `order:advance`.",
+        "tags": [
+          "Commerce"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/shipments/{id}/readings": {
+      "post": {
+        "operationId": "postShipmentsByIdReadings",
+        "summary": "Record logger readings",
+        "description": "A reading outside the temperature class raises a CAPA automatically. Requires `order:advance`.",
+        "tags": [
+          "Commerce"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/entitlements": {
+      "get": {
+        "operationId": "getEntitlements",
+        "summary": "Price-tier claims",
+        "description": "Also open to entitlement:claim. An approved tier is recorded and changes no price; there is no tier price list. Requires `entitlement:decide`.",
+        "tags": [
+          "Commerce"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      },
+      "post": {
+        "operationId": "postEntitlements",
+        "summary": "Claim a price tier",
+        "description": "Requires `entitlement:claim`.",
+        "tags": [
+          "Commerce"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/entitlements/{id}/decide": {
+      "post": {
+        "operationId": "postEntitlementsByIdDecide",
+        "summary": "Decide a claim",
+        "description": "SoD-3: you cannot decide a claim you raised. Requires `entitlement:decide`.",
+        "tags": [
+          "Commerce"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/vault": {
+      "get": {
+        "operationId": "getVault",
+        "summary": "The laboratory’s own holdings",
+        "description": "Requires `vault:use`.",
+        "tags": [
+          "Commerce"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/config": {
+      "get": {
+        "operationId": "getAdminConfig",
+        "summary": "Configuration versions",
+        "description": "Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/config/{id}": {
+      "get": {
+        "operationId": "getAdminConfigById",
+        "summary": "One version and its entries",
+        "description": "Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/config/draft": {
+      "post": {
+        "operationId": "postAdminConfigDraft",
+        "summary": "Open a configuration draft",
+        "description": "One draft per tenant. Two would be a fork. Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/config/draft/{id}/entry": {
+      "put": {
+        "operationId": "putAdminConfigDraftByIdEntry",
+        "summary": "Write a configuration entry",
+        "description": "Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/config/draft/{id}/entry/{kind}/{key}": {
+      "delete": {
+        "operationId": "deleteAdminConfigDraftByIdEntryByKindByKey",
+        "summary": "Remove a configuration entry",
+        "description": "Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          },
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The kind."
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The key."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/config/draft/{id}/review": {
+      "get": {
+        "operationId": "getAdminConfigDraftByIdReview",
+        "summary": "The diff, and everything that would refuse publication",
+        "description": "Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/config/draft/{id}/publish": {
+      "post": {
+        "operationId": "postAdminConfigDraftByIdPublish",
+        "summary": "Publish a draft",
+        "description": "A security or behaviour change must be signed. Publishability is checked BEFORE the signature is collected. Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/config/draft/{id}": {
+      "delete": {
+        "operationId": "deleteAdminConfigDraftById",
+        "summary": "Discard a draft",
+        "description": "Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/people": {
+      "get": {
+        "operationId": "getAdminPeople",
+        "summary": "Users, roles, teams and competence",
+        "description": "Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users": {
+      "post": {
+        "operationId": "postAdminUsers",
+        "summary": "Create an account",
+        "description": "Returns an initial credential ONCE. It is deliberately not in the ledger. Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users/{id}/deactivate": {
+      "post": {
+        "operationId": "postAdminUsersByIdDeactivate",
+        "summary": "Deactivate an account",
+        "description": "Never deletion: the id is referenced by signatures that must stay resolvable. Ends sessions and revokes role assignments. Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users/{id}/roles": {
+      "post": {
+        "operationId": "postAdminUsersByIdRoles",
+        "summary": "Grant a role, at a scope and optionally dated",
+        "description": "Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users/{id}/roles/{assignmentId}": {
+      "delete": {
+        "operationId": "deleteAdminUsersByIdRolesByAssignmentId",
+        "summary": "Revoke a role",
+        "description": "Revoked, not deleted: an as-of view has to find it. Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          },
+          {
+            "name": "assignmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The assignmentId."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/teams": {
+      "post": {
+        "operationId": "postAdminTeams",
+        "summary": "Create a team",
+        "description": "Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/teams/{id}/members": {
+      "post": {
+        "operationId": "postAdminTeamsByIdMembers",
+        "summary": "Add somebody to a team",
+        "description": "Membership is belonging; it grants nothing. Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/teams/{id}/members/{userId}": {
+      "delete": {
+        "operationId": "deleteAdminTeamsByIdMembersByUserId",
+        "summary": "End a team membership",
+        "description": "Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The id."
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The userId."
+          }
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/admin/competence": {
+      "post": {
+        "operationId": "postAdminCompetence",
+        "summary": "Record a competence authorisation",
+        "description": "ISO 17034 6.3. Requires `user:manage`.",
+        "tags": [
+          "Administration"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    },
+    "/api/v1/ops": {
+      "get": {
+        "operationId": "getOps",
+        "summary": "Scheduled job health and disaster-recovery drills",
+        "description": "Says what it cannot see: these checks run inside the API, so they cannot detect the API being down. Requires `audit:read`.",
+        "tags": [
+          "Operations"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          },
+          "403": {
+            "description": "Refused. `code` names the reason — permission_denied, segregation_of_duties, competence_missing or competence_expired — and `auditSeq` points at the ledger entry that recorded the refusal."
+          }
+        }
+      }
+    }
+  }
+}
