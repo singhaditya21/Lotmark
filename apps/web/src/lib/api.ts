@@ -120,6 +120,38 @@ export interface Budget {
   components: BudgetComponent[];
 }
 
+export interface Capa {
+  id: string;
+  code: string;
+  source: string;
+  severity: 'Minor' | 'Major' | 'Critical';
+  state: CapaState;
+  raised_on: string;
+  due_on: string | null;
+  root_cause: string | null;
+  corrective_action: string | null;
+  closed_at: string | null;
+  team: string | null;
+  /**
+   * Supplied by the server from the declared state machine.
+   *
+   * The console renders these rather than deciding for itself what may follow
+   * what — a hardcoded workflow in the UI would drift from the one actually
+   * enforced, and the drift would show up as buttons that 409.
+   */
+  availableTransitions: CapaState[];
+}
+
+export type CapaState =
+  | 'open' | 'investigation' | 'root_cause' | 'capa' | 'effectiveness' | 'closed';
+
+export interface CapaWorkflow {
+  states: CapaState[];
+  initial: CapaState;
+  terminal: CapaState[];
+  transitions: Array<{ from: CapaState; to: CapaState; action: string; requires: string }>;
+}
+
 export interface AuditEntry {
   seq: string; occurred_at: string; actor_label: string; actor_role_id: string;
   kind: string; action: string; detail: string; time_source: string; region: string;

@@ -5,8 +5,9 @@ import { SignIn } from './pages/SignIn';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { Audit } from './pages/Audit';
+import { Capa } from './pages/Capa';
 
-type Route = 'projects' | 'audit';
+type Route = 'projects' | 'capa' | 'audit';
 
 export function App() {
   const qc = useQueryClient();
@@ -53,6 +54,12 @@ export function App() {
                   onClick={() => { setRoute('projects'); setOpen(null); }}>
             Projects
           </button>
+          {held.has('capa:manage') && (
+            <button aria-current={route === 'capa' ? 'page' : 'false'}
+                    onClick={() => { setRoute('capa'); setOpen(null); }}>
+              Complaints &amp; CAPA
+            </button>
+          )}
           {held.has('audit:read') && (
             <button aria-current={route === 'audit' ? 'page' : 'false'}
                     onClick={() => { setRoute('audit'); setOpen(null); }}>
@@ -74,6 +81,8 @@ export function App() {
       <main>
         {route === 'audit' ? (
           <Audit canVerify={held.has('audit:verify')} />
+        ) : route === 'capa' ? (
+          <Capa canManage={held.has('capa:manage')} />
         ) : open ? (
           <ProjectDetail project={open} onBack={() => setOpen(null)} />
         ) : (
