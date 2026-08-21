@@ -102,6 +102,18 @@ const review = async (id: string) => {
   }>();
 };
 
+/** What the console would show in the `overridesDefault` column for one entry. */
+const overridesFor = async (versionId: string, kind: string, key: string) => {
+  const res = await app.inject({
+    method: 'GET', url: `/api/v1/admin/config/${versionId}`, headers: { cookie: admin },
+  });
+  expect(res.statusCode, res.body).toBe(200);
+  const entry = res.json<{ entries: Array<{ kind: string; key: string; overridesDefault: boolean }> }>()
+    .entries.find((e) => e.kind === kind && e.key === key);
+  expect(entry, `no ${kind}:${key} entry in version ${versionId}`).toBeDefined();
+  return entry!.overridesDefault;
+};
+
 const role = (key: string, over: Record<string, unknown> = {}) => ({
   key, name: `Role ${key}`, kind: 'producer',
   permissions: ['project:read'], inherits: [], system: false, ...over,
@@ -117,6 +129,64 @@ describe('who may administer configuration', () => {
     });
     expect(res.statusCode).toBe(403);
     expect(res.json<{ detail: string }>().detail).toContain('user:manage');
+  });
+});
+
+describe('an entry is filed under one identifier, not two', () => {
+  /**
+   * Every entry carries its key twice: in the `key` column, which is what a
+   * query joins and orders on, and inside the payload, which is what a reader
+   * parses. Nothing used to make them agree.
+   */
+  it('refuses a key that disagrees with the payload', async () => {
+    const id = await openDraft('Key agreement');
+    const res = await putEntry(id, 'role', 'auditor', role('inspector'));
+    expect(res.statusCode).toBe(422);
+    expect(res.json<{ detail: string }>().detail).toMatch(/calls itself/);
+  });
+
+  it('refuses a key the payload schema would itself reject', async () => {
+    // The route accepted `z.string().min(1).max(120)` for the column while the
+    // payload validated a lower-case slug, so a key with spaces and capitals
+    // got as far as the database.
+    const id = await openDraft('Key shape');
+    const res = await putEntry(id, 'role', 'My Auditor!', role('My Auditor!'));
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('accepts them when they agree', async () => {
+    const id = await openDraft('Key agreement, positive');
+    const res = await putEntry(id, 'role', 'auditor', role('auditor'));
+    expect(res.statusCode, res.body).toBe(200);
+  });
+});
+
+describe('whether an entry replaces a product default', () => {
+  /**
+   * `overrides_default` is shown in the console, so it has to be true. It was
+   * hardcoded to `true` on insert and left untouched on update, which claimed
+   * that anything written through the API replaces something the product
+   * ships — including kinds the product ships nothing of.
+   */
+  it('says so for a role the product ships', async () => {
+    const id = await openDraft('Overriding a shipped role');
+    await putEntry(id, 'role', 'quality', role('quality'));
+    expect(await overridesFor(id, 'role', 'quality')).toBe(true);
+  });
+
+  it('does not say so for a role the tenant invented', async () => {
+    const id = await openDraft('A role of our own');
+    await putEntry(id, 'role', 'inspector', role('inspector'));
+    expect(await overridesFor(id, 'role', 'inspector')).toBe(false);
+  });
+
+  it('gives the same answer whether the entry was created or edited', async () => {
+    // The UPDATE branch did not set the column at all, so an entry could end up
+    // with a different answer purely because of how it got there.
+    const id = await openDraft('Created then edited');
+    await putEntry(id, 'role', 'inspector', role('inspector'));
+    await putEntry(id, 'role', 'inspector', role('inspector', { name: 'Inspector, renamed' }));
+    expect(await overridesFor(id, 'role', 'inspector')).toBe(false);
   });
 });
 

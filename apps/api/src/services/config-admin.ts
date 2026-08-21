@@ -1,7 +1,7 @@
 import {
   diffConfig, parseConfigPayload, requiresSignatureToPublish, changesRequireSignature,
   effectivePermissionsOfRole, roleConfigSchema, isPermission, RETENTION_SCHEDULE,
-  ALL_CONFIG_KINDS, CONFIG_RISK,
+  ALL_CONFIG_KINDS, CONFIG_RISK, hasProductDefault,
   type ConfigKind, type ConfigChange, type RoleConfig,
 } from '@lotmark/domain';
 import { createHash } from 'node:crypto';
@@ -188,12 +188,43 @@ export async function upsertEntry(
     );
   }
 
+  /**
+   * The key COLUMN and the key inside the payload are the same identifier, and
+   * must say the same thing.
+   *
+   * They are stored twice because the column is what a query joins and orders
+   * on, and the payload is what a reader parses. Nothing made them agree, so
+   * `key: 'my-layout'` with `payload.key: 'my_layout'` stored a row that
+   * resolved under one name and not the other — a lookup miss that looks
+   * exactly like a missing entry.
+   *
+   * `sod` is the one kind whose payload has no `key` (it is identified by
+   * `ruleId`), so the check is conditional on the payload having one rather
+   * than on a list of kinds that would need updating whenever a kind is added.
+   */
+  const payloadKey = (parsed.data as { key?: unknown }).key;
+  if (typeof payloadKey === 'string' && payloadKey !== args.key) {
+    throw new ConfigAdminError(
+      `This entry is filed under '${args.key}' but its content calls itself ` +
+      `'${payloadKey}'. They are the same identifier and must match.`,
+    );
+  }
+
+  /**
+   * Whether this replaces something the product ships, asked rather than
+   * assumed — and set on BOTH branches, so an entry does not carry a different
+   * answer depending on whether it was created or edited.
+   */
+  const overrides = hasProductDefault(args.kind, args.key);
+
   await tx`
     INSERT INTO lotmark.config_entries (tenant_id, version_id, kind, key, payload, overrides_default)
     VALUES (${args.tenantId}, ${args.versionId}, ${args.kind}, ${args.key},
-            ${tx.json(parsed.data as never)}, true)
+            ${tx.json(parsed.data as never)}, ${overrides})
     ON CONFLICT (version_id, kind, key)
-    DO UPDATE SET payload = ${tx.json(parsed.data as never)}, updated_at = now()`;
+    DO UPDATE SET payload = ${tx.json(parsed.data as never)},
+                  overrides_default = ${overrides},
+                  updated_at = now()`;
 }
 
 export async function removeEntry(

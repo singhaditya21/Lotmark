@@ -13,7 +13,18 @@ import type { ConfigKind } from './registry';
  */
 
 const permissionSchema = z.enum(ALL_PERMISSIONS as [Permission, ...Permission[]]);
-const key = z.string().min(1).max(64).regex(/^[a-z0-9][a-z0-9_-]*$/, 'lower-case slug');
+/**
+ * The identifier of a configurable artefact.
+ *
+ * Exported so that the ONE place a key is validated is this one. The admin
+ * route used to accept `z.string().min(1).max(120)` for the `key` COLUMN while
+ * every payload validated its own `key` as a slug — so `PUT .../entry` with
+ * `key: 'My Layout!'` and `payload.key: 'my_layout'` stored a row whose two
+ * identifiers disagreed, and a reader keying off either one found nothing.
+ */
+export const configKeySchema = z.string().min(1).max(64)
+  .regex(/^[a-z0-9][a-z0-9_-]*$/, 'lower-case slug');
+const key = configKeySchema;
 const label = z.string().min(1).max(120);
 
 /* ── A · Roles ───────────────────────────────────────────────────────────── */

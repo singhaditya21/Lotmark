@@ -142,6 +142,37 @@ const STATUTORY_FLOOR_DAYS: Record<string, number> = {
   session_and_access_log: 180,
 };
 
+/**
+ * Does the PRODUCT ship a default for this artefact?
+ *
+ * `config_entries.overrides_default` is shown in the administration console, so
+ * it has to be true. It was hardcoded to `true` on insert and left untouched on
+ * update, which made two claims that are not so: that a layout — a kind with no
+ * product default at all — replaces one, and that an entry seeded as `false`
+ * still does not override after being edited.
+ *
+ * Only six kinds have defaults, and each is derived from the code constants
+ * rather than listed again here, so the answer cannot drift from what a fresh
+ * tenant is actually provisioned with.
+ */
+export function hasProductDefault(kind: string, entryKey: string): boolean {
+  switch (kind) {
+    case 'role': return defaultRoles().some((r) => r.key === entryKey);
+    case 'workflow': return defaultWorkflows().some((w) => w.key === entryKey);
+    // SoD entries are keyed by their rule id, not by a `key` property.
+    case 'sod': return defaultSodConfig().some((r) => r.ruleId === entryKey);
+    case 'numbering': return defaultNumbering().some((n) => n.key === entryKey);
+    case 'flag': return defaultFlags().some((f) => f.key === entryKey);
+    case 'retention': return entryKey in defaultRetentionFloorDays();
+    /**
+     * field, picklist, layout, view, dashboard, report, template, translation.
+     * The product ships none of these — everything of these kinds is something
+     * a tenant invented, and saying it overrides a default is simply false.
+     */
+    default: return false;
+  }
+}
+
 function titleise(s: string): string {
   return s.replace(/[_-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }

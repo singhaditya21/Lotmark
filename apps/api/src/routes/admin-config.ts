@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import {
-  isSignatureMeaning, changesRequireSignature, ALL_CONFIG_KINDS,
+  isSignatureMeaning, changesRequireSignature, ALL_CONFIG_KINDS, configKeySchema,
   type SignatureMeaning, type ConfigKind,
 } from '@lotmark/domain';
 import { inTenantTransaction, type Sql } from '../db';
@@ -46,7 +46,12 @@ const draftBody = z.object({
 const entryBody = z.object({
   kind: z.string().refine((k): k is ConfigKind => (ALL_CONFIG_KINDS as string[]).includes(k),
     'Not a configurable kind.'),
-  key: z.string().min(1).max(120),
+  /**
+   * The same slug rule the payloads use, imported rather than restated.
+   * This accepted `z.string().min(1).max(120)`, so a key the payload schema
+   * would have rejected got as far as the column.
+   */
+  key: configKeySchema,
   payload: z.unknown(),
 });
 
