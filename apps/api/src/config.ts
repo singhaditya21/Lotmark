@@ -34,6 +34,13 @@ const schema = z.object({
    */
   SIGNING_WINDOW_MINUTES: z.coerce.number().int().positive().max(60).default(15),
 
+  /**
+   * Where private signing keys live. Outside the database on purpose: an
+   * attacker who compromises Postgres must not thereby be able to forge
+   * signatures.
+   */
+  SIGNING_KEY_DIR: z.string().default('.keys'),
+
   /** Where the console is served from in development, for CORS and cookies. */
   WEB_ORIGIN: z.string().default('http://localhost:5173'),
 });

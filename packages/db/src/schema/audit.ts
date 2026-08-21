@@ -134,11 +134,25 @@ export const signaturesTable = lotmark.table('signatures', {
   region: text('region').notNull(),
 
   /**
-   * §11.70 binding. HMAC over the canonical material from @lotmark/domain, plus
-   * signer, meaning and instant. `canonicalVersion` lets the material format
-   * evolve without making historical signatures appear tampered with.
+   * §11.70 binding.
+   *
+   * `signatureValue` is an Ed25519 signature over the canonical payload from
+   * @lotmark/domain — the record's material, the signer, the meaning and the
+   * instant. Asymmetric on purpose: an assessor or a certificate holder can
+   * verify with the public key alone, holding nothing that could produce a
+   * signature. Every HMAC verifier is also a forger; this is the property that
+   * makes the signature evidence rather than a checksum.
+   *
+   * `bindingHash` is a SHA-256 digest of the same payload. Not the security
+   * mechanism — it exists so an operator can see WHICH payload a signature
+   * covers without reconstructing it.
+   *
+   * `canonicalVersion` lets the material format evolve without making every
+   * historical signature appear tampered with.
    */
   bindingHash: text('binding_hash').notNull(),
+  signatureValue: text('signature_value'),
+  algorithm: text('algorithm').notNull().default('ed25519'),
   canonicalVersion: text('canonical_version').notNull().default('1'),
   keyVersion: text('key_version').notNull().default('v1'),
 

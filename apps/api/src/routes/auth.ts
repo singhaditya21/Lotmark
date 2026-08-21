@@ -3,8 +3,9 @@ import { z } from 'zod';
 import { inTenantTransaction } from '../db';
 import { signIn, verifySecondFactor, MAX_MFA_ATTEMPTS } from '../services/auth';
 import {
-  SESSION_COOKIE, hashToken, loadLiveSession, revokeSession, touchSession,
+  SESSION_COOKIE, hashToken, loadLiveSession, revokeSession, touchSession, unlockSigning,
 } from '../services/sessions';
+import { verifyPassword, verifyTotp } from '@lotmark/security';
 import { recordAudit } from '../services/audit';
 import { requireSession } from '../plugins/session';
 
@@ -115,6 +116,77 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
     }
     reply.clearCookie(SESSION_COOKIE, { path: '/' });
     return reply.send({ outcome: 'signed_out' });
+  });
+
+
+  /**
+   * Step-up re-authentication, opening the signing window.
+   *
+   * 21 CFR 11 §11.200(a)(1) requires signings to employ at least two distinct
+   * identification components. §11.200(a)(1)(i) requires ALL components for a
+   * signing not executed during a continuous session — so both are demanded
+   * here, even though the caller is already signed in.
+   *
+   * The window is short and is checked again at the moment of signing, not
+   * merely when it is opened.
+   */
+  app.post('/step-up', {
+    config: { rateLimit: { max: 8, timeWindow: '1 minute' } },
+  }, async (req, reply) => {
+    const ctx = await requireSession(app, req, reply);
+    if (!ctx) return;
+
+    const parsed = z.object({
+      password: z.string().min(1).max(1024),
+      code: z.string().regex(/^\d{6}$/),
+    }).safeParse(req.body);
+
+    if (!parsed.success) {
+      return reply.code(400).send(problem('invalid_request',
+        'Both your password and an authenticator code are required to sign.'));
+    }
+
+    const outcome = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+      const [row] = await tx`
+        SELECT password_hash, totp_secret_encrypted FROM lotmark.users WHERE id = ${ctx.userId} LIMIT 1`;
+      const user = row as { password_hash: string; totp_secret_encrypted: string | null } | undefined;
+      if (!user) return { ok: false as const, why: 'account not found' };
+
+      const auditCtx = {
+        tenantId: ctx.tenantId, actorUserId: ctx.userId, actorLabel: ctx.displayName,
+        actorRoleId: '—', sessionId: ctx.sessionId,
+        timeSource: ctx.timeSource, region: ctx.region,
+      };
+
+      // Both components are checked before reporting, so the response cannot
+      // reveal WHICH one failed — that would let an attacker who has one
+      // component confirm it independently.
+      const passwordOk = await verifyPassword(parsed.data.password, user.password_hash);
+      const codeOk = user.totp_secret_encrypted
+        ? verifyTotp(parsed.data.code, user.totp_secret_encrypted)
+        : false;
+
+      if (!passwordOk || !codeOk) {
+        await recordAudit(tx, auditCtx, {
+          kind: 'SECURITY', action: 'Signing step-up rejected',
+          detail: 'one or both identification components were not accepted',
+        });
+        return { ok: false as const, why: 'components rejected' };
+      }
+
+      await unlockSigning(tx, ctx.sessionId);
+      await recordAudit(tx, auditCtx, {
+        kind: 'AUTH', action: 'Signing session opened',
+        detail: `valid for ${cfg.SIGNING_WINDOW_MINUTES} minutes`,
+      });
+      return { ok: true as const };
+    });
+
+    if (!outcome.ok) {
+      return reply.code(401).send(problem('step_up_failed',
+        'Your password and authenticator code were not accepted together.'));
+    }
+    return reply.send({ signingWindowMinutes: cfg.SIGNING_WINDOW_MINUTES });
   });
 
   /** Who am I, and what may I do — the console's bootstrap call. */

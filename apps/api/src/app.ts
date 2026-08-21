@@ -6,11 +6,14 @@ import { loadConfig, type AppConfig } from './config';
 import { createDb, type Sql } from './db';
 import { registerAuthRoutes } from './routes/auth';
 import { registerConsoleRoutes } from './routes/console';
+import { registerWorkflowRoutes } from './routes/workflow';
+import { KeyProvider } from './services/keys';
 
 declare module 'fastify' {
   interface FastifyInstance {
     cfg: AppConfig;
     db: Sql;
+    keys: KeyProvider;
   }
 }
 
@@ -28,6 +31,7 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
 
   app.decorate('cfg', cfg);
   app.decorate('db', createDb(cfg));
+  app.decorate('keys', new KeyProvider(cfg.SIGNING_KEY_DIR));
 
   await app.register(helmet, {
     // The API serves JSON only; a restrictive default CSP is right and cheap.
@@ -60,6 +64,7 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
 
   await app.register(registerAuthRoutes, { prefix: '/api/v1/auth' });
   await app.register(registerConsoleRoutes, { prefix: '/api/v1' });
+  await app.register(registerWorkflowRoutes, { prefix: '/api/v1' });
 
   app.addHook('onClose', async () => { await app.db.end(); });
   return app;

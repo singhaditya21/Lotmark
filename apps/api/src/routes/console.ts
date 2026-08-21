@@ -164,6 +164,45 @@ export async function registerConsoleRoutes(app: FastifyInstance): Promise<void>
     return reply.send(result.body);
   });
 
+
+  /** Studies for a project, with their state — the console's work list. */
+  app.get<{ Params: { id: string } }>('/projects/:id/studies', async (req, reply) => {
+    const ctx = await requireSession(app, req, reply);
+    if (!ctx) return;
+
+    const out = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+      const [projectRow] = await tx`
+        SELECT id, owner_team_id FROM lotmark.projects
+        WHERE tenant_id = ${ctx.tenantId} AND id = ${req.params.id} LIMIT 1`;
+      const project = projectRow as { id: string; owner_team_id: string | null } | undefined;
+      if (!project) return null;
+
+      const verdict = decide({
+        authority: ctx.authority, permission: 'project:read',
+        scope: project.owner_team_id ? { kind: 'team', teamId: project.owner_team_id } : { kind: 'tenant' },
+        sodSettings: {}, onDate: ctx.today,
+      });
+      if (!verdict.allowed) return { forbidden: verdict };
+
+      const rows = await tx`
+        SELECT id, code, study_type, state, uncertainty, signed_on, shelf_life_to
+        FROM lotmark.studies
+        WHERE tenant_id = ${ctx.tenantId} AND project_id = ${project.id}
+        ORDER BY code`;
+      return { studies: rows.map((r) => {
+        const s = r as Record<string, unknown>;
+        return {
+          id: s['id'], code: s['code'], type: s['study_type'], state: s['state'],
+          uncertainty: s['uncertainty'], signedOn: s['signed_on'],
+        };
+      }) };
+    });
+
+    if (!out) return reply.code(404).send(problem('not_found', 'No such project.'));
+    if ('forbidden' in out) return reply.code(403).send(problem(out.forbidden.reason, out.forbidden.message));
+    return reply.send(out);
+  });
+
   /** The audit ledger, newest first. */
   app.get<{ Querystring: { limit?: string } }>('/audit', async (req, reply) => {
     const ctx = await requireSession(app, req, reply);

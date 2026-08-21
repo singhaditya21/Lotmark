@@ -443,3 +443,122 @@ describe('teams and role assignments', () => {
     });
   });
 });
+
+describe('signature integrity constraints (migration 0003)', () => {
+  const sig = (tx: Sql, over: Record<string, unknown> = {}) => {
+    const base = {
+      meaning: 'approval', subject_kind: 'study',
+      signature_value: 'ZmFrZS1zaWduYXR1cmU',
+      competence_record_id: null, competence_activity: null,
+      competence_valid_from: null, competence_valid_to: null, competence_checked_on: null,
+      ...over,
+    };
+    return tx`INSERT INTO lotmark.signatures
+        (tenant_id, subject_kind, subject_id, signer_user_id, meaning, time_source, region,
+         binding_hash, signature_value, competence_record_id, competence_activity,
+         competence_valid_from, competence_valid_to, competence_checked_on)
+      VALUES (${T}, ${base.subject_kind as string}, ${U1}, ${U1}, ${base.meaning as string},
+              'ntp', 'local', ${'a'.repeat(64)}, ${base.signature_value as string | null},
+              ${base.competence_record_id as string | null}, ${base.competence_activity as string | null},
+              ${base.competence_valid_from as string | null}, ${base.competence_valid_to as string | null},
+              ${base.competence_checked_on as string | null})`;
+  };
+
+  it('accepts a well-formed signature', async () => {
+    await inRollback(async (tx) => { await expect(sig(tx)).resolves.toBeDefined(); });
+  });
+
+  it('REJECTS a signature carrying no cryptographic value', async () => {
+    await inRollback(async (tx) => {
+      await expect(sig(tx, { signature_value: null }))
+        .rejects.toSatisfy(violates('signature_has_a_value'));
+    });
+  });
+
+  it('REJECTS an unrecognised meaning — §11.50(a)(3)', async () => {
+    await inRollback(async (tx) => {
+      await expect(sig(tx, { meaning: 'because I said so' }))
+        .rejects.toSatisfy(violates('signature_meaning_known'));
+    });
+  });
+
+  it('REJECTS a half-copied competence basis', async () => {
+    await inRollback(async (tx) => {
+      // A partial basis cannot answer "was this person authorised on the day",
+      // which is the only question it exists to answer.
+      await expect(sig(tx, {
+        competence_record_id: U1, competence_activity: 'study:sign',
+        competence_valid_from: '2024-01-01', competence_valid_to: null,
+        competence_checked_on: '2026-08-21',
+      })).rejects.toSatisfy(violates('signature_competence_basis_is_whole'));
+    });
+  });
+
+  it('REJECTS a frozen basis that does not cover the day it was checked against', async () => {
+    await inRollback(async (tx) => {
+      await expect(sig(tx, {
+        competence_record_id: U1, competence_activity: 'study:sign',
+        competence_valid_from: '2024-01-01', competence_valid_to: '2026-06-30',
+        competence_checked_on: '2026-08-21',
+      })).rejects.toSatisfy(violates('signature_competence_basis_covers_the_day'));
+    });
+  });
+
+  it('accepts a whole basis that does cover the day', async () => {
+    await inRollback(async (tx) => {
+      await expect(sig(tx, {
+        competence_record_id: U1, competence_activity: 'study:sign',
+        competence_valid_from: '2024-01-01', competence_valid_to: '2027-12-31',
+        competence_checked_on: '2026-08-21',
+      })).resolves.toBeDefined();
+    });
+  });
+
+  it('REJECTS signing the same record twice with the same meaning', async () => {
+    await inRollback(async (tx) => {
+      await sig(tx);
+      // A double submit, not a second act of judgement.
+      await expect(sig(tx)).rejects.toSatisfy(violates('signatures_one_per_subject_signer_meaning'));
+    });
+  });
+
+  it('allows the same signer to add a DIFFERENT meaning', async () => {
+    await inRollback(async (tx) => {
+      await sig(tx, { meaning: 'authorship' });
+      await expect(sig(tx, { meaning: 'approval' })).resolves.toBeDefined();
+    });
+  });
+});
+
+describe('signing keys (migration 0003)', () => {
+  const key = (tx: Sql, version: string, retired: boolean = false) =>
+    tx`INSERT INTO lotmark.signing_keys
+         (tenant_id, key_version, public_key_pem, fingerprint, activated_at, retired_at, retired_reason)
+       VALUES (${T}, ${version}, 'PEM', ${'f' + version}, now(),
+               ${retired ? tx`now()` : null}, ${retired ? 'rotation' : null})`;
+
+  it('allows exactly one active key per tenant', async () => {
+    await inRollback(async (tx) => {
+      await key(tx, 'v1');
+      // Two current keys would make "which key signs this" ambiguous, and a
+      // verifier could not tell a rotation from a compromise.
+      await expect(key(tx, 'v2')).rejects.toSatisfy(violates('signing_keys_one_active_per_tenant'));
+    });
+  });
+
+  it('allows a new key once the previous one is retired', async () => {
+    await inRollback(async (tx) => {
+      await key(tx, 'v1', true);
+      await expect(key(tx, 'v2')).resolves.toBeDefined();
+    });
+  });
+
+  it('REJECTS retiring a key without stating why', async () => {
+    await inRollback(async (tx) => {
+      await expect(tx`INSERT INTO lotmark.signing_keys
+             (tenant_id, key_version, public_key_pem, fingerprint, activated_at, retired_at)
+           VALUES (${T}, 'v1', 'PEM', 'fp', now(), now())`)
+        .rejects.toSatisfy(violates('signing_key_retirement_states_reason'));
+    });
+  });
+});

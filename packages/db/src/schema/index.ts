@@ -2,6 +2,7 @@ export * from './_shared';
 export * from './tenancy';
 export * from './people';
 export * from './configuration';
+export * from './keys';
 export * from './audit';
 export * from './production';
 export * from './certification';

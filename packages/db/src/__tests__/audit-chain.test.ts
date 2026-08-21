@@ -132,9 +132,13 @@ describe('append-only enforcement', () => {
   // "current transaction is aborted" and would pass for the wrong reason.
   const withSignature = (fn: (tx: Sql) => Promise<unknown>) => async () => {
     await inRollback(async (tx) => {
+      // signature_value is required by 0003: a signature that carries only a
+      // digest is what the prototype had, and it proved nothing.
       await tx`INSERT INTO lotmark.signatures
-                 (tenant_id, subject_kind, subject_id, signer_user_id, meaning, time_source, region, binding_hash)
-               VALUES (${T}, 'study', ${U1}, ${U1}, 'approval', 'ntp', 'local', 'abc')`;
+                 (tenant_id, subject_kind, subject_id, signer_user_id, meaning,
+                  time_source, region, binding_hash, signature_value)
+               VALUES (${T}, 'study', ${U1}, ${U1}, 'approval', 'ntp', 'local',
+                       ${'a'.repeat(64)}, 'ZmFrZS1zaWduYXR1cmUtZm9yLXRoZS1hcHBlbmQtb25seS10ZXN0')`;
       await fn(tx);
     });
   };

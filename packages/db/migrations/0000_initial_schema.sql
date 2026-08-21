@@ -167,6 +167,21 @@ CREATE TABLE "lotmark"."teams" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "lotmark"."signing_keys" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"tenant_id" uuid NOT NULL,
+	"key_version" text NOT NULL,
+	"algorithm" text DEFAULT 'ed25519' NOT NULL,
+	"public_key_pem" text NOT NULL,
+	"fingerprint" text NOT NULL,
+	"custody" text DEFAULT 'dev_file' NOT NULL,
+	"activated_at" timestamp with time zone NOT NULL,
+	"retired_at" timestamp with time zone,
+	"retired_reason" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "lotmark"."audit_checkpoints" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"tenant_id" uuid NOT NULL,
@@ -211,6 +226,8 @@ CREATE TABLE "lotmark"."signatures" (
 	"time_source" text NOT NULL,
 	"region" text NOT NULL,
 	"binding_hash" text NOT NULL,
+	"signature_value" text,
+	"algorithm" text DEFAULT 'ed25519' NOT NULL,
 	"canonical_version" text DEFAULT '1' NOT NULL,
 	"key_version" text DEFAULT 'v1' NOT NULL,
 	"competence_record_id" uuid,
@@ -619,6 +636,7 @@ ALTER TABLE "lotmark"."team_memberships" ADD CONSTRAINT "team_memberships_tenant
 ALTER TABLE "lotmark"."team_memberships" ADD CONSTRAINT "team_memberships_team_id_teams_id_fk" FOREIGN KEY ("team_id") REFERENCES "lotmark"."teams"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lotmark"."team_memberships" ADD CONSTRAINT "team_memberships_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "lotmark"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lotmark"."teams" ADD CONSTRAINT "teams_tenant_id_tenants_id_fk" FOREIGN KEY ("tenant_id") REFERENCES "lotmark"."tenants"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "lotmark"."signing_keys" ADD CONSTRAINT "signing_keys_tenant_id_tenants_id_fk" FOREIGN KEY ("tenant_id") REFERENCES "lotmark"."tenants"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lotmark"."audit_checkpoints" ADD CONSTRAINT "audit_checkpoints_tenant_id_tenants_id_fk" FOREIGN KEY ("tenant_id") REFERENCES "lotmark"."tenants"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lotmark"."audit_ledger" ADD CONSTRAINT "audit_ledger_tenant_id_tenants_id_fk" FOREIGN KEY ("tenant_id") REFERENCES "lotmark"."tenants"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lotmark"."audit_ledger" ADD CONSTRAINT "audit_ledger_actor_user_id_users_id_fk" FOREIGN KEY ("actor_user_id") REFERENCES "lotmark"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -711,6 +729,8 @@ CREATE INDEX "role_assignments_team_idx" ON "lotmark"."role_assignments" USING b
 CREATE INDEX "team_memberships_lookup_idx" ON "lotmark"."team_memberships" USING btree ("user_id","team_id");--> statement-breakpoint
 CREATE INDEX "team_memberships_team_idx" ON "lotmark"."team_memberships" USING btree ("team_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "teams_tenant_key_unique" ON "lotmark"."teams" USING btree ("tenant_id","key");--> statement-breakpoint
+CREATE UNIQUE INDEX "signing_keys_tenant_version_unique" ON "lotmark"."signing_keys" USING btree ("tenant_id","key_version");--> statement-breakpoint
+CREATE INDEX "signing_keys_active_idx" ON "lotmark"."signing_keys" USING btree ("tenant_id","retired_at");--> statement-breakpoint
 CREATE INDEX "audit_checkpoints_tenant_time_idx" ON "lotmark"."audit_checkpoints" USING btree ("tenant_id","taken_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "audit_tenant_seq_unique" ON "lotmark"."audit_ledger" USING btree ("tenant_id","seq");--> statement-breakpoint
 CREATE INDEX "audit_tenant_time_idx" ON "lotmark"."audit_ledger" USING btree ("tenant_id","occurred_at");--> statement-breakpoint
