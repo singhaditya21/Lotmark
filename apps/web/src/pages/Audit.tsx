@@ -3,6 +3,46 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, type AuditEntry, type ChainResult } from '../lib/api';
 import { when } from '../lib/format';
 
+/**
+ * Three outcomes, not two.
+ *
+ * A chain the verifier could not check is NOT a broken chain, and rendering it
+ * in the same red box would send somebody to investigate a breach that did not
+ * happen. It happens whenever the audit key has been rotated and this process
+ * holds only the current one — an ordinary, expected state.
+ */
+function ChainVerdict({ result }: { result: ChainResult }) {
+  const spanned = result.generations.length > 1
+    ? ` spanning key generations ${result.generations.join(' and ')}`
+    : '';
+
+  if (result.ok) {
+    return (
+      <div className="note okbox">
+        The chain is intact across {result.entries} entries{spanned}.
+      </div>
+    );
+  }
+
+  if (result.unverified) {
+    return (
+      <div className="note warn">
+        <b>Not checked — this is not a failure.</b> No key is held for generation{' '}
+        <span className="mono">{result.keysMissing.join(', ')}</span>, so those entries could
+        not be verified. Nothing suggests they have been altered; the key simply is not on
+        this server. Supply the retired key in <span className="mono">LOTMARK_AUDIT_KEYS</span>{' '}
+        to check them.
+      </div>
+    );
+  }
+
+  return (
+    <div className="note deny">
+      <b>BROKEN at entry {result.brokenAt}.</b> {result.reason}
+    </div>
+  );
+}
+
 const KIND_TONE: Record<string, string> = {
   DENY: 'bad', SECURITY: 'bad', SIGNATURE: 'ok', CERTIFICATE: 'ok',
   WORKFLOW: 'grey', AUTH: 'grey', SYSTEM: 'grey', CONFIGURATION: 'warn', PII: 'warn',
@@ -49,13 +89,7 @@ export function Audit({ canVerify }: { canVerify: boolean }) {
       </div>
 
       {error && <div className="note deny">{error}</div>}
-      {result && (
-        <div className={`note ${result.ok ? 'okbox' : 'deny'}`}>
-          {result.ok
-            ? `The chain is intact across ${result.entries} entries.`
-            : `BROKEN at entry ${result.brokenAt}: ${result.reason}`}
-        </div>
-      )}
+      {result && <ChainVerdict result={result} />}
 
       {isLoading ? <div className="spinner">Loading the ledger…</div> : (
         <div className="card ledger" style={{ marginTop: 13 }}>

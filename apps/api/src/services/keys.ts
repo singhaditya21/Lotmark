@@ -151,15 +151,31 @@ export class KeyProvider {
       `(fingerprint ${fingerprint}, custody ${this.mintUnder}: ${minting.describe})`,
     );
 
-    const key: ActiveKey = {
+    /**
+     * A freshly minted key is NOT cached.
+     *
+     * The INSERT above is inside the CALLER'S transaction, which may roll back —
+     * and a refused signing does exactly that. Caching here meant the key
+     * survived in memory while its registration vanished, so the next request
+     * signed with a key the database had no record of. `publicKeyFor` then
+     * returns null for it, which makes the signature unverifiable by anyone,
+     * including the assessor it exists for.
+     *
+     * It surfaced as certificate issues carrying `document_key_version` that
+     * joined to nothing in `signing_keys`.
+     *
+     * Not caching costs one extra read on the next request. If the transaction
+     * committed, that read finds the registered key and caches it then; if it
+     * rolled back, a new key is minted, which is correct because the previous
+     * one never existed.
+     */
+    return {
       keyVersion: kp.keyVersion,
       privateKey: loadPrivateKey(kp.privateKeyPem),
       publicKeyPem: kp.publicKeyPem,
       fingerprint,
       custody: this.mintUnder,
     };
-    this.cache.set(tenantId, key);
-    return key;
   }
 
   /** Public key for verification, including retired ones. */

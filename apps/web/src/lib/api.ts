@@ -184,7 +184,21 @@ export interface AuditEntry {
 }
 
 export interface ChainResult {
-  ok: boolean; entries: number; brokenAt: number | null; reason: string | null;
+  ok: boolean;
+  entries: number;
+  brokenAt: number | null;
+  reason: string | null;
+  /** Which audit key generations the checked range spans. */
+  generations: string[];
+  /**
+   * Generations whose key the server does not hold.
+   *
+   * Non-empty means the answer is "not checked", NOT "tampered with". The two
+   * call for opposite responses — find a key, versus investigate a breach — so
+   * the console must never render one as the other.
+   */
+  keysMissing: string[];
+  unverified: boolean;
 }
 
 /* ── Certificates ───────────────────────────────────────────────────────── */

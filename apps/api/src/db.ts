@@ -36,14 +36,35 @@ export function createDb(cfg: AppConfig): Sql {
  * fails loudly at its first audited act rather than silently writing
  * unverifiable history.
  */
+export interface TenantTransactionArgs {
+  readonly tenantId: string;
+  readonly auditKey: string;
+  /**
+   * The generation the audit key belongs to. Defaults to 'v1' in the database,
+   * which is what every ledger written before rotation existed used.
+   */
+  readonly auditKeyGeneration?: string | undefined;
+  /**
+   * Retired keys, as JSON mapping generation to key, for VERIFYING history
+   * written under an earlier key. Never needed to write.
+   */
+  readonly auditKeys?: string | undefined;
+}
+
 export async function inTenantTransaction<T>(
   sql: Sql,
-  args: { readonly tenantId: string; readonly auditKey: string },
+  args: TenantTransactionArgs,
   fn: (tx: Sql) => Promise<T>,
 ): Promise<T> {
   return sql.begin(async (tx) => {
     await tx`SELECT set_config('lotmark.tenant_id', ${args.tenantId}, true)`;
     await tx`SELECT set_config('lotmark.audit_key', ${args.auditKey}, true)`;
+    if (args.auditKeyGeneration) {
+      await tx`SELECT set_config('lotmark.audit_key_generation', ${args.auditKeyGeneration}, true)`;
+    }
+    if (args.auditKeys) {
+      await tx`SELECT set_config('lotmark.audit_keys', ${args.auditKeys}, true)`;
+    }
     return fn(tx as unknown as Sql);
   }) as Promise<T>;
 }

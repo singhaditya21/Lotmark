@@ -150,12 +150,21 @@ describe('appending', () => {
   });
 
   it('reports not-verifiable rather than true when the key is absent', async () => {
+    /**
+     * The intent is unchanged since 0002: no key means UNVERIFIED, never
+     * `ok = true`. The wording moved when 0019 made verification per
+     * generation — "no key available for generation v1" says which key is
+     * missing, which matters once there can be more than one, and it is
+     * explicit that this is not a broken chain.
+     */
     await inRollback(async (tx) => {
       await write(tx, 'one');
       await tx`SELECT set_config('lotmark.audit_key', '', true)`;
       const [v] = await verify(tx);
       expect(v!.ok).toBe(false);
-      expect(v!.reason).toMatch(/audit_key is not set/);
+      expect(v!.reason).toMatch(/no key available for generation/);
+      expect(v!.reason, 'and it must not read as tampering').toMatch(/not broken/);
+      expect(v!.broken_at, 'nothing is broken, so nothing is pointed at').toBeNull();
     });
   });
 });

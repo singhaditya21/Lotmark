@@ -13,7 +13,10 @@
     "anchor": "tsx src/signer.ts",
     "pdfa": "tsx scripts/verapdf-gate.mts",
     "custody:show": "tsx scripts/move-custody.mts --show",
-    "custody:move": "tsx scripts/move-custody.mts"
+    "custody:move": "tsx scripts/move-custody.mts",
+    "audit:generations": "tsx scripts/rotate-audit-key.mts --show",
+    "audit:rotate": "tsx scripts/rotate-audit-key.mts",
+    "audit:claim": "tsx scripts/rotate-audit-key.mts --claim"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.1",

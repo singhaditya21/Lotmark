@@ -290,3 +290,58 @@ describe('a reissue that succeeds records the custody the key is actually held u
     expect(recorded.renderer_version).toBe('lotmark-pdf-2');
   });
 });
+
+
+describe('a key that was never committed must never sign anything', () => {
+  it('does not carry a rolled-back key forward in memory', async () => {
+    /**
+     * The bug this reproduces.
+     *
+     * `KeyProvider.active()` mints a key inside the CALLER'S transaction and
+     * used to cache it in memory immediately. A refused signing rolls that
+     * transaction back — so the registration vanished while the cache kept the
+     * key, and the next request signed with a key the database had no record
+     * of. `publicKeyFor` returns null for such a key, which makes the signature
+     * unverifiable by anyone, including the assessor it exists for.
+     *
+     * The sequence below is exactly how it happened: a refused reissue, then a
+     * successful one.
+     */
+    const cookie = await signIn('asha@producer.example');
+    const cert = await findCertificate(cookie);
+    if (!cert) throw new Error('No certificate in the seeded data; run pnpm db:setup.');
+
+    // A refusal. If a key is minted here, its registration rolls back with it.
+    const refused = await app.inject({
+      method: 'POST', url: `/api/v1/certificates/${cert.id}/reissue`,
+      headers: { cookie },
+      payload: { meaning: 'approval', reason: 'Refused, so any minted key rolls back.' },
+    });
+    expect(refused.statusCode).toBe(401);
+
+    await stepUp(cookie);
+    const done = await app.inject({
+      method: 'POST', url: `/api/v1/certificates/${cert.id}/reissue`,
+      headers: { cookie },
+      payload: { meaning: 'approval', reason: 'And now one that succeeds.' },
+    });
+    expect(done.statusCode, done.body).toBe(200);
+
+    // THE invariant: nothing signed may reference a key that is not registered.
+    const tenant = await tenantId();
+    const orphans = await inTenantTransaction(
+      app.db, { tenantId: tenant, auditKey: app.cfg.LOTMARK_AUDIT_KEY },
+      (tx) => tx`
+        SELECT i.issue_number, i.document_key_version
+        FROM lotmark.certificate_issues i
+        WHERE i.document_key_version IS NOT NULL
+          AND NOT EXISTS (
+            SELECT 1 FROM lotmark.signing_keys k
+            WHERE k.tenant_id = i.tenant_id AND k.key_version = i.document_key_version)`,
+    );
+    expect(
+      orphans,
+      'a signed document referencing an unregistered key can never be verified',
+    ).toEqual([]);
+  });
+});

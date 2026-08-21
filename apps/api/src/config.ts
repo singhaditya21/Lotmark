@@ -29,6 +29,25 @@ const schema = z.object({
    */
   LOTMARK_AUDIT_KEY: z.string().min(16).default('dev-audit-key-change-me'),
 
+  /**
+   * Which audit key generation this process writes under.
+   *
+   * The ledger records it on every entry, and migration 0019 binds it to a
+   * commitment so an entry cannot be written under a key that is not the
+   * generation's. Rotation is `pnpm --filter @lotmark/api audit:rotate`.
+   */
+  LOTMARK_AUDIT_KEY_GENERATION: z.string().min(1).default('v1'),
+
+  /**
+   * RETIRED audit keys, as JSON mapping generation to key, e.g.
+   * {"v1":"...","v2":"..."}.
+   *
+   * Needed only to VERIFY history written before the current rotation. Absent,
+   * verification reports those generations as unverified — which is honest, and
+   * deliberately not the same as reporting them broken.
+   */
+  LOTMARK_AUDIT_KEYS: z.string().optional(),
+
   /** Session lifetime and the idle window that ends one early. */
   SESSION_TTL_MINUTES: z.coerce.number().int().positive().default(480),
   IDLE_TIMEOUT_MINUTES: z.coerce.number().int().positive().default(30),

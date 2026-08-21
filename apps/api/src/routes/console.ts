@@ -321,28 +321,60 @@ export async function registerConsoleRoutes(app: FastifyInstance): Promise<void>
     });
     if (!verdict.allowed) return sendProblem(reply, forbidden(verdict.reason, verdict.message));
 
-    const result = await inTenantTransaction(db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+    const result = await inTenantTransaction(db, {
+      tenantId: ctx.tenantId,
+      auditKey: cfg.LOTMARK_AUDIT_KEY,
+      auditKeyGeneration: cfg.LOTMARK_AUDIT_KEY_GENERATION,
+      // Retired keys, so history written before a rotation can actually be
+      // verified rather than reported as unverified.
+      auditKeys: cfg.LOTMARK_AUDIT_KEYS,
+    }, async (tx) => {
       const [row] = await tx`SELECT * FROM lotmark.verify_audit_chain(${ctx.tenantId})`;
-      const v = row as { ok: boolean; entries: string; broken_at: string | null; reason: string | null };
+      const v = row as {
+        ok: boolean; entries: string; broken_at: string | null; reason: string | null;
+        generations: string[]; keys_missing: string[];
+      };
       // Running a verification is itself an auditable act — and it appends to
       // the very chain it just checked, which is correct: the next verification
       // covers this one.
+      /**
+       * An UNVERIFIED chain is not a broken one.
+       *
+       * `keys_missing` means the verifier does not hold a retired generation's
+       * key. Writing "BROKEN" into the ledger for that would be a false alarm
+       * recorded permanently, on the one record that must never overstate.
+       */
+      const unverified = v.keys_missing.length > 0;
       await recordAudit(tx, {
         tenantId: ctx.tenantId, actorUserId: ctx.userId, actorLabel: ctx.displayName,
         actorRoleId: '—', sessionId: ctx.sessionId,
         timeSource: ctx.timeSource, region: ctx.region,
       }, {
         kind: 'SYSTEM', action: 'Audit chain verification run',
-        detail: v.ok ? `intact across ${v.entries} entries` : `BROKEN at ${v.broken_at}: ${v.reason}`,
+        detail: v.ok
+          ? `intact across ${v.entries} entries (generation${v.generations.length === 1 ? '' : 's'} ${v.generations.join(', ')})`
+          : unverified
+            ? `UNVERIFIED: no key held for generation ${v.keys_missing.join(', ')}`
+            : `BROKEN at ${v.broken_at}: ${v.reason}`,
       });
       return v;
     });
 
+    const unverified = result.keys_missing.length > 0;
     return reply.send({
       ok: result.ok,
       entries: Number(result.entries),
       brokenAt: result.broken_at ? Number(result.broken_at) : null,
       reason: result.reason,
+      /** Which key generations the checked range spans. */
+      generations: result.generations,
+      /**
+       * Generations whose key the server does not hold. Non-empty means the
+       * answer is "not checked", NOT "tampered with" — a distinction the
+       * console renders differently because the two call for opposite responses.
+       */
+      keysMissing: result.keys_missing,
+      unverified,
     });
   });
 }
