@@ -4,7 +4,7 @@ import {
   ALL_CONFIG_KINDS, CONFIG_RISK, hasProductDefault,
   fieldConfigSchema, picklistConfigSchema, layoutConfigSchema, isSupportedFieldType,
   workflowConfigSchema, statesTheDatabaseRefuses, ENTITY_RECORD, alwaysSigned,
-  sodConfigSchema, SOD_RULES,
+  sodConfigSchema, SOD_RULES, retentionConfigSchema, statutoryFloorDays,
   guardProblems,
   type ConfigKind, type ConfigChange, type RoleConfig,
   type FieldConfig, type PicklistConfig, type LayoutConfig, type WorkflowConfig,
@@ -353,11 +353,45 @@ export async function publicationProblems(
     }
   }
 
-  /** A retention override must name a class that exists in the statutory schedule. */
+  /**
+   * A retention override must name a real class AND may not go below the floor.
+   *
+   * `retentionConfigSchema` has said since it was written that a tenant "may
+   * retain LONGER than the statutory minimum, never shorter — the floor is law,
+   * and configuration cannot lower it. Enforced on publish." Only the first
+   * half was: the class was checked and the number was not, so a tenant could
+   * publish a 30-day retention on electronic signatures against a floor of ten
+   * years and be told nothing.
+   */
   const classIds = new Set(RETENTION_SCHEDULE.map((c) => c.id as string));
   for (const e of entries.filter((x) => x.kind === 'retention')) {
     if (!classIds.has(e.key)) {
       problems.push(`Retention override '${e.key}' does not name a class in the statutory schedule.`);
+      continue;
+    }
+    const parsed = retentionConfigSchema.safeParse(e.payload);
+    if (!parsed.success) {
+      problems.push(`Retention override '${e.key}' is not valid: ${parsed.error.issues[0]?.message ?? 'unknown'}`);
+      continue;
+    }
+    // A backstop. `upsertEntry` refuses this for every kind at the write, so it
+    // is unreachable from the console — it catches an entry that arrived some
+    // other way, and a test asserts the write path is where it is actually
+    // stopped.
+    if (parsed.data.key !== e.key) {
+      problems.push(
+        `Retention override '${e.key}' calls itself '${parsed.data.key}'. They are the same class.`,
+      );
+    }
+    const floor = statutoryFloorDays(e.key);
+    if (floor !== null && parsed.data.retainForDays < floor) {
+      const klass = RETENTION_SCHEDULE.find((c) => c.id === e.key)!;
+      problems.push(
+        `Retention override '${e.key}' keeps ${klass.recordClass.toLowerCase()} for ` +
+        `${parsed.data.retainForDays} days, below the statutory minimum of ${floor} ` +
+        `(${klass.drivenBy}). A tenant may keep records longer than the law requires ` +
+        'and never less.',
+      );
     }
   }
 

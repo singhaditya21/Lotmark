@@ -124,3 +124,50 @@ export const ERASURE_REFUSABLE: readonly RetentionClassId[] =
 /** Classes that must not leave India. */
 export const INDIA_RESIDENT: readonly RetentionClassId[] =
   RETENTION_SCHEDULE.filter((r) => r.indiaResident).map((r) => r.id);
+
+
+/**
+ * The statutory MINIMUM, in days, per class.
+ *
+ * A floor, and law rather than policy — a tenant may retain longer and never
+ * shorter. Kept beside the schedule it comes from rather than in `defaults.ts`,
+ * because a number that encodes a regulation belongs next to the regulation it
+ * encodes; `defaultRetentionFloorDays()` now reads it from here.
+ *
+ * Zero means the regime sets no floor: `customer_contact_data` is governed by
+ * DPDP minimisation, which is a maximum and an obligation to erase, not a
+ * minimum to keep.
+ */
+export const STATUTORY_FLOOR_DAYS: Readonly<Record<RetentionClassId, number>> = {
+  audit_ledger_entry: 180,
+  electronic_signature: 3650,
+  study_and_property_value: 1825,
+  certificate_issue: 3650,
+  order_and_allocation: 2920,
+  customer_contact_data: 0,
+  consent_artefact: 1095,
+  competence_record: 3650,
+  session_and_access_log: 180,
+};
+
+export function statutoryFloorDays(classId: string): number | null {
+  return classId in STATUTORY_FLOOR_DAYS
+    ? STATUTORY_FLOOR_DAYS[classId as RetentionClassId]
+    : null;
+}
+
+/**
+ * How long this tenant keeps a class, given what it configured.
+ *
+ * The floor is applied HERE rather than trusted from configuration. Publication
+ * refuses a period below it, so a stored value that is too short arrived some
+ * other way — and the safe reading of an unlawfully short period is the lawful
+ * one, not the stored one.
+ */
+export function effectiveRetentionDays(
+  classId: string, configuredDays: number | undefined,
+): number | null {
+  const floor = statutoryFloorDays(classId);
+  if (floor === null) return null;
+  return Math.max(floor, configuredDays ?? floor);
+}

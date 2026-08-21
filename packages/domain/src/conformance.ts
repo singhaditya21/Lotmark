@@ -489,12 +489,29 @@ export const REQUIREMENTS: readonly Requirement[] = [
       'Records are retained for their statutory minimum, and an erasure request ' +
       'cannot remove a record still needed to support a live certificate.',
     status: 'partial',
-    code: ['packages/domain/src/retention.ts'],
-    tests: [{ file: 'packages/domain/src/__tests__/invariants.test.ts', named: 'retention' }],
+    code: [
+      'packages/domain/src/retention.ts',
+      'apps/api/src/services/retention.ts',
+      'apps/api/src/jobs/notices.ts',
+    ],
+    tests: [
+      { file: 'packages/domain/src/__tests__/invariants.test.ts', named: 'retention' },
+      { file: 'apps/api/src/__tests__/retention.test.ts', named: 'CERT-In' },
+      { file: 'apps/api/src/__tests__/config-admin.test.ts', named: 'below the statutory minimum' },
+    ],
+    live: 'retention',
     note:
-      'The schedule and its classes exist and are enforced where records are ' +
-      'deleted. There is no erasure-request workflow, so the refusal path has ' +
-      'never been exercised by a real request.',
+      'The statutory floor is now enforced in BOTH places the schema always ' +
+      'claimed: publication refuses a period below it, naming the regime, and ' +
+      'the runtime takes the greater of the stored period and the floor. ' +
+      'CORRECTION to what this note used to say — it claimed the schedule was ' +
+      '"enforced where records are deleted", and the only deletion path in the ' +
+      'product removed sessions after SEVEN days against the 180 CERT-In 2022 ' +
+      'requires of an access log. That is fixed and tested. Still PARTIAL: ' +
+      'there is no erasure-request workflow, so the refusal path has never been ' +
+      'exercised by a real request, and nothing actively erases customer ' +
+      'contact data once no order is open — DPDP minimisation is declared and ' +
+      'not performed.',
   },
 ];
 

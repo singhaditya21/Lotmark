@@ -1,7 +1,7 @@
 import { ROLES, ALL_ROLES } from '../roles';
 import { ALL_MACHINES } from '../state-machines';
 import { SOD_RULES } from '../sod';
-import { RETENTION_SCHEDULE } from '../retention';
+import { RETENTION_SCHEDULE, STATUTORY_FLOOR_DAYS } from '../retention';
 import { requiresCompetence } from '../permissions';
 import { alwaysSigned } from '../signatures';
 import type {
@@ -154,18 +154,6 @@ export function defaultRetentionFloorDays(): Record<string, number> {
   for (const r of RETENTION_SCHEDULE) out[r.id] = STATUTORY_FLOOR_DAYS[r.id] ?? 0;
   return out;
 }
-
-const STATUTORY_FLOOR_DAYS: Record<string, number> = {
-  audit_ledger_entry: 180,
-  electronic_signature: 3650,
-  study_and_property_value: 1825,
-  certificate_issue: 3650,
-  order_and_allocation: 2920,
-  customer_contact_data: 0,
-  consent_artefact: 1095,
-  competence_record: 3650,
-  session_and_access_log: 180,
-};
 
 /**
  * Does the PRODUCT ship a default for this artefact?

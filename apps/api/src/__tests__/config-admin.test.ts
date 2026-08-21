@@ -628,6 +628,57 @@ describe('segregation settings have to name a rule that exists', () => {
   });
 });
 
+describe('retention cannot be configured below the law', () => {
+  /**
+   * `retentionConfigSchema` has said since it was written that a tenant "may
+   * retain LONGER than the statutory minimum, never shorter — the floor is law,
+   * and configuration cannot lower it. Enforced on publish." Only half of that
+   * was: the class was checked and the number was not.
+   */
+  it('refuses a period below the statutory minimum, naming the regime', async () => {
+    const id = await openDraft('Keep signatures for a month');
+    await putEntry(id, 'retention', 'electronic_signature', {
+      key: 'electronic_signature', retainForDays: 30,
+      reason: 'Storage costs',
+    });
+    const r = await review(id);
+    expect(r.publishable).toBe(false);
+    const text = r.problems.join(' ');
+    expect(text).toMatch(/below the statutory minimum of 3650/);
+    // The regime is named, so the administrator can see whose rule it is.
+    expect(text).toMatch(/21 CFR 11/);
+  });
+
+  it('accepts a period longer than the law requires', async () => {
+    // Longer is always allowed: the floor is a minimum, not a target.
+    const id = await openDraft('Keep signatures for fifteen years');
+    await putEntry(id, 'retention', 'electronic_signature', {
+      key: 'electronic_signature', retainForDays: 5475,
+      reason: 'Group policy exceeds the statutory floor',
+    });
+    const r = await review(id);
+    expect(r.problems.filter((x) => x.includes('retention')), r.problems.join(' | ')).toEqual([]);
+  });
+
+  it('refuses an override whose key disagrees with its own content, at the WRITE', async () => {
+    /**
+     * Not at publication — `upsertEntry` already refuses an entry filed under
+     * one identifier that calls itself another, for every kind. So this never
+     * reaches a draft, which is the better place to stop it.
+     *
+     * The publication check for the same thing stays as a backstop, in case an
+     * entry arrives some other way — a migration, or an older version of this
+     * code — and it is deliberately not reachable from here.
+     */
+    const id = await openDraft('A retention override that misnames itself');
+    const res = await putEntry(id, 'retention', 'electronic_signature', {
+      key: 'certificate_issue', retainForDays: 4000, reason: 'Copied and not edited',
+    });
+    expect(res.statusCode).toBe(422);
+    expect(res.json<{ detail: string }>().detail).toMatch(/calls itself/);
+  });
+});
+
 describe('drafts', () => {
   it('copies the active version and changes nothing until published', async () => {
     const before = await app.inject({ method: 'GET', url: '/api/v1/admin/config', headers: { cookie: admin } });

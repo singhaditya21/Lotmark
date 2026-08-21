@@ -1,6 +1,7 @@
 import type { Sql } from '../db';
 import { recordAudit } from '../services/audit';
 import { machineForEntity } from '../services/workflows';
+import { retentionDaysFor } from '../services/retention';
 import { nextCode } from '../services/numbering';
 import { assertSystemTransition } from '@lotmark/domain';
 import { systemAuditContext, type TenantContext } from './context';
@@ -238,15 +239,40 @@ export async function lapseEntitlements(tx: Sql, tenant: TenantContext): Promise
   return lapsed.length;
 }
 
-/** Sessions past expiry or idle. Housekeeping, not evidence — no ledger entry. */
+/**
+ * Sessions past the retention period for access logs.
+ *
+ * ── This deleted them after SEVEN DAYS ──────────────────────────────────────
+ *
+ * The retention schedule has always classified sessions as
+ * `session_and_access_log`: CERT-In 2022, "180 days, in India". This job
+ * deleted them after seven, with a comment calling them "housekeeping, not
+ * evidence" — which is the product's view and not the regulator's. CERT-In
+ * treats access logs as exactly the evidence it wants available for an
+ * investigation, which is why it names a period at all.
+ *
+ * So the schedule said 180 days, the code did 7, and nothing read the schedule.
+ * The period now comes from the tenant's retention configuration, floored at
+ * the statutory minimum — a tenant may keep them longer and cannot keep them
+ * for less.
+ *
+ * ── Still not audited ───────────────────────────────────────────────────────
+ *
+ * A pruned session that has outlived its retention is not an act anybody needs
+ * to explain, and a ledger full of housekeeping hides the acts that matter. The
+ * COUNT is returned and lands in the job run record, which is where an operator
+ * looks and where the conformance view reads it from.
+ */
 export async function pruneSessions(tx: Sql, tenant: TenantContext): Promise<number> {
+  const days = await retentionDaysFor(tx, tenant.id, 'session_and_access_log');
+  if (days === null) return 0;
+
   const gone = await tx`
     DELETE FROM lotmark.sessions
     WHERE tenant_id = ${tenant.id}
-      AND (expires_at < now() - interval '7 days'
-           OR (revoked_at IS NOT NULL AND revoked_at < now() - interval '7 days'))
+      AND (expires_at < now() - make_interval(days => ${days})
+           OR (revoked_at IS NOT NULL
+               AND revoked_at < now() - make_interval(days => ${days})))
     RETURNING id`;
-  // Deliberately NOT audited. A pruned expired session is not an act anybody
-  // needs to explain, and a ledger full of housekeeping hides the acts that matter.
   return gone.length;
 }

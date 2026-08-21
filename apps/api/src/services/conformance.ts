@@ -4,6 +4,7 @@ import {
   type Requirement, type RequirementStatus,
 } from '@lotmark/domain';
 import type { Sql } from '../db';
+import { retentionSettings } from './retention';
 
 /**
  * Conformance, evidenced from the records rather than asserted.
@@ -299,6 +300,37 @@ export async function liveEvidence(tx: Sql, tenantId: string): Promise<Map<strin
      * decision anybody made.
      */
     satisfied: decided.length === SOD_RULES.length,
+  });
+
+  /**
+   * What this tenant keeps, and for how long.
+   *
+   * An assessor asks "show me your retention schedule and show me that you
+   * follow it". The schedule is code; this is the second half — the period
+   * actually in force per class, and whether any is below the law.
+   */
+  const retention = await retentionSettings(tx, tenantId);
+  const belowFloor = retention.filter(
+    (r) => r.configuredDays !== null && r.floorDays !== null && r.configuredDays < r.floorDays);
+  const withPeriod = retention.filter((r) => r.configuredDays !== null);
+  add({
+    key: 'retention',
+    summary: belowFloor.length > 0
+      ? `${belowFloor.length} class(es) configured below the statutory minimum`
+      : `${retention.length} class(es) scheduled, ${withPeriod.length} with a tenant period`,
+    figures: {
+      classes: retention.length,
+      tenantSet: withPeriod.length,
+      belowFloor: belowFloor.length,
+      /** The shortest period in force, which is the one an assessor probes. */
+      shortestDays: Math.min(...retention.map((r) => r.effectiveDays ?? Infinity)),
+    },
+    /**
+     * A stored period below the floor does not take effect — the runtime takes
+     * the greater of the two — but it must not read as satisfied, because
+     * somebody wrote it down and believes it.
+     */
+    satisfied: belowFloor.length === 0,
   });
 
   const [coldchain] = await tx`

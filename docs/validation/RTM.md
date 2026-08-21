@@ -194,12 +194,13 @@ Signatures are linked to their records so they cannot be transferred to another 
 
 Records are retained for their statutory minimum, and an erasure request cannot remove a record still needed to support a live certificate.
 
-> The schedule and its classes exist and are enforced where records are deleted. There is no erasure-request workflow, so the refusal path has never been exercised by a real request.
+> The statutory floor is now enforced in BOTH places the schema always claimed: publication refuses a period below it, naming the regime, and the runtime takes the greater of the stored period and the floor. CORRECTION to what this note used to say — it claimed the schedule was "enforced where records are deleted", and the only deletion path in the product removed sessions after SEVEN days against the 180 CERT-In 2022 requires of an access log. That is fixed and tested. Still PARTIAL: there is no erasure-request workflow, so the refusal path has never been exercised by a real request, and nothing actively erases customer contact data once no order is open — DPDP minimisation is declared and not performed.
 
 | | |
 |---|---|
-| Implemented by | `packages/domain/src/retention.ts` |
-| Demonstrated by | `packages/domain/src/__tests__/invariants.test.ts` — "retention" |
+| Implemented by | `packages/domain/src/retention.ts`<br>`apps/api/src/services/retention.ts`<br>`apps/api/src/jobs/notices.ts` |
+| Demonstrated by | `packages/domain/src/__tests__/invariants.test.ts` — "retention"<br>`apps/api/src/__tests__/retention.test.ts` — "CERT-In"<br>`apps/api/src/__tests__/config-admin.test.ts` — "below the statutory minimum" |
+| Live evidence | `retention` on the conformance view |
 
 ## GAMP 5 · 21 CFR 11 §11.10(a)
 
