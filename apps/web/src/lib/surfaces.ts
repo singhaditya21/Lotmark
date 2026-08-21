@@ -75,6 +75,7 @@ export const SURFACES: readonly Surface[] = [
   // Configuration: designing a field IS a configuration change, and it lands in
   // the same draft, reviewed and signed on the same screen.
   { id: 'forms', label: 'Form designer', half: 'producer', permission: 'user:manage' },
+  { id: 'flows', label: 'Flow designer', half: 'producer', permission: 'user:manage' },
   // Operational health sits behind `audit:read` because it IS what the system
   // did, in the half nobody watches — and the Quality Manager who reads the
   // ledger is who most needs to know the CAPA-raising job stopped on Tuesday.

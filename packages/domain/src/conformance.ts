@@ -285,7 +285,7 @@ export const REQUIREMENTS: readonly Requirement[] = [
     statement:
       'Operational system checks enforce permitted sequencing of steps and ' +
       'events, and the permitted sequence is the tenant\u2019s to declare.',
-    status: 'enforced',
+    status: 'partial',
     code: [
       'packages/domain/src/state-machines.ts',
       'packages/domain/src/config/workflows.ts',
@@ -302,7 +302,11 @@ export const REQUIREMENTS: readonly Requirement[] = [
       'refuses a change that would leave records in a state the new machine does ' +
       'not have. NOT yet extensible for studies: `studies.state` carries a CHECK ' +
       'listing its two states, and publication refuses a third rather than ' +
-      'letting the INSERT fail.',
+      'letting the INSERT fail. PARTLY declared: a transition can also carry ' +
+      '`requiresSignature`, `signatureMeanings`, `requiresReason` and `guards`, ' +
+      'and none of those is read — which acts demand a signature is still fixed ' +
+      'in the routes. `systemInitiated` IS enforced. The flow designer says so ' +
+      'beside the controls rather than letting them read as working.',
   },
   {
     id: 'REQ-AUTHORITY',

@@ -12,6 +12,7 @@ import { Capa } from './pages/Capa';
 import { People } from './pages/People';
 import { Configuration } from './pages/Configuration';
 import { FormDesigner } from './pages/FormDesigner';
+import { FlowDesigner } from './pages/FlowDesigner';
 import { Operations } from './pages/Operations';
 import { Conformance } from './pages/Conformance';
 import { JobHealthBanner } from './components/JobHealthBanner';
@@ -168,6 +169,8 @@ export function App() {
           <Configuration />
         ) : route === 'forms' ? (
           <FormDesigner />
+        ) : route === 'flows' ? (
+          <FlowDesigner />
         ) : route === 'operations' ? (
           <Operations />
         ) : route === 'conformance' ? (

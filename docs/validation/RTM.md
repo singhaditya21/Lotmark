@@ -8,8 +8,8 @@ The source is `packages/domain/src/conformance.ts`, and every citation below is 
 
 | Status | Count | Meaning |
 |---|---|---|
-| enforced | 25 | the code refuses the thing |
-| partial | 3 | enforced on some paths; the gap is stated |
+| enforced | 24 | the code refuses the thing |
+| partial | 4 | enforced on some paths; the gap is stated |
 | declared | 1 | written down, nothing checks it |
 | not implemented | 0 | absent, and recorded as absent |
 
@@ -97,11 +97,11 @@ A secure, computer-generated, time-stamped audit trail records operator entries 
 
 ## 21 CFR 11 §11.10(f)
 
-### REQ-SEQUENCING — enforced
+### REQ-SEQUENCING — partial
 
 Operational system checks enforce permitted sequencing of steps and events, and the permitted sequence is the tenant’s to declare.
 
-> Every lifecycle is an explicit transition table, and the table now comes from the ACTIVE configuration with the code machine as the fallback. One machine governs every record of an entity at a time, so publication refuses a change that would leave records in a state the new machine does not have. NOT yet extensible for studies: `studies.state` carries a CHECK listing its two states, and publication refuses a third rather than letting the INSERT fail.
+> Every lifecycle is an explicit transition table, and the table now comes from the ACTIVE configuration with the code machine as the fallback. One machine governs every record of an entity at a time, so publication refuses a change that would leave records in a state the new machine does not have. NOT yet extensible for studies: `studies.state` carries a CHECK listing its two states, and publication refuses a third rather than letting the INSERT fail. PARTLY declared: a transition can also carry `requiresSignature`, `signatureMeanings`, `requiresReason` and `guards`, and none of those is read — which acts demand a signature is still fixed in the routes. `systemInitiated` IS enforced. The flow designer says so beside the controls rather than letting them read as working.
 
 | | |
 |---|---|
