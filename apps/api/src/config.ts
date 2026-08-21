@@ -55,6 +55,18 @@ const schema = z.object({
    */
   DATABASE_ADMIN_URL: z.string().default('postgres://localhost:5432/lotmark_dev'),
 
+  /**
+   * The SIGNER's connection and key directory.
+   *
+   * A separate database role that can read the ledger and insert anchors, and
+   * nothing else — and a key directory the API's own SIGNING_KEY_DIR does not
+   * point at. The application must be unable to read the anchor key or write
+   * the table attesting to its own ledger, or the attestation is worth exactly
+   * what the ledger is.
+   */
+  DATABASE_SIGNER_URL: z.string().default('postgres://lotmark_signer@localhost:5432/lotmark_dev'),
+  ANCHOR_KEY_DIR: z.string().default('.keys-anchor'),
+
   /** Run the scheduler in this process. Off for the API, on for the worker. */
   RUN_SCHEDULER: z.coerce.boolean().default(false),
 

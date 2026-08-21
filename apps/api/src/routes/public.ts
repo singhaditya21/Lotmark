@@ -40,7 +40,9 @@ export async function registerPublicRoutes(app: FastifyInstance): Promise<void> 
     const [row] = await db`SELECT * FROM lotmark.verify_certificate(${token})`;
     const v = row as Verification | undefined;
 
-    interface PublicKey { public_key_pem: string; custody: string; fingerprint: string }
+    interface PublicKey {
+      public_key_pem: string; custody: string; fingerprint: string; purpose: string;
+    }
     let publicKey: PublicKey | null = null;
     if (v?.document_key_version) {
       const [k] = await db`
@@ -60,7 +62,7 @@ export async function registerPublicRoutes(app: FastifyInstance): Promise<void> 
 
   function page(
     v: Verification | null,
-    key: { public_key_pem: string; custody: string; fingerprint: string } | null,
+    key: { public_key_pem: string; custody: string; fingerprint: string; purpose: string } | null,
   ): string {
     const status = !v ? 'unknown'
       : v.withdrawn ? 'withdrawn'
@@ -132,7 +134,8 @@ export async function registerPublicRoutes(app: FastifyInstance): Promise<void> 
     <p style="font-size:14px;color:var(--muted)">
       The document carries an Ed25519 signature over its own bytes. Anyone can check it
       with the public key below — no account and no access to the producer's systems.
-      Key custody for this signature is <b>${esc(key.custody)}</b>.
+      This is the producer's <b>${esc(key.purpose)}</b> key; custody is
+      <b>${esc(key.custody)}</b>.
     </p>
     <p style="font-size:13px"><b>Fingerprint</b> <code>${esc(key.fingerprint)}</code></p>
     <pre><code>${esc(key.public_key_pem)}</code></pre>

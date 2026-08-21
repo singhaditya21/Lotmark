@@ -43,3 +43,5 @@ Thumbs.db
 packages/db/src/seed/.extract*.tmp.mjs
 .keys/
 .documents/
+.keys-anchor/
+.anchors-exported/

@@ -533,18 +533,36 @@ describe('signature integrity constraints (migration 0003)', () => {
 });
 
 describe('signing keys (migration 0003)', () => {
-  const key = (tx: Sql, version: string, retired: boolean = false) =>
+  const key = (tx: Sql, version: string, retired = false, purpose = 'record') =>
     tx`INSERT INTO lotmark.signing_keys
-         (tenant_id, key_version, public_key_pem, fingerprint, activated_at, retired_at, retired_reason)
-       VALUES (${T}, ${version}, 'PEM', ${'f' + version}, now(),
+         (tenant_id, key_version, public_key_pem, fingerprint, purpose,
+          activated_at, retired_at, retired_reason)
+       VALUES (${T}, ${version}, 'PEM', ${'f' + version}, ${purpose}, now(),
                ${retired ? tx`now()` : null}, ${retired ? 'rotation' : null})`;
 
-  it('allows exactly one active key per tenant', async () => {
+  it('allows exactly one active key per tenant PER PURPOSE', async () => {
     await inRollback(async (tx) => {
-      await key(tx, 'v1');
-      // Two current keys would make "which key signs this" ambiguous, and a
-      // verifier could not tell a rotation from a compromise.
-      await expect(key(tx, 'v2')).rejects.toSatisfy(violates('signing_keys_one_active_per_tenant'));
+      await key(tx, 'rec-v1');
+      // Two current record keys would make "which key signs this" ambiguous,
+      // and a verifier could not tell a rotation from a compromise.
+      await expect(key(tx, 'rec-v2'))
+        .rejects.toSatisfy(violates('signing_keys_one_active_per_purpose'));
+    });
+  });
+
+  it('allows a record key and an anchor key to be active at once', async () => {
+    await inRollback(async (tx) => {
+      await key(tx, 'rec-v1', false, 'record');
+      // They are different keys for different jobs. The API holds the record
+      // key; the signer holds the anchor key and the API must never see it.
+      await expect(key(tx, 'anc-v1', false, 'anchor')).resolves.toBeDefined();
+    });
+  });
+
+  it('REJECTS an unrecognised key purpose', async () => {
+    await inRollback(async (tx) => {
+      await expect(key(tx, 'x-v1', false, 'whatever'))
+        .rejects.toSatisfy(violates('signing_key_purpose_known'));
     });
   });
 

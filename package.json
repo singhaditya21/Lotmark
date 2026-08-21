@@ -22,7 +22,8 @@
     "web": "pnpm --filter @lotmark/web dev",
     "db:status": "pnpm --filter @lotmark/db migrate:status",
     "worker": "pnpm --filter @lotmark/api worker",
-    "job": "pnpm --filter @lotmark/api job"
+    "job": "pnpm --filter @lotmark/api job",
+    "anchor": "pnpm --filter @lotmark/api anchor"
   },
   "devDependencies": {
     "typescript": "^5.7.2",

@@ -22,6 +22,24 @@ import type { Sql } from '../db';
  */
 export type Custody = 'dev_file' | 'env' | 'kms' | 'hsm';
 
+/**
+ * What a key is FOR.
+ *
+ * `record` signs studies, values, lots and certificates — the API holds it.
+ * `anchor` signs statements about the ledger, and the API must never hold it:
+ * a component that can rewrite the ledger and also sign attestations about it
+ * proves nothing.
+ *
+ * This distinction is load-bearing. `active()` below previously had no purpose
+ * filter and no ORDER BY, working only because a unique index guaranteed one
+ * un-retired key per tenant. Registering an anchor key would have made it
+ * return that key at random and then fail to find a private half the API
+ * deliberately does not hold — breaking every signing act nondeterministically.
+ */
+export type KeyPurpose = 'record' | 'anchor';
+
+export const RECORD_KEY_VERSION = 'rec-v1';
+
 export interface ActiveKey {
   readonly keyVersion: string;
   readonly privateKey: KeyObject;
@@ -50,6 +68,8 @@ export class KeyProvider {
       SELECT key_version, public_key_pem, fingerprint, custody
       FROM lotmark.signing_keys
       WHERE tenant_id = ${tenantId} AND retired_at IS NULL
+        -- Explicit, not implied by an index. See KeyPurpose above.
+        AND purpose = 'record'
       LIMIT 1`;
     const registered = row as
       | { key_version: string; public_key_pem: string; fingerprint: string; custody: Custody }
@@ -84,16 +104,19 @@ export class KeyProvider {
       return key;
     }
 
-    // First use: mint and register.
-    const kp = generateSigningKeyPair('v1');
+    // First use: mint and register. The version is purpose-prefixed so a record
+    // key and an anchor key can never collide on key_version, which remains
+    // unique per tenant.
+    const kp = generateSigningKeyPair(RECORD_KEY_VERSION);
     this.writePrivate(tenantId, kp.keyVersion, kp.privateKeyPem);
     const fingerprint = publicKeyFingerprint(kp.publicKeyPem);
 
     await sql`
       INSERT INTO lotmark.signing_keys
-        (tenant_id, key_version, algorithm, public_key_pem, fingerprint, custody, activated_at)
+        (tenant_id, key_version, algorithm, public_key_pem, fingerprint, custody,
+         purpose, activated_at)
       VALUES (${tenantId}, ${kp.keyVersion}, 'ed25519', ${kp.publicKeyPem},
-              ${fingerprint}, 'dev_file', now())`;
+              ${fingerprint}, 'dev_file', 'record', now())`;
 
     log?.(`minted signing key ${kp.keyVersion} for tenant ${tenantId} (fingerprint ${fingerprint}, custody dev_file)`);
 

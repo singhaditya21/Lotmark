@@ -89,6 +89,43 @@ prefixes, and a veraPDF gate in CI. Fonts are fully embedded and XMP metadata
 carries the provenance, but an unverified conformance claim is worth less than
 an honest absence of one. See the header of `certificate-pdf.ts`.
 
+## Audit anchoring
+
+The HMAC chain proves ordering to somebody who trusts the database. It proves
+nothing to somebody who does not — an attacker who can rewrite rows can rewrite
+the checkpoints attesting to them. An **anchor** breaks that circle.
+
+```bash
+pnpm anchor              # sign a statement about everything since the last anchor
+pnpm anchor verify       # check every anchor AND the ledger it attests to
+pnpm anchor export       # copy anchors out of the database
+```
+
+The signer is a **separate process, a separate database role and a separate key
+directory**. The application role has `INSERT` on `audit_checkpoints` revoked:
+if the component that writes the ledger could also sign statements about it, the
+statement would be worth exactly what the ledger is.
+
+The signer **never signs caller-supplied bytes** — it reads the ledger itself
+and builds its own statement. Otherwise a compromised application could hand it
+a statement about a ledger that never existed, and the signature would be
+perfectly valid over a lie.
+
+Four attacks, all caught:
+
+| Attack | Detected as |
+|---|---|
+| Rewrite an anchored entry's content | `LEDGER_DISCONTINUITY — entry was altered after it was written` |
+| Delete an anchored entry | `the anchor attests to 2 entries, the ledger now holds 1` |
+| Delete an anchor | `anchor chain is broken — a preceding anchor is missing` |
+| Application writes its own anchor | `permission denied for table audit_checkpoints` |
+
+**What it proves:** the ledger at anchor time held exactly those entries, in that
+order. **What it does not:** anything about entries written since the last
+anchor. That window is the exposure, and `verify` reports it rather than
+glossing over it. Key custody is `dev_file` and is printed everywhere — it is a
+real separation of duty, and it is not an HSM.
+
 ## Documents
 
 - [`docs/architecture/`](docs/architecture) — the architecture decision document, its adversarial critique, and [the low-code design](docs/architecture/LOW-CODE.md)
