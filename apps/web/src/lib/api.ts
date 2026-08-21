@@ -90,6 +90,17 @@ export const api = {
 
 export interface Me {
   user: { id: string; name: string; email: string };
+  /**
+   * Which half of the product this person belongs in, from their ROLE kinds.
+   *
+   * Distinct from `organisation.kind` below, deliberately: role kind is the
+   * product boundary (which half you land in), organisation kind is the data
+   * boundary (which rows you may see, enforced by row-level security). A
+   * producer employee holding a customer role for testing belongs in the
+   * storefront; a laboratory user granted audit:read does not.
+   */
+  roleKinds: Array<'producer' | 'customer'>;
+  organisation: { id: string; kind: string; name: string };
   teams: Array<{ id: string; key: string; name: string }>;
   permissions: string[];
   permissionsByTeam: Record<string, string[]>;

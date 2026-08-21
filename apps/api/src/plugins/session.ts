@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import {
-  resolveAuthority, roleConfigSchema,
-  type ResolvedAuthority, type RoleConfig, type RoleAssignment,
+  resolveAuthority, resolveRoleKinds, roleConfigSchema,
+  type ResolvedAuthority, type RoleConfig, type RoleAssignment, type RoleKind,
 } from '@lotmark/domain';
 import { inTenantTransaction } from '../db';
 import { SESSION_COOKIE, hashToken, loadLiveSession } from '../services/sessions';
@@ -22,6 +22,16 @@ export interface RequestContext {
   readonly displayName: string;
   readonly email: string;
   readonly authority: ResolvedAuthority;
+  /**
+   * Which half of the product this person belongs in — see resolveRoleKinds.
+   * Advisory routing only; it authorises nothing.
+   */
+  readonly roleKinds: readonly RoleKind[];
+  /**
+   * The organisation the user belongs to. A DIFFERENT question from roleKinds:
+   * this is the data boundary, that is the product boundary.
+   */
+  readonly organisation: { id: string; kind: string; name: string };
   readonly teams: ReadonlyArray<{ id: string; key: string; name: string }>;
   readonly mfaSatisfied: boolean;
   readonly timeSource: string;
@@ -64,8 +74,15 @@ export async function requireSession(
       if (!session) return null;
 
       const [userRow] = await tx`
-        SELECT id, display_name, email FROM lotmark.users WHERE id = ${session.user_id} LIMIT 1`;
-      const user = userRow as { id: string; display_name: string; email: string } | undefined;
+        SELECT u.id, u.display_name, u.email,
+               o.id AS organisation_id, o.kind AS organisation_kind, o.name AS organisation_name
+        FROM lotmark.users u
+        JOIN lotmark.organisations o ON o.id = u.organisation_id
+        WHERE u.id = ${session.user_id} LIMIT 1`;
+      const user = userRow as {
+        id: string; display_name: string; email: string;
+        organisation_id: string; organisation_kind: string; organisation_name: string;
+      } | undefined;
       if (!user) return null;
 
       // Roles come from the ACTIVE configuration version, not from code.
@@ -134,6 +151,12 @@ export async function requireSession(
         displayName: user.display_name,
         email: user.email,
         authority: resolveAuthority({ userId: user.id, assignments, roles, asOf: today }),
+        roleKinds: resolveRoleKinds({ userId: user.id, assignments, roles, asOf: today }),
+        organisation: {
+          id: user.organisation_id,
+          kind: user.organisation_kind,
+          name: user.organisation_name,
+        },
         teams: teamRows.map((t) => t as { id: string; key: string; name: string }),
         mfaSatisfied: session.mfa_satisfied_at !== null,
         timeSource: tenant.time_source,

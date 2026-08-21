@@ -1,5 +1,6 @@
 import type { Permission } from '../permissions';
 import type { RoleConfig } from './schemas';
+import type { RoleKind } from '../roles';
 
 /**
  * Resolving User → Team → Role → Permission.
@@ -158,6 +159,53 @@ export function teamsWherePermitted(
     if (perms.has(permission)) out.push(teamId);
   }
   return out;
+}
+
+/**
+ * Which half or halves of the product this person belongs in.
+ *
+ * ── Why this comes from ROLE kind, not organisation kind ────────────────────
+ *
+ * `roles.ts` has always said a role is either producer-side or customer-side,
+ * and that "the kind decides which half of the application the user lands in".
+ * Nothing implemented it, so every persona landed on the producer Projects
+ * screen — and four of the nine landed on it empty, because they legitimately
+ * have visibility of no projects. Correct enforcement, presented as a broken
+ * product.
+ *
+ * The tempting alternative is to read `organisations.kind` off the user's row.
+ * That is a different question with a different answer, and conflating them
+ * would be wrong in both directions: a producer employee given a customer role
+ * for testing would be sent to the producer console, and a laboratory user
+ * granted `audit:read` would be sent to the storefront.
+ *
+ * The division of labour, stated once so it does not get collapsed later:
+ *
+ *   organisation kind  →  the DATA boundary. What rows you may see. Enforced by
+ *                         row-level security, in the database.
+ *   role kind          →  the PRODUCT boundary. Which half you land in. Decided
+ *                         here, and advisory — every act is still authorised by
+ *                         the guard on its own terms.
+ *
+ * A person can legitimately hold both, and then they get both.
+ */
+export function resolveRoleKinds(args: {
+  readonly userId: string;
+  readonly assignments: readonly RoleAssignment[];
+  readonly roles: ReadonlyMap<string, RoleConfig>;
+  readonly asOf: string;
+}): RoleKind[] {
+  const kinds = new Set<RoleKind>();
+  for (const a of args.assignments) {
+    if (a.userId !== args.userId) continue;
+    if (!assignmentActiveOn(a, args.asOf)) continue;
+    const role = args.roles.get(a.roleKey);
+    // An assignment naming a role the configuration does not define is a
+    // configuration fault, not a licence to guess a half. Skipped here and
+    // reported where the configuration is read.
+    if (role) kinds.add(role.kind);
+  }
+  return [...kinds];
 }
 
 /** Every permission the user holds anywhere — for UI navigation only, never for enforcement. */

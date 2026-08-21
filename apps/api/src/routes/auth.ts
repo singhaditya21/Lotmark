@@ -203,6 +203,13 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
 
     return reply.send({
       user: { id: ctx.userId, name: ctx.displayName, email: ctx.email },
+      /**
+       * Which half of the product to show, and which organisation the user
+       * belongs to. Two different boundaries — see resolveRoleKinds. Both are
+       * advisory to the client; the server re-decides every act regardless.
+       */
+      roleKinds: ctx.roleKinds,
+      organisation: ctx.organisation,
       teams: ctx.teams,
       // Permissions are sent so the console can hide what the user cannot do.
       // They are advisory: every act is re-checked server-side by the guard.

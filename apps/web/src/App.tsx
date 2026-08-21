@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, type Me, type Project } from './lib/api';
+import { visibleSurfaces, resolveRoute, type Viewer } from './lib/surfaces';
 import { SignIn } from './pages/SignIn';
+import { Access } from './pages/Access';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { Audit } from './pages/Audit';
 import { Capa } from './pages/Capa';
 
-type Route = 'projects' | 'capa' | 'audit';
-
 export function App() {
   const qc = useQueryClient();
-  const [route, setRoute] = useState<Route>('projects');
+  const [requested, setRequested] = useState<string | null>(null);
   const [open, setOpen] = useState<Project | null>(null);
 
   const me = useQuery({
@@ -28,16 +28,18 @@ export function App() {
   }
 
   /**
-   * Permission-aware navigation.
-   *
    * The union across tenant-wide and every team grant, used ONLY to decide what
-   * to show. Every act is re-checked server-side; hiding a button is a courtesy
-   * to the user, never a security control.
+   * to show. Every act is re-checked server-side; hiding a control is a
+   * courtesy to the user, never a security control.
    */
   const held = new Set([
     ...me.data.permissions,
     ...Object.values(me.data.permissionsByTeam).flat(),
   ]);
+
+  const viewer: Viewer = { held, roleKinds: me.data.roleKinds };
+  const sections = visibleSurfaces(viewer);
+  const route = resolveRoute(viewer, requested);
 
   const signOut = async () => {
     await api.post('/auth/sign-out');
@@ -45,27 +47,21 @@ export function App() {
     await qc.invalidateQueries();
   };
 
+  const go = (id: string) => { setRequested(id); setOpen(null); };
+
   return (
     <>
       <header className="top">
         <span className="brand">Lotmark</span>
         <nav aria-label="Sections">
-          <button aria-current={route === 'projects' ? 'page' : 'false'}
-                  onClick={() => { setRoute('projects'); setOpen(null); }}>
-            Projects
-          </button>
-          {held.has('capa:manage') && (
-            <button aria-current={route === 'capa' ? 'page' : 'false'}
-                    onClick={() => { setRoute('capa'); setOpen(null); }}>
-              Complaints &amp; CAPA
+          {/* Driven by the surface table, so adding a section is one row there
+              rather than a button here and a branch below that can disagree. */}
+          {sections.map((s) => (
+            <button key={s.id} aria-current={route === s.id ? 'page' : 'false'}
+                    onClick={() => go(s.id)}>
+              {s.label}
             </button>
-          )}
-          {held.has('audit:read') && (
-            <button aria-current={route === 'audit' ? 'page' : 'false'}
-                    onClick={() => { setRoute('audit'); setOpen(null); }}>
-              Audit ledger
-            </button>
-          )}
+          ))}
         </nav>
         <div className="who">
           <span className="muted">
@@ -79,7 +75,14 @@ export function App() {
       </header>
 
       <main>
-        {route === 'audit' ? (
+        {/*
+          `route === null` is a real outcome, not an error: this person holds no
+          section. It gets an explanation rather than a blank page or — as
+          before — an empty Projects table that looked like lost data.
+        */}
+        {route === null ? (
+          <Access viewer={viewer} name={me.data.user.name} organisation={me.data.organisation} />
+        ) : route === 'audit' ? (
           <Audit canVerify={held.has('audit:verify')} />
         ) : route === 'capa' ? (
           <Capa canManage={held.has('capa:manage')} />
