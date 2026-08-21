@@ -1,4 +1,4 @@
-import type { Permission } from './permissions.js';
+import type { Permission } from './permissions';
 
 /**
  * Segregation of duties.

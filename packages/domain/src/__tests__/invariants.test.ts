@@ -8,12 +8,12 @@
  * tests in @lotmark/db.
  */
 import { describe, it, expect } from 'vitest';
-import { PERMISSIONS, ALL_PERMISSIONS, COMPETENCE_GATED, isPermission } from '../permissions.js';
-import { ROLES, ALL_ROLES, undefinedGrants, permissionsOf, kindOf } from '../roles.js';
-import { SOD_RULES, defaultSodSettings, findSodViolation, isSodEnabled } from '../sod.js';
-import { ALL_MACHINES, canTransition, assertTransition, IllegalTransitionError, VALUE_MACHINE } from '../state-machines.js';
-import { RETENTION_SCHEDULE } from '../retention.js';
-import { canonicalMaterial, signaturePayload, ALL_SIGNATURE_MEANINGS, isBasisValid } from '../signatures.js';
+import { PERMISSIONS, ALL_PERMISSIONS, COMPETENCE_GATED, isPermission } from '../permissions';
+import { ROLES, ALL_ROLES, undefinedGrants, permissionsOf, kindOf } from '../roles';
+import { SOD_RULES, defaultSodSettings, findSodViolation, isSodEnabled } from '../sod';
+import { ALL_MACHINES, canTransition, assertTransition, IllegalTransitionError, VALUE_MACHINE } from '../state-machines';
+import { RETENTION_SCHEDULE } from '../retention';
+import { canonicalMaterial, signaturePayload, ALL_SIGNATURE_MEANINGS, isBasisValid } from '../signatures';
 
 describe('permission model', () => {
   // Prototype invariant: "every granted permission is defined"

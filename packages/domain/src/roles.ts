@@ -1,4 +1,4 @@
-import { PERMISSIONS, ALL_PERMISSIONS, type Permission } from './permissions.js';
+import { PERMISSIONS, ALL_PERMISSIONS, type Permission } from './permissions';
 
 /**
  * A role is either a producer-side role (works in the console) or a

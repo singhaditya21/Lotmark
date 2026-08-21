@@ -1,4 +1,4 @@
-import { mean, assertAllFinite, StatisticsError } from './descriptive.js';
+import { mean, assertAllFinite, StatisticsError } from './descriptive';
 
 /** One stability timepoint: months elapsed, measured value. */
 export interface StabilityPoint {

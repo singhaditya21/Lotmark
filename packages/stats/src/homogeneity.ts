@@ -1,4 +1,4 @@
-import { mean, assertAllFinite, StatisticsError } from './descriptive.js';
+import { mean, assertAllFinite, StatisticsError } from './descriptive';
 
 /** One measurement: unit (bottle/vial) identifier, replicate number, value. */
 export interface HomogeneityMeasurement {

@@ -12,10 +12,10 @@
  */
 import { describe, it, expect } from 'vitest';
 import golden from './prototype-golden.json' with { type: 'json' };
-import { oneWayAnova, type HomogeneityMeasurement } from '../homogeneity.js';
-import { linearStability, shelfLifeMonthsBetween, type StabilityPoint } from '../stability.js';
-import { consensus, type CharacterisationResult } from '../characterisation.js';
-import { combineBudget, type UncertaintyComponent, type StudyType } from '../budget.js';
+import { oneWayAnova, type HomogeneityMeasurement } from '../homogeneity';
+import { linearStability, shelfLifeMonthsBetween, type StabilityPoint } from '../stability';
+import { consensus, type CharacterisationResult } from '../characterisation';
+import { combineBudget, type UncertaintyComponent, type StudyType } from '../budget';
 
 type RawRow = { u?: number; r?: number; m?: number; lab?: string; v: number };
 type StudyMeta = { id: string; prj: string; type: string; state: string; at: string | null; shelf?: string };

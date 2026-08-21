@@ -1,4 +1,4 @@
-import { rootSumSquare } from './descriptive.js';
+import { rootSumSquare } from './descriptive';
 
 export type StudyType =
   | 'homogeneity'

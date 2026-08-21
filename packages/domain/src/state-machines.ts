@@ -11,7 +11,7 @@
  *  3. An illegal transition is a defect that gets caught at the boundary, not a
  *     corrupt record discovered months later during an audit.
  */
-import type { Permission } from './permissions.js';
+import type { Permission } from './permissions';
 
 export interface Transition<S extends string> {
   readonly from: S;

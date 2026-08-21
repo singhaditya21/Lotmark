@@ -1,4 +1,4 @@
-import { mean, standardDeviation, assertAllFinite, StatisticsError } from './descriptive.js';
+import { mean, standardDeviation, assertAllFinite, StatisticsError } from './descriptive';
 
 /** One characterisation result from one laboratory. */
 export interface CharacterisationResult {
