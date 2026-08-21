@@ -16,7 +16,10 @@
     "custody:move": "tsx scripts/move-custody.mts",
     "audit:generations": "tsx scripts/rotate-audit-key.mts --show",
     "audit:rotate": "tsx scripts/rotate-audit-key.mts",
-    "audit:claim": "tsx scripts/rotate-audit-key.mts --claim"
+    "audit:claim": "tsx scripts/rotate-audit-key.mts --claim",
+    "dr:backup": "tsx scripts/dr-drill.mts --backup-only",
+    "dr:drill": "tsx scripts/dr-drill.mts",
+    "dr:sabotage": "tsx scripts/dr-drill.mts --sabotage"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.1",

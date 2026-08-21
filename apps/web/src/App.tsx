@@ -10,6 +10,8 @@ import { Audit } from './pages/Audit';
 import { Capa } from './pages/Capa';
 import { People } from './pages/People';
 import { Configuration } from './pages/Configuration';
+import { Operations } from './pages/Operations';
+import { JobHealthBanner } from './components/JobHealthBanner';
 
 export function App() {
   const qc = useQueryClient();
@@ -78,6 +80,15 @@ export function App() {
 
       <main>
         {/*
+          One banner slot, above everything. A failing overnight job is only
+          discovered by somebody who opens Operations, and nobody opens it on a
+          normal day. Shown only to people who could act on it.
+        */}
+        {sections.some((s) => s.id === 'operations') && (
+          <JobHealthBanner onOpen={() => go('operations')} />
+        )}
+
+        {/*
           `route === null` is a real outcome, not an error: this person holds no
           section. It gets an explanation rather than a blank page or — as
           before — an empty Projects table that looked like lost data.
@@ -92,6 +103,8 @@ export function App() {
           <People />
         ) : route === 'configuration' ? (
           <Configuration />
+        ) : route === 'operations' ? (
+          <Operations />
         ) : open ? (
           <ProjectDetail project={open} onBack={() => setOpen(null)}
                          canReissue={held.has('cert:reissue')} />

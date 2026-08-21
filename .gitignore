@@ -45,3 +45,4 @@ packages/db/src/seed/.extract*.tmp.mjs
 .documents/
 .keys-anchor/
 .anchors-exported/
+.backups/

@@ -1,5 +1,6 @@
 import type { Sql } from '../db';
 import { recordAudit } from '../services/audit';
+import { nextCode } from '../services/numbering';
 import { assertSystemTransition, ENTITLEMENT_MACHINE } from '@lotmark/domain';
 import { systemAuditContext, type TenantContext } from './context';
 
@@ -147,8 +148,18 @@ export async function monitoringDue(tx: Sql, tenant: TenantContext): Promise<num
       ON CONFLICT DO NOTHING RETURNING id`;
     if (claimed.length === 0) continue;
 
-    const [countRow] = await tx`SELECT count(*)::int AS n FROM lotmark.capa WHERE tenant_id = ${tenant.id}`;
-    const code = `NCR-${String((countRow as { n: number }).n + 1001).padStart(4, '0')}`;
+    /**
+     * The configured numbering counter, not `count(*)`.
+     *
+     * Counting rows races — two concurrent creates read the same count and
+     * render the same code — and it ignores the tenant's template entirely.
+     * It also reuses a code the moment a row is removed. `nextCode` takes the
+     * sequence under a row lock and renders the configured template, which for
+     * this tenant is NCR-{SEQ} with a yearly reset.
+     */
+    const code = await nextCode(tx, {
+      tenantId: tenant.id, entity: 'capa', today: new Date().toISOString().slice(0, 10),
+    });
 
     await tx`
       INSERT INTO lotmark.capa

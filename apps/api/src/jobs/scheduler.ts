@@ -21,6 +21,16 @@ export interface JobDefinition {
   readonly name: string;
   /** Standard five-field cron. */
   readonly cron: string;
+  /**
+   * How long may pass without a successful run before something is wrong.
+   *
+   * Declared rather than derived from the cron expression. Parsing cron to
+   * work out a cadence is a small amount of code that is subtly wrong for the
+   * interesting cases, and the number wanted here is not the schedule anyway —
+   * it is the tolerance, which includes retries, restarts and a night where
+   * the machine was asleep.
+   */
+  readonly expectedEveryHours: number;
   readonly description: string;
   readonly run: (sql: Sql, cfg: AppConfig) => Promise<JobOutcome[]>;
 }
@@ -28,6 +38,7 @@ export interface JobDefinition {
 export const JOBS: readonly JobDefinition[] = [
   {
     name: 'lot-expiry-notices',
+    expectedEveryHours: 36,
     cron: '0 7 * * *',
     description: 'Tell holders when a lot approaches expiry, at 90, 30 and 7 days.',
     run: (sql, cfg) => forEachTenant(sql,
@@ -36,6 +47,7 @@ export const JOBS: readonly JobDefinition[] = [
   },
   {
     name: 'monitoring-due',
+    expectedEveryHours: 36,
     cron: '15 7 * * *',
     description: 'Raise a CAPA where stability monitoring has fallen overdue (ISO 17034 7.8).',
     run: (sql, cfg) => forEachTenant(sql,
@@ -44,6 +56,7 @@ export const JOBS: readonly JobDefinition[] = [
   },
   {
     name: 'entitlement-revalidation',
+    expectedEveryHours: 36,
     cron: '30 7 * * *',
     description: 'Lapse approved price tiers past their revalidation date, and revert pricing.',
     run: (sql, cfg) => forEachTenant(sql,
@@ -52,6 +65,7 @@ export const JOBS: readonly JobDefinition[] = [
   },
   {
     name: 'session-prune',
+    expectedEveryHours: 36,
     cron: '0 3 * * *',
     description: 'Remove sessions expired or revoked more than seven days ago.',
     run: (sql, cfg) => forEachTenant(sql,

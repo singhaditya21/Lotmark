@@ -391,3 +391,43 @@ export interface NewUserResult {
   enrolment: string;
   note: string;
 }
+
+/* ── Operations ─────────────────────────────────────────────────────────── */
+
+export type JobState = 'healthy' | 'running' | 'failing' | 'stale' | 'never_run';
+
+export interface JobStatus {
+  name: string;
+  description: string;
+  cron: string;
+  state: JobState;
+  lastStartedAt: string | null;
+  lastFinishedAt: string | null;
+  lastOutcome: string | null;
+  lastError: string | null;
+  lastSuccessAt: string | null;
+  consecutiveFailures: number;
+  hoursSinceSuccess: number | null;
+  expectedEveryHours: number;
+  /** What to do about it, when there is something to do. */
+  advice: string | null;
+}
+
+export interface DrillRecord {
+  id: string;
+  startedAt: string;
+  finishedAt: string | null;
+  source: string;
+  outcome: string | null;
+  checks: Array<{ name: string; ok: boolean; detail?: string }>;
+  notes: string | null;
+}
+
+export interface OpsReport {
+  jobs: JobStatus[];
+  /** Names of jobs an operator should act on. */
+  attention: string[];
+  drills: DrillRecord[];
+  /** What these checks cannot see, stated rather than implied. */
+  limits: string[];
+}

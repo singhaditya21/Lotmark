@@ -62,6 +62,10 @@ export const SURFACES: readonly Surface[] = [
   // in any tenant that already exists and would gate these shut.
   { id: 'people', label: 'People', half: 'producer', permission: 'user:manage' },
   { id: 'configuration', label: 'Configuration', half: 'producer', permission: 'user:manage' },
+  // Operational health sits behind `audit:read` because it IS what the system
+  // did, in the half nobody watches — and the Quality Manager who reads the
+  // ledger is who most needs to know the CAPA-raising job stopped on Tuesday.
+  { id: 'operations', label: 'Operations', half: 'producer', permission: 'audit:read' },
 ];
 
 export interface Viewer {

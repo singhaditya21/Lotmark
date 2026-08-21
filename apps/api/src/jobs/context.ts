@@ -95,7 +95,23 @@ export async function forEachTenant(
   const outcomes: JobOutcome[] = [];
 
   for (const tenant of tenants) {
-    const startedAt = new Date().toISOString();
+    /**
+     * The run is OPENED before the work starts.
+     *
+     * It used to be written only once the work had finished, either way. So a
+     * process killed mid-run — an operator's Ctrl-C, an OOM kill, a machine
+     * rebooting at 3am — left no row at all, and the worst case became
+     * indistinguishable from the best: a job that has nothing to do also
+     * writes nothing an operator would notice.
+     *
+     * An open row with no `finished_at` is now visible as `running`, and one
+     * that stays open long after its cadence is the clearest signal there is
+     * that something died.
+     */
+    const runId = await openRun(sql, {
+      tenantId: tenant.id, jobName: args.jobName, auditKey: args.auditKey,
+    });
+
     try {
       const itemsProcessed = await inTenantTransaction(
         sql, { tenantId: tenant.id, auditKey: args.auditKey },
@@ -105,9 +121,9 @@ export async function forEachTenant(
         tenantId: tenant.id, tenantSlug: tenant.slug,
         itemsProcessed, outcome: 'success',
       });
-      await recordRun(sql, {
-        tenantId: tenant.id, jobName: args.jobName, startedAt,
-        outcome: 'success', itemsProcessed, error: null, auditKey: args.auditKey,
+      await closeRun(sql, {
+        tenantId: tenant.id, runId, outcome: 'success',
+        itemsProcessed, error: null, auditKey: args.auditKey,
       });
     } catch (e) {
       const error = e instanceof Error ? e.message : String(e);
@@ -115,30 +131,45 @@ export async function forEachTenant(
         tenantId: tenant.id, tenantSlug: tenant.slug,
         itemsProcessed: 0, outcome: 'failure', error,
       });
-      // Recorded on its own connection: the failing transaction has rolled
-      // back, and a job run nobody can see is a job that silently stopped.
-      await recordRun(sql, {
-        tenantId: tenant.id, jobName: args.jobName, startedAt,
-        outcome: 'failure', itemsProcessed: 0, error, auditKey: args.auditKey,
+      // Closed on its own connection: the failing transaction has rolled back,
+      // and a job run nobody can see is a job that silently stopped.
+      await closeRun(sql, {
+        tenantId: tenant.id, runId, outcome: 'failure',
+        itemsProcessed: 0, error, auditKey: args.auditKey,
       });
     }
   }
   return outcomes;
 }
 
-async function recordRun(
+/** Open a run, before any work is attempted. Returns its id. */
+async function openRun(
+  sql: Sql,
+  args: { tenantId: string; jobName: string; auditKey: string },
+): Promise<string> {
+  return inTenantTransaction(sql, { tenantId: args.tenantId, auditKey: args.auditKey }, async (tx) => {
+    const [row] = await tx`
+      INSERT INTO lotmark.job_runs (tenant_id, job_name, started_at, items_processed)
+      VALUES (${args.tenantId}, ${args.jobName}, now(), 0)
+      RETURNING id`;
+    return (row as { id: string }).id;
+  });
+}
+
+/** Close it with what actually happened. */
+async function closeRun(
   sql: Sql,
   args: {
-    tenantId: string; jobName: string; startedAt: string;
+    tenantId: string; runId: string;
     outcome: 'success' | 'failure'; itemsProcessed: number;
     error: string | null; auditKey: string;
   },
 ): Promise<void> {
   await inTenantTransaction(sql, { tenantId: args.tenantId, auditKey: args.auditKey }, async (tx) => {
     await tx`
-      INSERT INTO lotmark.job_runs
-        (tenant_id, job_name, started_at, finished_at, outcome, items_processed, error_text)
-      VALUES (${args.tenantId}, ${args.jobName}, ${args.startedAt}, now(),
-              ${args.outcome}, ${args.itemsProcessed}, ${args.error})`;
+      UPDATE lotmark.job_runs
+      SET finished_at = now(), outcome = ${args.outcome},
+          items_processed = ${args.itemsProcessed}, error_text = ${args.error}
+      WHERE id = ${args.runId}`;
   });
 }
