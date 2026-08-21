@@ -126,6 +126,10 @@ describe('what a tenant may define', () => {
     // administrator whose control accepts nothing.
     expect(isSupportedFieldType('text')).toBe(true);
     expect(isSupportedFieldType('attachment')).toBe(false);
+    // `user` and `team` validate as identifiers, and rendering one means a
+    // picker. A text box asking for a uuid is not a person picker.
+    expect(isSupportedFieldType('user')).toBe(false);
+    expect(isSupportedFieldType('team')).toBe(false);
   });
 });
 

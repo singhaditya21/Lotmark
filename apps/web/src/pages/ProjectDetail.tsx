@@ -10,6 +10,7 @@ import { NewStudy } from '../components/NewStudy';
 import { RecordResults } from '../components/RecordResults';
 import { Dialog, Field } from '../components/Dialog';
 import { CertificatePanel } from '../components/CertificatePanel';
+import { CustomFieldsDialog } from '../components/CustomFields';
 import type { Meaning } from '../lib/meanings';
 
 type Pending =
@@ -20,12 +21,18 @@ type Pending =
   | null;
 
 export function ProjectDetail({
-  project, onBack, canReissue,
+  project, onBack, canReissue, canRecordLotFields,
 }: {
   project: Project;
   onBack: () => void;
   /** Whether to offer reissue and withdrawal. The server re-checks regardless. */
   canReissue: boolean;
+  /**
+   * Whether to offer the custom-field form as editable. `lot:create` is what
+   * governs a lot, so it is what governs what a lot says — the server decides
+   * again at the record's own team scope, which this cannot know.
+   */
+  canRecordLotFields: boolean;
 }) {
   const qc = useQueryClient();
   const [pending, setPending] = useState<Pending>(null);
@@ -33,6 +40,7 @@ export function ProjectDetail({
   const [newStudy, setNewStudy] = useState(false);
   const [recordFor, setRecordFor] = useState<Study | null>(null);
   const [certFor, setCertFor] = useState<string | null>(null);
+  const [fieldsFor, setFieldsFor] = useState<{ id: string; code: string } | null>(null);
   const [newValue, setNewValue] = useState(false);
   const [valueName, setValueName] = useState('Assay (as is)');
   const [valueUnit, setValueUnit] = useState('% w/w');
@@ -277,6 +285,16 @@ export function ProjectDetail({
                         Issues &amp; reissue
                       </button>
                     )}
+                    {/*
+                      Always offered, even when nothing is configured: the panel
+                      says so, which is a better answer than a button that
+                      appears and disappears depending on configuration the
+                      person cannot see.
+                    */}
+                    <button className="btn ghost sm"
+                            onClick={() => setFieldsFor({ id: l.id, code: l.lot_code })}>
+                      Details
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -284,6 +302,16 @@ export function ProjectDetail({
           </table>
         </div>
       </div>
+
+      {fieldsFor && (
+        <CustomFieldsDialog
+          entity="lot"
+          recordId={fieldsFor.id}
+          label={fieldsFor.code}
+          canWrite={canRecordLotFields}
+          onClose={() => setFieldsFor(null)}
+        />
+      )}
 
       <SignAction
         open={pending !== null}

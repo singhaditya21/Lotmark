@@ -180,7 +180,8 @@ export function App() {
           <Vault />
         ) : open ? (
           <ProjectDetail project={open} onBack={() => setOpen(null)}
-                         canReissue={held.has('cert:reissue')} />
+                         canReissue={held.has('cert:reissue')}
+                         canRecordLotFields={held.has('lot:create')} />
         ) : (
           <Projects onOpen={setOpen} canCreate={held.has('project:manage')} />
         )}

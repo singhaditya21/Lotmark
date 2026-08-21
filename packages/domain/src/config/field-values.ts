@@ -120,16 +120,23 @@ export const CUSTOM_FIELD_PERMISSIONS: Record<
 };
 
 /**
- * Types the form designer can actually store and render.
+ * Types the form designer can store AND render, end to end.
  *
- * `attachment` is in `fieldTypeSchema` and is NOT here: there is no upload
- * surface, so a published attachment field would be a control that accepts
- * nothing. `publicationProblems()` refuses one by name rather than letting it
- * publish and disappoint — see the note on REQ-CUSTOM-FIELDS.
+ * Three of `fieldTypeSchema`'s twelve are deliberately absent, and the line is
+ * drawn at "a person can actually use it", not at "the server can validate it":
+ *
+ *  · `attachment` has no upload surface at all;
+ *  · `user` and `team` validate as identifiers perfectly well, and rendering
+ *    them means a picker. A text box asking somebody to paste a uuid is not a
+ *    person picker, it is a way to record the wrong person.
+ *
+ * `publicationProblems()` refuses these by name, so a tenant is told when they
+ * choose one rather than discovering it from whoever has to fill the form in.
+ * Adding a picker later means deleting a line here and one from the renderer.
  */
 export const SUPPORTED_FIELD_TYPES = [
   'text', 'textarea', 'number', 'integer', 'boolean',
-  'date', 'datetime', 'select', 'multiselect', 'user', 'team',
+  'date', 'datetime', 'select', 'multiselect',
 ] as const;
 
 export function isSupportedFieldType(t: string): boolean {
