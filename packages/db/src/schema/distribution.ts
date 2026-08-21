@@ -146,7 +146,25 @@ export const vaultHoldingsTable = lotmark.table('vault_holdings', {
    */
   source: text('source', { enum: ['order', 'qr_scan', 'upload', 'import', 'sample'] })
     .notNull().default('order'),
-  acquiredOn: isoDate('acquired_on'),
+  /**
+   * When the holding was acquired. NOT NULL, and deliberately with no default.
+   *
+   * It decides which certificate ISSUE the holder is holding, and therefore who
+   * receives a withdrawal notice. A default of today would stamp a date nobody
+   * stated onto every imported row, indistinguishable afterwards from one
+   * somebody did — so an INSERT that omits it fails instead, forcing the caller
+   * to decide. See migration 0020.
+   */
+  acquiredOn: isoDate('acquired_on').notNull(),
+  /**
+   * How that date was arrived at: `recorded` by a person, `derived_from_order`
+   * from the order that supplied it, or `earliest_possible` — the lot's
+   * release, which is a LOWER BOUND rather than a claim. The provenance is part
+   * of the record because the date is used to decide who gets warned.
+   */
+  acquiredOnBasis: text('acquired_on_basis', {
+    enum: ['recorded', 'derived_from_order', 'earliest_possible'],
+  }).notNull().default('recorded'),
   ...timestamps,
 }, (t) => ({
   orgIdx: index('vault_holdings_organisation_idx').on(t.organisationId),

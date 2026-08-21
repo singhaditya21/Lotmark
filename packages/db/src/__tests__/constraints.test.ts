@@ -231,10 +231,15 @@ describe("the prototype's vault double-counting defect", () => {
       const [l] = await tx`INSERT INTO lotmark.lots (tenant_id, project_id, lot_code, expiry_date, storage_condition)
                            VALUES (${T}, ${(p as { id: string }).id}, 'L-1', '2028-03-31', '2-8') RETURNING id`;
       const lotId = (l as { id: string }).id;
-      await tx`INSERT INTO lotmark.vault_holdings (tenant_id, organisation_id, lot_id, storage_location, quantity)
-               VALUES (${T}, ${ORG}, ${lotId}, 'Cold room A', 2)`;
-      await expect(tx`INSERT INTO lotmark.vault_holdings (tenant_id, organisation_id, lot_id, storage_location, quantity)
-                      VALUES (${T}, ${ORG}, ${lotId}, 'Cold room A', 1)`)
+      // acquired_on is NOT NULL since 0020 and has no default, deliberately —
+      // so it has to be supplied here for this test to reach the constraint it
+      // is actually about.
+      await tx`INSERT INTO lotmark.vault_holdings
+                 (tenant_id, organisation_id, lot_id, storage_location, quantity, acquired_on)
+               VALUES (${T}, ${ORG}, ${lotId}, 'Cold room A', 2, '2026-01-01')`;
+      await expect(tx`INSERT INTO lotmark.vault_holdings
+                        (tenant_id, organisation_id, lot_id, storage_location, quantity, acquired_on)
+                      VALUES (${T}, ${ORG}, ${lotId}, 'Cold room A', 1, '2026-01-01')`)
         .rejects.toSatisfy(violates('vault_holding_unique_per_location'));
     });
   });

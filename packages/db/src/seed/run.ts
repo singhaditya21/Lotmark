@@ -417,10 +417,22 @@ async function seedDistribution(sql: Sql) {
     }
   }
 
+  /**
+   * Vault holdings carry no acquisition date in the prototype fixture, and
+   * `acquired_on` is NOT NULL because it decides who receives a withdrawal
+   * notice. Rather than stamping today onto historical demonstration data —
+   * a date nobody stated, indistinguishable afterwards from one somebody did —
+   * the seed asks the SAME function migration 0020 uses to derive it, so
+   * seeded and migrated data cannot disagree about who holds what.
+   */
   for (const v of D['vault'] as Array<any>) {
+    const org = uuidFor(`org:${v.org}`);
+    const lot = uuidFor(`lot:${v.lot}`);
     await sql`INSERT INTO lotmark.vault_holdings
-        (tenant_id, organisation_id, lot_id, storage_location, quantity)
-      VALUES (${TENANT}, ${uuidFor(`org:${v.org}`)}, ${uuidFor(`lot:${v.lot}`)}, ${v.loc}, ${v.qty})`;
+        (tenant_id, organisation_id, lot_id, storage_location, quantity,
+         acquired_on, acquired_on_basis)
+      SELECT ${TENANT}, ${org}, ${lot}, ${v.loc}, ${v.qty}, d.acquired_on, d.basis
+      FROM lotmark.vault_acquisition_for(${org}, ${lot}) d`;
   }
   console.log(`distribution: ${(D['orders'] as []).length} orders`);
 }
@@ -545,6 +557,24 @@ async function backdateHistory(sql: Sql) {
            'released as part of the seeded history'
     FROM lotmark.lots l WHERE l.tenant_id = ${TENANT}`;
 
+
+  /**
+   * Vault acquisition dates come LAST.
+   *
+   * They are derived from lots and orders, so they can only be right once those
+   * carry the dates they claim rather than the instant the seed ran. Derived at
+   * insert time, the fallback resolved to the lot's creation — which was that
+   * same instant — and a holding of a lot released in 2025 was dated today.
+   *
+   * Guarded on `acquired_on_basis <> 'recorded'`, so a date somebody actually
+   * stated is never overwritten by a derivation.
+   */
+  await sql`
+    UPDATE lotmark.vault_holdings v
+    SET acquired_on = d.acquired_on, acquired_on_basis = d.basis
+    FROM lotmark.vault_holdings src
+    CROSS JOIN LATERAL lotmark.vault_acquisition_for(src.organisation_id, src.lot_id) d
+    WHERE v.id = src.id AND v.acquired_on_basis <> 'recorded'`;
 
   console.log('history: created_at aligned with the dates the records claim');
 }
