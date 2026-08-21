@@ -16,10 +16,22 @@ import type { Permission } from './permissions';
 export interface Transition<S extends string> {
   readonly from: S;
   readonly to: S;
-  /** The permission required to make this move. */
+  /** The permission required when a PERSON makes this move. */
   readonly requires: Permission;
   /** Human-readable name of the act, used in the audit ledger. */
   readonly action: string;
+  /**
+   * May scheduled work make this move without a person?
+   *
+   * A job holds no ResolvedAuthority, so it cannot satisfy `requires` — and it
+   * should not: the permission describes a human act. Without this flag the
+   * only options were to give jobs a synthetic authority, which is a lie, or to
+   * bypass the machine entirely, which is what the entitlement lapse job did.
+   *
+   * Marking the transition is the honest third option: the machine states which
+   * moves the system is allowed to make on its own, and a job asserts it.
+   */
+  readonly systemInitiated?: boolean;
 }
 
 export interface StateMachine<S extends string> {
@@ -133,8 +145,13 @@ export const ENTITLEMENT_MACHINE = machine<EntitlementState>({
   transitions: [
     { from: 'under_review', to: 'approved', requires: 'entitlement:decide', action: 'Tier approved' },
     { from: 'under_review', to: 'rejected', requires: 'entitlement:decide', action: 'Tier rejected' },
-    // An approved tier carries a revalidation date; lapsing is done by a job.
-    { from: 'approved', to: 'lapsed', requires: 'entitlement:decide', action: 'Tier lapsed at revalidation' },
+    // An approved tier carries a revalidation date, and lapsing is done by a
+    // job with no person behind it — so it is marked system-initiated. The
+    // permission still describes who may do it by hand.
+    {
+      from: 'approved', to: 'lapsed', requires: 'entitlement:decide',
+      action: 'Tier lapsed at revalidation', systemInitiated: true,
+    },
   ],
 });
 
@@ -194,6 +211,35 @@ export function assertTransition<S extends string>(
 ): Transition<S> {
   const t = canTransition(m, from, to);
   if (!t) throw new IllegalTransitionError(m.name, from, to);
+  return t;
+}
+
+export class NotSystemInitiatedError extends Error {
+  constructor(machineName: string, from: string, to: string) {
+    super(
+      `${machineName}: ${from} → ${to} is not marked systemInitiated, so scheduled ` +
+      'work may not make it. A person holding the required permission must.',
+    );
+    this.name = 'NotSystemInitiatedError';
+  }
+}
+
+/**
+ * The job-shaped equivalent of the guard.
+ *
+ * A job cannot satisfy `requires`, so this asserts the move exists AND that the
+ * machine permits the system to make it unattended. Without this a job either
+ * fakes an authority or skips the machine — the entitlement lapse did the
+ * latter, which is how a state change happened that the declared machine said
+ * needed a permission nobody had checked.
+ */
+export function assertSystemTransition<S extends string>(
+  m: StateMachine<S>,
+  from: S,
+  to: S,
+): Transition<S> {
+  const t = assertTransition(m, from, to);
+  if (t.systemInitiated !== true) throw new NotSystemInitiatedError(m.name, from, to);
   return t;
 }
 

@@ -209,7 +209,7 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
       }
       const changeText = diff.length > 0 ? diff.join('; ') : 'no change to the certified figures';
 
-      const holders = await notifyHolders(tx, {
+      const notice = await notifyHolders(tx, {
         tenantId: ctx.tenantId, certificateId: cert.id, issueNumber: prev.issue_number,
         kind: 'reissue',
         subject: `${cert.code} has been reissued as issue #${issueNumber}`,
@@ -220,9 +220,14 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
       await recordAudit(tx, auditOf(ctx), {
         kind: 'CERTIFICATE', action: 'Certificate reissued',
         detail: `${cert.code} #${prev.issue_number} → #${issueNumber} · ${parsed.data.reason} · ` +
-          `${changeText} · ${holders.length} holder(s) notified`,
+          `${changeText} · ${notice.notified.length} holder(s) notified` +
+          (notice.unreachable.length > 0
+            ? ` · ${notice.unreachable.length} UNREACHABLE` : ''),
         subjectTable: 'certificate_issues', subjectId: issueId,
-        changes: { from: prev.issue_number, to: issueNumber, diff, holders: holders.length },
+        changes: {
+          from: prev.issue_number, to: issueNumber, diff,
+          notified: notice.notified.length, unreachable: notice.unreachable.length,
+        },
       });
 
       return {
@@ -232,7 +237,8 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
           issue: { number: issueNumber, previous: prev.issue_number },
           changed: diff, changeSummary: changeText,
           document: { sha256: rendered.sha256, verifyUrl: `${cfg.PUBLIC_ORIGIN}/verify/${rendered.verificationToken}` },
-          notified: holders.map((h) => ({ organisation: h.organisation_name, basis: h.basis, quantity: Number(h.quantity) })),
+          notified: notice.notified.map((h) => ({ organisation: h.organisation_name, basis: h.basis, quantity: Number(h.quantity) })),
+          unreachable: notice.unreachable.map((h) => ({ organisation: h.organisation_name, basis: h.basis })),
         },
       };
     });
@@ -302,7 +308,7 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
         UPDATE lotmark.lots SET state = 'withdrawn', version = version + 1
         WHERE id = ${issue.lot_id} AND state = 'released'`;
 
-      const holders = await notifyHolders(tx, {
+      const notice = await notifyHolders(tx, {
         tenantId: ctx.tenantId, certificateId: issue.cert_id, issueNumber: issue.issue_number,
         kind: 'withdrawal',
         subject: `${issue.code} issue #${issue.issue_number} has been WITHDRAWN`,
@@ -313,16 +319,23 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
       await recordAudit(tx, auditOf(ctx), {
         kind: 'CERTIFICATE', action: 'Certificate WITHDRAWN',
         detail: `${issue.code} #${issue.issue_number} · ${parsed.data.reason} · ` +
-          `${holders.length} holder(s) notified · lot removed from the catalogue`,
+          `${notice.notified.length} holder(s) notified` +
+          (notice.unreachable.length > 0
+            ? ` · ${notice.unreachable.length} UNREACHABLE — reach them another way` : '') +
+          ' · lot removed from the catalogue',
         subjectTable: 'certificate_issues', subjectId: issue.id,
-        changes: { withdrawn: true, reason: parsed.data.reason, holders: holders.length },
+        changes: {
+          withdrawn: true, reason: parsed.data.reason,
+          notified: notice.notified.length, unreachable: notice.unreachable.length,
+        },
       });
 
       return {
         status: 200 as const,
         body: {
           certificate: issue.code, issue: issue.issue_number, withdrawn: true,
-          notified: holders.map((h) => ({ organisation: h.organisation_name, basis: h.basis })),
+          notified: notice.notified.map((h) => ({ organisation: h.organisation_name, basis: h.basis })),
+          unreachable: notice.unreachable.map((h) => ({ organisation: h.organisation_name, basis: h.basis })),
         },
       };
     });

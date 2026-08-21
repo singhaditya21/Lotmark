@@ -338,3 +338,35 @@ describe('competence-gate rules', () => {
     }
   });
 });
+
+describe('system-initiated transitions', () => {
+  it('a job may make only the moves the machine marks systemInitiated', async () => {
+    const { assertSystemTransition, NotSystemInitiatedError, ENTITLEMENT_MACHINE, STUDY_MACHINE } =
+      await import('../state-machines');
+
+    // Lapsing at revalidation is the system's to make.
+    expect(assertSystemTransition(ENTITLEMENT_MACHINE, 'approved', 'lapsed').systemInitiated).toBe(true);
+
+    // Signing a study is emphatically not: it manifests a person's judgement.
+    expect(() => assertSystemTransition(STUDY_MACHINE, 'draft', 'signed'))
+      .toThrow(NotSystemInitiatedError);
+
+    // Nor is deciding an entitlement claim.
+    expect(() => assertSystemTransition(ENTITLEMENT_MACHINE, 'under_review', 'approved'))
+      .toThrow(NotSystemInitiatedError);
+  });
+
+  it('no signature-bearing transition is system-initiated', async () => {
+    const { ALL_MACHINES } = await import('../state-machines');
+    const SIGNED = new Set(['study:sign', 'value:assign', 'value:authorise', 'cert:issue', 'cert:reissue']);
+    for (const m of ALL_MACHINES) {
+      for (const t of m.transitions) {
+        if (!SIGNED.has(t.requires)) continue;
+        // A machine could not sign; if one were ever marked system-initiated the
+        // system would be manifesting a human signature, which is the whole
+        // thing Part 11 forbids.
+        expect(t.systemInitiated ?? false, `${m.name}: ${t.from}→${t.to}`).toBe(false);
+      }
+    }
+  });
+});

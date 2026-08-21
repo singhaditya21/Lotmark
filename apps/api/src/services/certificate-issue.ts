@@ -122,6 +122,19 @@ export interface Holder {
   quantity: string; basis: string; contact_user_id: string | null;
 }
 
+export interface NotificationOutcome {
+  /** Holders who now have a notification addressed to a person. */
+  readonly notified: readonly Holder[];
+  /**
+   * Holders recorded but with nobody to address it to.
+   *
+   * Reported separately and never counted as notified. A withdrawal notice
+   * that reached nobody, recorded as delivered, is precisely the failure a
+   * withdrawal exists to prevent.
+   */
+  readonly unreachable: readonly Holder[];
+}
+
 /**
  * Notify every holder of an issue.
  *
@@ -137,31 +150,41 @@ export async function notifyHolders(
     tenantId: string; certificateId: string; issueNumber: number;
     subject: string; body: string; kind: 'reissue' | 'withdrawal';
   },
-): Promise<Holder[]> {
+): Promise<NotificationOutcome> {
   const holders = (await tx`
     SELECT * FROM lotmark.certificate_holders(${args.certificateId}, ${args.issueNumber})`
   ) as unknown as Holder[];
 
+  const notified: Holder[] = [];
+  const unreachable: Holder[] = [];
+
   for (const h of holders) {
-    // A holder with no named contact still gets a notification row: the
-    // organisation must appear in the notification report even when the
-    // producer has to reach them another way.
     const [recipient] = await tx`
       SELECT id FROM lotmark.users
       WHERE tenant_id = ${args.tenantId} AND organisation_id = ${h.organisation_id}
         AND deactivated_at IS NULL
       ORDER BY created_at LIMIT 1`;
-    const recipientId = h.contact_user_id ?? (recipient as { id: string } | undefined)?.id;
-    if (!recipientId) continue;
+    const recipientId = h.contact_user_id ?? (recipient as { id: string } | undefined)?.id ?? null;
 
+    /**
+     * A holder with nobody to address still gets a row.
+     *
+     * The previous version said exactly this in a comment and then `continue`d,
+     * so the organisation vanished from the notification report while the
+     * caller went on to record "N holder(s) notified" counting it. That is a
+     * false statement in the ledger, on the withdrawal path.
+     */
     await tx`
       INSERT INTO lotmark.notifications
         (tenant_id, recipient_user_id, subject, body, subject_table, subject_id,
-         certificate_id, issue_number, organisation_id)
+         certificate_id, issue_number, organisation_id, unreachable_reason)
       VALUES (${args.tenantId}, ${recipientId}, ${args.subject}, ${args.body},
               ${args.kind}, ${args.certificateId},
-              ${args.certificateId}, ${args.issueNumber}, ${h.organisation_id})
+              ${args.certificateId}, ${args.issueNumber}, ${h.organisation_id},
+              ${recipientId ? null : 'no active user at this organisation'})
       ON CONFLICT DO NOTHING`;
+
+    (recipientId ? notified : unreachable).push(h);
   }
-  return holders;
+  return { notified, unreachable };
 }

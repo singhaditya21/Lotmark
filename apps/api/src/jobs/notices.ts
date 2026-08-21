@@ -1,5 +1,6 @@
 import type { Sql } from '../db';
 import { recordAudit } from '../services/audit';
+import { assertSystemTransition, ENTITLEMENT_MACHINE } from '@lotmark/domain';
 import { systemAuditContext, type TenantContext } from './context';
 
 /**
@@ -178,6 +179,11 @@ export async function monitoringDue(tx: Sql, tenant: TenantContext): Promise<num
  * than being deleted, because the claim and its decision remain part of the record.
  */
 export async function lapseEntitlements(tx: Sql, tenant: TenantContext): Promise<number> {
+  // The declared machine is consulted even though no person is acting. It was
+  // previously bypassed with a raw UPDATE, so a state change happened that the
+  // machine said required a permission nobody had checked.
+  assertSystemTransition(ENTITLEMENT_MACHINE, 'approved', 'lapsed');
+
   const lapsed = await tx`
     UPDATE lotmark.entitlements
     SET state = 'lapsed', version = version + 1
