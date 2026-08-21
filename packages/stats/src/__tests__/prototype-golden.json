@@ -1,0 +1,851 @@
+{
+  "today": "2026-08-18",
+  "results": {
+    "ST-1001": [
+      {
+        "u": 4,
+        "r": 1,
+        "v": 99.609
+      },
+      {
+        "u": 4,
+        "r": 2,
+        "v": 99.552
+      },
+      {
+        "u": 21,
+        "r": 1,
+        "v": 99.473
+      },
+      {
+        "u": 21,
+        "r": 2,
+        "v": 99.546
+      },
+      {
+        "u": 38,
+        "r": 1,
+        "v": 99.401
+      },
+      {
+        "u": 38,
+        "r": 2,
+        "v": 99.45
+      },
+      {
+        "u": 55,
+        "r": 1,
+        "v": 99.486
+      },
+      {
+        "u": 55,
+        "r": 2,
+        "v": 99.353
+      },
+      {
+        "u": 72,
+        "r": 1,
+        "v": 99.662
+      },
+      {
+        "u": 72,
+        "r": 2,
+        "v": 99.691
+      },
+      {
+        "u": 89,
+        "r": 1,
+        "v": 99.758
+      },
+      {
+        "u": 89,
+        "r": 2,
+        "v": 99.575
+      }
+    ],
+    "ST-1002": [
+      {
+        "m": 0,
+        "v": 99.711
+      },
+      {
+        "m": 1,
+        "v": 99.377
+      },
+      {
+        "m": 3,
+        "v": 99.609
+      },
+      {
+        "m": 6,
+        "v": 99.528
+      },
+      {
+        "m": 12,
+        "v": 99.393
+      },
+      {
+        "m": 24,
+        "v": 99.389
+      }
+    ],
+    "ST-1003": [
+      {
+        "lab": "L1",
+        "v": 99.769
+      },
+      {
+        "lab": "L2",
+        "v": 100.243
+      },
+      {
+        "lab": "L3",
+        "v": 99.405
+      },
+      {
+        "lab": "L4",
+        "v": 99.226
+      },
+      {
+        "lab": "L5",
+        "v": 99.724
+      }
+    ],
+    "ST-1010": [
+      {
+        "u": 4,
+        "r": 1,
+        "v": 99.493
+      },
+      {
+        "u": 4,
+        "r": 2,
+        "v": 99.517
+      },
+      {
+        "u": 21,
+        "r": 1,
+        "v": 99.452
+      },
+      {
+        "u": 21,
+        "r": 2,
+        "v": 99.45
+      },
+      {
+        "u": 38,
+        "r": 1,
+        "v": 99.727
+      },
+      {
+        "u": 38,
+        "r": 2,
+        "v": 99.644
+      },
+      {
+        "u": 55,
+        "r": 1,
+        "v": 99.673
+      },
+      {
+        "u": 55,
+        "r": 2,
+        "v": 99.611
+      },
+      {
+        "u": 72,
+        "r": 1,
+        "v": 99.614
+      },
+      {
+        "u": 72,
+        "r": 2,
+        "v": 99.491
+      },
+      {
+        "u": 89,
+        "r": 1,
+        "v": 99.634
+      },
+      {
+        "u": 89,
+        "r": 2,
+        "v": 99.47
+      }
+    ],
+    "ST-1011": [
+      {
+        "m": 0,
+        "v": 99.323
+      },
+      {
+        "m": 1,
+        "v": 99.421
+      },
+      {
+        "m": 3,
+        "v": 99.396
+      },
+      {
+        "m": 6,
+        "v": 99.405
+      },
+      {
+        "m": 12,
+        "v": 99.325
+      },
+      {
+        "m": 24,
+        "v": 99.257
+      }
+    ],
+    "ST-1012": [
+      {
+        "lab": "L1",
+        "v": 100.817
+      },
+      {
+        "lab": "L2",
+        "v": 100.092
+      },
+      {
+        "lab": "L3",
+        "v": 98.503
+      },
+      {
+        "lab": "L4",
+        "v": 99.369
+      },
+      {
+        "lab": "L5",
+        "v": 98.513
+      }
+    ],
+    "ST-1013": [
+      {
+        "lab": "L1",
+        "v": 99.529
+      },
+      {
+        "lab": "L2",
+        "v": 99.429
+      },
+      {
+        "lab": "L3",
+        "v": 99.438
+      }
+    ],
+    "ST-1020": [
+      {
+        "u": 4,
+        "r": 1,
+        "v": 100.065
+      },
+      {
+        "u": 4,
+        "r": 2,
+        "v": 99.975
+      },
+      {
+        "u": 21,
+        "r": 1,
+        "v": 99.655
+      },
+      {
+        "u": 21,
+        "r": 2,
+        "v": 99.747
+      },
+      {
+        "u": 38,
+        "r": 1,
+        "v": 99.681
+      },
+      {
+        "u": 38,
+        "r": 2,
+        "v": 99.769
+      },
+      {
+        "u": 55,
+        "r": 1,
+        "v": 99.803
+      },
+      {
+        "u": 55,
+        "r": 2,
+        "v": 99.795
+      },
+      {
+        "u": 72,
+        "r": 1,
+        "v": 99.648
+      },
+      {
+        "u": 72,
+        "r": 2,
+        "v": 99.776
+      },
+      {
+        "u": 89,
+        "r": 1,
+        "v": 99.778
+      },
+      {
+        "u": 89,
+        "r": 2,
+        "v": 99.668
+      }
+    ],
+    "ST-1021": [
+      {
+        "m": 0,
+        "v": 99.715
+      },
+      {
+        "m": 1,
+        "v": 99.865
+      },
+      {
+        "m": 3,
+        "v": 99.629
+      },
+      {
+        "m": 6,
+        "v": 99.811
+      },
+      {
+        "m": 12,
+        "v": 99.642
+      },
+      {
+        "m": 24,
+        "v": 99.822
+      }
+    ],
+    "ST-1022": [
+      {
+        "lab": "L1",
+        "v": 100.362
+      },
+      {
+        "lab": "L2",
+        "v": 98.726
+      },
+      {
+        "lab": "L3",
+        "v": 100.542
+      },
+      {
+        "lab": "L4",
+        "v": 100.165
+      },
+      {
+        "lab": "L5",
+        "v": 99.765
+      }
+    ],
+    "ST-1030": [
+      {
+        "u": 4,
+        "r": 1,
+        "v": 99.335
+      },
+      {
+        "u": 4,
+        "r": 2,
+        "v": 99.236
+      },
+      {
+        "u": 21,
+        "r": 1,
+        "v": 99.26
+      },
+      {
+        "u": 21,
+        "r": 2,
+        "v": 99.039
+      },
+      {
+        "u": 38,
+        "r": 1,
+        "v": 99.438
+      },
+      {
+        "u": 38,
+        "r": 2,
+        "v": 99.144
+      },
+      {
+        "u": 55,
+        "r": 1,
+        "v": 99.064
+      },
+      {
+        "u": 55,
+        "r": 2,
+        "v": 99.159
+      },
+      {
+        "u": 72,
+        "r": 1,
+        "v": 99.427
+      },
+      {
+        "u": 72,
+        "r": 2,
+        "v": 99.33
+      },
+      {
+        "u": 89,
+        "r": 1,
+        "v": 99.332
+      },
+      {
+        "u": 89,
+        "r": 2,
+        "v": 99.247
+      }
+    ]
+  },
+  "studyMeta": [
+    {
+      "id": "ST-1001",
+      "prj": "PRJ-0412",
+      "type": "homogeneity",
+      "eq": [
+        "EQ-01",
+        "EQ-02"
+      ],
+      "u": 0.18,
+      "state": "signed",
+      "by": "u-ravi",
+      "at": "2025-11-04"
+    },
+    {
+      "id": "ST-1002",
+      "prj": "PRJ-0412",
+      "type": "stability",
+      "eq": [
+        "EQ-01",
+        "EQ-04"
+      ],
+      "u": 0.22,
+      "state": "signed",
+      "by": "u-ravi",
+      "at": "2025-12-10",
+      "shelf": "2028-03-31",
+      "storage": "2–8 °C",
+      "transport": "Chilled 72 h"
+    },
+    {
+      "id": "ST-1003",
+      "prj": "PRJ-0412",
+      "type": "characterisation",
+      "eq": [
+        "EQ-01"
+      ],
+      "u": 0.31,
+      "state": "signed",
+      "by": "u-ravi",
+      "at": "2026-01-08"
+    },
+    {
+      "id": "ST-1010",
+      "prj": "PRJ-0413",
+      "type": "homogeneity",
+      "eq": [
+        "EQ-02"
+      ],
+      "u": 0.15,
+      "state": "signed",
+      "by": "u-ravi",
+      "at": "2026-02-02"
+    },
+    {
+      "id": "ST-1011",
+      "prj": "PRJ-0413",
+      "type": "stability",
+      "eq": [
+        "EQ-04"
+      ],
+      "u": 0.2,
+      "state": "signed",
+      "by": "u-ravi",
+      "at": "2026-03-11",
+      "shelf": "2027-11-30",
+      "storage": "2–8 °C",
+      "transport": "Chilled 72 h"
+    },
+    {
+      "id": "ST-1012",
+      "prj": "PRJ-0413",
+      "type": "characterisation",
+      "eq": [
+        "EQ-01",
+        "EQ-03"
+      ],
+      "u": 0.28,
+      "state": "signed",
+      "by": "u-ravi",
+      "at": "2026-04-01"
+    },
+    {
+      "id": "ST-1013",
+      "prj": "PRJ-0413",
+      "type": "confirmatory retest",
+      "eq": [
+        "EQ-02"
+      ],
+      "u": 0.17,
+      "state": "signed",
+      "by": "u-ravi",
+      "at": "2026-07-15"
+    },
+    {
+      "id": "ST-1020",
+      "prj": "PRJ-0414",
+      "type": "homogeneity",
+      "eq": [
+        "EQ-01",
+        "EQ-02"
+      ],
+      "u": 0.21,
+      "state": "signed",
+      "by": "u-ravi",
+      "at": "2026-05-14"
+    },
+    {
+      "id": "ST-1021",
+      "prj": "PRJ-0414",
+      "type": "stability",
+      "eq": [
+        "EQ-04"
+      ],
+      "u": 0.25,
+      "state": "signed",
+      "by": "u-ravi",
+      "at": "2026-06-20",
+      "shelf": "2028-09-30",
+      "storage": "Room temperature",
+      "transport": "Ambient"
+    },
+    {
+      "id": "ST-1022",
+      "prj": "PRJ-0414",
+      "type": "characterisation",
+      "eq": [
+        "EQ-01"
+      ],
+      "u": 0.33,
+      "state": "draft",
+      "by": null,
+      "at": null
+    },
+    {
+      "id": "ST-1030",
+      "prj": "PRJ-0415",
+      "type": "homogeneity",
+      "eq": [
+        "EQ-02"
+      ],
+      "u": 0.19,
+      "state": "draft",
+      "by": null,
+      "at": null
+    }
+  ],
+  "studies": {
+    "ST-1001": {
+      "type": "homogeneity",
+      "shelf": null,
+      "at": "2025-11-04",
+      "state": "signed",
+      "stats": {
+        "kind": "bb",
+        "units": 6,
+        "reps": 2,
+        "gm": 99.54633333333334,
+        "msB": 0.025837933333333757,
+        "msW": 0.005249833333333342,
+        "sbb": 0.10145959787028631,
+        "ubb": 0.10145959787028631,
+        "floored": false,
+        "u": 0.10145959787028631
+      }
+    },
+    "ST-1002": {
+      "type": "stability",
+      "shelf": "2028-03-31",
+      "at": "2025-12-10",
+      "state": "signed",
+      "stats": {
+        "kind": "lts",
+        "n": 6,
+        "slope": -0.008781451612903246,
+        "inter": 99.56849112903227,
+        "seSlope": 0.006231574022330633,
+        "ults": 0.17448407262525772,
+        "significant": false,
+        "shelfMonths": 28,
+        "u": 0.17448407262525772
+      }
+    },
+    "ST-1003": {
+      "type": "characterisation",
+      "shelf": null,
+      "at": "2026-01-08",
+      "state": "signed",
+      "stats": {
+        "kind": "char",
+        "labs": 5,
+        "value": 99.6734,
+        "s": 0.38998371760882394,
+        "uchar": 0.1744060205382824,
+        "u": 0.1744060205382824
+      }
+    },
+    "ST-1010": {
+      "type": "homogeneity",
+      "shelf": null,
+      "at": "2026-02-02",
+      "state": "signed",
+      "stats": {
+        "kind": "bb",
+        "units": 6,
+        "reps": 2,
+        "gm": 99.56466666666667,
+        "msB": 0.014947933333334334,
+        "msW": 0.004444833333333425,
+        "sbb": 0.0724675789577688,
+        "ubb": 0.0724675789577688,
+        "floored": false,
+        "u": 0.0724675789577688
+      }
+    },
+    "ST-1011": {
+      "type": "stability",
+      "shelf": "2027-11-30",
+      "at": "2026-03-11",
+      "state": "signed",
+      "stats": {
+        "kind": "lts",
+        "n": 6,
+        "slope": -0.005322580645161058,
+        "inter": 99.39530645161288,
+        "seSlope": 0.002247824564006753,
+        "ults": 0.047204315844141816,
+        "significant": true,
+        "shelfMonths": 21,
+        "u": 0.047204315844141816
+      }
+    },
+    "ST-1012": {
+      "type": "characterisation",
+      "shelf": null,
+      "at": "2026-04-01",
+      "state": "signed",
+      "stats": {
+        "kind": "char",
+        "labs": 5,
+        "value": 99.4588,
+        "s": 1.007695985900506,
+        "uchar": 0.45065534502544013,
+        "u": 0.45065534502544013
+      }
+    },
+    "ST-1013": {
+      "type": "confirmatory retest",
+      "shelf": null,
+      "at": "2026-07-15",
+      "state": "signed",
+      "stats": {
+        "kind": "char",
+        "labs": 3,
+        "value": 99.46533333333333,
+        "s": 0.055320279584732415,
+        "uchar": 0.03193917830989062,
+        "u": 0.03193917830989062
+      }
+    },
+    "ST-1020": {
+      "type": "homogeneity",
+      "shelf": null,
+      "at": "2026-05-14",
+      "state": "signed",
+      "stats": {
+        "kind": "bb",
+        "units": 6,
+        "reps": 2,
+        "gm": 99.78000000000002,
+        "msB": 0.03004,
+        "msW": 0.004404666666666803,
+        "sbb": 0.11321513444176357,
+        "ubb": 0.11321513444176357,
+        "floored": false,
+        "u": 0.11321513444176357
+      }
+    },
+    "ST-1021": {
+      "type": "stability",
+      "shelf": "2028-09-30",
+      "at": "2026-06-20",
+      "state": "signed",
+      "stats": {
+        "kind": "lts",
+        "n": 6,
+        "slope": 0.0016274193548387107,
+        "inter": 99.73485645161288,
+        "seSlope": 0.005417412706434821,
+        "ults": 0.15168755578017498,
+        "significant": false,
+        "shelfMonths": 28,
+        "u": 0.15168755578017498
+      }
+    },
+    "ST-1022": {
+      "type": "characterisation",
+      "shelf": null,
+      "at": null,
+      "state": "draft",
+      "stats": {
+        "kind": "char",
+        "labs": 5,
+        "value": 99.912,
+        "s": 0.7231206676620442,
+        "uchar": 0.32338939376547293,
+        "u": 0.32338939376547293
+      }
+    },
+    "ST-1030": {
+      "type": "homogeneity",
+      "shelf": null,
+      "at": null,
+      "state": "draft",
+      "stats": {
+        "kind": "bb",
+        "units": 6,
+        "reps": 2,
+        "gm": 99.25091666666668,
+        "msB": 0.020116483333332574,
+        "msW": 0.014228083333333398,
+        "sbb": 0.05426048285814998,
+        "ubb": 0.05426048285814998,
+        "floored": false,
+        "u": 0.05426048285814998
+      }
+    }
+  },
+  "projects": {
+    "PRJ-0412": {
+      "budget": {
+        "uBb": 0.10145959787028631,
+        "uLts": 0.17448407262525772,
+        "uChar": 0.1744060205382824,
+        "uc": 0.2667511979352599,
+        "complete": true
+      },
+      "assignedValue": 99.6734,
+      "components": [
+        {
+          "study": "ST-1001",
+          "type": "homogeneity",
+          "symbol": "u(bb)",
+          "value": 0.10145959787028631,
+          "basis": "6 units × 2 replicates, one-way ANOVA"
+        },
+        {
+          "study": "ST-1002",
+          "type": "stability",
+          "symbol": "u(lts)",
+          "value": 0.17448407262525772,
+          "basis": "6 timepoints, slope -0.00878/month (not significant), projected over 28 months"
+        },
+        {
+          "study": "ST-1003",
+          "type": "characterisation",
+          "symbol": "u(char)",
+          "value": 0.1744060205382824,
+          "basis": "5 laboratories, s = 0.390"
+        }
+      ]
+    },
+    "PRJ-0413": {
+      "budget": {
+        "uBb": 0.0724675789577688,
+        "uLts": 0.047204315844141816,
+        "uChar": 0.45065534502544013,
+        "uc": 0.45887910982557534,
+        "complete": true
+      },
+      "assignedValue": 99.4588,
+      "components": [
+        {
+          "study": "ST-1010",
+          "type": "homogeneity",
+          "symbol": "u(bb)",
+          "value": 0.0724675789577688,
+          "basis": "6 units × 2 replicates, one-way ANOVA"
+        },
+        {
+          "study": "ST-1011",
+          "type": "stability",
+          "symbol": "u(lts)",
+          "value": 0.047204315844141816,
+          "basis": "6 timepoints, slope -0.00532/month (SIGNIFICANT), projected over 21 months"
+        },
+        {
+          "study": "ST-1012",
+          "type": "characterisation",
+          "symbol": "u(char)",
+          "value": 0.45065534502544013,
+          "basis": "5 laboratories, s = 1.008"
+        },
+        {
+          "study": "ST-1013",
+          "type": "confirmatory retest",
+          "symbol": "u(char)",
+          "value": 0.03193917830989062,
+          "basis": "3 laboratories, s = 0.055"
+        }
+      ]
+    },
+    "PRJ-0414": {
+      "budget": {
+        "uBb": 0.11321513444176357,
+        "uLts": 0.15168755578017498,
+        "uChar": null,
+        "uc": 0.1892796376930976,
+        "complete": false
+      },
+      "assignedValue": null,
+      "components": [
+        {
+          "study": "ST-1020",
+          "type": "homogeneity",
+          "symbol": "u(bb)",
+          "value": 0.11321513444176357,
+          "basis": "6 units × 2 replicates, one-way ANOVA"
+        },
+        {
+          "study": "ST-1021",
+          "type": "stability",
+          "symbol": "u(lts)",
+          "value": 0.15168755578017498,
+          "basis": "6 timepoints, slope 0.00163/month (not significant), projected over 28 months"
+        }
+      ]
+    },
+    "PRJ-0415": {
+      "budget": {
+        "uBb": null,
+        "uLts": null,
+        "uChar": null,
+        "uc": null,
+        "complete": false
+      },
+      "assignedValue": null,
+      "components": []
+    }
+  }
+}

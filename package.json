@@ -1,0 +1,23 @@
+{
+  "name": "lotmark",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lotmark — ISO 17034 reference material producer platform",
+  "engines": { "node": ">=22" },
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "db:generate": "pnpm --filter @lotmark/db generate",
+    "db:migrate": "pnpm --filter @lotmark/db migrate",
+    "db:seed": "pnpm --filter @lotmark/db seed",
+    "db:reset": "pnpm --filter @lotmark/db reset"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
+    "tsx": "^4.19.2"
+  }
+}
