@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   hashPassword, verifyPassword, needsRehash, WeakPasswordError,
   MIN_PASSWORD_LENGTH,
-} from '../security/passwords';
+} from '../passwords';
 
 describe('password hashing', () => {
   const good = 'correct-horse-battery-staple';

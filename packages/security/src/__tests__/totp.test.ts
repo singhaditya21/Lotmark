@@ -3,7 +3,7 @@ import { authenticator } from 'otplib';
 import {
   generateSecret, verifyTotp, enrolmentUri, replayKey,
   generateRecoveryCodes, hashRecoveryCode, recoveryCodeMatches,
-} from '../security/totp';
+} from '../totp';
 
 describe('TOTP', () => {
   const secret = generateSecret();

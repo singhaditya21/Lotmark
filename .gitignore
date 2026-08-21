@@ -38,3 +38,6 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# seed working files
+packages/db/src/seed/.extract*.tmp.mjs

@@ -1,0 +1,1184 @@
+{
+  "DB": {
+    "equipment": [
+      {
+        "id": "EQ-01",
+        "n": "HPLC — Agilent 1260",
+        "type": "Chromatograph",
+        "cal": [
+          {
+            "from": "2025-04-01",
+            "to": "2026-03-31"
+          },
+          {
+            "from": "2026-04-01",
+            "to": "2027-03-31"
+          }
+        ]
+      },
+      {
+        "id": "EQ-02",
+        "n": "Analytical balance — XPR205",
+        "type": "Balance",
+        "cal": [
+          {
+            "from": "2025-06-01",
+            "to": "2026-05-31"
+          }
+        ]
+      },
+      {
+        "id": "EQ-03",
+        "n": "Karl Fischer titrator",
+        "type": "Titrator",
+        "cal": [
+          {
+            "from": "2026-01-01",
+            "to": "2027-01-01"
+          }
+        ]
+      },
+      {
+        "id": "EQ-04",
+        "n": "Stability chamber 5 °C",
+        "type": "Chamber",
+        "cal": [
+          {
+            "from": "2026-02-01",
+            "to": "2027-02-01"
+          }
+        ]
+      }
+    ],
+    "competence": [
+      {
+        "p": "u-ravi",
+        "act": "study:sign",
+        "from": "2024-01-01",
+        "to": "2027-12-31"
+      },
+      {
+        "p": "u-ravi",
+        "act": "value:assign",
+        "from": "2024-01-01",
+        "to": "2027-12-31"
+      },
+      {
+        "p": "u-sunil",
+        "act": "study:sign",
+        "from": "2024-01-01",
+        "to": "2026-06-30"
+      },
+      {
+        "p": "u-asha",
+        "act": "value:authorise",
+        "from": "2023-01-01",
+        "to": "2028-12-31"
+      },
+      {
+        "p": "u-asha",
+        "act": "cert:issue",
+        "from": "2023-01-01",
+        "to": "2028-12-31"
+      },
+      {
+        "p": "u-admin",
+        "act": "value:authorise",
+        "from": "2024-01-01",
+        "to": "2028-12-31"
+      },
+      {
+        "p": "u-admin",
+        "act": "cert:issue",
+        "from": "2024-01-01",
+        "to": "2028-12-31"
+      },
+      {
+        "p": "u-admin",
+        "act": "study:sign",
+        "from": "2024-01-01",
+        "to": "2028-12-31"
+      },
+      {
+        "p": "u-admin",
+        "act": "value:assign",
+        "from": "2024-01-01",
+        "to": "2028-12-31"
+      }
+    ],
+    "projects": [
+      {
+        "id": "PRJ-0412",
+        "mat": "Paracetamol",
+        "cas": "103-90-2",
+        "sku": "RM-PARA",
+        "stage": "released",
+        "owner": "u-sunil",
+        "intake": "50 mg",
+        "target": "0.5%"
+      },
+      {
+        "id": "PRJ-0413",
+        "mat": "Metformin Hydrochloride",
+        "cas": "1115-70-4",
+        "sku": "RM-METF",
+        "stage": "released",
+        "owner": "u-sunil",
+        "intake": "50 mg",
+        "target": "0.5%"
+      },
+      {
+        "id": "PRJ-0414",
+        "mat": "Ibuprofen",
+        "cas": "15687-27-1",
+        "sku": "RM-IBUP",
+        "stage": "authorisation",
+        "owner": "u-sunil",
+        "intake": "50 mg",
+        "target": "0.6%"
+      },
+      {
+        "id": "PRJ-0415",
+        "mat": "Atorvastatin Calcium",
+        "cas": "134523-03-8",
+        "sku": "RM-ATOR",
+        "stage": "study",
+        "owner": "u-sunil",
+        "intake": "25 mg",
+        "target": "0.8%"
+      }
+    ],
+    "studies": [
+      {
+        "id": "ST-1001",
+        "prj": "PRJ-0412",
+        "type": "homogeneity",
+        "eq": [
+          "EQ-01",
+          "EQ-02"
+        ],
+        "u": 0.18,
+        "state": "signed",
+        "by": "u-ravi",
+        "at": "2025-11-04"
+      },
+      {
+        "id": "ST-1002",
+        "prj": "PRJ-0412",
+        "type": "stability",
+        "eq": [
+          "EQ-01",
+          "EQ-04"
+        ],
+        "u": 0.22,
+        "state": "signed",
+        "by": "u-ravi",
+        "at": "2025-12-10",
+        "shelf": "2028-03-31",
+        "storage": "2–8 °C",
+        "transport": "Chilled 72 h"
+      },
+      {
+        "id": "ST-1003",
+        "prj": "PRJ-0412",
+        "type": "characterisation",
+        "eq": [
+          "EQ-01"
+        ],
+        "u": 0.31,
+        "state": "signed",
+        "by": "u-ravi",
+        "at": "2026-01-08"
+      },
+      {
+        "id": "ST-1010",
+        "prj": "PRJ-0413",
+        "type": "homogeneity",
+        "eq": [
+          "EQ-02"
+        ],
+        "u": 0.15,
+        "state": "signed",
+        "by": "u-ravi",
+        "at": "2026-02-02"
+      },
+      {
+        "id": "ST-1011",
+        "prj": "PRJ-0413",
+        "type": "stability",
+        "eq": [
+          "EQ-04"
+        ],
+        "u": 0.2,
+        "state": "signed",
+        "by": "u-ravi",
+        "at": "2026-03-11",
+        "shelf": "2027-11-30",
+        "storage": "2–8 °C",
+        "transport": "Chilled 72 h"
+      },
+      {
+        "id": "ST-1012",
+        "prj": "PRJ-0413",
+        "type": "characterisation",
+        "eq": [
+          "EQ-01",
+          "EQ-03"
+        ],
+        "u": 0.28,
+        "state": "signed",
+        "by": "u-ravi",
+        "at": "2026-04-01"
+      },
+      {
+        "id": "ST-1013",
+        "prj": "PRJ-0413",
+        "type": "confirmatory retest",
+        "eq": [
+          "EQ-02"
+        ],
+        "u": 0.17,
+        "state": "signed",
+        "by": "u-ravi",
+        "at": "2026-07-15"
+      },
+      {
+        "id": "ST-1020",
+        "prj": "PRJ-0414",
+        "type": "homogeneity",
+        "eq": [
+          "EQ-01",
+          "EQ-02"
+        ],
+        "u": 0.21,
+        "state": "signed",
+        "by": "u-ravi",
+        "at": "2026-05-14"
+      },
+      {
+        "id": "ST-1021",
+        "prj": "PRJ-0414",
+        "type": "stability",
+        "eq": [
+          "EQ-04"
+        ],
+        "u": 0.25,
+        "state": "signed",
+        "by": "u-ravi",
+        "at": "2026-06-20",
+        "shelf": "2028-09-30",
+        "storage": "Room temperature",
+        "transport": "Ambient"
+      },
+      {
+        "id": "ST-1022",
+        "prj": "PRJ-0414",
+        "type": "characterisation",
+        "eq": [
+          "EQ-01"
+        ],
+        "u": 0.33,
+        "state": "draft",
+        "by": null,
+        "at": null
+      },
+      {
+        "id": "ST-1030",
+        "prj": "PRJ-0415",
+        "type": "homogeneity",
+        "eq": [
+          "EQ-02"
+        ],
+        "u": 0.19,
+        "state": "draft",
+        "by": null,
+        "at": null
+      }
+    ],
+    "values": [
+      {
+        "id": "PV-01",
+        "prj": "PRJ-0412",
+        "prop": "Assay (as is)",
+        "unit": "% w/w",
+        "val": 99.62,
+        "k": 2,
+        "state": "authorised",
+        "assigned": "u-ravi",
+        "auth": "u-asha"
+      },
+      {
+        "id": "PV-02",
+        "prj": "PRJ-0413",
+        "prop": "Assay (as is)",
+        "unit": "% w/w",
+        "val": 99.41,
+        "k": 2,
+        "state": "authorised",
+        "assigned": "u-ravi",
+        "auth": "u-asha"
+      },
+      {
+        "id": "PV-03",
+        "prj": "PRJ-0414",
+        "prop": "Assay (as is)",
+        "unit": "% w/w",
+        "val": 99.78,
+        "k": 2,
+        "state": "draft",
+        "assigned": null,
+        "auth": null
+      }
+    ],
+    "lots": [
+      {
+        "id": "L-01",
+        "prj": "PRJ-0412",
+        "lot": "RMP-PARA-0421",
+        "prev": "RMP-PARA-0388",
+        "exp": "2028-03-31",
+        "stock": 48,
+        "state": "released",
+        "storage": "2–8 °C",
+        "cold": true,
+        "price": 5000,
+        "tierable": true
+      },
+      {
+        "id": "L-02",
+        "prj": "PRJ-0413",
+        "lot": "RMP-METF-0518",
+        "prev": "RMP-METF-0470",
+        "exp": "2027-11-30",
+        "stock": 9,
+        "state": "released",
+        "storage": "2–8 °C",
+        "cold": true,
+        "price": 5000,
+        "tierable": true
+      },
+      {
+        "id": "L-03",
+        "prj": "PRJ-0412",
+        "lot": "RMP-PARA-0388",
+        "prev": "—",
+        "exp": "2026-04-30",
+        "stock": 0,
+        "state": "superseded",
+        "storage": "2–8 °C",
+        "cold": true,
+        "price": 5000,
+        "tierable": true
+      }
+    ],
+    "certs": [
+      {
+        "id": "CRT-2041",
+        "lot": "L-01",
+        "issues": [
+          {
+            "n": 1,
+            "at": "2026-02-01",
+            "by": "u-asha",
+            "val": 99.62,
+            "U": 0.84,
+            "withdrawn": false
+          }
+        ]
+      },
+      {
+        "id": "CRT-2042",
+        "lot": "L-02",
+        "issues": [
+          {
+            "n": 1,
+            "at": "2026-04-10",
+            "by": "u-asha",
+            "val": 99.41,
+            "U": 0.76,
+            "withdrawn": false
+          }
+        ]
+      }
+    ],
+    "orders": [
+      {
+        "id": "ORD-3301",
+        "org": "c-genpharm",
+        "by": "u-meera",
+        "lines": [
+          {
+            "lot": "L-01",
+            "q": 2,
+            "unit": 5000
+          }
+        ],
+        "total": 10000,
+        "state": "delivered",
+        "placed": "2026-03-04",
+        "courier": "Blue Dart"
+      },
+      {
+        "id": "ORD-3302",
+        "org": "c-sdtl",
+        "by": "u-suresh",
+        "lines": [
+          {
+            "lot": "L-02",
+            "q": 1,
+            "unit": 5000
+          }
+        ],
+        "total": 5000,
+        "state": "dispatched",
+        "placed": "2026-05-19",
+        "courier": "Delhivery"
+      },
+      {
+        "id": "ORD-3303",
+        "org": "c-genpharm",
+        "by": "u-meera",
+        "lines": [
+          {
+            "lot": "L-02",
+            "q": 1,
+            "unit": 5000
+          }
+        ],
+        "total": 5000,
+        "state": "placed",
+        "placed": "2026-08-12",
+        "courier": "—"
+      }
+    ],
+    "entitlements": [
+      {
+        "id": "ENT-124",
+        "org": "c-sdtl",
+        "by": "u-suresh",
+        "doc": "FDCA Gujarat notification FDCA/GJ/2026/771",
+        "state": "under_review",
+        "raised": "2026-08-04",
+        "decider": null,
+        "reval": null
+      }
+    ],
+    "capa": [
+      {
+        "id": "NCR-0231",
+        "src": "Temperature excursion",
+        "obj": "ORD-3302",
+        "sev": "Major",
+        "state": "investigation",
+        "owner": "u-neha",
+        "raised": "2026-06-02"
+      }
+    ],
+    "subs": [
+      {
+        "id": "SUB-01",
+        "n": "Metrolab Analytical Services",
+        "act": "Characterisation testing",
+        "accred": "ISO/IEC 17025 · TC-9981",
+        "to": "2027-03-31"
+      },
+      {
+        "id": "SUB-02",
+        "n": "ColdChain Logistics Pvt Ltd",
+        "act": "Storage and distribution",
+        "accred": "GDP audit report 2026",
+        "to": "2026-11-30"
+      }
+    ],
+    "results": {
+      "ST-1001": [
+        {
+          "u": 4,
+          "r": 1,
+          "v": 99.609
+        },
+        {
+          "u": 4,
+          "r": 2,
+          "v": 99.552
+        },
+        {
+          "u": 21,
+          "r": 1,
+          "v": 99.473
+        },
+        {
+          "u": 21,
+          "r": 2,
+          "v": 99.546
+        },
+        {
+          "u": 38,
+          "r": 1,
+          "v": 99.401
+        },
+        {
+          "u": 38,
+          "r": 2,
+          "v": 99.45
+        },
+        {
+          "u": 55,
+          "r": 1,
+          "v": 99.486
+        },
+        {
+          "u": 55,
+          "r": 2,
+          "v": 99.353
+        },
+        {
+          "u": 72,
+          "r": 1,
+          "v": 99.662
+        },
+        {
+          "u": 72,
+          "r": 2,
+          "v": 99.691
+        },
+        {
+          "u": 89,
+          "r": 1,
+          "v": 99.758
+        },
+        {
+          "u": 89,
+          "r": 2,
+          "v": 99.575
+        }
+      ],
+      "ST-1002": [
+        {
+          "m": 0,
+          "v": 99.711
+        },
+        {
+          "m": 1,
+          "v": 99.377
+        },
+        {
+          "m": 3,
+          "v": 99.609
+        },
+        {
+          "m": 6,
+          "v": 99.528
+        },
+        {
+          "m": 12,
+          "v": 99.393
+        },
+        {
+          "m": 24,
+          "v": 99.389
+        }
+      ],
+      "ST-1003": [
+        {
+          "lab": "L1",
+          "v": 99.769
+        },
+        {
+          "lab": "L2",
+          "v": 100.243
+        },
+        {
+          "lab": "L3",
+          "v": 99.405
+        },
+        {
+          "lab": "L4",
+          "v": 99.226
+        },
+        {
+          "lab": "L5",
+          "v": 99.724
+        }
+      ],
+      "ST-1010": [
+        {
+          "u": 4,
+          "r": 1,
+          "v": 99.493
+        },
+        {
+          "u": 4,
+          "r": 2,
+          "v": 99.517
+        },
+        {
+          "u": 21,
+          "r": 1,
+          "v": 99.452
+        },
+        {
+          "u": 21,
+          "r": 2,
+          "v": 99.45
+        },
+        {
+          "u": 38,
+          "r": 1,
+          "v": 99.727
+        },
+        {
+          "u": 38,
+          "r": 2,
+          "v": 99.644
+        },
+        {
+          "u": 55,
+          "r": 1,
+          "v": 99.673
+        },
+        {
+          "u": 55,
+          "r": 2,
+          "v": 99.611
+        },
+        {
+          "u": 72,
+          "r": 1,
+          "v": 99.614
+        },
+        {
+          "u": 72,
+          "r": 2,
+          "v": 99.491
+        },
+        {
+          "u": 89,
+          "r": 1,
+          "v": 99.634
+        },
+        {
+          "u": 89,
+          "r": 2,
+          "v": 99.47
+        }
+      ],
+      "ST-1011": [
+        {
+          "m": 0,
+          "v": 99.323
+        },
+        {
+          "m": 1,
+          "v": 99.421
+        },
+        {
+          "m": 3,
+          "v": 99.396
+        },
+        {
+          "m": 6,
+          "v": 99.405
+        },
+        {
+          "m": 12,
+          "v": 99.325
+        },
+        {
+          "m": 24,
+          "v": 99.257
+        }
+      ],
+      "ST-1012": [
+        {
+          "lab": "L1",
+          "v": 100.817
+        },
+        {
+          "lab": "L2",
+          "v": 100.092
+        },
+        {
+          "lab": "L3",
+          "v": 98.503
+        },
+        {
+          "lab": "L4",
+          "v": 99.369
+        },
+        {
+          "lab": "L5",
+          "v": 98.513
+        }
+      ],
+      "ST-1013": [
+        {
+          "lab": "L1",
+          "v": 99.529
+        },
+        {
+          "lab": "L2",
+          "v": 99.429
+        },
+        {
+          "lab": "L3",
+          "v": 99.438
+        }
+      ],
+      "ST-1020": [
+        {
+          "u": 4,
+          "r": 1,
+          "v": 100.065
+        },
+        {
+          "u": 4,
+          "r": 2,
+          "v": 99.975
+        },
+        {
+          "u": 21,
+          "r": 1,
+          "v": 99.655
+        },
+        {
+          "u": 21,
+          "r": 2,
+          "v": 99.747
+        },
+        {
+          "u": 38,
+          "r": 1,
+          "v": 99.681
+        },
+        {
+          "u": 38,
+          "r": 2,
+          "v": 99.769
+        },
+        {
+          "u": 55,
+          "r": 1,
+          "v": 99.803
+        },
+        {
+          "u": 55,
+          "r": 2,
+          "v": 99.795
+        },
+        {
+          "u": 72,
+          "r": 1,
+          "v": 99.648
+        },
+        {
+          "u": 72,
+          "r": 2,
+          "v": 99.776
+        },
+        {
+          "u": 89,
+          "r": 1,
+          "v": 99.778
+        },
+        {
+          "u": 89,
+          "r": 2,
+          "v": 99.668
+        }
+      ],
+      "ST-1021": [
+        {
+          "m": 0,
+          "v": 99.715
+        },
+        {
+          "m": 1,
+          "v": 99.865
+        },
+        {
+          "m": 3,
+          "v": 99.629
+        },
+        {
+          "m": 6,
+          "v": 99.811
+        },
+        {
+          "m": 12,
+          "v": 99.642
+        },
+        {
+          "m": 24,
+          "v": 99.822
+        }
+      ],
+      "ST-1022": [
+        {
+          "lab": "L1",
+          "v": 100.362
+        },
+        {
+          "lab": "L2",
+          "v": 98.726
+        },
+        {
+          "lab": "L3",
+          "v": 100.542
+        },
+        {
+          "lab": "L4",
+          "v": 100.165
+        },
+        {
+          "lab": "L5",
+          "v": 99.765
+        }
+      ],
+      "ST-1030": [
+        {
+          "u": 4,
+          "r": 1,
+          "v": 99.335
+        },
+        {
+          "u": 4,
+          "r": 2,
+          "v": 99.236
+        },
+        {
+          "u": 21,
+          "r": 1,
+          "v": 99.26
+        },
+        {
+          "u": 21,
+          "r": 2,
+          "v": 99.039
+        },
+        {
+          "u": 38,
+          "r": 1,
+          "v": 99.438
+        },
+        {
+          "u": 38,
+          "r": 2,
+          "v": 99.144
+        },
+        {
+          "u": 55,
+          "r": 1,
+          "v": 99.064
+        },
+        {
+          "u": 55,
+          "r": 2,
+          "v": 99.159
+        },
+        {
+          "u": 72,
+          "r": 1,
+          "v": 99.427
+        },
+        {
+          "u": 72,
+          "r": 2,
+          "v": 99.33
+        },
+        {
+          "u": 89,
+          "r": 1,
+          "v": 99.332
+        },
+        {
+          "u": 89,
+          "r": 2,
+          "v": 99.247
+        }
+      ]
+    },
+    "loggers": [
+      {
+        "ship": "SHP-8841",
+        "order": "ORD-3302",
+        "cls": "2-8",
+        "readings": [
+          {
+            "t": "2026-05-19 09:00",
+            "c": 5.1
+          },
+          {
+            "t": "2026-05-19 21:00",
+            "c": 5.4
+          },
+          {
+            "t": "2026-05-20 09:00",
+            "c": 6
+          },
+          {
+            "t": "2026-05-20 21:00",
+            "c": 11.8
+          },
+          {
+            "t": "2026-05-21 03:00",
+            "c": 14.2
+          },
+          {
+            "t": "2026-05-21 09:00",
+            "c": 12.6
+          },
+          {
+            "t": "2026-05-21 21:00",
+            "c": 6.2
+          },
+          {
+            "t": "2026-05-22 09:00",
+            "c": 5.3
+          }
+        ]
+      },
+      {
+        "ship": "SHP-8830",
+        "order": "ORD-3301",
+        "cls": "2-8",
+        "readings": [
+          {
+            "t": "2026-03-05 09:00",
+            "c": 4.8
+          },
+          {
+            "t": "2026-03-05 21:00",
+            "c": 5.2
+          },
+          {
+            "t": "2026-03-06 09:00",
+            "c": 5.6
+          },
+          {
+            "t": "2026-03-06 21:00",
+            "c": 5.1
+          },
+          {
+            "t": "2026-03-07 09:00",
+            "c": 4.9
+          }
+        ]
+      }
+    ],
+    "process": [
+      {
+        "prj": "PRJ-0412",
+        "step": "Drying",
+        "eq": "EQ-02",
+        "by": "u-ravi",
+        "at": "2025-09-12",
+        "note": "40 °C, 24 h to constant mass"
+      },
+      {
+        "prj": "PRJ-0412",
+        "step": "Milling and sieving",
+        "eq": "EQ-02",
+        "by": "u-ravi",
+        "at": "2025-09-15",
+        "note": "250 µm mesh"
+      },
+      {
+        "prj": "PRJ-0412",
+        "step": "Blending",
+        "eq": "EQ-02",
+        "by": "u-sunil",
+        "at": "2025-09-16",
+        "note": "V-blender, 30 min"
+      },
+      {
+        "prj": "PRJ-0413",
+        "step": "Drying",
+        "eq": "EQ-03",
+        "by": "u-ravi",
+        "at": "2025-12-02",
+        "note": "Karl Fischer confirmed"
+      },
+      {
+        "prj": "PRJ-0414",
+        "step": "Milling",
+        "eq": "EQ-02",
+        "by": "u-ravi",
+        "at": "2026-04-18",
+        "note": "250 µm mesh"
+      }
+    ],
+    "facilities": [
+      {
+        "id": "FC-01",
+        "n": "Cold store A",
+        "cond": "2–8 °C",
+        "lots": [
+          "L-01",
+          "L-02",
+          "L-03"
+        ],
+        "excursions": [
+          {
+            "from": "2026-06-04",
+            "to": "2026-06-05",
+            "peak": "14.2 °C",
+            "dur": "9 h",
+            "disposition": "under assessment"
+          }
+        ]
+      },
+      {
+        "id": "FC-02",
+        "n": "Ambient store B",
+        "cond": "15–25 °C",
+        "lots": [],
+        "excursions": []
+      },
+      {
+        "id": "FC-03",
+        "n": "Freezer C",
+        "cond": "−20 °C",
+        "lots": [],
+        "excursions": []
+      }
+    ],
+    "vault": [
+      {
+        "org": "c-genpharm",
+        "lot": "L-01",
+        "loc": "Cold room A, shelf 3",
+        "qty": 2
+      },
+      {
+        "org": "c-genpharm",
+        "lot": "L-03",
+        "loc": "Cold room A, shelf 1",
+        "qty": 1
+      }
+    ],
+    "notifs": [],
+    "audit": [],
+    "chain": "00000000",
+    "cart": {},
+    "reissueAck": {}
+  },
+  "USERS": [
+    {
+      "id": "u-ravi",
+      "n": "Ravi Menon",
+      "e": "ravi@producer.example",
+      "pw": "demo1234",
+      "role": "scientist",
+      "org": "t-ipc",
+      "col": "#1F6F8B",
+      "mfa": true
+    },
+    {
+      "id": "u-sunil",
+      "n": "Sunil Bhatt",
+      "e": "sunil@producer.example",
+      "pw": "demo1234",
+      "role": "prodlead",
+      "org": "t-ipc",
+      "col": "#3E5C2E",
+      "mfa": true
+    },
+    {
+      "id": "u-asha",
+      "n": "Dr. Asha Pillai",
+      "e": "asha@producer.example",
+      "pw": "demo1234",
+      "role": "techmgr",
+      "org": "t-ipc",
+      "col": "#9E211B",
+      "mfa": true
+    },
+    {
+      "id": "u-neha",
+      "n": "Neha Kulkarni",
+      "e": "neha@producer.example",
+      "pw": "demo1234",
+      "role": "quality",
+      "org": "t-ipc",
+      "col": "#7A2E86",
+      "mfa": true
+    },
+    {
+      "id": "u-arjun",
+      "n": "Arjun Rao",
+      "e": "arjun@producer.example",
+      "pw": "demo1234",
+      "role": "commercial",
+      "org": "t-ipc",
+      "col": "#17457C",
+      "mfa": true
+    },
+    {
+      "id": "u-vikram",
+      "n": "Vikram Shetty",
+      "e": "vikram@producer.example",
+      "pw": "demo1234",
+      "role": "dispatch",
+      "org": "t-ipc",
+      "col": "#4A4A6A",
+      "mfa": true
+    },
+    {
+      "id": "u-admin",
+      "n": "Tenant Administrator",
+      "e": "admin@producer.example",
+      "pw": "demo1234",
+      "role": "tenantadmin",
+      "org": "t-ipc",
+      "col": "#0E1C36",
+      "mfa": true
+    },
+    {
+      "id": "u-meera",
+      "n": "Dr. Meera Raghavan",
+      "e": "meera@genpharm.example",
+      "pw": "demo1234",
+      "role": "labqm",
+      "org": "c-genpharm",
+      "col": "#0B6A4D",
+      "mfa": false
+    },
+    {
+      "id": "u-suresh",
+      "n": "Suresh Iyer",
+      "e": "suresh@sdtl.gov.example",
+      "pw": "demo1234",
+      "role": "labbuyer",
+      "org": "c-sdtl",
+      "col": "#8A5300",
+      "mfa": false
+    }
+  ],
+  "ORGS": [
+    {
+      "id": "t-ipc",
+      "n": "Pharmacopoeial Standards Division",
+      "kind": "producer",
+      "accred": "NABL RMP-0042",
+      "scope": "Organic chemical reference materials"
+    },
+    {
+      "id": "c-genpharm",
+      "n": "GenPharm Laboratories Pvt Ltd",
+      "kind": "customer",
+      "type": "Private manufacturer",
+      "ph": "+91 79 4000 1122",
+      "tier": "private"
+    },
+    {
+      "id": "c-sdtl",
+      "n": "State Drug Testing Laboratory, Vadodara",
+      "kind": "customer",
+      "type": "Government laboratory",
+      "ph": "+91 265 234 5566",
+      "tier": "private"
+    }
+  ],
+  "extractedFrom": "docs/artefacts/lotmark-app.html"
+}
