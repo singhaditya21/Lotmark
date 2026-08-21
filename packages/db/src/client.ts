@@ -19,5 +19,19 @@ export function createClient(url = process.env.DATABASE_URL ?? DEFAULT_URL) {
   });
 }
 
-export const DEFAULT_URL = 'postgres://localhost:5432/lotmark_dev';
+/**
+ * The APPLICATION connection: `lotmark_app`, deliberately not a superuser and
+ * not the schema owner, because a superuser bypasses row-level security
+ * unconditionally. Connecting as one would mean tenant isolation is absent in
+ * development and the test suite, and first exercised in production.
+ */
+export const DEFAULT_URL = 'postgres://lotmark_app@localhost:5432/lotmark_dev';
+
+/**
+ * The MIGRATION and SEED connection: the schema owner.
+ *
+ * Needed only for work the application must never be able to do — DDL, and
+ * TRUNCATE, which bypasses the row triggers that make the ledger append-only.
+ */
+export const ADMIN_URL = 'postgres://localhost:5432/lotmark_dev';
 export type Sql = ReturnType<typeof createClient>;

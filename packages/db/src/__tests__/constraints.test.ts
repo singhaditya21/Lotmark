@@ -29,8 +29,10 @@ async function inRollback<T2>(fn: (tx: Sql) => Promise<T2>): Promise<T2> {
   const ROLLBACK = Symbol('rollback');
   try {
     return await sql.begin(async (tx) => {
-      await tx`INSERT INTO lotmark.tenants (id, slug, name, short_name, conformance_frame, lot_numbering_template, data_residency)
-               VALUES (${T}, 't', 'T', 'T', 'ISO 17034', 'X-{SEQ}', 'local')`;
+      // Tenants are under RLS; provision_tenant is SECURITY DEFINER and is the
+      // only way to create one without an existing tenant context.
+      await tx`SELECT lotmark.provision_tenant(${T}, 't', 'T', 'T', 'ISO 17034', 'X-{SEQ}', 'local')`;
+      await tx`SELECT set_config('lotmark.tenant_id', ${T}, true)`;
       await tx`INSERT INTO lotmark.organisations (id, tenant_id, code, name, kind)
                VALUES (${ORG}, ${T}, 'O', 'Org', 'producer')`;
       await tx`INSERT INTO lotmark.users (id, tenant_id, organisation_id, code, email, display_name, password_hash)

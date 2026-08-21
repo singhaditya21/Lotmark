@@ -46,7 +46,9 @@ export async function requireSession(
     return null;
   }
 
-  const [tenantRow] = await app.db`SELECT id, time_source, region FROM lotmark.tenants ORDER BY created_at LIMIT 1`;
+  // Same bootstrap path as sign-in: RLS blocks a direct read before the
+  // request has a tenant context to be judged against.
+  const [tenantRow] = await app.db`SELECT * FROM lotmark.resolve_tenant(NULL)`;
   const tenant = tenantRow as { id: string; time_source: string; region: string } | undefined;
   if (!tenant) {
     await reply.code(503).send(problem('not_provisioned', 'No tenant is provisioned.'));

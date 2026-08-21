@@ -16,7 +16,7 @@ import { hashPassword, enrolmentUri } from '@lotmark/security';
 import {
   defaultRoles, defaultWorkflows, defaultSodConfig, defaultNumbering, defaultFlags,
 } from '@lotmark/domain';
-import { createClient, type Sql } from '../client';
+import { createClient, ADMIN_URL, type Sql } from '../client';
 import { uuidFor } from './ids';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -51,12 +51,17 @@ const teamOfProject = (prj: string) =>
   uuidFor(`team:${TEAMS.find((t) => (t.projects as readonly string[]).includes(prj))?.key ?? 'organics'}`);
 
 async function main() {
-  const sql = createClient();
+  // The seed TRUNCATEs, which the application role must never be able to do.
+  const sql = createClient(process.env.DATABASE_URL ?? ADMIN_URL);
   console.log('seeding into', process.env.DATABASE_URL ?? 'postgres://localhost:5432/lotmark_dev');
 
   await sql.begin(async (tx) => {
     await tx`SELECT set_config('lotmark.audit_key', ${AUDIT_KEY}, true)`;
     await reset(tx as unknown as Sql);
+    // Every table is under RLS with FORCE, so even the seed must declare which
+    // tenant it is acting for. Without this the policies match nothing and the
+    // inserts silently affect zero rows.
+    await tx`SELECT set_config('lotmark.tenant_id', ${TENANT}, true)`;
     // Order matters: config_versions.created_by references a user, and
     // role_assignments reference the tenant — so tenant, then people, then config.
     await seedTenantAndOrgs(tx as unknown as Sql);
@@ -122,17 +127,22 @@ async function reset(sql: Sql) {
 }
 
 async function seedTenantAndOrgs(sql: Sql): Promise<void> {
-  await sql`INSERT INTO lotmark.tenants
-      (id, slug, name, short_name, bilingual, adr, publications, gov_tier,
-       conformance_frame, lot_numbering_template, data_residency, out_of_scope, time_source, region)
-    VALUES (${TENANT}, 'ipc', 'Indian Pharmacopoeia Commission', 'IPC tenant',
-            true, true, true, true,
-            'ISO 17034 + GIGW 3.0 + DPDP', 'IPRS{MAT}{SEQ}', 'NIC / MeitY, in-country',
-            ${sql.json([
-              'GIGW 3.0 portal and CMS', 'Bilingual content authoring',
-              'PvPI outreach pages', 'Events, forum, recruitment',
-            ] as never)},
-            'nic.ntp.gov.in (stratum 1)', 'ap-south-1')`;
+  // The tenants table is itself under RLS, and a caller creating the FIRST
+  // tenant has no tenant context to be granted by. provision_tenant is
+  // SECURITY DEFINER and is the only sanctioned way in.
+  await sql`SELECT lotmark.provision_tenant(
+      ${TENANT}, 'ipc', 'Indian Pharmacopoeia Commission', 'IPC tenant',
+      'ISO 17034 + GIGW 3.0 + DPDP', 'IPRS{MAT}{SEQ}', 'NIC / MeitY, in-country')`;
+
+  await sql`UPDATE lotmark.tenants SET
+      bilingual = true, adr = true, publications = true, gov_tier = true,
+      out_of_scope =
+        ${sql.json([
+          'GIGW 3.0 portal and CMS', 'Bilingual content authoring',
+          'PvPI outreach pages', 'Events, forum, recruitment',
+        ] as never)},
+      time_source = 'nic.ntp.gov.in (stratum 1)', region = 'ap-south-1'
+    WHERE id = ${TENANT}`;
 
   for (const o of fixture.ORGS) {
     await sql`INSERT INTO lotmark.organisations

@@ -12,7 +12,12 @@ const schema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   HOST: z.string().default('127.0.0.1'),
 
-  DATABASE_URL: z.string().default('postgres://localhost:5432/lotmark_dev'),
+  /**
+   * Connects as `lotmark_app`, never as a superuser or the schema owner: a
+   * superuser bypasses row-level security unconditionally, so the tenant
+   * isolation policies would simply not apply.
+   */
+  DATABASE_URL: z.string().default('postgres://lotmark_app@localhost:5432/lotmark_dev'),
 
   /**
    * The audit chain HMAC key.

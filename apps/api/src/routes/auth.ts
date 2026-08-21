@@ -27,7 +27,10 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
    * one demonstration tenant, so it is looked up by slug.
    */
   async function currentTenant(): Promise<{ id: string; timeSource: string; region: string }> {
-    const [row] = await db`SELECT id, time_source, region FROM lotmark.tenants ORDER BY created_at LIMIT 1`;
+    // Through resolve_tenant, not a direct SELECT: the tenants table is under
+    // RLS and a request that has not yet identified its tenant cannot satisfy
+    // the policy. This is the one sanctioned bootstrap path.
+    const [row] = await db`SELECT * FROM lotmark.resolve_tenant(NULL)`;
     const t = row as { id: string; time_source: string; region: string } | undefined;
     if (!t) throw new Error('No tenant is provisioned. Run: pnpm db:seed');
     return { id: t.id, timeSource: t.time_source, region: t.region };
