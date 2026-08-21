@@ -6,6 +6,7 @@ import {
 } from '@lotmark/stats';
 import {
   isSignatureMeaning, defaultSodSettings, assertTransition, signatureRequired,
+  reasonRequired,
   type SignatureMeaning, type CompetenceBasis, type AuthScope, type Permission,
 } from '@lotmark/domain';
 import { inTenantTransaction, type Sql } from '../db';
@@ -182,6 +183,22 @@ export async function registerValueRoutes(app: FastifyInstance): Promise<void> {
        * longer carries its own opinion about it.
        */
       const needsSignature = signatureRequired(move);
+
+      /**
+       * A reason, when the move asks for one — `assigned → draft` does, because
+       * returning somebody's work without saying why is not a review.
+       *
+       * Declared since the configuration model was written and enforced by
+       * nothing: this body accepted `reason` as optional whatever the workflow
+       * said. Checked before the signature, so a missing reason does not cost
+       * the person a step-up they then have to repeat.
+       */
+      if (reasonRequired(move) && !parsed.data.reason?.trim()) {
+        return {
+          status: 422 as const,
+          message: `Moving ${value.code} from ${step.from} to ${step.to} must state why.`,
+        };
+      }
 
       const scope: AuthScope = value.owner_team_id
         ? { kind: 'team', teamId: value.owner_team_id } : { kind: 'tenant' };

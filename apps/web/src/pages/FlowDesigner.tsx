@@ -541,22 +541,13 @@ function MoveDialog({
         </Field>
       )}
 
-      {/*
-        Stated where somebody is about to rely on it. A checkbox that reads as a
-        control and is not one is the exact failure this product's conformance
-        view exists to catch.
-      */}
-      <div className="note warn">
-        <b>Recorded, not yet enforced.</b> A reason is currently demanded on every CAPA
-        move whatever this says, and required nowhere else. Setting it changes what the
-        configuration says, not what the system does.
-      </div>
-
+      {/* Enforced — the move is refused without one, and it is checked before
+          the signature so a missing reason does not cost a step-up. */}
       <Field label="Needs a stated reason">
         <label className="inline">
           <input type="checkbox" checked={t.requiresReason}
                  onChange={(e) => set({ requiresReason: e.target.checked })} />
-          <span>Recorded on the transition and shown in the ledger.</span>
+          <span>Kept on the transition and shown in the ledger.</span>
         </label>
       </Field>
 

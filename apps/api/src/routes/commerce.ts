@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import {
-  assertTransition, defaultSodSettings,
+  assertTransition, defaultSodSettings, reasonRequired,
   type OrderState,
 } from '@lotmark/domain';
 import { inTenantTransaction, type Sql } from '../db';
@@ -47,6 +47,13 @@ const advanceBody = z.object({
   to: z.string(),
   courier: z.string().max(120).optional(),
   trackingReference: z.string().max(120).optional(),
+  /**
+   * Demanded by the move, not by this schema. The product's default asks for
+   * one when cancelling — `placed → cancelled` and `packed → cancelled` — and
+   * there was no field to put it in, so the declared rule could not have been
+   * obeyed even by somebody trying to.
+   */
+  reason: z.string().max(1000).optional(),
 });
 
 const claimBody = z.object({
@@ -358,6 +365,13 @@ export async function registerCommerceRoutes(app: FastifyInstance): Promise<void
         return { status: 409 as const, message: e instanceof Error ? e.message : 'Illegal transition.' };
       }
 
+      if (reasonRequired(step) && !parsed.data.reason?.trim()) {
+        return {
+          status: 422 as const,
+          message: `Moving ${order.code} from ${order.state} to ${parsed.data.to} must state why.`,
+        };
+      }
+
       await t`
         UPDATE lotmark.orders
         SET state = ${parsed.data.to},
@@ -370,7 +384,7 @@ export async function registerCommerceRoutes(app: FastifyInstance): Promise<void
         INSERT INTO lotmark.state_transitions
           (tenant_id, subject_type, subject_id, from_state, to_state, actor_user_id, reason)
         VALUES (${ctx.tenantId}, 'order', ${order.id}, ${order.state}, ${parsed.data.to},
-                ${ctx.userId}, ${step.action})`;
+                ${ctx.userId}, ${parsed.data.reason?.trim() || step.action})`;
 
       await recordAudit(t, auditOf(ctx), {
         kind: 'WORKFLOW', action: step.action,

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   ALL_MACHINES, defaultWorkflows, machineFromConfig, machineFor, builtInMachine,
   workflowConfigSchema, statesTheDatabaseRefuses, DDL_CONSTRAINED_STATES,
-  canTransition, assertSystemTransition, type StateMachine,
+  canTransition, assertSystemTransition, reasonRequired, type StateMachine,
 } from '../index';
 
 /**
@@ -54,6 +54,36 @@ describe('the round trip is lossless', () => {
   it('does not let configuration hand a job a move meant for a person', () => {
     const study = configured().get('study')!;
     expect(() => assertSystemTransition(study, 'draft', 'signed')).toThrow();
+  });
+});
+
+describe('the ceremony a move carries', () => {
+  it('asks for a reason on every CAPA move, as the routes already did', () => {
+    /**
+     * The CAPA route demanded a reason on every move while this list named one
+     * of them. Making the route read configuration without fixing that would
+     * have quietly dropped the requirement from four of the five moves — the
+     * same shape as the lot-release signature, found the same way.
+     */
+    const capa = defaultWorkflows().find((w) => w.entity === 'capa')!;
+    for (const t of capa.transitions) {
+      expect(t.requiresReason, `${t.from} → ${t.to}`).toBe(true);
+    }
+  });
+
+  it('leaves a reason optional where the product never asked for one', () => {
+    // A reason is a quality practice, not a regulatory obligation, so it is a
+    // default a tenant may configure away — unlike a signature.
+    const study = defaultWorkflows().find((w) => w.entity === 'study')!;
+    expect(study.transitions.every((t) => t.requiresReason === false)).toBe(true);
+  });
+
+  it('carries the reason flag onto the resolved machine', () => {
+    const capa = configured().get('capa')!;
+    const move = canTransition(capa, 'open', 'investigation')!;
+    expect(reasonRequired(move)).toBe(true);
+    const study = configured().get('study')!;
+    expect(reasonRequired(canTransition(study, 'draft', 'signed')!)).toBe(false);
   });
 });
 

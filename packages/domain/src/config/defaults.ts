@@ -79,12 +79,36 @@ export function defaultWorkflows(): WorkflowConfig[] {
  * comes from, and is enforced rather than merely described — see ALWAYS_SIGNED.
  */
 
-/** Transitions where a free-text reason is mandatory. */
+/**
+ * Transitions where a free-text reason is mandatory, as the PRODUCT ships it.
+ *
+ * A default, not a floor — unlike `ALWAYS_SIGNED`. A signature is a regulatory
+ * obligation a tenant may not configure away; a reason is a quality practice a
+ * tenant may reasonably decide differently about, so this is the starting point
+ * and configuration governs from there.
+ *
+ * ── Every CAPA move, because that is what the product already did ───────────
+ *
+ * The CAPA route demanded a reason on EVERY move — "a nonconformity that moved
+ * for reasons nobody wrote down is a nonconformity you cannot defend during an
+ * assessment" — while this list named one of its transitions. Two rules for the
+ * same question again, the stricter one in the route and the weaker one in the
+ * configuration nothing read. Making the route read configuration without
+ * fixing this would have QUIETLY DROPPED the requirement from four of the five
+ * CAPA moves.
+ *
+ * The route was right, so the list now says what it did.
+ */
 const REASON_REQUIRED = new Set([
   'property_value:assigned->draft',   // returning work needs a stated reason
   'lot:released->withdrawn',
   'order:placed->cancelled',
   'order:packed->cancelled',
+  'capa:open->investigation',
+  'capa:investigation->root_cause',
+  'capa:root_cause->capa',
+  'capa:capa->effectiveness',
+  'capa:effectiveness->closed',
   'capa:effectiveness->capa',         // a failed effectiveness check must say why
 ]);
 

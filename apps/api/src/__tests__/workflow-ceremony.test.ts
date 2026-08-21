@@ -5,7 +5,7 @@ import { buildApp } from '../app';
 import { inTenantTransaction, type Sql } from '../db';
 
 /**
- * A signature demanded by CONFIGURATION, not by the route.
+ * Ceremony demanded by CONFIGURATION, not by the route.
  *
  * Until this, `requiresSignature` was a field a tenant could set and nothing
  * read: the flow designer offered a checkbox that changed what the
@@ -14,6 +14,10 @@ import { inTenantTransaction, type Sql } from '../db';
  * demands no signature to close a nonconformity — and the seeded tenant's
  * quality manual does. That override is what these tests exercise, and it is
  * the difference between the setting being real and being decorative.
+ *
+ * The same applies to `requiresReason`, which was declared for five transitions
+ * and enforced for none of them — while the CAPA route demanded one on every
+ * move regardless of what the workflow said.
  */
 
 const PASSWORD = 'demo-password-1234';
@@ -220,4 +224,50 @@ describe('the move a tenant DID ask to be signed', () => {
 const stateOf = (id: string) => asTenant(async (tx) => {
   const [row] = await tx`SELECT state FROM lotmark.capa WHERE id = ${id}`;
   return (row as { state: string }).state;
+});
+
+describe('a reason the move asks for', () => {
+  it('refuses a CAPA move that does not state why', async () => {
+    /**
+     * The route used to demand this with `z.string().min(1)`, whatever the
+     * configured workflow said. The rule was right and is now where it belongs:
+     * the product's default declares a reason on all five CAPA moves, so the
+     * behaviour is unchanged — and a tenant that decides otherwise is obeyed
+     * rather than overruled by a schema.
+     */
+    const capa = await aCapa('open');
+    const res = await move(capa.id, { to: 'investigation' });
+    expect(res.statusCode, res.body).toBe(422);
+    expect(res.json<{ detail: string }>().detail).toMatch(/must state why/);
+  });
+
+  it('accepts it once it does', async () => {
+    const capa = await aCapa('open');
+    const res = await move(capa.id, { to: 'investigation', reason: 'Complaint corroborated' });
+    expect(res.statusCode, res.body).toBe(200);
+
+    const recorded = await asTenant(async (tx) => {
+      const [row] = await tx`
+        SELECT reason FROM lotmark.state_transitions
+        WHERE subject_type = 'capa' AND subject_id = ${capa.id}`;
+      return (row as { reason: string | null }).reason;
+    });
+    expect(recorded, 'the reason is kept with the move, not just checked')
+      .toBe('Complaint corroborated');
+  });
+
+  it('asks for the reason BEFORE asking for the signature', async () => {
+    /**
+     * Order matters here in a way that costs the user real effort. Closing a
+     * CAPA needs both. If the signature were checked first, somebody who forgot
+     * the reason would be told to re-authenticate, do it, and only then be told
+     * about the reason — spending a step-up on a mistake they had already made.
+     */
+    const capa = await aCapa('effectiveness');
+    const res = await move(capa.id, { to: 'closed' });
+    expect(res.statusCode, res.body).toBe(422);
+    const detail = res.json<{ detail: string }>().detail;
+    expect(detail, 'the missing reason is the first thing to fix').toMatch(/must state why/);
+    expect(detail).not.toMatch(/must be signed/);
+  });
 });

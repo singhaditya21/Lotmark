@@ -306,10 +306,12 @@ export const REQUIREMENTS: readonly Requirement[] = [
       '`signatureMeanings` and `systemInitiated` are ENFORCED: a move a tenant ' +
       'marked as signed is refused without one, and a refused signing rolls the ' +
       'move back rather than leaving it unsigned. Configuration can only ADD a ' +
-      'signature — `ALWAYS_SIGNED` is a floor publication refuses to lower. ' +
-      'PARTIAL because `requiresReason` and `guards` are still recorded and read ' +
-      'by nothing; the flow designer says so beside those controls rather than ' +
-      'letting them read as working.',
+      'signature — `ALWAYS_SIGNED` is a floor publication refuses to lower, ' +
+      'whereas `requiresReason` is a DEFAULT a tenant may waive, and is enforced ' +
+      'where it stands: the move is refused without one, and it is checked ' +
+      'before the signature so a missing reason does not cost a step-up. ' +
+      'PARTIAL for one remaining reason — `guards` is recorded and evaluated by ' +
+      'nothing, and the designer offers no control for it.',
   },
   {
     id: 'REQ-AUTHORITY',

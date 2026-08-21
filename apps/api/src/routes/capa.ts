@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import {
   assertTransition, canTransition, nextStates, IllegalTransitionError,
-  defaultSodSettings, signatureRequired, meaningsFor, isSignatureMeaning,
+  defaultSodSettings, signatureRequired, meaningsFor, reasonRequired, isSignatureMeaning,
   type AuthScope, type SignatureMeaning,
 } from '@lotmark/domain';
 import { inTenantTransaction } from '../db';
@@ -39,7 +39,16 @@ const transitionBody = z.object({
    * that is asked.
    */
   to: z.string().min(1).max(64),
-  reason: z.string().min(1, 'Every move must state why.').max(2000),
+  /**
+   * Optional HERE, and demanded by the move.
+   *
+   * This was `min(1)` — every CAPA move stated why, whatever the configured
+   * workflow said. That rule was right and is now where it belongs: the
+   * product's default declares a reason on all five CAPA moves, so the
+   * behaviour is unchanged, and a tenant that decides otherwise is obeyed
+   * instead of overruled by a schema.
+   */
+  reason: z.string().max(2000).optional(),
   /**
    * Required only when the move demands a signature, which is now a property of
    * the configured transition rather than of this route.
@@ -176,6 +185,22 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
       const step = canTransition(machine, capa.state as string, body.to)!;
       const needsSignature = signatureRequired(step);
 
+      /**
+       * A reason, when the move asks for one.
+       *
+       * Checked before the signature: being told to re-authenticate and THEN
+       * that the reason was missing is two round trips for one mistake — and
+       * the second one costs a step-up the person now has to repeat.
+       */
+      if (reasonRequired(step) && !body.reason?.trim()) {
+        return {
+          status: 422 as const,
+          message: `Moving ${capa.code} from ${capa.state} to ${body.to} must state why. `
+            + 'A nonconformity that moved for reasons nobody wrote down is one you cannot '
+            + 'defend during an assessment.',
+        };
+      }
+
       if (needsSignature) {
         const offered = meaningsFor(step);
         if (!body.meaning || !isSignatureMeaning(body.meaning)) {
@@ -245,7 +270,7 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
               kind: 'state_transition',
               record: {
                 entity: 'capa', recordId: capa.id, code: capa.code,
-                from: capa.state as string, to: body.to, reason: body.reason,
+                from: capa.state as string, to: body.to, reason: body.reason ?? '',
               },
             },
             subjectId: capa.id, signerUserId: ctx.userId,
@@ -265,14 +290,15 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
           (tenant_id, subject_type, subject_id, from_state, to_state, actor_user_id, reason,
            signature_id)
         VALUES (${ctx.tenantId}, 'capa', ${capa.id}, ${capa.state}, ${body.to},
-                ${ctx.userId}, ${body.reason}, ${signatureId})`;
+                ${ctx.userId}, ${body.reason ?? null}, ${signatureId})`;
 
       await recordAudit(tx, auditOf(ctx), {
         kind: 'WORKFLOW',
         action: body.to === 'closed' ? 'CAPA closed' : `CAPA moved to ${body.to}`,
-        detail: `${capa.code} · ${capa.state} → ${body.to} · ${body.reason}`,
+        detail: `${capa.code} · ${capa.state} → ${body.to}`
+          + (body.reason ? ` · ${body.reason}` : ''),
         subjectTable: 'capa', subjectId: capa.id,
-        changes: { from: capa.state, to: body.to, reason: body.reason },
+        changes: { from: capa.state, to: body.to, reason: body.reason ?? null },
       });
 
       return {
