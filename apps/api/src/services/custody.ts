@@ -43,9 +43,15 @@ export interface KeyCustody {
   /**
    * Whether this class may be used outside development.
    *
-   * Not a comment — `loadConfig` refuses to boot a production process on a
-   * class that is false here. A development key file surviving into production
-   * is the failure this exists to make impossible.
+   * Read this as documentation on the instance. The ENFORCEMENT is not here —
+   * `loadConfig` refuses to boot a production process by consulting the
+   * `PRODUCTION_GRADE` table at the foot of this file, because that check has
+   * to run before anything is constructed. The two must agree; they are two
+   * views of one fact about the class.
+   *
+   * The wording here used to say `loadConfig` refused "on a class that is false
+   * here", which sent a reader looking for a reader of this property and
+   * finding none — the check is real, and it is fifty lines further down.
    */
   readonly productionGrade: boolean;
 

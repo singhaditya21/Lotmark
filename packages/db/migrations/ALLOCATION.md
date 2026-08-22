@@ -22,6 +22,7 @@ Take the next free number from this table and add a row; do not take it from
 | 0026 | `signed_state_transitions` | Flow designer — a configured move can demand a signature | 0017 |
 | 0027 | `flags_have_one_home` | Pre-build audit — two stores for the same four facts | — |
 | 0028 | `drill_incomplete` | A recovery drill that skipped checks is not a pass | 0021 |
+| 0029 | `custody_ratchet` | Custody must not silently downgrade for a tenant | 0018 |
 
 ## Why those orderings, specifically
 
@@ -75,6 +76,9 @@ Take the next free number from this table and add a row; do not take it from
 - **0027 stands alone.** It drops four boolean columns from `tenants` that
   duplicate `config_entries` of kind `flag`. Safe because nothing reads either
   store — verified by grep across the repository before it was written.
+
+- **0029 after 0018.** 0018 created the custody vocabulary and
+  `key_custody_events`. The ratchet reads both, so it cannot precede them.
 
 - **0028 after 0021.** 0021 gave `dr_drills` its outcome vocabulary of
   `passed` and `failed`. A drill can also skip checks it had no data to run, and
