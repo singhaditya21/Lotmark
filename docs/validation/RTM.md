@@ -8,8 +8,8 @@ The source is `packages/domain/src/conformance.ts`, and every citation below is 
 
 | Status | Count | Meaning |
 |---|---|---|
-| enforced | 25 | the code refuses the thing |
-| partial | 3 | enforced on some paths; the gap is stated |
+| enforced | 24 | the code refuses the thing |
+| partial | 4 | enforced on some paths; the gap is stated |
 | declared | 1 | written down, nothing checks it |
 | not implemented | 0 | absent, and recorded as absent |
 
@@ -106,7 +106,7 @@ Operational system checks enforce permitted sequencing of steps and events, and 
 | | |
 |---|---|
 | Implemented by | `packages/domain/src/state-machines.ts`<br>`packages/domain/src/config/workflows.ts`<br>`packages/domain/src/config/guards.ts`<br>`apps/api/src/services/workflows.ts` |
-| Demonstrated by | `packages/domain/src/__tests__/workflows.test.ts` — "round trip is lossless"<br>`apps/api/src/__tests__/config-admin.test.ts` — "nowhere to go"<br>`packages/domain/src/__tests__/guards.test.ts` — "reads nothing but the facts it was handed"<br>`apps/api/src/__tests__/workflow-ceremony.test.ts` — "does not meet a condition" |
+| Demonstrated by | `packages/domain/src/__tests__/workflows.test.ts` — "round trip is lossless"<br>`apps/api/src/__tests__/config-admin.test.ts` — "refuses removing a state records are sitting in"<br>`packages/domain/src/__tests__/guards.test.ts` — "reads nothing but the facts it was handed"<br>`apps/api/src/__tests__/workflow-ceremony.test.ts` — "refuses the move when the condition does not hold" |
 
 ## 21 CFR 11 §11.10(g)
 
@@ -266,16 +266,16 @@ The assigned value carries an expanded uncertainty combining every contribution,
 | | |
 |---|---|
 | Implemented by | `packages/stats/src/budget.ts`<br>`apps/api/src/routes/console.ts` |
-| Demonstrated by | `packages/stats/src/__tests__/golden.test.ts` — "combine" |
+| Demonstrated by | `packages/stats/src/__tests__/golden.test.ts` — "uncertainty budget reproduces the prototype" |
 | Live evidence | `uncertainty` on the conformance view |
 
 ## ISO 17034 §7.11
 
-### REQ-WITHDRAWAL — enforced
+### REQ-WITHDRAWAL — partial
 
 When a certified value is found to be wrong, every holder of the affected certificate is identified and told.
 
-> The holder set is order lines UNION self-declared vault holdings, because a vial received as a sample or a replacement has no order line. Holders nobody can be addressed at are reported SEPARATELY and never counted as notified.
+> IDENTIFICATION is enforced. The holder set is order lines UNION self-declared vault holdings, because a vial received as a sample or a replacement has no order line, and holders nobody can be addressed at are reported SEPARATELY and never counted as notified. TELLING is not. This said `enforced` on the strength of the first half of its own sentence. Withdrawal writes a row in `notifications` addressed to a user at the holding organisation, and that is the whole of the delivery: there is no email, SMS or webhook path anywhere in this codebase, so a holder who does not sign in is never told. Nothing escalates an unread notice either, though `read_at` and `acknowledged_at` are recorded and would support it. For a §7.11 recall that gap is the difference between informing a customer and filing a note that they were informed.
 
 | | |
 |---|---|
@@ -389,9 +389,11 @@ The property value is characterised, and the interlaboratory spread contributes 
 
 Nonconformities are recorded, investigated, corrected and checked for effect.
 
+> The register cited only a CONSOLE test for this until an evidence check was tightened to reject that. The server-side rule an assessor cares about — a nonconformity cannot close without a recorded root cause and corrective action — is enforced in the route and is now what is cited.
+
 | | |
 |---|---|
 | Implemented by | `apps/api/src/routes/capa.ts`<br>`packages/domain/src/state-machines.ts` |
-| Demonstrated by | `apps/web/src/lib/__tests__/capa.test.ts` — "close" |
+| Demonstrated by | `apps/api/src/__tests__/workflow-ceremony.test.ts` — "refuses a CAPA move that does not state why"<br>`apps/web/src/lib/__tests__/capa.test.ts` — "close" |
 | Live evidence | `capa` on the conformance view |
 

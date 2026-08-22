@@ -184,7 +184,7 @@ export const REQUIREMENTS: readonly Requirement[] = [
     statement:
       'When a certified value is found to be wrong, every holder of the affected ' +
       'certificate is identified and told.',
-    status: 'enforced',
+    status: 'partial',
     code: [
       'apps/api/src/routes/certificates.ts',
       'apps/api/src/services/certificate-issue.ts',
@@ -192,10 +192,18 @@ export const REQUIREMENTS: readonly Requirement[] = [
     tests: [{ file: 'packages/db/src/__tests__/holders.test.ts', named: 'holder list' }],
     live: 'holders',
     note:
-      'The holder set is order lines UNION self-declared vault holdings, because ' +
-      'a vial received as a sample or a replacement has no order line. Holders ' +
-      'nobody can be addressed at are reported SEPARATELY and never counted as ' +
-      'notified.',
+      'IDENTIFICATION is enforced. The holder set is order lines UNION ' +
+      'self-declared vault holdings, because a vial received as a sample or a ' +
+      'replacement has no order line, and holders nobody can be addressed at are ' +
+      'reported SEPARATELY and never counted as notified. ' +
+      'TELLING is not. This said `enforced` on the strength of the first half of ' +
+      'its own sentence. Withdrawal writes a row in `notifications` addressed to ' +
+      'a user at the holding organisation, and that is the whole of the delivery: ' +
+      'there is no email, SMS or webhook path anywhere in this codebase, so a ' +
+      'holder who does not sign in is never told. Nothing escalates an unread ' +
+      'notice either, though `read_at` and `acknowledged_at` are recorded and ' +
+      'would support it. For a §7.11 recall that gap is the difference between ' +
+      'informing a customer and filing a note that they were informed.',
   },
   {
     id: 'REQ-STORAGE',
