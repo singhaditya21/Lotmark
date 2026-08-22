@@ -5,6 +5,7 @@ import {
   fieldConfigSchema, picklistConfigSchema, layoutConfigSchema, isSupportedFieldType,
   workflowConfigSchema, statesTheDatabaseRefuses, ENTITY_RECORD, alwaysSigned,
   sodConfigSchema, SOD_RULES, retentionConfigSchema, statutoryFloorDays,
+  flagConfigSchema, defaultFlags,
   guardProblems,
   type ConfigKind, type ConfigChange, type RoleConfig,
   type FieldConfig, type PicklistConfig, type LayoutConfig, type WorkflowConfig,
@@ -416,6 +417,29 @@ export async function publicationProblems(
 
   problems.push(...await customFieldProblems(tx, tenantId, entries));
   problems.push(...await workflowProblems(tx, tenantId, entries));
+
+  /**
+   * A flag must name a feature this system has.
+   *
+   * A flag gates something in CODE, so configuration can turn one on and off
+   * and cannot invent one — the same rule as roles composing permissions and
+   * workflows requiring them. An entry named `bilingal` publishes cleanly, sits
+   * in the console reading exactly like a control, and gates nothing.
+   */
+  const shippedFlags = new Set(defaultFlags().map((f) => f.key));
+  for (const e of entries.filter((x) => x.kind === 'flag')) {
+    const parsed = flagConfigSchema.safeParse(e.payload);
+    if (!parsed.success) {
+      problems.push(`Flag '${e.key}' is not valid: ${parsed.error.issues[0]?.message ?? 'unknown'}`);
+      continue;
+    }
+    if (!shippedFlags.has(parsed.data.key)) {
+      problems.push(
+        `Flag '${parsed.data.key}' is not a feature this system has, so switching it ` +
+        `would change nothing. Known flags: ${[...shippedFlags].sort().join(', ')}.`,
+      );
+    }
+  }
 
   /**
    * A segregation setting must name a rule this system has.

@@ -138,7 +138,6 @@ async function seedTenantAndOrgs(sql: Sql): Promise<void> {
       'ISO 17034 + GIGW 3.0 + DPDP', 'IPRS{MAT}{SEQ}', 'NIC / MeitY, in-country')`;
 
   await sql`UPDATE lotmark.tenants SET
-      bilingual = true, adr = true, publications = true, gov_tier = true,
       out_of_scope =
         ${sql.json([
           'GIGW 3.0 portal and CMS', 'Bilingual content authoring',

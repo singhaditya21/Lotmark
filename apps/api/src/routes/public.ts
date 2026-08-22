@@ -1,4 +1,6 @@
 import type { FastifyInstance } from 'fastify';
+import { inTenantTransaction } from '../db';
+import { tenantFlags, flagEnabled } from '../services/flags';
 
 /**
  * Public certificate verification.
@@ -35,6 +37,35 @@ export async function registerPublicRoutes(app: FastifyInstance): Promise<void> 
     const token = req.params.token;
     if (!/^[A-Za-z0-9_-]{16,64}$/.test(token)) {
       return reply.code(404).type('text/html; charset=utf-8').send(page(null, null));
+    }
+
+    /**
+     * A producer may switch public verification off.
+     *
+     * Answered as 404 rather than 403, and the same 404 an unknown token gets:
+     * whether a producer offers public verification at all is not something an
+     * unauthenticated caller should be able to probe, and a distinct status
+     * would tell them.
+     *
+     * The tenant comes from `resolve_tenant(NULL)`, which is what every
+     * unauthenticated path in this codebase currently does — sign-in included.
+     * It is the single-tenant bootstrap, and it is one of the things the
+     * request-level tenant identity decision will have to revisit. Named here
+     * rather than left to be discovered.
+     */
+    const [tenantRow] = await db`SELECT * FROM lotmark.resolve_tenant(NULL)`;
+    const tenant = tenantRow as { id: string } | undefined;
+    if (!tenant) {
+      return reply.code(404).type('text/html; charset=utf-8').send(page(null, null));
+    }
+    const flags = await inTenantTransaction(
+      db, { tenantId: tenant.id, auditKey: app.cfg.LOTMARK_AUDIT_KEY },
+      (tx) => tenantFlags(tx, tenant.id, (m) => app.log.warn(m)));
+    if (!flagEnabled(flags, 'public_verification')) {
+      return reply
+        .code(404).type('text/html; charset=utf-8')
+        .header('cache-control', 'no-store')
+        .send(page(null, null));
     }
 
     const [row] = await db`SELECT * FROM lotmark.verify_certificate(${token})`;

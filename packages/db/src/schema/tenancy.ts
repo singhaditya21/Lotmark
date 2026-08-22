@@ -16,13 +16,14 @@ export const tenantsTable = lotmark.table('tenants', {
   name: text('name').notNull(),
   shortName: text('short_name').notNull(),
 
-  /** Render every label in English and Hindi. */
-  bilingual: boolean('bilingual').notNull().default(false),
-  /** Alternative dispute resolution flow enabled. */
-  adr: boolean('adr').notNull().default(false),
-  publications: boolean('publications').notNull().default(false),
-  /** Government price tier available to eligible customers. */
-  govTier: boolean('gov_tier').notNull().default(false),
+  /**
+   * NOTE: there are no feature-flag columns here.
+   *
+   * `bilingual`, `adr`, `publications` and `gov_tier` lived here AND as
+   * `config_entries` of kind `flag`, and the two already disagreed. A flag is a
+   * tenant decision, and decisions belong in the versioned model where they are
+   * drafted, signed and reversible. See migration 0027.
+   */
 
   /** The conformance frame claimed, e.g. 'ISO 17034 + GIGW 3.0 + DPDP'. */
   conformanceFrame: text('conformance_frame').notNull(),

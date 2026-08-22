@@ -134,11 +134,39 @@ export function defaultNumbering(): NumberingConfig[] {
   ];
 }
 
+/**
+ * Flags whose feature exists but has not been built yet.
+ *
+ * The same distinction `sod.ts` draws with `pending-subject`: "declared and
+ * visible in the register, but the record it constrains is not yet modelled.
+ * Marking it beats omitting it: the gap is then visible rather than forgotten."
+ *
+ * `bilingual` waits on an i18n layer — every user-facing string is currently
+ * hardcoded English, and the `translation` config kind is stored and read by
+ * nothing. `gov_tier` waits on a price list: `organisations.price_tier` is a
+ * label today and approving a tier changes no number, so a flag switching the
+ * tier on would gate a decision with no consequence.
+ *
+ * `flags.test.ts` requires every flag to be EITHER consulted in the source OR
+ * named here. That is what stops the next one being decoration.
+ */
+export const PENDING_FLAGS: Readonly<Record<string, string>> = {
+  bilingual: 'no i18n layer exists; every string is hardcoded English',
+  gov_tier: 'no price list exists, so a tier changes no number',
+};
+
+/**
+ * Flags the product ships.
+ *
+ * Each one must GATE something, or be named in `PENDING_FLAGS` with the reason.
+ * `adr` and `publications` were removed rather than wired: they named features
+ * with no route, no table, no screen and no test anywhere in the repository,
+ * and nobody could say what building them would even mean — which is the
+ * difference between a gap and a name.
+ */
 export function defaultFlags(): FlagConfig[] {
   return [
     { key: 'bilingual', name: 'Bilingual interface and certificates', enabled: false },
-    { key: 'adr', name: 'Alternative dispute resolution workflow', enabled: false },
-    { key: 'publications', name: 'Publications catalogue', enabled: false },
     { key: 'gov_tier', name: 'Government price tier', enabled: false },
     { key: 'public_verification', name: 'Public certificate verification endpoint', enabled: true },
   ];
