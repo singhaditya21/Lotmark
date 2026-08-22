@@ -46,3 +46,9 @@ packages/db/src/seed/.extract*.tmp.mjs
 .keys-anchor/
 .anchors-exported/
 .backups/
+
+# Per-worker signing key directories, created and removed by the API test
+# suite's global setup. A key directory per worker exists because the signing
+# key is registered per DATABASE and written per DIRECTORY — sharing one across
+# four worker databases recreates by hand the mismatch keys.ts prevents.
+.keys-test-*/

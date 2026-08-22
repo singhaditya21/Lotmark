@@ -36,15 +36,17 @@ let app: FastifyInstance;
 /**
  * FIXED ids, not random ones.
  *
+ * Each worker now gets its own database, cloned from a template and dropped
+ * afterwards, so nothing this file creates outlives the run. Fixed ids are kept
+ * anyway: they cost nothing, they make a failed run inspectable, and they mean
+ * this file is still safe if somebody ever points it at a database that
+ * persists.
+ *
  * The first version generated a fresh uuid per run and deleted it afterwards —
  * except the delete ran on a bare connection, which under FORCED row-level
  * security removes nothing and reports success. Seventeen abandoned tenants
- * later, the lesson is the same one this suite keeps relearning: a bare
- * `app.db` write is a silent no-op.
- *
- * Fixed ids mean a re-run REUSES the tenant instead of leaving another, so the
- * count is bounded at two however many times the suite runs. What gets cleared
- * is the signing key, because first use is the thing under test.
+ * later, the lesson was the one this suite keeps relearning: a bare `app.db`
+ * write is a silent no-op.
  */
 const TENANT = '00000000-0000-4000-8000-0000000000e1';
 const NO_MINT_TENANT = '00000000-0000-4000-8000-0000000000e2';

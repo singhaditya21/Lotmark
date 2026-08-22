@@ -1,0 +1,106 @@
+name: CI
+
+# Every gate this codebase built for itself ran only when somebody typed it:
+# the migration-checksum refusal, the OpenAPI drift test, the conformance
+# register's evidence check, the RTM, and 590 tests. A broken commit was pushed
+# from this repository the day before this file was written, and nothing caught
+# it. That is what this is for.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        # 16, to match what the IQ protocol asserts and what the schema uses
+        # (generated columns, `WITH (FORCE)` on DROP DATABASE, jsonb paths).
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      # The test suite builds its own template database and clones one per
+      # worker; it needs the maintenance connection to do that, and the CI
+      # superuser is `postgres` rather than the local developer's own name.
+      PGHOST: localhost
+      PGUSER: postgres
+      DATABASE_URL: postgres://postgres@localhost:5432/lotmark_dev
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Types first: a type error fails every suite below in a less readable
+      # way, so it is worth failing on its own.
+      - run: pnpm -r typecheck
+
+      - name: Create the development database the db suite uses
+        run: psql -c 'CREATE DATABASE lotmark_dev'
+
+      - name: Migrate and seed it
+        run: |
+          pnpm --filter @lotmark/db migrate
+          pnpm --filter @lotmark/db seed
+
+      # The API suite ignores DATABASE_URL: its global setup builds a template
+      # and clones a database per worker. The db suite uses the one above, and
+      # rolls back everything it does.
+      - run: pnpm -r test
+
+      # Installation qualification: roles are not superusers, row-level
+      # security is forced everywhere, PUBLIC can execute nothing, the
+      # append-only tables really are.
+      - run: pnpm --filter @lotmark/api iq
+
+      # The generated documents must match what generated them. Both write into
+      # the working tree, so a diff means somebody changed the source and not
+      # the artefact.
+      - name: Regenerate the API description and the traceability matrix
+        run: |
+          pnpm --filter @lotmark/api openapi
+          pnpm --filter @lotmark/api rtm
+      - name: Fail if either is out of date
+        run: git diff --exit-code -- docs/api/openapi.json docs/validation/RTM.md
+
+  # veraPDF needs a JRE, which the job above does not have. Kept separate so the
+  # main check does not carry a Java toolchain it otherwise has no use for, and
+  # so this can be allowed to fail loudly while the gate is still being taught
+  # to run here.
+  pdfa:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: pnpm install --frozen-lockfile
+      - name: PDF/A conformance
+        run: pnpm --filter @lotmark/api pdfa
