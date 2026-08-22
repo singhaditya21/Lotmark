@@ -24,6 +24,7 @@ Take the next free number from this table and add a row; do not take it from
 | 0028 | `drill_incomplete` | A recovery drill that skipped checks is not a pass | 0021 |
 | 0029 | `custody_ratchet` | Custody must not silently downgrade for a tenant | 0018 |
 | 0030 | `signable_config_version` | Publishing a signed configuration hit the CHECK | 0026 |
+| 0031 | ~~`signature_algorithm_known`~~ | **withdrawn, written and reverted** — see below | — |
 
 ## Why those orderings, specifically
 
@@ -77,6 +78,30 @@ Take the next free number from this table and add a row; do not take it from
 - **0027 stands alone.** It drops four boolean columns from `tenants` that
   duplicate `config_entries` of kind `flag`. Safe because nothing reads either
   store — verified by grep across the repository before it was written.
+
+- **0031 withdrawn.** It added `CHECK (algorithm = 'ed25519')` to
+  `signatures`, matching the constraint 0003 gave `signing_keys` and never gave
+  the signature's own copy. It was written, applied, and reverted the same
+  hour.
+
+  The reason is worth keeping. `verifyStoredSignature` was found never to read
+  the column at all, so a row claiming any other algorithm was verified as
+  Ed25519 — reported as tampering when the bytes did not match, and reported
+  VALID when they did. The read side now reports such a row `unverifiable`, and
+  the regression tests for that have to CONSTRUCT such a row.
+
+  With the constraint in place they cannot. Tests connect as `lotmark_app`,
+  which does not own the table and so cannot lift a CHECK, and `signatures`
+  refuses DELETE, so a fixture row cannot be inserted under a dropped
+  constraint and cleaned up afterwards.
+
+  That trade is not worth taking. The write side is already closed in code —
+  `applySignature` writes `SIGNING_ALGORITHM`, the same constant the verifier
+  compares against, so this application cannot produce a bad row. The constraint
+  would only have guarded against hand-written SQL, while removing the coverage
+  protecting the defence that matters: a row from a restore, from replication,
+  or from a newer deployment still has to be read safely, and that path must
+  stay testable.
 
 - **0030 after 0026.** 0026 last rewrote `signature_subject_kind_known`, and
   0030 rewrites it again. Applying them out of order would drop a constraint
