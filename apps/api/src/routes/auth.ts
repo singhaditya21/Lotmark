@@ -12,6 +12,7 @@ import {
 } from '@lotmark/security';
 import { recordAudit } from '../services/audit';
 import { requireSession } from '../plugins/session';
+import { requireTenant } from '../services/tenancy';
 import {
   authenticationFailed, fieldErrors, invalidRequest, sendProblem, sessionExpired, unprocessable,
 } from '../http/problem';
@@ -49,15 +50,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
    * The tenant is resolved from the host in production. On localhost there is
    * one demonstration tenant, so it is looked up by slug.
    */
-  async function currentTenant(): Promise<{ id: string; timeSource: string; region: string }> {
-    // Through resolve_tenant, not a direct SELECT: the tenants table is under
-    // RLS and a request that has not yet identified its tenant cannot satisfy
-    // the policy. This is the one sanctioned bootstrap path.
-    const [row] = await db`SELECT * FROM lotmark.resolve_tenant(NULL)`;
-    const t = row as { id: string; time_source: string; region: string } | undefined;
-    if (!t) throw new Error('No tenant is provisioned. Run: pnpm db:seed');
-    return { id: t.id, timeSource: t.time_source, region: t.region };
-  }
+  const tenantNow = () => requireTenant(db);
 
   app.post('/sign-in', {
     config: { rateLimit: { max: 10, timeWindow: '1 minute' } },
@@ -65,7 +58,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
     const parsed = credentials.safeParse(req.body);
     if (!parsed.success) return sendProblem(reply, invalidRequest('Email and password are required.'));
 
-    const tenant = await currentTenant();
+    const tenant = await tenantNow();
     const result = await inTenantTransaction(db, { tenantId: tenant.id, auditKey: cfg.LOTMARK_AUDIT_KEY }, (tx) =>
       signIn(tx, {
         tenantId: tenant.id,
@@ -103,7 +96,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
     const token = req.cookies[SESSION_COOKIE];
     if (!token) return sendProblem(reply, sessionExpired('Sign in again.'));
 
-    const tenant = await currentTenant();
+    const tenant = await tenantNow();
     const result = await inTenantTransaction(db, { tenantId: tenant.id, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
       const session = await loadLiveSession(tx, hashToken(token), cfg.IDLE_TIMEOUT_MINUTES);
       if (!session) return { outcome: 'rejected' as const, message: 'Sign in again.', sessionRevoked: true };
@@ -128,7 +121,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
   app.post('/sign-out', async (req, reply) => {
     const token = req.cookies[SESSION_COOKIE];
     if (token) {
-      const tenant = await currentTenant();
+      const tenant = await tenantNow();
       await inTenantTransaction(db, { tenantId: tenant.id, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
         const session = await loadLiveSession(tx, hashToken(token), cfg.IDLE_TIMEOUT_MINUTES);
         if (!session) return;

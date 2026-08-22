@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { inTenantTransaction } from '../db';
 import { tenantFlags, flagEnabled } from '../services/flags';
+import { currentTenant } from '../services/tenancy';
 
 /**
  * Public certificate verification.
@@ -47,14 +48,11 @@ export async function registerPublicRoutes(app: FastifyInstance): Promise<void> 
      * unauthenticated caller should be able to probe, and a distinct status
      * would tell them.
      *
-     * The tenant comes from `resolve_tenant(NULL)`, which is what every
-     * unauthenticated path in this codebase currently does — sign-in included.
-     * It is the single-tenant bootstrap, and it is one of the things the
-     * request-level tenant identity decision will have to revisit. Named here
-     * rather than left to be discovered.
+     * The tenant is the deployment's — see services/tenancy.ts. Lotmark serves
+     * one producer per instance, deliberately, and that decision is written
+     * down in one place rather than assumed in three.
      */
-    const [tenantRow] = await db`SELECT * FROM lotmark.resolve_tenant(NULL)`;
-    const tenant = tenantRow as { id: string } | undefined;
+    const tenant = await currentTenant(db);
     if (!tenant) {
       return reply.code(404).type('text/html; charset=utf-8').send(page(null, null));
     }

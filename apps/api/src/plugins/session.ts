@@ -5,6 +5,7 @@ import {
 } from '@lotmark/domain';
 import { inTenantTransaction } from '../db';
 import { SESSION_COOKIE, hashToken, loadLiveSession } from '../services/sessions';
+import { currentTenant } from '../services/tenancy';
 import {
   notAuthenticated, notProvisioned, passwordChangeRequired, secondFactorRequired,
   sendProblem, sessionExpired,
@@ -91,10 +92,10 @@ export async function requireSession(
     return null;
   }
 
-  // Same bootstrap path as sign-in: RLS blocks a direct read before the
-  // request has a tenant context to be judged against.
-  const [tenantRow] = await app.db`SELECT * FROM lotmark.resolve_tenant(NULL)`;
-  const tenant = tenantRow as { id: string; time_source: string; region: string } | undefined;
+  // One resolution point for the whole product — see services/tenancy.ts for
+  // the single-tenant decision and why it is written down there rather than
+  // repeated here.
+  const tenant = await currentTenant(app.db);
   if (!tenant) {
     await sendProblem(reply, notProvisioned('No tenant is provisioned.'));
     return null;
@@ -199,7 +200,7 @@ export async function requireSession(
         )],
         mfaSatisfied: session.mfa_satisfied_at !== null,
         passwordChangeRequired: user.password_change_required,
-        timeSource: tenant.time_source,
+        timeSource: tenant.timeSource,
         region: tenant.region,
         today,
       };
