@@ -11,6 +11,7 @@ const S: CertificateSnapshot = {
   components: [{ symbol: 'u(bb)', value: 0.1, basis: 'ANOVA' }],
   issuedByName: 'Dr. Asha Pillai', signedAt: '2026-08-21T09:15:00Z', signatureMeaning: 'approval',
   keyVersion: 'v1', keyCustody: 'dev_file', verificationToken: 'k3nQ8vRtY2wPzL9mA4xB6dF1',
+  verificationOrigin: 'https://certificates.example.org',
   reissueReason: null, conformanceFrame: 'ISO 17034',
 };
 console.log(formatReport(await checkPdfA2b(await renderCertificate(S))));

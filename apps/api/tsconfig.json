@@ -1,5 +1,18 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": { "outDir": "./dist", "types": ["node"], "noEmit": true },
-  "include": ["src/**/*"]
+  /*
+   * `scripts/` is in here because it was not, and three type errors were
+   * living in it — two of them introduced the same day by changes that
+   * `tsc --noEmit` reported as clean. One made the disaster-recovery drill
+   * throw a TypeError on the path where a restore came back empty; the other
+   * two made the PDF/A gate render a certificate whose verification footer
+   * read `undefined/verify/...` while the gate printed PASS.
+   *
+   * These are operator tools — the migrator, the DR drill, audit key rotation,
+   * custody moves, the PDF/A gate. They run by hand, in production, on the
+   * worst day. Excluding them from the typecheck put the least-exercised code
+   * in the repository under the least scrutiny.
+   */
+  "include": ["src/**/*", "scripts/**/*"]
 }

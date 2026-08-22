@@ -204,7 +204,17 @@ async function prove(scratchUrl: string, label: string, recordIt = true): Promis
   try {
     const [t] = await scratch`SELECT id, slug FROM lotmark.tenants LIMIT 1`;
     const tenant = t as { id: string; slug: string } | undefined;
-    if (!tenant) { record('a tenant exists in the restored database', false); return false; }
+    if (!tenant) {
+      /*
+       * `return false` here until it was type-checked for the first time.
+       * `prove` returns an Outcome, and `main` calls `.toUpperCase()` on it —
+       * so the drill threw a TypeError on the one path that matters most: a
+       * restore that came back with no tenant in it at all. The worst possible
+       * result was the one it could not report.
+       */
+      record('a tenant exists in the restored database', false);
+      return 'failed';
+    }
     record('a tenant exists in the restored database', true, tenant.slug);
 
     /* — Row counts. Necessary, and nowhere near sufficient. — */
