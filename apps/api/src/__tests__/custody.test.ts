@@ -177,6 +177,9 @@ describe('the classes that do not exist here', () => {
 
 describe('the configuration guard', () => {
   const base = {
+    // Stated, because NODE_ENV has no default: loadConfig refuses to guess which
+    // environment it is in, since every production refusal hangs off the answer.
+    NODE_ENV: 'development',
     LOTMARK_AUDIT_KEY: 'a-real-secret-value-for-tests',
     DATABASE_URL: 'postgres://localhost:5432/x',
   };
@@ -200,6 +203,9 @@ describe('the configuration guard', () => {
   it('allows env custody in production', () => {
     const cfg = loadConfig({
       ...base, NODE_ENV: 'production', SIGNING_KEY_CUSTODY: 'env',
+      // The other production refusals apply here too — see config-guards.test.ts.
+      // This one is about custody, so it has to get past them.
+      PUBLIC_ORIGIN: 'https://certificates.example.org',
     } as NodeJS.ProcessEnv);
     expect(cfg.SIGNING_KEY_CUSTODY).toBe('env');
   });

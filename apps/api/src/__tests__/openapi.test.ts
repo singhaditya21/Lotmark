@@ -123,8 +123,8 @@ describe('the generated document', () => {
 
   it('marks the unauthenticated operations, and only those', () => {
     /**
-     * Three operations are reachable without a session, each on purpose. If a
-     * fourth appears here it is either a deliberate decision somebody should
+     * Four operations are reachable without a session, each on purpose. If a
+     * fifth appears here it is either a deliberate decision somebody should
      * see, or a route that forgot requireSession.
      */
     const doc = buildOpenApi();
@@ -135,8 +135,8 @@ describe('the generated document', () => {
       }
     }
     expect(open.sort()).toEqual([
-      'GET /api/v1/ops/alive',
-      'GET /health',
+      'GET /health/live',
+      'GET /health/ready',
       'GET /verify/{token}',
       'POST /api/v1/auth/sign-in',
     ]);

@@ -35,6 +35,20 @@ declare module 'fastify' {
   }
 }
 
+/**
+ * TRUST_PROXY as Fastify wants it.
+ *
+ * The environment has only strings, and Fastify means different things by the
+ * boolean and the string, so the conversion has to happen rather than be left
+ * to coercion. `loadConfig` has already refused every other shape — including a
+ * hop count, which Fastify accepts and then ignores; see the note there.
+ */
+function parseTrustProxy(value: string): boolean | string {
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  return value;
+}
+
 export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<FastifyInstance> {
   const cfg = { ...loadConfig(), ...overrides };
   const app = Fastify({
@@ -43,8 +57,11 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
       : { level: cfg.NODE_ENV === 'production' ? 'info' : 'debug' },
     // Trusting a forwarded header lets a client choose the IP that appears in
     // the security ledger and drives rate limiting. Only trust it behind a
-    // proxy that actually sets it.
-    trustProxy: false,
+    // proxy that actually sets it — which is why this is now configuration
+    // rather than a hard-coded false: a deployment DOES sit behind a proxy, and
+    // the honest answer differs per deployment. loadConfig checks the shape
+    // everywhere and refuses blanket `true` in production.
+    trustProxy: parseTrustProxy(cfg.TRUST_PROXY),
   });
 
   /**
@@ -116,9 +133,59 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
     keyGenerator: (req) => req.ip,
   });
 
-  app.get('/health', async () => {
-    const [row] = await app.db`SELECT now() AS at`;
-    return { status: 'ok', database: 'reachable', at: (row as { at: string }).at };
+  /**
+   * ── Two probes, because they answer two different questions ────────────────
+   *
+   * What was here before was one `/health` that queried the database, plus a
+   * second `/api/v1/ops/alive` that queried the database, caught the failure,
+   * and returned 200 with `database: 'unreachable'` in the body. A load
+   * balancer reads the STATUS CODE. So the endpoint whose name promised
+   * liveness kept an instance that could not reach its database in rotation,
+   * reporting the outage politely to nobody, and the endpoint that would have
+   * failed correctly was the one an orchestrator would not have been pointed at.
+   *
+   * The two questions an orchestrator actually asks:
+   *
+   *   /health/live   is this process running? Restart it if not. NO dependency
+   *                  checks, deliberately — a liveness probe that fails on a
+   *                  database outage makes every instance restart at once,
+   *                  which turns a recoverable outage into a crash loop.
+   *   /health/ready  can it serve a request? Take it out of rotation if not.
+   *                  Non-200 when not, so the answer is in the status code and
+   *                  not only in a body nobody parses.
+   *
+   * Both are unauthenticated and both say nothing about the data. A health
+   * endpoint that leaks tenant counts is a reconnaissance endpoint.
+   */
+  app.get('/health/live', async () => ({
+    status: 'ok',
+    uptimeSeconds: Math.round(process.uptime()),
+  }));
+
+  app.get('/health/ready', async (_req, reply) => {
+    const started = Date.now();
+    let database = 'unreachable';
+    let detail: string | null = null;
+    try {
+      await app.db`SELECT 1`;
+      database = 'reachable';
+    } catch (err) {
+      // The reason, not just the verdict: "unreachable" alone sends an operator
+      // to the wrong place about equally often as the right one.
+      detail = err instanceof Error ? err.message : String(err);
+    }
+    const ready = database === 'reachable';
+    return reply
+      // 503 rather than 500: this instance is not ready, which is a statement
+      // about availability and is retryable, not an error in the request.
+      .code(ready ? 200 : 503)
+      .send({
+        status: ready ? 'ready' : 'not_ready',
+        database,
+        ...(detail === null ? {} : { detail }),
+        checkedInMs: Date.now() - started,
+        uptimeSeconds: Math.round(process.uptime()),
+      });
   });
 
   await app.register(registerAuthRoutes, { prefix: '/api/v1/auth' });

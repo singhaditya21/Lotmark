@@ -288,7 +288,10 @@ async function pq(): Promise<boolean> {
   console.log('\nPERFORMANCE QUALIFICATION');
   console.log('The business process end to end, through the API, as the people who use it.\n');
 
-  const alive = await fetch('http://127.0.0.1:4000/health').then((r) => r.ok).catch(() => false);
+  // /health/ready, not /health/live: the PQ is about to drive the whole
+  // business process through the API, so "the process is up" is not the
+  // question — "it can reach its database" is.
+  const alive = await fetch('http://127.0.0.1:4000/health/ready').then((r) => r.ok).catch(() => false);
   if (!record('the API is running', alive, 'start it with: pnpm api')) return false;
 
   const asha = await signIn('asha@producer.example');

@@ -86,15 +86,19 @@ const publicOp = (
 
 export const OPERATIONS: readonly Operation[] = [
   /* ── Public ───────────────────────────────────────────────────────────── */
-  publicOp('GET', '/health', 'Public', 'Liveness, and whether the database answers',
-    'Unauthenticated by design, and says nothing about the data.'),
+  publicOp('GET', '/health/live', 'Public', 'Whether this process is running',
+    'Unauthenticated by design, and says nothing about the data. Checks NO ' +
+    'dependencies, deliberately: a liveness probe that fails during a database ' +
+    'outage restarts every instance at once. Always 200 while the process answers.'),
+  publicOp('GET', '/health/ready', 'Public', 'Whether this instance can serve a request',
+    'Unauthenticated by design, and says nothing about the data. 200 when the ' +
+    'database answers and 503 when it does not, so an orchestrator can act on the ' +
+    'status code — the endpoint this replaced returned 200 either way and reported ' +
+    'the outage only in the body.'),
   publicOp('GET', '/verify/:token', 'Public',
     'Verify a certificate issue from the address printed on it',
     'Unauthenticated DELIBERATELY: an auditor holding a printed certificate must ' +
     'not need an account with the producer whose certificate is in question.'),
-  publicOp('GET', '/api/v1/ops/alive', 'Public', 'Liveness and readiness in one place',
-    'Deliberately thin. A health endpoint that leaks tenant counts is a ' +
-    'reconnaissance endpoint.'),
 
   /* ── Authentication ───────────────────────────────────────────────────── */
   publicOp('POST', '/api/v1/auth/sign-in', 'Authentication', 'Password authentication',

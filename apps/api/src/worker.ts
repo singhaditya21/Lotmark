@@ -1,14 +1,28 @@
 /**
  * The worker process.
  *
- * Separate from the API by default. A long job must not compete with request
+ * Separate from the API, always. A long job must not compete with request
  * handling for the event loop, and a worker that crashes must not take sign-in
- * down with it. Run it inline only for a demo, by setting RUN_SCHEDULER on the
- * API instead.
+ * down with it.
+ *
+ * ── How the scheduler is enabled ────────────────────────────────────────────
+ *
+ * By running THIS FILE, and by nothing else. There is no in-process switch: the
+ * API never constructs a Scheduler, so an API process runs no jobs regardless of
+ * how it is configured.
+ *
+ * This comment used to tell operators to "run it inline for a demo by setting
+ * RUN_SCHEDULER on the API instead". `RUN_SCHEDULER` was parsed by config.ts and
+ * read by nothing — so an operator who followed the instruction got an API that
+ * silently ran no scheduled jobs, and the only symptom would have been the
+ * stability-monitoring CAPA that never got raised. The setting has been deleted
+ * rather than implemented; the honest deployment is two processes.
  *
  *   pnpm --filter @lotmark/api worker          # run the scheduler
  *   pnpm --filter @lotmark/api job <name>      # run one job now and exit
  *   pnpm --filter @lotmark/api job --list      # what jobs exist
+ *
+ * NODE_ENV must be set — see config.ts. There is no default.
  */
 import { loadConfig } from './config';
 import { createDb } from './db';

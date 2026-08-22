@@ -68,24 +68,11 @@ export async function registerOpsRoutes(app: FastifyInstance): Promise<void> {
   });
 
   /**
-   * A liveness and readiness summary in one place.
-   *
-   * Deliberately unauthenticated and deliberately thin: it says whether the
-   * process is up and the database reachable, and NOTHING about the data. A
-   * health endpoint that leaks tenant counts is a reconnaissance endpoint.
+   * `/ops/alive` used to live here. It returned 200 whether or not the database
+   * answered, with the bad news in the body — so an orchestrator reading the
+   * status code kept sending traffic to an instance that could not serve it.
+   * It was replaced by /health/live and /health/ready in app.ts, which are
+   * separate because a liveness probe that fails on a database outage restarts
+   * every instance at once.
    */
-  app.get('/ops/alive', async () => {
-    const started = Date.now();
-    let database = 'unreachable';
-    try {
-      await db`SELECT 1`;
-      database = 'reachable';
-    } catch { /* reported as unreachable */ }
-    return {
-      status: database === 'reachable' ? 'ok' : 'degraded',
-      database,
-      checkedInMs: Date.now() - started,
-      uptimeSeconds: Math.round(process.uptime()),
-    };
-  });
 }

@@ -51,7 +51,37 @@ const TEAMS = [
 const teamOfProject = (prj: string) =>
   uuidFor(`team:${TEAMS.find((t) => (t.projects as readonly string[]).includes(prj))?.key ?? 'organics'}`);
 
+/**
+ * The seed cannot run against production, and says why rather than just no.
+ *
+ * Two independent reasons, either of which is sufficient: it TRUNCATEs 40-odd
+ * tables including the append-only audit ledger — the one operation that can
+ * destroy the 21 CFR 11 record, which is precisely why no application role
+ * holds it — and it creates nine accounts with a password published in this
+ * file and a shared authenticator secret.
+ *
+ * The refusal is here rather than in a runbook because the difference between
+ * seeding the demo and destroying a producer's records is one shell that had
+ * the wrong DATABASE_URL exported.
+ */
+function refuseInProduction(): void {
+  if (process.env.NODE_ENV !== 'production') return;
+  throw new Error(
+    'The seed refuses to run with NODE_ENV=production.\n' +
+    '  It TRUNCATEs every table, including lotmark.audit_ledger — the append-only\n' +
+    '  record that 21 CFR 11 §11.10(e) exists to protect, and which no application\n' +
+    '  role is granted the privilege to touch.\n' +
+    '  It then creates nine demonstration accounts sharing one password that is\n' +
+    '  printed in this file and one authenticator secret.\n' +
+    '  If this is a fresh deployment that needs a first tenant, provision it with\n' +
+    '  lotmark.provision_tenant and create the first account through the admin API;\n' +
+    '  neither destroys anything and neither mints a known credential.',
+  );
+}
+
 async function main() {
+  refuseInProduction();
+
   // The seed TRUNCATEs, which the application role must never be able to do.
   const sql = createClient(process.env.DATABASE_URL ?? ADMIN_URL);
   console.log('seeding into', process.env.DATABASE_URL ?? 'postgres://localhost:5432/lotmark_dev');

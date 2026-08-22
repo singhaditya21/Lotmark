@@ -16,14 +16,14 @@
     "db:migrate": "pnpm --filter @lotmark/db migrate",
     "db:seed": "pnpm --filter @lotmark/db seed",
     "db:reset": "pnpm --filter @lotmark/db reset",
-    "api": "pnpm --filter @lotmark/api start",
+    "api": "NODE_ENV=development pnpm --filter @lotmark/api start",
     "smoke": "node apps/api/scripts/smoke.mjs",
     "db:setup": "createdb lotmark_dev 2>/dev/null; pnpm db:migrate && pnpm db:seed",
     "web": "pnpm --filter @lotmark/web dev",
     "db:status": "pnpm --filter @lotmark/db migrate:status",
-    "worker": "pnpm --filter @lotmark/api worker",
-    "job": "pnpm --filter @lotmark/api job",
-    "anchor": "pnpm --filter @lotmark/api anchor"
+    "worker": "NODE_ENV=development pnpm --filter @lotmark/api worker",
+    "job": "NODE_ENV=development pnpm --filter @lotmark/api job",
+    "anchor": "NODE_ENV=development pnpm --filter @lotmark/api anchor"
   },
   "devDependencies": {
     "typescript": "^5.7.2",
