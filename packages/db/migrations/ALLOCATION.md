@@ -27,6 +27,7 @@ Take the next free number from this table and add a row; do not take it from
 | 0031 | ~~`signature_algorithm_known`~~ | **withdrawn, written and reverted** — see below | — |
 | 0032 | `operational_alerts` | Conditions were detected and nobody was told | 0021 |
 | 0033 | `revoke_custody_helper` | 0029 revoked one function and not its sibling | 0029 |
+| 0034 | `probe_role` | The prober must see every tenant, and nothing else | 0032 |
 
 ## Why those orderings, specifically
 
@@ -80,6 +81,8 @@ Take the next free number from this table and add a row; do not take it from
 - **0027 stands alone.** It drops four boolean columns from `tenants` that
   duplicate `config_entries` of kind `flag`. Safe because nothing reads either
   store — verified by grep across the repository before it was written.
+
+- **0034 after 0032.** It reads the two tables 0032 creates.
 
 - **0033 after 0029.** It revokes a privilege on a function 0029 creates.
 

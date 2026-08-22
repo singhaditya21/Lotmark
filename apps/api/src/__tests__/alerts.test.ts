@@ -161,6 +161,41 @@ describe('a condition that stops being true', () => {
   });
 });
 
+describe('the prober can see across tenants and the application cannot', () => {
+  /**
+   * `ops_probe_summary` is SECURITY DEFINER, so it reads past the per-tenant
+   * policies — which is the whole point of it, and exactly why who may call it
+   * is load-bearing. Cross-tenant reachability is the property FORCE row-level
+   * security exists to deny the application; a function it can call that
+   * enumerates tenants gives it back quietly.
+   *
+   * NOT granting was not enough. 0012 set `ALTER DEFAULT PRIVILEGES ... GRANT
+   * EXECUTE ON FUNCTIONS TO lotmark_app`, so every function in this schema is
+   * app-callable the moment it exists, and migration 0034 as first written
+   * handed the application the ability it said in its own comment it withheld.
+   * It takes an explicit REVOKE, and this is what stops the next one drifting.
+   */
+  it('refuses the application role', async () => {
+    /*
+     * The suite connects as lotmark_app, so this is the real principal rather
+     * than a simulated one.
+     */
+    await expect(app.db`SELECT * FROM lotmark.ops_probe_summary()`)
+      .rejects.toThrow(/permission denied/i);
+  });
+
+  it('grants exactly one role, and it is not the application', async () => {
+    const [row] = await app.db`
+      SELECT array_to_string(p.proacl, ',') AS acl
+        FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+       WHERE n.nspname = 'lotmark' AND p.proname = 'ops_probe_summary'`;
+    const acl = (row as { acl: string }).acl;
+    expect(acl, 'the probe role must be able to call it').toContain('lotmark_probe=X');
+    expect(acl, 'the application must not').not.toContain('lotmark_app=X');
+    expect(acl, 'and certainly not everybody').not.toMatch(/(^|,)=X/);
+  });
+});
+
 describe('the sweep', () => {
   it('raises an alert for a job that has never run', async () => {
     /*
