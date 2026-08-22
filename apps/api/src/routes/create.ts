@@ -4,6 +4,7 @@ import { defaultSodSettings, type AuthScope } from '@lotmark/domain';
 import { inTenantTransaction, type Sql } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
+import { activeConfigVersionId } from '../services/config-admin';
 import { recordAudit } from '../services/audit';
 import { nextCode } from '../services/numbering';
 import {
@@ -78,14 +79,6 @@ export async function registerCreateRoutes(app: FastifyInstance): Promise<void> 
     timeSource: ctx.timeSource, region: ctx.region,
   });
 
-  /** The active configuration version, stamped onto everything created under it. */
-  async function activeConfigVersion(tx: Sql, tenantId: string): Promise<string | null> {
-    const [row] = await tx`
-      SELECT id FROM lotmark.config_versions
-      WHERE tenant_id = ${tenantId} AND status = 'active' LIMIT 1`;
-    return (row as { id: string } | undefined)?.id ?? null;
-  }
-
   /* ── Create a project ─────────────────────────────────────────────────── */
 
   app.post('/projects', async (req, reply) => {
@@ -134,7 +127,7 @@ export async function registerCreateRoutes(app: FastifyInstance): Promise<void> 
         tenantId: ctx.tenantId, entity: 'project',
         material: body.sku.split('-')[1] ?? body.sku, today: ctx.today,
       });
-      const configVersionId = await activeConfigVersion(tx, ctx.tenantId);
+      const configVersionId = await activeConfigVersionId(tx, ctx.tenantId);
 
       const [row] = await tx`
         INSERT INTO lotmark.projects
@@ -237,7 +230,7 @@ export async function registerCreateRoutes(app: FastifyInstance): Promise<void> 
       }
 
       const code = await nextCode(tx, { tenantId: ctx.tenantId, entity: 'study', today: ctx.today });
-      const configVersionId = await activeConfigVersion(tx, ctx.tenantId);
+      const configVersionId = await activeConfigVersionId(tx, ctx.tenantId);
 
       const [row] = await tx`
         INSERT INTO lotmark.studies
@@ -415,7 +408,7 @@ export async function registerCreateRoutes(app: FastifyInstance): Promise<void> 
       if (!verdict.allowed) return { status: 403 as const, verdict };
 
       const code = await nextCode(tx, { tenantId: ctx.tenantId, entity: 'property_value', today: ctx.today });
-      const configVersionId = await activeConfigVersion(tx, ctx.tenantId);
+      const configVersionId = await activeConfigVersionId(tx, ctx.tenantId);
 
       const [row] = await tx`
         INSERT INTO lotmark.property_values

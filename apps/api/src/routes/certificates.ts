@@ -4,6 +4,7 @@ import { isSignatureMeaning, defaultSodSettings, type SignatureMeaning, type Aut
 import { inTenantTransaction } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
+import { activeConfigVersionId } from '../services/config-admin';
 import { recordAudit } from '../services/audit';
 import { applySignature, rejectSigning, SigningRejection } from '../services/signing';
 import { refuseSigning } from '../services/signing-refusal';
@@ -371,13 +372,27 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
       const key = await keys.active(tx, ctx.tenantId, (m) => app.log.info(m));
 
       const issueNumber = prev.issue_number + 1;
+      /**
+       * The configuration version this issue was produced under.
+       *
+       * The column has existed since 0001 with an FK, the seed populates it,
+       * and `routes/create.ts` stamps it on projects, studies and values — and
+       * both routes that issue a CERTIFICATE omitted it, which is the record
+       * where provenance matters most. Without it "under what rules was this
+       * certificate issued" is answerable only by guessing from dates, in a
+       * table nobody may rewrite.
+       */
+      const configVersionId = await activeConfigVersionId(tx, ctx.tenantId);
+
       const [issueRow] = await tx`
         INSERT INTO lotmark.certificate_issues
           (tenant_id, certificate_id, issue_number, assigned_value, expanded_uncertainty,
-           coverage_factor, property_name, unit, issued_by_user_id, issued_at, reissue_reason)
+           coverage_factor, property_name, unit, issued_by_user_id, issued_at, reissue_reason,
+           config_version_id)
         VALUES (${ctx.tenantId}, ${cert.id}, ${issueNumber}, ${pv.assigned_value},
                 ${pv.expanded_uncertainty}, ${pv.coverage_factor}, ${pv.property_name},
-                ${pv.unit}, ${ctx.userId}, now(), ${parsed.data.reason})
+                ${pv.unit}, ${ctx.userId}, now(), ${parsed.data.reason},
+                ${configVersionId})
         RETURNING id`;
       const issueId = (issueRow as { id: string }).id;
 

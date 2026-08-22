@@ -7,6 +7,7 @@ import {
 import { inTenantTransaction, type Sql } from '../db';
 import { requireSession, type RequestContext } from '../plugins/session';
 import { decide } from '../services/guard';
+import { activeConfigVersionId } from '../services/config-admin';
 import { recordAudit } from '../services/audit';
 import { tenantSod } from '../services/sod';
 import { machineForEntity } from '../services/workflows';
@@ -347,14 +348,28 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
       if (!session) return { status: 401 as const, message: 'Your session has ended.' };
       const key = await keys.active(tx, ctx.tenantId, (m) => app.log.info(m));
 
+      /**
+       * The configuration version this issue was produced under.
+       *
+       * The column has existed since 0001 with an FK, the seed populates it,
+       * and `routes/create.ts` stamps it on projects, studies and values — and
+       * both routes that issue a CERTIFICATE omitted it, which is the record
+       * where provenance matters most. Without it "under what rules was this
+       * certificate issued" is answerable only by guessing from dates, in a
+       * table nobody may rewrite.
+       */
+      const configVersionId = await activeConfigVersionId(tx, ctx.tenantId);
+
       const [issueRow] = await tx`
         INSERT INTO lotmark.certificate_issues
           (tenant_id, certificate_id, issue_number, assigned_value, expanded_uncertainty,
-           coverage_factor, property_name, unit, issued_by_user_id, issued_at, reissue_reason)
+           coverage_factor, property_name, unit, issued_by_user_id, issued_at, reissue_reason,
+           config_version_id)
         VALUES (${ctx.tenantId}, ${cert.id}, ${issueNumber}, ${value.assigned_value},
                 ${value.expanded_uncertainty}, ${value.coverage_factor}, ${value.property_name},
                 ${value.unit}, ${ctx.userId}, now(),
-                ${issueNumber > 1 ? (parsed.data.reason ?? 'Reissued') : null})
+                ${issueNumber > 1 ? (parsed.data.reason ?? 'Reissued') : null},
+                ${configVersionId})
         RETURNING id`;
       const issueId = (issueRow as { id: string }).id;
 

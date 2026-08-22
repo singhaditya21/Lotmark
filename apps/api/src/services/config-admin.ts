@@ -90,6 +90,25 @@ export async function versionById(
   return (row as unknown as ConfigVersionRow | undefined) ?? null;
 }
 
+/**
+ * The id of the version to stamp onto a record being created now.
+ *
+ * `registry.ts` states it as a principle: every business record carries the
+ * configuration version it was created under, so "what rules was this issued
+ * under" is answerable from the row rather than reconstructed from dates.
+ *
+ * Shared because it was NOT shared. A private copy lived inside
+ * `routes/create.ts`, three routes used it, and the two routes that issue a
+ * CERTIFICATE — the record where provenance matters most — simply omitted the
+ * column. A helper somebody has to remember to copy is a helper somebody
+ * forgets.
+ */
+export async function activeConfigVersionId(
+  tx: Sql, tenantId: string,
+): Promise<string | null> {
+  return (await activeVersion(tx, tenantId))?.id ?? null;
+}
+
 export async function activeVersion(tx: Sql, tenantId: string): Promise<ConfigVersionRow | null> {
   const [row] = await tx`
     SELECT id, version_number, status, change_reason, based_on_version_id,
