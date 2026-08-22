@@ -15,12 +15,7 @@ import { applySignature, rejectSigning, SigningRejection } from '../services/sig
 import { refuseSigning } from '../services/signing-refusal';
 import { loadLiveSession, hashToken, SESSION_COOKIE } from '../services/sessions';
 import { nextCode } from '../services/numbering';
-import { signPayload } from '@lotmark/security';
-import { mintVerificationToken } from '../services/documents';
-import {
-  renderCertificate, snapshotDigest, RENDERER_VERSION, TEMPLATE_KEY, TEMPLATE_VERSION,
-  type CertificateSnapshot,
-} from '../services/certificate-pdf';
+import { renderAndStoreIssue } from '../services/certificate-issue';
 import { conflict, forbidden, invalidRequest, notFound, sendProblem, stepUpRequired, unprocessable } from '../http/problem';
 
 const releaseBody = z.object({
@@ -407,85 +402,48 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
        * something that never happened. Both are worse than the whole issuance
        * failing, so they succeed or fail together.
        */
-      const [projectRow] = await tx`
-        SELECT p.material_name, p.cas_number, t.name AS producer_name,
-               t.conformance_frame, o.accreditation
-        FROM lotmark.projects p
-        JOIN lotmark.tenants t ON t.id = p.tenant_id
-        LEFT JOIN lotmark.organisations o ON o.tenant_id = t.id AND o.kind = 'producer'
-        WHERE p.id = ${lot.project_id} LIMIT 1`;
-      const meta = projectRow as {
-        material_name: string; cas_number: string | null; producer_name: string;
-        conformance_frame: string; accreditation: string | null;
-      };
-
-      const [lotDetail] = await tx`
-        SELECT l.expiry_date, l.storage_condition, prev.lot_code AS previous_lot_code
-        FROM lotmark.lots l
-        LEFT JOIN lotmark.lots prev ON prev.id = l.previous_lot_id
-        WHERE l.id = ${lot.id}`;
-      const detail = lotDetail as {
-        expiry_date: string; storage_condition: string; previous_lot_code: string | null;
-      };
-
       const [pvRow] = await tx`
         SELECT components FROM lotmark.property_values
         WHERE tenant_id = ${ctx.tenantId} AND project_id = ${lot.project_id} AND state = 'authorised'
         ORDER BY authorised_at DESC LIMIT 1`;
-      const components = ((pvRow as { components: Array<{ symbol: string; value: number; basis: string }> } | undefined)
+      const components = ((pvRow as
+        { components: Array<{ symbol: string; value: number; basis: string }> } | undefined)
         ?.components ?? []).map((c) => ({ symbol: c.symbol, value: c.value, basis: c.basis }));
 
-      const verificationToken = mintVerificationToken();
-
-      const snapshot: CertificateSnapshot = {
-        producerName: meta.producer_name,
-        producerAccreditation: meta.accreditation,
+      /**
+       * ONE render path, for issuing and for reissuing.
+       *
+       * `renderAndStoreIssue` was extracted precisely so that "issuing and
+       * REISSUING must produce documents by the same path. Two copies would
+       * eventually differ" — and first issue went on rendering inline, with its
+       * own copy of the metadata queries, the snapshot build and an
+       * eight-column UPDATE. Two copies that had not diverged yet.
+       *
+       * The golden hash in `certificate-pdf.test.ts` is what made collapsing
+       * them safe: it pins the bytes, so a de-duplication that changed the
+       * document by accident fails rather than passing quietly.
+       */
+      const rendered = await renderAndStoreIssue(tx, documents, {
+        tenantId: ctx.tenantId,
+        issueId,
         certificateCode: cert.code,
         issueNumber,
-        issuedAt: signature.signedAt,
-        lotCode: lot.lot_code,
-        previousLotCode: detail.previous_lot_code,
-        materialName: meta.material_name,
-        casNumber: meta.cas_number,
-        propertyName: value.property_name,
-        assignedValue: value.assigned_value,
-        expandedUncertainty: value.expanded_uncertainty,
-        coverageFactor: value.coverage_factor,
-        unit: value.unit,
-        expiryDate: detail.expiry_date,
-        storageCondition: detail.storage_condition,
-        transportCondition: null,
-        components,
+        lotId: lot.id,
+        projectId: lot.project_id,
+        value: {
+          propertyName: value.property_name,
+          assignedValue: value.assigned_value,
+          expandedUncertainty: value.expanded_uncertainty,
+          coverageFactor: value.coverage_factor,
+          unit: value.unit,
+          components,
+        },
         issuedByName: ctx.displayName,
         signedAt: signature.signedAt,
         signatureMeaning: signature.meaning,
-        keyVersion: key.keyVersion,
-        keyCustody: key.custody,
-        verificationToken,
+        key,
         reissueReason: issueNumber > 1 ? (parsed.data.reason ?? 'Reissued') : null,
-        conformanceFrame: meta.conformance_frame,
-      };
-
-      const pdf = await renderCertificate(snapshot);
-      const stored = documents.put(pdf);
-      // The signature is over the PDF BYTES, so a verifier needs only the file
-      // and the public key — no database, no account, no cooperation from us.
-      const documentSignature = signPayload(
-        Buffer.from(pdf).toString('base64'), key.privateKey,
-      );
-
-      await tx`
-        UPDATE lotmark.certificate_issues
-        SET document_sha256 = ${stored.sha256}, document_path = ${stored.relativePath},
-            document_bytes = ${stored.bytes},
-            data_snapshot = ${tx.json(snapshot as never)},
-            data_snapshot_digest = ${snapshotDigest(snapshot)},
-            template_key = ${TEMPLATE_KEY}, template_version = ${TEMPLATE_VERSION},
-            renderer_version = ${RENDERER_VERSION},
-            document_signature = ${documentSignature},
-            document_key_version = ${key.keyVersion},
-            rendered_at = now(), verification_token = ${verificationToken}
-        WHERE id = ${issueId}`;
+      });
 
       await recordAudit(tx, auditCtxOf(ctx), {
         kind: 'CERTIFICATE', action: issueNumber === 1 ? 'Certificate issued' : 'Certificate reissued',
@@ -494,7 +452,7 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
         subjectTable: 'certificate_issues', subjectId: issueId,
         changes: {
           certificate: cert.code, issueNumber, value: value.assigned_value,
-          documentSha256: stored.sha256, documentBytes: stored.bytes,
+          documentSha256: rendered.sha256, documentBytes: rendered.bytes,
         },
       });
 
@@ -511,10 +469,10 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
           },
           signature: { id: signature.id, signedAt: signature.signedAt, keyVersion: key.keyVersion },
           document: {
-            sha256: stored.sha256, bytes: stored.bytes,
-            verificationToken,
+            sha256: rendered.sha256, bytes: rendered.bytes,
+            verificationToken: rendered.verificationToken,
             url: `/api/v1/certificates/${cert.id}/issues/${issueNumber}/pdf`,
-            verifyUrl: `${cfg.PUBLIC_ORIGIN}/verify/${verificationToken}`,
+            verifyUrl: `${cfg.PUBLIC_ORIGIN}/verify/${rendered.verificationToken}`,
           },
         },
       };

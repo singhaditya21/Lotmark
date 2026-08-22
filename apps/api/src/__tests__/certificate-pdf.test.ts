@@ -30,7 +30,45 @@ const SNAPSHOT: CertificateSnapshot = {
 
 const sha = (b: Uint8Array) => createHash('sha256').update(b).digest('hex');
 
+/**
+ * The bytes this snapshot renders to, pinned.
+ *
+ * Stable across three separate processes before it was written down, so it is a
+ * property of the renderer rather than of one run.
+ *
+ * ── Why the tests below were not enough ─────────────────────────────────────
+ *
+ * They render the same in-memory object TWICE IN ONE PROCESS and compare. That
+ * catches non-determinism — a wall clock, a random document ID — and it cannot
+ * catch a change to the layout, the font, the margins, the wording, the number
+ * formatting or the ICC profile. Every constant in `certificate-pdf.ts` could
+ * move and the suite stayed green. `ARCHITECTURE.md:1031` describes this test;
+ * it had never been written.
+ *
+ * ── What to do when it fails ────────────────────────────────────────────────
+ *
+ * Look at the change and decide whether the document was MEANT to move. A
+ * certificate already issued is re-rendered from its stored snapshot to check
+ * its hash, so a deliberate change to the renderer breaks that check for every
+ * certificate issued before it — which is what `renderer_version` on the issue
+ * exists to record. Bump it, and update this hash in the same commit.
+ *
+ * Do not update this hash on its own. That is the one edit that turns the test
+ * back into the thing it replaced.
+ */
+const GOLDEN_SHA256 =
+  '781b4965019bd72dc9ffeb69b80ba00894fe1e1731a82d1c073d6d34a6064e40';
+const GOLDEN_BYTES = 44088;
+
 describe('the certificate renders deterministically', () => {
+  it('renders the bytes it has always rendered', async () => {
+    const pdf = await renderCertificate(SNAPSHOT);
+    expect(sha(pdf), 'the certificate document changed — see GOLDEN_SHA256')
+      .toBe(GOLDEN_SHA256);
+    // Reported separately: a length change alone localises the diff quickly.
+    expect(pdf.length).toBe(GOLDEN_BYTES);
+  });
+
   it('produces byte-identical output for the same snapshot', async () => {
     // THE property. A certificate states a value somebody relies on for years;
     // "here is the document we issued" only means something if re-rendering the
