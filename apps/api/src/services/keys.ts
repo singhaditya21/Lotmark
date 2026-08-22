@@ -84,7 +84,11 @@ export class KeyProvider {
    * registered in the database as an auditable act. A signing key appearing
    * from nowhere is exactly the event an investigator needs to be able to see.
    */
-  async active(sql: Sql, tenantId: string, log?: (msg: string) => void): Promise<ActiveKey> {
+  async active(
+    sql: Sql, tenantId: string, log?: (msg: string) => void,
+    opts: { readonly mint?: boolean } = {},
+  ): Promise<ActiveKey> {
+    const { mint = true } = opts;
     const cached = this.cache.get(tenantId);
     if (cached) return cached;
 
@@ -131,20 +135,70 @@ export class KeyProvider {
       return key;
     }
 
+    if (mint === false) {
+      /**
+       * The caller has asked NOT to mint, and means it.
+       *
+       * Used where minting would be both surprising and unsafe — building an
+       * assessment pack, which reads at REPEATABLE READ. Creating a tenant's
+       * first signing key should not be a side effect of exporting a report,
+       * and under REPEATABLE READ the conflict handling below raises a
+       * serialization failure instead of resolving.
+       */
+      throw new Error(
+        `No signing key is registered for tenant ${tenantId}, and this operation ` +
+        'will not create one. Issue or reissue a certificate first, or mint a key ' +
+        'deliberately.',
+      );
+    }
+
     // First use: mint and register. The version is purpose-prefixed so a record
     // key and an anchor key can never collide on key_version, which remains
     // unique per tenant.
     const kp = generateSigningKeyPair(RECORD_KEY_VERSION);
     const minting = this.custodyFor(this.mintUnder);
-    minting.write(tenantId, kp.keyVersion, kp.privateKeyPem);
     const fingerprint = publicKeyFingerprint(kp.publicKeyPem);
 
-    await sql`
+    /**
+     * REGISTER FIRST, then write the private half. The order is the whole fix.
+     *
+     * It was the other way round, with a bare INSERT and no `ON CONFLICT`, and
+     * `DevFileCustody.write` is an unconditional overwrite. Two processes
+     * reaching first-use together therefore BOTH wrote the file, one INSERT
+     * raised 23505 and aborted its transaction, and the tenant was left with
+     * one racer's public key registered against the other's private key on
+     * disk — a permanent 500 at the mismatch check above, needing manual
+     * intervention. It happened twice here in one day, because the test suite
+     * runs files in parallel forks against one key directory.
+     *
+     * `DO NOTHING` rather than a savepoint: a conflict is no longer an error to
+     * contain, so there is nothing for a savepoint to protect. And a concurrent
+     * uncommitted insert makes this statement WAIT rather than skip, so by the
+     * time no row comes back the winner has committed — and had written its
+     * private half before committing, which is why that write moved above the
+     * commit and below the insert.
+     */
+    const [claimed] = await sql`
       INSERT INTO lotmark.signing_keys
         (tenant_id, key_version, algorithm, public_key_pem, fingerprint, custody,
          purpose, activated_at)
       VALUES (${tenantId}, ${kp.keyVersion}, 'ed25519', ${kp.publicKeyPem},
-              ${fingerprint}, ${this.mintUnder}, 'record', now())`;
+              ${fingerprint}, ${this.mintUnder}, 'record', now())
+      ON CONFLICT DO NOTHING
+      RETURNING key_version`;
+
+    if (!claimed) {
+      /**
+       * Somebody else registered first. Use THEIR key, never ours — the private
+       * half we generated has no registration and never will, and writing it to
+       * disk would clobber the key that does.
+       */
+      log?.(`another process registered a signing key for tenant ${tenantId} first; using it`);
+      this.cache.delete(tenantId);
+      return this.active(sql, tenantId, log, { mint: false });
+    }
+
+    minting.write(tenantId, kp.keyVersion, kp.privateKeyPem);
 
     log?.(
       `minted signing key ${kp.keyVersion} for tenant ${tenantId} ` +

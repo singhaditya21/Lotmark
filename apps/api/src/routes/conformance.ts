@@ -91,7 +91,13 @@ export async function registerConformanceRoutes(app: FastifyInstance): Promise<v
     const pack = await inTenantTransaction(
       db, { ...args(ctx.tenantId), isolation: 'repeatable read' },
       async (tx) => {
-        const key = await keys.active(tx, ctx.tenantId, (m) => app.log.info(m));
+        /**
+         * Will not MINT. This transaction reads at REPEATABLE READ, where the
+         * `ON CONFLICT DO NOTHING` that makes first-use race-safe raises a
+         * serialization failure instead of resolving — and creating a tenant's
+         * first signing key should not be a side effect of exporting a report.
+         */
+        const key = await keys.active(tx, ctx.tenantId, (m) => app.log.info(m), { mint: false });
         return buildAssessmentPack(tx, ctx.tenantId, (payload) => ({
           signature: signPayload(payload, key.privateKey),
           keyVersion: key.keyVersion,
