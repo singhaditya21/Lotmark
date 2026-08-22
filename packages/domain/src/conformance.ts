@@ -11,9 +11,17 @@
  *
  * So each requirement names its evidence as PATHS AND TEST NAMES, and
  * `conformance.test.ts` asserts every one of them resolves: the file exists,
- * the test exists and passes. A requirement whose evidence has been deleted or
- * renamed fails the suite. The matrix in docs/validation is generated from
- * this; it is a report, never a source.
+ * and a test in it is DECLARED under that name. A requirement whose evidence
+ * has been deleted or renamed fails the suite. The matrix in docs/validation is
+ * generated from this; it is a report, never a source.
+ *
+ * What that check does NOT do is run the test. This paragraph used to claim it
+ * asserted the test "passes", which it never did — a citation is a pointer, and
+ * whether the thing it points at is green is what CI is for. It also used to
+ * match the name anywhere in the file, so an IMPORT of a function with the
+ * right name satisfied a requirement; it now parses `it`/`test`/`describe`
+ * titles, which is what caught four bad citations, two of them written the same
+ * day as this correction.
  *
  * ── Status is not a grade ───────────────────────────────────────────────────
  *
@@ -133,7 +141,10 @@ export const REQUIREMENTS: readonly Requirement[] = [
       'contribution, and is reproducible from the raw measurements.',
     status: 'enforced',
     code: ['packages/stats/src/budget.ts', 'apps/api/src/routes/console.ts'],
-    tests: [{ file: 'packages/stats/src/__tests__/golden.test.ts', named: 'combine' }],
+    tests: [{
+      file: 'packages/stats/src/__tests__/golden.test.ts',
+      named: 'uncertainty budget reproduces the prototype',
+    }],
     live: 'uncertainty',
     note:
       'Recomputed from raw results on every request. Nothing reads a stored ' +
@@ -202,8 +213,24 @@ export const REQUIREMENTS: readonly Requirement[] = [
     statement: 'Nonconformities are recorded, investigated, corrected and checked for effect.',
     status: 'enforced',
     code: ['apps/api/src/routes/capa.ts', 'packages/domain/src/state-machines.ts'],
-    tests: [{ file: 'apps/web/src/lib/__tests__/capa.test.ts', named: 'close' }],
+    /**
+     * Server evidence FIRST, and it used to be the only citation that was a
+     * console test. `apps/web` tests assert what the console does with an
+     * answer; they cannot assert that the server refuses anything, and this
+     * product is explicit that hiding a control is a courtesy rather than a
+     * control. A requirement evidenced only from the browser is evidenced by
+     * something incapable of demonstrating it.
+     */
+    tests: [
+      { file: 'apps/api/src/__tests__/workflow-ceremony.test.ts', named: 'refuses a CAPA move that does not state why' },
+      { file: 'apps/web/src/lib/__tests__/capa.test.ts', named: 'close' },
+    ],
     live: 'capa',
+    note:
+      'The register cited only a CONSOLE test for this until an evidence check ' +
+      'was tightened to reject that. The server-side rule an assessor cares ' +
+      'about — a nonconformity cannot close without a recorded root cause and ' +
+      'corrective action — is enforced in the route and is now what is cited.',
   },
 
   /* ── 21 CFR Part 11 ───────────────────────────────────────────────────── */
@@ -294,9 +321,9 @@ export const REQUIREMENTS: readonly Requirement[] = [
     ],
     tests: [
       { file: 'packages/domain/src/__tests__/workflows.test.ts', named: 'round trip is lossless' },
-      { file: 'apps/api/src/__tests__/config-admin.test.ts', named: 'nowhere to go' },
+      { file: 'apps/api/src/__tests__/config-admin.test.ts', named: 'refuses removing a state records are sitting in' },
       { file: 'packages/domain/src/__tests__/guards.test.ts', named: 'reads nothing but the facts it was handed' },
-      { file: 'apps/api/src/__tests__/workflow-ceremony.test.ts', named: 'does not meet a condition' },
+      { file: 'apps/api/src/__tests__/workflow-ceremony.test.ts', named: 'refuses the move when the condition does not hold' },
     ],
     note:
       'Every lifecycle is an explicit transition table, and the table now comes ' +

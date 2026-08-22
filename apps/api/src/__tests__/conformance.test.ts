@@ -3,7 +3,7 @@ import { createHmac } from 'node:crypto';
 import type { FastifyInstance, LightMyRequestResponse } from 'fastify';
 import { buildApp } from '../app';
 import { inTenantTransaction } from '../db';
-import { buildAssessmentPack, canonicalJson } from '../services/conformance';
+import { buildAssessmentPack, canonicalJson, liveEvidence } from '../services/conformance';
 
 /**
  * Conformance reporting, and the pack an assessor takes away.
@@ -107,6 +107,70 @@ const inTenant = <T>(fn: (tx: never) => Promise<T>): Promise<T> =>
     organisationKind: 'producer',
     isolation: 'repeatable read',
   }, fn as never));
+
+/**
+ * Runs `fn` inside a tenant transaction and then throws the work away.
+ *
+ * A drill row is the newest row the moment it is written, and the conformance
+ * view reads the newest one — so a test that inserted one and left it there
+ * would decide what every later assertion in this file sees. Rolling back is
+ * the only way to ask "what would the view say about this row" without the row
+ * becoming a fact about the database.
+ */
+class Rollback extends Error {
+  constructor(readonly value: unknown) { super('deliberate rollback'); }
+}
+
+const inDiscardedTenant = async <T>(fn: (tx: never) => Promise<T>): Promise<T> => {
+  try {
+    await inTenant(async (tx) => { throw new Rollback(await fn(tx)); });
+  } catch (e) {
+    if (e instanceof Rollback) return e.value as T;
+    throw e;
+  }
+  throw new Error('the transaction committed, which it was supposed not to');
+};
+
+describe('a recovery drill that could not run its checks', () => {
+  /**
+   * The bug this pins down shipped and was recorded twice.
+   *
+   * The drill script marked a check it could not run as `ok: true` with the
+   * word "skipped" in its detail text, computed `passed = checks.every(c =>
+   * c.ok)`, and wrote `outcome: 'passed'`. The two checks that skip are the two
+   * that matter — that stored certificates still match their digest, and that
+   * one re-renders byte-identically — and they skip exactly when the database
+   * holds no rendered certificate, which is the state a fresh seed leaves. So
+   * the strongest evidence in the drill was the evidence most likely to be
+   * silently absent, and the conformance view read `passed` and reported
+   * recovery as demonstrated.
+   *
+   * Migration 0028 gave the outcome a third value for it.
+   */
+  const drillVerdict = (outcome: string) =>
+    tenantId().then((t) => inDiscardedTenant(async (tx) => {
+      const sql = tx as unknown as typeof app.db;
+      await sql`
+        INSERT INTO lotmark.dr_drills (tenant_id, source_label, finished_at, outcome)
+        VALUES (${t}, 'proving test', now(), ${outcome})`;
+      const [newest] = await sql`
+        SELECT outcome FROM lotmark.dr_drills
+        WHERE tenant_id = ${t} ORDER BY started_at DESC LIMIT 1`;
+      expect((newest as { outcome: string }).outcome,
+        'the inserted row must be the one the view reads, or this proves nothing')
+        .toBe(outcome);
+      return (await liveEvidence(tx, t)).get('drills')?.satisfied;
+    }));
+
+  it('is not evidence that recovery works', async () => {
+    expect(await drillVerdict('incomplete')).toBe(false);
+  });
+
+  it('is still distinguished from one that failed and one that passed', async () => {
+    expect(await drillVerdict('passed'), 'the control').toBe(true);
+    expect(await drillVerdict('failed')).toBe(false);
+  });
+});
 
 describe('the snapshot the pack is read from', () => {
   /**

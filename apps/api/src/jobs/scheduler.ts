@@ -67,7 +67,10 @@ export const JOBS: readonly JobDefinition[] = [
     name: 'session-prune',
     expectedEveryHours: 36,
     cron: '0 3 * * *',
-    description: 'Remove sessions expired or revoked more than seven days ago.',
+    description:
+      'Remove sessions expired or revoked beyond the tenant\'s configured '
+      + 'session_and_access_log retention. Seven days was hard-coded here once; '
+      + 'CERT-In requires 180, and the window is a retention policy now, not a constant.',
     run: (sql, cfg) => forEachTenant(sql,
       { jobName: 'session-prune', auditKey: cfg.LOTMARK_AUDIT_KEY },
       (tx, tenant) => pruneSessions(tx, tenant)),

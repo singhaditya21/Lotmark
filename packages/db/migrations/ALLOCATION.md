@@ -21,6 +21,7 @@ Take the next free number from this table and add a row; do not take it from
 | 0025 | `custom_field_values_live` | Form designer — make `field`/`picklist`/`layout` live | 0017 |
 | 0026 | `signed_state_transitions` | Flow designer — a configured move can demand a signature | 0017 |
 | 0027 | `flags_have_one_home` | Pre-build audit — two stores for the same four facts | — |
+| 0028 | `drill_incomplete` | A recovery drill that skipped checks is not a pass | 0021 |
 
 ## Why those orderings, specifically
 
@@ -74,6 +75,10 @@ Take the next free number from this table and add a row; do not take it from
 - **0027 stands alone.** It drops four boolean columns from `tenants` that
   duplicate `config_entries` of kind `flag`. Safe because nothing reads either
   store — verified by grep across the repository before it was written.
+
+- **0028 after 0021.** 0021 gave `dr_drills` its outcome vocabulary of
+  `passed` and `failed`. A drill can also skip checks it had no data to run, and
+  that is a third thing.
 
 - **0024 stands alone.** It adds two columns to `users` and depends on nothing.
   It deliberately does NOT back-fill `password_changed_at`, and its default of

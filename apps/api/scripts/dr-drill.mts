@@ -44,11 +44,42 @@ const SCRATCH_DB = 'lotmark_drill';
 /** Tables whose counts are compared. Indicative only — see the header. */
 const COUNTED = ['audit_ledger', 'certificate_issues', 'signatures', 'users', 'lots'] as const;
 
-interface Check { name: string; ok: boolean; detail?: string }
+/**
+ * A check either passed, failed, or COULD NOT RUN.
+ *
+ * The third was missing, and it mattered. Two of this drill's strongest
+ * assertions — that stored certificates match their recorded digest, and that
+ * one re-renders byte-identically — do nothing when the database holds no
+ * rendered certificate, and they were recorded as `ok: true` with the word
+ * "skipped" buried in the detail text. `passed = checks.every(c => c.ok)`, so
+ * the drill reported PASSED, wrote `outcome: 'passed'` into `dr_drills`, and
+ * the conformance view read that as a satisfied control.
+ *
+ * The printed line said "skipped". The stored boolean said "ok". The boolean is
+ * what an assessor is shown.
+ */
+interface Check { name: string; ok: boolean; skipped?: boolean; detail?: string }
 const checks: Check[] = [];
+
+const push = (c: Check) => {
+  checks.push(c);
+  const badge = c.skipped ? 'skip' : c.ok ? 'ok  ' : 'FAIL';
+  console.log(`  ${badge}  ${c.name}${c.detail ? ` — ${c.detail}` : ''}`);
+};
+
 const record = (name: string, ok: boolean, detail?: string) => {
-  checks.push(detail === undefined ? { name, ok } : { name, ok, detail });
-  console.log(`  ${ok ? 'ok  ' : 'FAIL'}  ${name}${detail ? ` — ${detail}` : ''}`);
+  push(detail === undefined ? { name, ok } : { name, ok, detail });
+};
+
+/**
+ * A check that could not run. Not a pass.
+ *
+ * `ok` stays true so that `passed` keeps its meaning — nothing FAILED — and the
+ * skip is carried separately so the drill cannot claim to have proved something
+ * it never executed.
+ */
+const skip = (name: string, why: string) => {
+  push({ name, ok: true, skipped: true, detail: `not run — ${why}` });
 };
 
 function dbName(url: string): string {
@@ -139,7 +170,9 @@ function restore(label: string, sabotage = false): string {
 
 /* ── 3. Prove it ──────────────────────────────────────────────────────────── */
 
-async function prove(scratchUrl: string, label: string, recordIt = true): Promise<boolean> {
+type Outcome = 'passed' | 'failed' | 'incomplete';
+
+async function prove(scratchUrl: string, label: string, recordIt = true): Promise<Outcome> {
   console.log('\nproving the restore:');
   const live = createDb(cfg);
   const scratch = postgres(scratchUrl, { max: 4, onnotice: () => {} });
@@ -233,7 +266,8 @@ async function prove(scratchUrl: string, label: string, recordIt = true): Promis
     }>;
 
     if (issues.length === 0) {
-      record('stored certificates match their recorded digest', true, 'no rendered issues to check');
+      skip('stored certificates match their recorded digest',
+        'the database holds no rendered certificate');
     } else {
       let intact = 0;
       let missing = 0;
@@ -257,8 +291,8 @@ async function prove(scratchUrl: string, label: string, recordIt = true): Promis
      */
     const reproducible = issues.filter((i) => i.renderer_version === RENDERER_VERSION);
     if (reproducible.length === 0) {
-      record('a certificate re-renders byte-identically', true,
-        `skipped — no issue was produced by ${RENDERER_VERSION}`);
+      skip('a certificate re-renders byte-identically',
+        `no issue was produced by ${RENDERER_VERSION}`);
     } else {
       const issue = reproducible[0]!;
       const bytes = await renderCertificate(issue.data_snapshot);
@@ -278,8 +312,24 @@ async function prove(scratchUrl: string, label: string, recordIt = true): Promis
       `${keyFiles.length} file(s) in ${cfg.SIGNING_KEY_DIR} for ${registered!.n} registered key(s)`);
 
     /* — Record the drill in the LIVE database, where somebody will see it. — */
-    const passed = checks.every((c) => c.ok);
-    if (!recordIt) return passed;
+    const failed = checks.filter((c) => !c.ok).length;
+    const skipped = checks.filter((c) => c.skipped).length;
+    /**
+     * A skip is not a pass.
+     *
+     * `checks.every(c => c.ok)` used to decide this on its own, and a check
+     * that could not run recorded itself `ok: true` — so a drill that never
+     * looked at a certificate came out `passed`. The three outcomes are now
+     * separate, and `incomplete` is what a drill that skipped anything gets.
+     * The conformance view treats it as unsatisfied. See migration 0028.
+     */
+    const outcome: Outcome = failed > 0 ? 'failed' : skipped > 0 ? 'incomplete' : 'passed';
+    if (skipped > 0) {
+      console.log(
+        `\n  ${skipped} check(s) COULD NOT RUN. A drill that skipped its document ` +
+        'checks has not proved that a certificate survives a restore.');
+    }
+    if (!recordIt) return outcome;
     await inTenantTransaction(live, {
       tenantId: tenant.id,
       auditKey: cfg.LOTMARK_AUDIT_KEY,
@@ -288,13 +338,15 @@ async function prove(scratchUrl: string, label: string, recordIt = true): Promis
       await tx`
         INSERT INTO lotmark.dr_drills
           (tenant_id, source_label, finished_at, outcome, checks, notes)
-        VALUES (${tenant.id}, ${label}, now(), ${passed ? 'passed' : 'failed'},
+        VALUES (${tenant.id}, ${label}, now(),
+                ${outcome},
                 ${tx.json(checks as never)},
                 ${'Restored into ' + SCRATCH_DB + ' and verified. ' +
-                  'Key material and documents were checked from the backup set, not the dump.'})`;
+                  'Key material and documents were checked from the backup set, not the dump.' +
+                  (skipped > 0 ? ` ${skipped} check(s) could not run.` : '')})`;
     });
 
-    return passed;
+    return outcome;
   } finally {
     await scratch.end();
     await live.end();
@@ -320,13 +372,13 @@ async function main(): Promise<void> {
   if (args.includes('--sabotage')) {
     const label = backup();
     const scratchUrl = restore(label, true);
-    const passed = await prove(scratchUrl, label, false);
+    const outcome = await prove(scratchUrl, label, false);
     console.log();
-    if (passed) {
+    if (outcome !== 'failed') {
       console.error(
-        'THE DRILL IS NOT WORKING: a restore with --no-privileges passed every check. ' +
-        'The privilege assertions are the only thing standing between this drill and ' +
-        'a false sense of security.',
+        `THE DRILL IS NOT WORKING: a restore with --no-privileges came out ${outcome} ` +
+        'rather than failed. The privilege assertions are the only thing standing ' +
+        'between this drill and a false sense of security.',
       );
       process.exit(1);
     }
@@ -345,11 +397,18 @@ async function main(): Promise<void> {
 
   const label = backup();
   const scratchUrl = restore(label);
-  const passed = await prove(scratchUrl, label);
+  const outcome = await prove(scratchUrl, label);
 
-  console.log(`\n${passed ? 'DRILL PASSED' : 'DRILL FAILED'} — recorded against backup set ${label}`);
+  console.log(`\n${`DRILL ${outcome.toUpperCase()}`} — recorded against backup set ${label}`);
   console.log(`The scratch database ${SCRATCH_DB} is left in place for inspection.`);
-  if (!passed) process.exit(1);
+  /**
+   * An incomplete drill exits 1 as well.
+   *
+   * It did not fail, and it also did not do the job it was run to do. An
+   * operator running this from cron wants to hear about that, and the only
+   * channel a cron job has is the exit code.
+   */
+  if (outcome !== 'passed') process.exit(1);
 }
 
 main().catch((e) => {

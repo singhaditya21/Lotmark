@@ -219,6 +219,15 @@ export async function liveEvidence(tx: Sql, tenantId: string): Promise<Map<strin
       ? `Last rehearsed restore ${dr.on_date}: ${dr.outcome}`
       : 'No restore has ever been rehearsed. Whether the backups work is unknown.',
     figures: { lastDrill: dr?.on_date ?? null, outcome: dr?.outcome ?? null },
+    /**
+     * `incomplete` is not satisfied.
+     *
+     * A drill that could not run its document checks has not shown that a
+     * certificate survives a restore, which is the part of recovery an
+     * assessor cares about. It used to be indistinguishable from a pass: the
+     * script recorded a skipped check as `ok: true` and the outcome came out
+     * `passed`. See migration 0028.
+     */
     satisfied: dr?.outcome === 'passed',
   });
 
