@@ -3,6 +3,7 @@ import type { AppConfig } from '../config';
 import type { Sql } from '../db';
 import { forEachTenant, type JobOutcome } from './context';
 import { lotExpiryNotices, monitoringDue, lapseEntitlements, pruneSessions } from './notices';
+import { sweepAlerts } from './alert-sweep';
 
 /**
  * The scheduler.
@@ -62,6 +63,28 @@ export const JOBS: readonly JobDefinition[] = [
     run: (sql, cfg) => forEachTenant(sql,
       { jobName: 'entitlement-revalidation', auditKey: cfg.LOTMARK_AUDIT_KEY },
       (tx, tenant) => lapseEntitlements(tx, tenant)),
+  },
+  {
+    name: 'alert-sweep',
+    /**
+     * The only job here that is not daily.
+     *
+     * Everything else in this list DOES something on a human timescale — a
+     * notice, a lapse, a prune — and a few hours either way changes nothing.
+     * This one only notices, and the value of noticing decays fast: an alert
+     * about a worker that died on Friday is worth much less on Monday. Fifteen
+     * minutes is the cadence; an hour is the tolerance, so a restart or a slow
+     * run is not itself reported as a fault.
+     */
+    expectedEveryHours: 1,
+    cron: '*/15 * * * *',
+    description:
+      'Turn what the system already knows — failing jobs, an unrehearsed or '
+      + 'incomplete restore — into deduplicated alerts. It cannot report its own '
+      + 'absence: see alert_sweeps.last_swept_at and scripts/prober.mts.',
+    run: (sql, cfg) => forEachTenant(sql,
+      { jobName: 'alert-sweep', auditKey: cfg.LOTMARK_AUDIT_KEY },
+      (tx, tenant) => sweepAlerts(tx, tenant)),
   },
   {
     name: 'session-prune',

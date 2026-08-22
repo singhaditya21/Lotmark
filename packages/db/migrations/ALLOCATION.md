@@ -25,6 +25,8 @@ Take the next free number from this table and add a row; do not take it from
 | 0029 | `custody_ratchet` | Custody must not silently downgrade for a tenant | 0018 |
 | 0030 | `signable_config_version` | Publishing a signed configuration hit the CHECK | 0026 |
 | 0031 | ~~`signature_algorithm_known`~~ | **withdrawn, written and reverted** — see below | — |
+| 0032 | `operational_alerts` | Conditions were detected and nobody was told | 0021 |
+| 0033 | `revoke_custody_helper` | 0029 revoked one function and not its sibling | 0029 |
 
 ## Why those orderings, specifically
 
@@ -78,6 +80,11 @@ Take the next free number from this table and add a row; do not take it from
 - **0027 stands alone.** It drops four boolean columns from `tenants` that
   duplicate `config_entries` of kind `flag`. Safe because nothing reads either
   store — verified by grep across the repository before it was written.
+
+- **0033 after 0029.** It revokes a privilege on a function 0029 creates.
+
+- **0032 after 0021.** 0021 built `job_health()` and `dr_drills`, which are
+  two of the three things the sweep reads.
 
 - **0031 withdrawn.** It added `CHECK (algorithm = 'ed25519')` to
   `signatures`, matching the constraint 0003 gave `signing_keys` and never gave

@@ -144,11 +144,66 @@ describe('the states an operator has to tell apart', () => {
 });
 
 describe('every job declares how often it is expected', () => {
-  it('has a tolerance greater than its schedule', async () => {
-    // The tolerance is not the schedule: it has to allow for retries, a restart
-    // and a night the machine was asleep. All four jobs are daily.
+  /**
+   * The cadence a cron expression describes, for the two shapes this scheduler
+   * uses, and an exception for anything else.
+   *
+   * `scheduler.ts` argues against deriving the tolerance from cron, on the
+   * grounds that a cron parser is "a small amount of code that is subtly wrong
+   * for the interesting cases". That is right, and it is why this one REFUSES
+   * every case it does not recognise instead of guessing. Loudly incomplete is
+   * a different thing from subtly wrong: a schedule this cannot read fails the
+   * suite and is dealt with by a person.
+   *
+   * This used to assert `> 24` for every job, with a comment saying "all four
+   * jobs are daily". They are no longer all daily — the alert sweep runs every
+   * fifteen minutes — and an assertion whose justification has expired is worth
+   * less than no assertion, because it still looks like a check.
+   */
+  const cadenceHours = (cron: string): number => {
+    const f = cron.trim().split(/\s+/);
+    if (f.length !== 5) throw new Error(`not a 5-field cron: '${cron}'`);
+    const [minute, hour, dom, month, dow] = f as [string, string, string, string, string];
+    if (dom !== '*' || month !== '*' || dow !== '*') {
+      throw new Error(
+        `this test only reads schedules that run every day; '${cron}' does not. ` +
+        'Teach it the new shape rather than loosening the assertion.');
+    }
+    const everyNMinutes = /^\*\/(\d+)$/.exec(minute);
+    if (everyNMinutes && hour === '*') return Number(everyNMinutes[1]) / 60;
+    if (/^\d+$/.test(minute) && /^\d+$/.test(hour)) return 24;
+    throw new Error(`unrecognised schedule '${cron}' — teach this test its shape.`);
+  };
+
+  it('sets a tolerance that is looser than the schedule but still fires', () => {
+    /*
+     * Bounded on both sides, because both ways of getting it wrong are real.
+     *
+     * Too tight and every retry or restart is reported as a fault, which is how
+     * an operations screen becomes something people stop reading. Too loose and
+     * the job is never reported at all — a tolerance of a week on a daily job
+     * looks like a control and is not one, which is the failure this whole
+     * week has been about.
+     *
+     * The daily jobs sit at 36 hours against a 24-hour cadence: one missed
+     * night IS reported, deliberately. The sweep sits at 1 hour against 15
+     * minutes. Those are 1.5x and 4x, so the band is (1x, 4x].
+     */
     for (const job of JOBS) {
-      expect(job.expectedEveryHours, job.name).toBeGreaterThan(24);
+      const cadence = cadenceHours(job.cron);
+      const where = `${job.name} (${job.cron}, every ${cadence}h)`;
+      expect(job.expectedEveryHours, `${where} would report a single hiccup`)
+        .toBeGreaterThan(cadence);
+      expect(job.expectedEveryHours, `${where} is so lax it would never fire`)
+        .toBeLessThanOrEqual(cadence * 4);
+    }
+  });
+
+  it('reads every schedule this scheduler actually declares', () => {
+    // If a job gains a shape the reader above cannot parse, this says so here
+    // rather than letting the tolerance assertion quietly stop covering it.
+    for (const job of JOBS) {
+      expect(() => cadenceHours(job.cron), job.name).not.toThrow();
     }
   });
 });
