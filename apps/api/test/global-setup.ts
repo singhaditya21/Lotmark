@@ -33,6 +33,24 @@ import postgres from 'postgres';
 const TEMPLATE = 'lotmark_test_tpl';
 
 /**
+ * A namespace, so two suites can run at once without sharing a database.
+ *
+ * Default is empty, which keeps the names exactly as they were. Set
+ * `LOTMARK_TEST_NS` to run a second suite concurrently — several agents working
+ * on separate parts of the codebase, each wanting to prove its own test fails
+ * without its fix. Without this they all get `lotmark_test_1` and quietly
+ * corrupt each other's fixtures, which is precisely the class of false result
+ * this whole test-database arrangement exists to remove.
+ *
+ * The template is shared and read-only during a run (`CREATE DATABASE ...
+ * TEMPLATE` only reads it), so namespaced runs still clone the same one — but a
+ * run that REBUILDS the template while another is cloning it would fail. Only
+ * the un-namespaced run rebuilds; a namespaced one requires it to exist.
+ */
+const NS = process.env['LOTMARK_TEST_NS'] ?? '';
+const suffix = NS ? `_${NS}` : '';
+
+/**
  * Fixed, and matched to `poolOptions` in vitest.config.ts.
  *
  * Databases are created up front rather than on demand because `CREATE
@@ -42,8 +60,8 @@ const TEMPLATE = 'lotmark_test_tpl';
  */
 export const WORKERS = 4;
 
-export const workerDatabase = (id: number) => `lotmark_test_${id}`;
-export const workerKeyDir = (id: number) => `.keys-test-${id}`;
+export const workerDatabase = (id: number) => `lotmark_test${suffix}_${id}`;
+export const workerKeyDir = (id: number) => `.keys-test${suffix}-${id}`;
 
 /** The OWNER connection — DDL, and the TRUNCATE the seed needs. */
 const ownerUrl = (db: string) => `postgres://localhost:5432/${db}`;
@@ -60,12 +78,23 @@ export async function setup(): Promise<() => Promise<void>> {
   };
 
   try {
-    await drop(TEMPLATE);
-    await admin.unsafe(`CREATE DATABASE "${TEMPLATE}"`);
+    if (NS) {
+      // A namespaced run borrows the template rather than rebuilding it —
+      // dropping it would pull the floor out from under a concurrent run.
+      const found = await admin`SELECT 1 FROM pg_database WHERE datname = ${TEMPLATE}`;
+      if (found.length === 0) {
+        throw new Error(
+          `LOTMARK_TEST_NS=${NS} needs the template ${TEMPLATE}, which does not exist. ` +
+          'Run the suite once without LOTMARK_TEST_NS to build it.');
+      }
+    } else {
+      await drop(TEMPLATE);
+      await admin.unsafe(`CREATE DATABASE "${TEMPLATE}"`);
 
-    const env = { ...process.env, DATABASE_URL: ownerUrl(TEMPLATE) };
-    execSync('pnpm --filter @lotmark/db migrate', { env, stdio: 'pipe' });
-    execSync('pnpm --filter @lotmark/db seed', { env, stdio: 'pipe' });
+      const env = { ...process.env, DATABASE_URL: ownerUrl(TEMPLATE) };
+      execSync('pnpm --filter @lotmark/db migrate', { env, stdio: 'pipe' });
+      execSync('pnpm --filter @lotmark/db seed', { env, stdio: 'pipe' });
+    }
 
     for (let id = 1; id <= WORKERS; id++) {
       await drop(workerDatabase(id));
