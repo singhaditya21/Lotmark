@@ -69,6 +69,25 @@ describe('/health/ready', () => {
       const res = await broken.inject({ method: 'GET', url: '/health/ready' });
       expect(res.statusCode, 'an instance that cannot reach its database is not ready').toBe(503);
       expect(res.json()).toMatchObject({ status: 'not_ready', database: 'unreachable' });
+
+      /*
+       * And it must SAY WHY. The handler's comment promises "the reason, not
+       * just the verdict", and it delivered the empty string for the commonest
+       * production failure there is — postgres.js raises an Error whose detail
+       * is on `code` (ECONNREFUSED, ENOTFOUND) with nothing in `message`, so
+       * `err.message` was blank exactly when an operator most needs it.
+       */
+      const detail = res.json<{ detail?: string }>().detail;
+      expect(detail, 'not_ready without a reason sends an operator to the wrong place')
+        .toBeTruthy();
+      /*
+       * A code and then a sentence. This fixture points at a missing DATABASE
+       * on a reachable host, so the code is the SQLSTATE 3D000; a missing HOST
+       * gives ENOTFOUND and a closed port gives ECONNREFUSED. All three were
+       * measured against a running process. The shape is what is asserted,
+       * because the exact text belongs to the driver.
+       */
+      expect(detail).toMatch(/^[A-Z0-9]+: .+|did not answer/);
       expect(res.json()['detail'], 'and it says what failed').toBeTruthy();
     } finally {
       await broken.close();

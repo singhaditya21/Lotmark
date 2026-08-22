@@ -170,9 +170,24 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
       await app.db`SELECT 1`;
       database = 'reachable';
     } catch (err) {
-      // The reason, not just the verdict: "unreachable" alone sends an operator
-      // to the wrong place about equally often as the right one.
-      detail = err instanceof Error ? err.message : String(err);
+      /**
+       * The reason, not just the verdict — and it has to survive the case
+       * where the driver does not supply one.
+       *
+       * `err.message` is the EMPTY STRING for the commonest production failure
+       * of all: the database host not resolving or refusing the connection.
+       * postgres.js raises an Error whose detail lives on `code` (ENOTFOUND,
+       * ECONNREFUSED, ETIMEDOUT) with nothing in the message, so the field this
+       * comment promised was blank exactly when an operator most needed it.
+       * Measured against an unreachable host: {"detail":""}.
+       */
+      const e = err as { message?: unknown; code?: unknown; errno?: unknown };
+      const message = typeof e.message === 'string' ? e.message.trim() : '';
+      const code = typeof e.code === 'string' && e.code ? e.code : null;
+      detail = message !== '' && code !== null ? `${code}: ${message}`
+        : message !== '' ? message
+        : code !== null ? `${code} — the database host did not accept a connection`
+        : 'the database did not answer, and the driver gave no reason';
     }
     const ready = database === 'reachable';
     return reply

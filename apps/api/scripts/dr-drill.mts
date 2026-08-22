@@ -148,9 +148,33 @@ function restore(label: string, sabotage = false): string {
   adminUrl.pathname = `/${SCRATCH_DB}`;
   const scratchUrl = adminUrl.toString();
 
-  console.log(`\nrestoring into ${SCRATCH_DB} (dropped and recreated)`);
-  try { execFileSync('dropdb', ['--if-exists', SCRATCH_DB], { stdio: 'pipe' }); } catch { /* fine */ }
-  execFileSync('createdb', [SCRATCH_DB], { stdio: 'inherit' });
+  /**
+   * Point dropdb/createdb at the SAME cluster pg_restore is about to use.
+   *
+   * They took no connection arguments, so libpq fell back to PGHOST and the
+   * local socket while `pg_restore` targeted DATABASE_ADMIN_URL. On a laptop
+   * those are the same cluster and the drill passed; against any real
+   * deployment — `postgres://lotmark_owner@db.internal:5432/lotmark` — the
+   * scratch database was created locally, or not at all, and the restore then
+   * targeted a database that did not exist.
+   *
+   * A disaster-recovery rehearsal that only works on the machine that never
+   * needs recovering is the exact shape of control this repository has spent a
+   * week removing. Connecting to `postgres` on the same server, because you
+   * cannot create a database from inside the one you are creating.
+   */
+  const serverUrl = new URL(cfg.DATABASE_ADMIN_URL);
+  serverUrl.pathname = '/postgres';
+  // `--maintenance-db`, not `--dbname`: these two tools take the database to
+  // create or drop as a POSITIONAL argument and have no --dbname at all, so a
+  // connection string passed that way would be read as the database name.
+  const connect = [`--maintenance-db=${serverUrl.toString()}`];
+
+  console.log(`\nrestoring into ${SCRATCH_DB} on ${adminUrl.host} (dropped and recreated)`);
+  try {
+    execFileSync('dropdb', [...connect, '--if-exists', SCRATCH_DB], { stdio: 'pipe' });
+  } catch { /* fine — it may not exist */ }
+  execFileSync('createdb', [...connect, SCRATCH_DB], { stdio: 'inherit' });
 
   /**
    * Restored WITH privileges, deliberately.
