@@ -387,6 +387,8 @@ export interface AssessmentPack {
     readonly signature: string | null;
     readonly keyVersion: string | null;
     readonly keyCustody: string | null;
+    /** How to recompute the digests above, and what the signature covers. */
+    readonly howToVerify: readonly string[];
   };
 }
 
@@ -410,6 +412,12 @@ const digest = (v: unknown) => createHash('sha256').update(canonicalJson(v)).dig
  * The pack is REPRODUCIBLE for a given database state: `generatedAt` is
  * excluded from the digest, because otherwise two exports of the same records
  * would differ and the digest would prove nothing about the records.
+ *
+ * And it is reproducible BY THE ASSESSOR. The digest is taken over the pack as
+ * published — the same objects, in the same shape, that go out over the wire —
+ * so the only inputs needed to recompute it are the document itself and the
+ * rule stated in `manifest.howToVerify`. Anything digested in a shape that is
+ * not published is a number nobody outside can check.
  */
 export async function buildAssessmentPack(
   tx: Sql,
@@ -418,8 +426,24 @@ export async function buildAssessmentPack(
 ): Promise<AssessmentPack> {
   const [tenantRow] = await tx`
     SELECT id, slug, name, conformance_frame FROM lotmark.tenants WHERE id = ${tenantId}`;
-  const tenant = tenantRow as
+  const row = tenantRow as
     { id: string; slug: string; name: string; conformance_frame: string };
+
+  /**
+   * The tenant block in the shape it is PUBLISHED in — built here, not in the
+   * return literal, because this is the object the digest is taken over.
+   *
+   * It used to be taken over `row`, whose key is `conformance_frame`, while the
+   * pack published `conformanceFrame`. So the bytes hashed were not the bytes
+   * handed over, and an assessor recomputing the digest from the pack in their
+   * possession got a different number. Measured against the seeded `ipc`
+   * tenant: the pack carried 6e1c8007625a6257…, recomputing from its own
+   * published JSON gave 954148be61657eed…. A digest only the producer can
+   * reproduce is not evidence of anything.
+   */
+  const tenant = {
+    id: row.id, slug: row.slug, name: row.name, conformanceFrame: row.conformance_frame,
+  };
 
   const view = await conformanceView(tx, tenantId);
 
@@ -427,7 +451,7 @@ export async function buildAssessmentPack(
 
   sections['scope'] = {
     producer: tenant.name,
-    conformanceFrame: tenant.conformance_frame,
+    conformanceFrame: tenant.conformanceFrame,
     accreditation: (await tx`
       SELECT accreditation FROM lotmark.organisations
       WHERE tenant_id = ${tenantId} AND kind = 'producer' LIMIT 1`)
@@ -515,23 +539,38 @@ export async function buildAssessmentPack(
     liveEvidence: r.evidence,
   })));
 
-  const sectionDigests = Object.fromEntries(
-    Object.entries(sections).map(([k, v]) => [k, digest(v)]),
-  );
-
   const body = { tenant, requirements, sections };
-  const packDigest = digest(body);
+
+  /**
+   * Digested in the form the assessor RECEIVES, not the form we happen to hold.
+   *
+   * The pack leaves as JSON, so the only representation anybody outside can
+   * digest is the one that survived `JSON.stringify`. A value that serialises
+   * to something other than itself — a `Date`, a `Buffer`, a key whose value is
+   * `undefined` and therefore disappears — would be hashed here as one thing
+   * and read there as another: the same failure as the `conformance_frame` key
+   * above, arriving by a different door. Round-tripping first closes the door
+   * rather than the one hole.
+   *
+   * This changes no digest today: in an export of the seeded tenant every
+   * section's held form and its serialised form were compared and came out
+   * identical. What keeps that true is `db.ts` returning dates and timestamps
+   * as strings on purpose — one edit away from not being true, and the failure
+   * would be silent.
+   */
+  const published = JSON.parse(JSON.stringify(body)) as typeof body;
+
+  const sectionDigests = Object.fromEntries(
+    Object.entries(published.sections).map(([k, v]) => [k, digest(v)]),
+  );
+  const packDigest = digest(published);
   const signed = sign(packDigest);
 
   return {
     // Excluded from the digest on purpose — see the doc comment.
     generatedAt: new Date().toISOString(),
-    tenant: {
-      id: tenant.id, slug: tenant.slug, name: tenant.name,
-      conformanceFrame: tenant.conformance_frame,
-    },
-    requirements,
-    sections,
+    // The very objects that were digested, so the two cannot drift apart.
+    ...published,
     limits: [
       'The requirement statuses are the producer\'s own, checked against the ' +
       'repository by an automated test — they are not an accreditation body\'s ' +
@@ -550,6 +589,32 @@ export async function buildAssessmentPack(
       signature: signed?.signature ?? null,
       keyVersion: signed?.keyVersion ?? null,
       keyCustody: signed?.custody ?? null,
+      /**
+       * The pack carries the rule for checking itself.
+       *
+       * The assessor has the document and not this repository, and the
+       * canonicalisation is not guessable from the JSON — the sorted keys and
+       * the excluded `generatedAt` least of all. Without it the digest is a
+       * number they can only take on trust, which is the opposite of the point.
+       *
+       * Outside the digest by construction, because it describes the digest.
+       */
+      howToVerify: [
+        'packDigest is the SHA-256, in lower-case hex, of the canonical JSON '
+        + 'encoding of an object holding exactly the keys tenant, requirements '
+        + 'and sections, taken verbatim from this document.',
+        'Canonical JSON: object keys sorted ascending by UTF-16 code unit, no '
+        + 'whitespace between tokens, array order preserved, and every value '
+        + 'encoded as JSON encodes it.',
+        'generatedAt, limits and manifest are NOT covered. Two exports of the '
+        + 'same records must digest alike, and generatedAt would not.',
+        'Each entry in sectionDigests is that same function applied to that '
+        + 'one section\'s value on its own.',
+        'signature, when present, is Ed25519 over the 64 characters of '
+        + 'packDigest as UTF-8, base64-encoded, made with the key named by '
+        + 'keyVersion. Its custody class is keyCustody and may not be '
+        + 'production-grade.',
+      ],
     },
   };
 }

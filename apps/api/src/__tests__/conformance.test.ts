@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
-import { createHmac } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 import type { FastifyInstance, LightMyRequestResponse } from 'fastify';
 import { buildApp } from '../app';
 import { inTenantTransaction } from '../db';
@@ -362,6 +362,60 @@ describe('the assessment pack', () => {
     expect(text, 'the truncation limit must be stated').toMatch(/truncated/);
     expect(text, 'it must not present itself as an accreditation finding')
       .toMatch(/not an accreditation body/);
+  });
+
+  /**
+   * The digest is only worth carrying if somebody OUTSIDE can arrive at it.
+   *
+   * So this recomputes it the way an assessor does: from the published document
+   * and nothing else — no database, no reach into the objects the service was
+   * holding while it built the pack — applying the rule the pack states about
+   * itself in `manifest.howToVerify`.
+   *
+   * It failed before the fix, and the two numbers are worth recording. The
+   * digest was taken over the raw tenant ROW, whose key is `conformance_frame`,
+   * while the pack published `conformanceFrame`: the bytes hashed were not the
+   * bytes handed over. Against the seeded `ipc` tenant the pack carried
+   * 6e1c8007625a6257… and this recomputation produced 954148be61657eed…, so the
+   * pack's own digest disagreed with the pack.
+   *
+   * The pack is serialised HERE rather than fetched from POST
+   * /conformance/pack, and the reason is not convenience: that route
+   * deliberately will not MINT a signing key while exporting, and a freshly
+   * seeded database has none, so it would fail for a reason unrelated to this
+   * claim. The bytes are the same either way — the route registers no response
+   * schema, so Fastify serialises the pack with `JSON.stringify`, which is the
+   * line below.
+   */
+  it('carries a digest an outsider can recompute from the pack alone', async () => {
+    const held = JSON.parse(JSON.stringify(await pack())) as {
+      tenant: unknown; requirements: unknown; sections: Record<string, unknown>;
+      manifest: { packDigest: string; sectionDigests: Record<string, string> };
+    };
+
+    const sha = (v: unknown) => createHash('sha256').update(canonicalJson(v)).digest('hex');
+
+    expect(
+      sha({ tenant: held.tenant, requirements: held.requirements, sections: held.sections }),
+      'an assessor recomputing from the published pack must get the digest it carries',
+    ).toBe(held.manifest.packDigest);
+
+    // Each section digest has to stand on its own too, or quoting one section
+    // with its digest means nothing.
+    for (const [name, d] of Object.entries(held.manifest.sectionDigests)) {
+      expect(sha(held.sections[name]), `section ${name}`).toBe(d);
+    }
+  });
+
+  it('states the rule for recomputing its own digest', async () => {
+    // The assessor has the document and not this repository. Sorted keys and an
+    // excluded `generatedAt` are not guessable from the JSON, so a pack that
+    // does not say them leaves its digest as a number to be taken on trust.
+    const p = await pack();
+    const rule = p.manifest.howToVerify.join(' ');
+    expect(rule).toMatch(/SHA-256/);
+    expect(rule, 'the canonicalisation must be stated').toMatch(/sorted/);
+    expect(rule, 'and so must what the digest leaves out').toMatch(/generatedAt/);
   });
 
   it('canonicalises so key order cannot change the digest', () => {
