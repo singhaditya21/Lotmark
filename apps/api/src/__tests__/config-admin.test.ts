@@ -77,6 +77,14 @@ async function signIn(email: string): Promise<string> {
   return cookie;
 }
 
+const stepUp = async (cookie: string): Promise<void> => {
+  const res = await app.inject({
+    method: 'POST', url: '/api/v1/auth/step-up',
+    headers: { cookie }, payload: { password: PASSWORD, code: currentTotp() },
+  });
+  expect(res.statusCode, `step-up: ${res.body}`).toBe(200);
+};
+
 const openDraft = async (reason: string): Promise<string> => {
   const res = await app.inject({
     method: 'POST', url: '/api/v1/admin/config/draft',
@@ -827,6 +835,92 @@ describe('what publication refuses', () => {
     const v = after.json<{ version: { status: string; signed: boolean } }>().version;
     expect(v.status, 'a refused signing must not publish the version').toBe('draft');
     expect(v.signed).toBe(false);
+  });
+
+  /**
+   * The act itself, which nothing here had ever performed.
+   *
+   * Every other case in this file stops at the publish PREVIEW, for the reason
+   * given further up: publishing swaps the tenant's active version and the next
+   * test inherits it. The one case that did call publish with a signature
+   * asserted the step-up REFUSAL — which returns before a signature is written.
+   *
+   * So the happy path was never executed, and it was broken. `applySignature`
+   * writes `signable.kind` straight into `signatures.subject_kind`, the CHECK
+   * constraint admitted five kinds, and `config_version` was not among them.
+   * Ten of the fourteen configuration kinds carry a risk above `presentation`
+   * and therefore need a signature, so ten of fourteen could not be published
+   * at all. Migration 0030 adds the kind;
+   * apps/api/src/__tests__/signable-kinds.test.ts stops the two lists diverging
+   * again; this is the test that would have noticed in the first place.
+   *
+   * It publishes TWICE — a new picklist, then its removal — so the effective
+   * configuration is unchanged by the time the file ends. The version number
+   * advances by two, which is the honest cost: publication is append-only, and
+   * a test that needed to undo one would be testing something this system does
+   * not offer.
+   */
+  it('publishes a signed version, and records the signature against it', async () => {
+    const KEY = 'publish_probe';
+    const picklist = (values: string[]) => ({
+      key: KEY,
+      name: 'Publish probe',
+      values: values.map((v, i) => ({ value: v, label: v, retired: false, sortOrder: i })),
+    });
+
+    /* Nothing references this key, so neither publication changes behaviour. */
+    const id = await openDraft('Add a picklist nothing uses, to exercise publication');
+    expect((await putEntry(id, 'picklist', KEY, picklist(['alpha']))).statusCode).toBe(200);
+
+    const r = await review(id);
+    expect(r.needsSignature, 'a picklist is behaviour risk, so it must need one').toBe(true);
+    expect(r.publishable, JSON.stringify(r.problems)).toBe(true);
+
+    await stepUp(admin);
+    const res = await app.inject({
+      method: 'POST', url: `/api/v1/admin/config/draft/${id}/publish`,
+      headers: { cookie: admin }, payload: { meaning: 'approval' },
+    });
+    expect(res.statusCode, res.body).toBe(200);
+
+    const after = await app.inject({
+      method: 'GET', url: `/api/v1/admin/config/${id}`, headers: { cookie: admin },
+    });
+    const v = after.json<{ version: { status: string; signed: boolean } }>().version;
+    expect(v.status).toBe('active');
+    expect(v.signed, 'published, but carrying no signature').toBe(true);
+
+    /*
+     * Read the row, not just the flag. `config_versions.signature_id` being
+     * non-null says a signature was written; only the signature itself says it
+     * was written ABOUT this version, under the kind the domain asked for.
+     */
+    const [tenantRow] = await app.db`SELECT * FROM lotmark.resolve_tenant(NULL)`;
+    const sig = await inTenantTransaction(app.db, {
+      tenantId: (tenantRow as { id: string }).id,
+      auditKey: app.cfg.LOTMARK_AUDIT_KEY,
+      auditKeyGeneration: app.cfg.LOTMARK_AUDIT_KEY_GENERATION,
+    }, async (tx) => {
+      const rows = await tx`
+        SELECT subject_kind, meaning FROM lotmark.signatures WHERE subject_id = ${id}`;
+      return rows[0] as { subject_kind: string; meaning: string } | undefined;
+    });
+    expect(sig?.subject_kind).toBe('config_version');
+    expect(sig?.meaning).toBe('approval');
+
+    /* Put the tenant back where it started. */
+    const undo = await openDraft('Remove the probe picklist');
+    const removed = await app.inject({
+      method: 'DELETE', url: `/api/v1/admin/config/draft/${undo}/entry/picklist/${KEY}`,
+      headers: { cookie: admin },
+    });
+    expect(removed.statusCode, removed.body).toBe(200);
+    await stepUp(admin);
+    const second = await app.inject({
+      method: 'POST', url: `/api/v1/admin/config/draft/${undo}/publish`,
+      headers: { cookie: admin }, payload: { meaning: 'approval' },
+    });
+    expect(second.statusCode, second.body).toBe(200);
   });
 });
 

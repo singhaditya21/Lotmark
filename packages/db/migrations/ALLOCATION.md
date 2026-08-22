@@ -23,6 +23,7 @@ Take the next free number from this table and add a row; do not take it from
 | 0027 | `flags_have_one_home` | Pre-build audit — two stores for the same four facts | — |
 | 0028 | `drill_incomplete` | A recovery drill that skipped checks is not a pass | 0021 |
 | 0029 | `custody_ratchet` | Custody must not silently downgrade for a tenant | 0018 |
+| 0030 | `signable_config_version` | Publishing a signed configuration hit the CHECK | 0026 |
 
 ## Why those orderings, specifically
 
@@ -76,6 +77,10 @@ Take the next free number from this table and add a row; do not take it from
 - **0027 stands alone.** It drops four boolean columns from `tenants` that
   duplicate `config_entries` of kind `flag`. Safe because nothing reads either
   store — verified by grep across the repository before it was written.
+
+- **0030 after 0026.** 0026 last rewrote `signature_subject_kind_known`, and
+  0030 rewrites it again. Applying them out of order would drop a constraint
+  that does not exist yet.
 
 - **0029 after 0018.** 0018 created the custody vocabulary and
   `key_custody_events`. The ratchet reads both, so it cannot precede them.
