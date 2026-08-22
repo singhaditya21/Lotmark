@@ -2,7 +2,7 @@ import {
   signaturePayload, canonicalMaterial, CANONICAL_VERSION,
   type SignableRecord, type SignatureMeaning, type CompetenceBasis,
 } from '@lotmark/domain';
-import { signPayload, verifyPayload, payloadDigest } from '@lotmark/security';
+import { signPayload, verifyPayload, payloadDigest, SIGNING_ALGORITHM } from '@lotmark/security';
 import type { Sql } from '../db';
 import type { ActiveKey, KeyProvider } from './keys';
 import { signingWindowOpen, type SessionRow } from './sessions';
@@ -180,7 +180,8 @@ export async function applySignature(
          competence_valid_to, competence_checked_on)
       VALUES (${args.tenantId}, ${args.signable.kind}, ${args.subjectId}, ${args.signerUserId},
               ${args.meaning}, ${signedAt}::timestamptz,
-              ${args.timeSource}, ${args.region}, ${bindingHash}, ${signatureValue}, 'ed25519',
+              ${args.timeSource}, ${args.region}, ${bindingHash}, ${signatureValue},
+              ${SIGNING_ALGORITHM},
               ${String(CANONICAL_VERSION)}, ${args.key.keyVersion},
               ${args.competenceBasis?.competenceRecordId ?? null},
               ${args.competenceBasis?.activity ?? null},
@@ -207,7 +208,44 @@ export async function applySignature(
   }
 }
 
+/**
+ * What a verification ESTABLISHED — which is not the same question as whether
+ * it came out true.
+ *
+ * ── The defect this replaced ────────────────────────────────────────────────
+ *
+ * The result was a bare `{ ok, reason }`. `ok` has two values and there are
+ * four answers, so every outcome that was not a clean pass collapsed into one
+ * — and the reason attached to that collapse read "the record was altered
+ * after it was signed". That sentence is a finding an assessor acts on: it
+ * says somebody tampered with a Part 11 electronic signature.
+ *
+ * `signatures.algorithm` is free text. 0003 constrains
+ * `signing_keys.algorithm` to ed25519; nothing constrains the signature's copy,
+ * which only ever carried a default. So a row can hold an algorithm this build
+ * does not implement — written by a newer version, retired since, or simply
+ * mistyped — and none of those three is tampering.
+ *
+ *  valid        — checked, and it holds.
+ *  invalid      — checked, and it does not. The ONLY verdict that says the
+ *                 record no longer matches what was signed.
+ *  unverifiable — NOT checked, because this build cannot check it. Says
+ *                 nothing about the record in either direction.
+ *  unsigned     — there is nothing bound to the record to check.
+ */
+export type VerificationStatus = 'valid' | 'invalid' | 'unverifiable' | 'unsigned';
+
 export interface VerificationResult {
+  /** The verdict. Only `invalid` implicates the record. */
+  readonly status: VerificationStatus;
+  /**
+   * True for `valid` and nothing else.
+   *
+   * Kept so a caller that reads only this fails CLOSED — a signature this
+   * build could not check is not a signature it verified. It is no longer
+   * sufficient on its own: `ok: false` now spans three different incidents,
+   * and only one of them is worth waking anybody up for.
+   */
   readonly ok: boolean;
   readonly reason?: string;
   readonly signedBy?: string;
@@ -218,12 +256,39 @@ export interface VerificationResult {
 }
 
 /**
+ * Build every verdict that is not `valid`, so `ok` cannot drift out of step
+ * with `status` as branches are added.
+ */
+function inconclusive(
+  status: Exclude<VerificationStatus, 'valid'>, reason: string,
+): VerificationResult {
+  return { status, ok: false, reason };
+}
+
+/**
+ * Show a stored free-text value in a reason string.
+ *
+ * Quoted, because one of the incidents this has to distinguish is a typo —
+ * `'ed25519 '` and `'Ed25519'` are invisible differences unquoted and obvious
+ * quoted. Clipped, because the column takes anything and a reason string ends
+ * up in an HTTP response an operator reads.
+ */
+function quoted(value: string): string {
+  return JSON.stringify(value.length > 40 ? `${value.slice(0, 40)}…` : value);
+}
+
+/**
  * Verify a stored signature against the record AS IT IS NOW.
  *
  * This is the check that convicts. If the record was altered after signing, the
  * canonical material no longer matches what was signed and verification fails —
  * which is the entire point of §11.70 and the thing the prototype's unkeyed
  * digest could not deliver.
+ *
+ * It convicts only where it has actually checked. Every condition that would
+ * stop the check from happening at all is ruled out first and returned as
+ * `unverifiable`, so the one sentence that names alteration is reached only
+ * when the cryptography, and nothing else, said no. See `VerificationStatus`.
  */
 export async function verifyStoredSignature(
   tx: Sql,
@@ -248,23 +313,60 @@ export async function verifyStoredSignature(
   const sig = row as {
     signer_user_id: string; display_name: string; meaning: string;
     signed_at: string; signature_value: string | null; key_version: string;
-    canonical_version: string; custody: string | null;
+    algorithm: string; canonical_version: string; custody: string | null;
   } | undefined;
 
-  if (!sig) return { ok: false, reason: 'no signature is bound to this record' };
-  if (!sig.signature_value) return { ok: false, reason: 'the signature carries no cryptographic value' };
+  if (!sig) return inconclusive('unsigned', 'no signature is bound to this record');
+
+  if (!sig.signature_value) {
+    // Unreachable for anything written since 0003 added `signature_has_a_value`;
+    // kept for rows that predate it. `unsigned` rather than `invalid`: a row
+    // with no cryptographic value binds nothing, which is the same practical
+    // state as no row at all and is not evidence that anything was altered.
+    return inconclusive('unsigned', 'a signature row exists but carries no cryptographic value');
+  }
+
+  if (sig.algorithm !== SIGNING_ALGORITHM) {
+    /**
+     * Checked BEFORE verifying, and this order is the point.
+     *
+     * The algorithm used not to be read at all — the query says `s.*` but the
+     * cast above omitted the column, so an ed25519 verification was attempted
+     * on every row whatever it claimed to be. Both directions were wrong, and
+     * both were observed:
+     *
+     *   algorithm 'ml-dsa-65', bytes that are not an ed25519 signature
+     *     → `{ ok: false, reason: 'the record was altered after it was signed' }`
+     *       An accusation of tampering, over a signature nobody had checked.
+     *
+     *   algorithm 'ml-dsa-65', bytes that ARE a valid ed25519 signature
+     *     → `{ ok: true, signedBy: 'Dr. Asha Pillai', … }`
+     *       A signature this build cannot check, presented as one it had.
+     *
+     * Inspecting the algorithm after verifying would fix only the first.
+     */
+    return inconclusive(
+      'unverifiable',
+      `the signature is stored under algorithm ${quoted(sig.algorithm)}; ` +
+      `this build can verify ${SIGNING_ALGORITHM} only, so it cannot check this signature`,
+    );
+  }
 
   if (sig.canonical_version !== String(CANONICAL_VERSION)) {
     // Verifying a v1 signature with a v2 canonicaliser would fail for a reason
     // that has nothing to do with tampering. Say so plainly.
-    return {
-      ok: false,
-      reason: `signature uses canonical format v${sig.canonical_version}, this build canonicalises v${CANONICAL_VERSION}`,
-    };
+    return inconclusive(
+      'unverifiable',
+      `signature uses canonical format v${sig.canonical_version}, this build canonicalises v${CANONICAL_VERSION}`,
+    );
   }
 
   const publicKey = await keys.publicKeyFor(tx, args.tenantId, sig.key_version);
-  if (!publicKey) return { ok: false, reason: `signing key ${sig.key_version} is not registered` };
+  if (!publicKey) {
+    // The key is missing, not the record's integrity. Nothing can be concluded
+    // about the record until somebody restores or accounts for the key.
+    return inconclusive('unverifiable', `signing key ${sig.key_version} is not registered`);
+  }
 
   const signedAt = normaliseInstant(sig.signed_at);
   const payload = signaturePayload({
@@ -274,14 +376,19 @@ export async function verifyStoredSignature(
     signedAt,
   });
 
-  const ok = verifyPayload(payload, sig.signature_value, publicKey);
-  return ok
+  /**
+   * Everything that could make this fail for a reason OTHER than the record
+   * changing has been ruled out above. Only now does a false result mean what
+   * the sentence says.
+   */
+  const verified = verifyPayload(payload, sig.signature_value, publicKey);
+  return verified
     ? {
-        ok: true, signedBy: sig.display_name, signedAt,
+        status: 'valid', ok: true, signedBy: sig.display_name, signedAt,
         meaning: sig.meaning, keyVersion: sig.key_version,
         custody: sig.custody ?? 'unknown',
       }
-    : { ok: false, reason: 'the record was altered after it was signed' };
+    : inconclusive('invalid', 'the record was altered after it was signed');
 }
 
 /** Render a stored instant in the exact form the payload was built with. */

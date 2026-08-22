@@ -288,6 +288,21 @@ export async function registerWorkflowRoutes(app: FastifyInstance): Promise<void
 
     if (!out) return sendProblem(reply, notFound('No such study.'));
     if ('forbidden' in out) return sendProblem(reply, forbidden(out.forbidden.reason, out.forbidden.message));
+
+    /**
+     * The verdict IS the response, at 200, whatever it says.
+     *
+     * Including `unverifiable`. That is not a fault of this request and not
+     * something to retry — it is a durable fact about the stored row that the
+     * operator needs put in front of them, so a 5xx would be both wrong and
+     * unhelpful.
+     *
+     * `status` is the field that carries the meaning; `ok` only distinguishes
+     * `valid` from everything else, and a consumer that renders `reason` as a
+     * tamper alert whenever `ok` is false is wrong for three of the four
+     * statuses. That was exactly the defect: an unrecognised algorithm arrived
+     * here as "the record was altered after it was signed".
+     */
     return reply.send(out);
   });
 
