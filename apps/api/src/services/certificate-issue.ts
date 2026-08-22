@@ -32,6 +32,12 @@ export interface IssueRenderInput {
   readonly signatureMeaning: string;
   readonly key: ActiveKey;
   readonly reissueReason: string | null;
+  /**
+   * `cfg.PUBLIC_ORIGIN`. Required, and passed in rather than read here, because
+   * this module has no configuration and should not acquire one — the caller
+   * already holds it to build the JSON `verifyUrl` beside this call.
+   */
+  readonly verificationOrigin: string;
 }
 
 export interface RenderedIssue {
@@ -93,6 +99,7 @@ export async function renderAndStoreIssue(
     keyVersion: input.key.keyVersion,
     keyCustody: input.key.custody,
     verificationToken,
+    verificationOrigin: input.verificationOrigin,
     reissueReason: input.reissueReason,
     conformanceFrame: meta.conformance_frame,
   };

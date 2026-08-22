@@ -270,6 +270,7 @@ describe('a reissue that succeeds records the custody the key is actually held u
       async (tx) => {
         const [row] = await tx`
           SELECT i.data_snapshot ->> 'keyCustody' AS snapshot_custody,
+                 i.data_snapshot ->> 'verificationOrigin' AS snapshot_origin,
                  i.document_sha256, i.renderer_version,
                  k.custody AS key_custody
           FROM lotmark.certificate_issues i
@@ -278,7 +279,8 @@ describe('a reissue that succeeds records the custody the key is actually held u
           WHERE i.certificate_id = ${cert.id}
           ORDER BY i.issue_number DESC LIMIT 1`;
         return row as {
-          snapshot_custody: string; document_sha256: string | null;
+          snapshot_custody: string; snapshot_origin: string | null;
+          document_sha256: string | null;
           renderer_version: string; key_custody: string;
         };
       },
@@ -287,7 +289,21 @@ describe('a reissue that succeeds records the custody the key is actually held u
     expect(recorded.snapshot_custody, 'the document must not overclaim its key custody')
       .toBe(recorded.key_custody);
     expect(recorded.document_sha256, 'a signed issue must have a rendered document').not.toBeNull();
-    expect(recorded.renderer_version).toBe('lotmark-pdf-2');
+    expect(recorded.renderer_version).toBe('lotmark-pdf-3');
+
+    /*
+     * The last link in the chain, and the one that was actually broken.
+     *
+     * certificate-pdf.test.ts proves the RENDERER honours the origin it is
+     * given. This proves the ROUTE gives it the configured one — the join that
+     * did not exist, and could not have, because CertificateSnapshot had no
+     * origin field at all. Read from the stored snapshot rather than from the
+     * response body, because the snapshot is what a re-render years from now
+     * will use.
+     */
+    expect(recorded.snapshot_origin,
+      'the issued certificate did not record the origin it was issued under')
+      .toBe(app.cfg.PUBLIC_ORIGIN);
   });
 });
 

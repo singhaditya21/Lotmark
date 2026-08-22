@@ -430,6 +430,7 @@ export async function registerLotRoutes(app: FastifyInstance): Promise<void> {
         issueNumber,
         lotId: lot.id,
         projectId: lot.project_id,
+        verificationOrigin: cfg.PUBLIC_ORIGIN,
         value: {
           propertyName: value.property_name,
           assignedValue: value.assigned_value,

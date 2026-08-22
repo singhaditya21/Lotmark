@@ -16,6 +16,7 @@ const SNAPSHOT: CertificateSnapshot = {
   issuedByName: 'Dr. Asha Pillai', signedAt: '2026-08-21T09:15:00Z',
   signatureMeaning: 'approval', keyVersion: 'rec-v1', keyCustody: 'dev_file',
   verificationToken: 'k3nQ8vRtY2wPzL9mA4xB6dF1', reissueReason: null,
+  verificationOrigin: 'https://certificates.example.org',
   conformanceFrame: 'ISO 17034 + GIGW 3.0 + DPDP',
 };
 

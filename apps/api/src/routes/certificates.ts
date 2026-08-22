@@ -429,6 +429,7 @@ export async function registerCertificateRoutes(app: FastifyInstance): Promise<v
       const rendered = await renderAndStoreIssue(tx, documents, {
         tenantId: ctx.tenantId, issueId, certificateCode: cert.code, issueNumber,
         lotId: cert.lot_id, projectId: cert.project_id,
+        verificationOrigin: cfg.PUBLIC_ORIGIN,
         value: {
           propertyName: pv.property_name, assignedValue: pv.assigned_value,
           expandedUncertainty: pv.expanded_uncertainty, coverageFactor: pv.coverage_factor,

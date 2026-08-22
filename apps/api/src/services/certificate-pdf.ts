@@ -61,7 +61,15 @@ import { srgbProfile, ICC_DESCRIPTION, ICC_COMPONENTS } from './icc';
  * `renderer_version` and stay explicable, which is the whole reason this
  * string is stored on every issue rather than assumed.
  */
-export const RENDERER_VERSION = 'lotmark-pdf-2';
+/*
+ * Bumped from `lotmark-pdf-2` when the verification footer stopped being a
+ * hard-coded localhost URL and started reading the issued origin. That changes
+ * the rendered bytes, so it changes the version — which is exactly what this
+ * constant is for. The DR drill only re-renders issues stamped with the CURRENT
+ * renderer (dr-drill.mts:292) and covers older ones by stored digest, so
+ * certificates printed under pdf-2 stay verifiable without being reproducible.
+ */
+export const RENDERER_VERSION = 'lotmark-pdf-3';
 export const TEMPLATE_KEY = 'certificate.default';
 export const TEMPLATE_VERSION = '1';
 
@@ -107,6 +115,23 @@ export interface CertificateSnapshot {
   readonly keyVersion: string;
   readonly keyCustody: string;
   readonly verificationToken: string;
+  /**
+   * The origin printed in the verification footer.
+   *
+   * In the SNAPSHOT rather than read from configuration at render time, which
+   * is the same reason every other field here is: this document is re-rendered
+   * years later — by the DR drill, and by anyone checking the stored digest —
+   * and a value fetched live would make the bytes depend on today's environment
+   * instead of on what was issued. Moving the service to a new domain must not
+   * retroactively alter a certificate that was printed under the old one.
+   *
+   * It was a hard-coded `http://localhost:5173` until this was noticed. The
+   * guard in config.ts that refuses a loopback PUBLIC_ORIGIN in production had
+   * been protecting a promise the renderer did not keep — every certificate
+   * this system had ever produced told an auditor to visit a development
+   * server. See RENDERER_VERSION below.
+   */
+  readonly verificationOrigin: string;
   readonly reissueReason: string | null;
   readonly conformanceFrame: string;
 }
@@ -262,7 +287,7 @@ export async function renderCertificate(s: CertificateSnapshot): Promise<Uint8Ar
   y -= 16;
   text('VERIFY THIS CERTIFICATE', { size: 7.5, color: MUTED, font: bold });
   y -= 13;
-  text(`http://localhost:5173/verify/${s.verificationToken}`, { size: 9, font: mono, color: ACCENT });
+  text(`${s.verificationOrigin}/verify/${s.verificationToken}`, { size: 9, font: mono, color: ACCENT });
   y -= 13;
   text('The verification page states whether this issue is current, superseded or withdrawn.',
        { size: 8, color: MUTED });

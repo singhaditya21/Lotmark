@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createHash } from 'node:crypto';
+import { inflateSync } from 'node:zlib';
 import {
   renderCertificate, snapshotDigest, RENDERER_VERSION, TEMPLATE_KEY,
   type CertificateSnapshot,
@@ -24,6 +25,7 @@ const SNAPSHOT: CertificateSnapshot = {
   signedAt: '2026-08-21T09:15:00Z', signatureMeaning: 'approval',
   keyVersion: 'v1', keyCustody: 'dev_file',
   verificationToken: 'k3nQ8vRtY2wPzL9mA4xB6dF1',
+  verificationOrigin: 'https://certificates.example.org',
   reissueReason: null,
   conformanceFrame: 'ISO 17034 + GIGW 3.0 + DPDP',
 };
@@ -56,9 +58,134 @@ const sha = (b: Uint8Array) => createHash('sha256').update(b).digest('hex');
  * Do not update this hash on its own. That is the one edit that turns the test
  * back into the thing it replaced.
  */
+/*
+ * Moved once, deliberately, from
+ * 781b4965019bd72dc9ffeb69b80ba00894fe1e1731a82d1c073d6d34a6064e40.
+ *
+ * The verification footer used to be a hard-coded `http://localhost:5173`. It
+ * now prints the origin recorded in the snapshot, so the bytes changed and
+ * RENDERER_VERSION went to lotmark-pdf-3 in the same commit, as the note above
+ * requires. Certificates issued under pdf-2 are still covered by the stored
+ * digest check; they are simply no longer re-renderable, which is what a
+ * renderer version is for.
+ */
 const GOLDEN_SHA256 =
-  '781b4965019bd72dc9ffeb69b80ba00894fe1e1731a82d1c073d6d34a6064e40';
-const GOLDEN_BYTES = 44088;
+  '8decda6946f7bec9630f5198b179888f19b4c52a270238c5d78e2459969dc689';
+const GOLDEN_BYTES = 44096;
+
+describe('the address an auditor is told to visit', () => {
+  /**
+   * The footer used to read `http://localhost:5173/verify/<token>`, hard-coded,
+   * on every certificate this system had ever produced.
+   *
+   * The failure was quiet in the way that matters: `config.ts` refuses a
+   * loopback PUBLIC_ORIGIN in production and says why — a printed certificate
+   * cannot be recalled — so the control existed, was tested, and guarded a
+   * value that never reached the renderer. `CertificateSnapshot` had no origin
+   * field, so `renderCertificate` could not have honoured it even if asked.
+   *
+   * Asserting on the rendered BYTES rather than on the snapshot, because the
+   * snapshot carrying the right value is not the claim. The claim is that the
+   * paper says it.
+   */
+  /**
+   * What a person holding the certificate actually reads.
+   *
+   * Getting this right took three attempts, and the two failures are the point.
+   *
+   * A PDF's text lives in Flate-compressed content streams, so searching the
+   * raw bytes finds nothing — and, worse, a `not.toContain('localhost:5173')`
+   * against those bytes PASSES whatever the footer says, because the string is
+   * never there in literal form. That assertion would have been exactly the
+   * kind of test this codebase has spent a week deleting.
+   *
+   * Inflating is not enough either. The text is written as subset-font glyph
+   * ids — `<00010002...> Tj` — so it has to be mapped back through the
+   * `/ToUnicode` CMap that pdf-lib embeds beside each font.
+   *
+   * Each font has its own CMap and its own glyph numbering, so a single merged
+   * map would decode one font's runs with another font's alphabet. Every CMap
+   * is therefore tried separately and the candidates returned together: the
+   * caller asserts a string appears in ONE of them, which cannot produce a
+   * false pass and cannot be corrupted by a collision.
+   */
+  const renderedTexts = (pdf: Uint8Array): string[] => {
+    const buf = Buffer.from(pdf);
+    const streams: string[] = [];
+    let at = 0;
+    for (;;) {
+      const start = buf.indexOf('stream', at);
+      if (start < 0) break;
+      const end = buf.indexOf('endstream', start);
+      if (end < 0) break;
+      let from = start + 'stream'.length;
+      if (buf[from] === 0x0d) from++;
+      if (buf[from] === 0x0a) from++;
+      try { streams.push(inflateSync(buf.subarray(from, end)).toString('latin1')); }
+      catch { /* a font file or the ICC profile, not a Flate stream */ }
+      // `endstream` contains `stream`; advancing by one desynchronises the scan
+      // onto its own terminator and silently skips every CMap in the file.
+      at = end + 'endstream'.length;
+    }
+
+    const all = streams.join('\n');
+    const maps: Array<Map<number, string>> = [];
+    for (const block of all.matchAll(/beginbfchar([\s\S]*?)endbfchar/g)) {
+      const m = new Map<number, string>();
+      for (const pair of (block[1] ?? '').matchAll(/<([0-9a-fA-F]+)>\s*<([0-9a-fA-F]+)>/g)) {
+        // The destination is UTF-16BE and may be more than one code unit — a
+        // ligature maps one glyph to several. Decoding it as a single integer
+        // yields code points like 6684777 and throws.
+        const dst = pair[2]!;
+        let text = '';
+        for (let i = 0; i + 3 < dst.length; i += 4) {
+          text += String.fromCharCode(parseInt(dst.slice(i, i + 4), 16));
+        }
+        m.set(parseInt(pair[1]!, 16), text);
+      }
+      if (m.size > 0) maps.push(m);
+    }
+
+    const runs = [...all.matchAll(/<([0-9a-fA-F]+)>\s*Tj/g)].map((r) => r[1]!);
+    return maps.map((map) => runs.map((hex) => {
+      let word = '';
+      for (let i = 0; i + 3 < hex.length; i += 4) {
+        word += map.get(parseInt(hex.slice(i, i + 4), 16)) ?? '';
+      }
+      return word;
+    }).join('\n'));
+  };
+
+  const readsSomewhere = (pdf: Uint8Array, needle: string): boolean =>
+    renderedTexts(pdf).some((t) => t.includes(needle));
+
+  it('is the one that was issued, not a development server', async () => {
+    const pdf = await renderCertificate(SNAPSHOT);
+    const decoded = renderedTexts(pdf);
+    expect(decoded.length, 'nothing decoded — every assertion below would be vacuous')
+      .toBeGreaterThan(0);
+    expect(readsSomewhere(pdf, `${SNAPSHOT.verificationOrigin}/verify/${SNAPSHOT.verificationToken}`),
+      'the verification footer does not carry the issued origin').toBe(true);
+    expect(readsSomewhere(pdf, 'localhost:5173'),
+      'the certificate still sends an auditor to a development server').toBe(false);
+  });
+
+  it('follows the origin the certificate was issued under', async () => {
+    /*
+     * Two origins, two documents. If the footer were still a constant these
+     * would be byte-identical — which is exactly how the bug survived: every
+     * other determinism test in this file renders the SAME object twice, and
+     * a hard-coded string is perfectly deterministic.
+     */
+    const other = await renderCertificate({
+      ...SNAPSHOT, verificationOrigin: 'https://certs.another-producer.example',
+    });
+    const mine = await renderCertificate(SNAPSHOT);
+    expect(Buffer.compare(Buffer.from(other), Buffer.from(mine))).not.toBe(0);
+    expect(readsSomewhere(other, 'https://certs.another-producer.example/verify/')).toBe(true);
+    expect(readsSomewhere(mine, 'another-producer')).toBe(false);
+  });
+});
 
 describe('the certificate renders deterministically', () => {
   it('renders the bytes it has always rendered', async () => {
