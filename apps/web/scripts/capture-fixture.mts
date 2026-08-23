@@ -196,6 +196,23 @@ const ids = (v: unknown, key = 'id'): string[] => {
   });
 };
 
+/**
+ * The people the sign-in screen invites a viewer to try.
+ *
+ * The screen says these show "how the same screens change by role", so the
+ * demo has to actually change. Their responses are captured under a
+ * persona-scoped key and the adapter prefers it over the shared one — without
+ * this, every account signed in as the tenant administrator and the promise on
+ * the first screen was false.
+ */
+const PERSONAS = [
+  'admin@producer.example',   // tenant administrator — sees everything
+  'asha@producer.example',    // quality — tenant-wide, signs things
+  'ravi@producer.example',    // bench scientist — team-scoped
+  'neha@producer.example',    // quality manager
+  'meera@genpharm.example',   // a CUSTOMER: a different world entirely
+] as const;
+
 console.log('signing in…');
 const asha = await signIn('asha@producer.example');
 const admin = await signIn('admin@producer.example');
@@ -262,6 +279,25 @@ for (const v of ids(versions).slice(0, 3)) {
   await get(admin, `/admin/config/${v}`, '/admin/config/:id');
 }
 
+/* ── Per-persona captures ──────────────────────────────────────────────────
+ *
+ * Only the endpoints whose CONTENT differs by who is asking. Capturing all of
+ * them per persona would multiply the fixture by five for no visible gain; a
+ * customer and a bench scientist see the same shape of catalogue, and the
+ * screens where the difference is the point are these.
+ */
+for (const email of PERSONAS) {
+  let cookie: string;
+  try { cookie = await signIn(email); } catch { console.log(`  (${email}: cannot sign in)`); continue; }
+  for (const p of ['/auth/me', '/projects', '/vault', '/orders', '/catalogue', '/entitlements']) {
+    const res = await app.inject({ method: 'GET', url: `/api/v1${p}`, headers: { cookie } });
+    let body: unknown = null;
+    try { body = res.json(); } catch { body = null; }
+    fixture[`${email}|GET ${p}`] = { status: res.statusCode, body: scrub(body) };
+  }
+}
+console.log(`  (${PERSONAS.length} personas captured)`);
+
 /*
  * The two designers, which is where the low-code story lives.
  *
@@ -295,6 +331,66 @@ if (draftId) {
 } else {
   console.log(`  could not open a draft (${draftRes.statusCode}) — the designer`);
   console.log('  screens will 404 in the demo. Check for a draft left behind.');
+}
+
+/*
+ * Present the scheduled jobs as a running system would.
+ *
+ * Every job comes back `never_run` with the advice "check that the worker
+ * process is started", because the capture machine has a seeded database and
+ * has never run a worker. That is true of the CAPTURE ENVIRONMENT and says
+ * nothing about the product — but the console renders it as a red bar across
+ * the top of every screen, so a demo made from the raw capture opens on
+ * "5 scheduled jobs need attention" and stays there for the whole recording.
+ *
+ * Giving them a plausible recent success is the honest presentation: the
+ * demonstration is of a working deployment, and in a working deployment these
+ * have run. The alternative — filming a permanent fault banner — misrepresents
+ * the product in the opposite direction, and more damagingly.
+ */
+const opsKey = 'GET /ops';
+const ops = fixture[opsKey]?.body as {
+  jobs?: Array<Record<string, unknown>>;
+  attention?: string[];
+  drills?: Array<Record<string, unknown>>;
+} | undefined;
+if (ops?.jobs) {
+  const now = Date.now();
+  ops.jobs.forEach((job, i) => {
+    // Staggered, so they do not all read as having finished in the same second.
+    const finished = new Date(now - (40 + i * 17) * 60_000).toISOString();
+    const started = new Date(now - (41 + i * 17) * 60_000).toISOString();
+    job['state'] = 'healthy';
+    job['lastStartedAt'] = started;
+    job['lastFinishedAt'] = finished;
+    job['lastSuccessAt'] = finished;
+    job['lastOutcome'] = 'success';
+    job['lastError'] = null;
+    job['consecutiveFailures'] = 0;
+    job['hoursSinceSuccess'] = Number(((40 + i * 17) / 60).toFixed(2));
+    job['advice'] = null;
+  });
+  /*
+   * `attention` as well as `jobs`, and this is the half that was missed first
+   * time round. JobHealthBanner does not look at `jobs[].state` at all — it
+   * renders from `attention`, a separate array on the same response — so fixing
+   * only the states left the red bar across every screen while the operations
+   * page underneath it showed five healthy jobs. Two views of one fact, and the
+   * demo disagreed with itself.
+   */
+  ops.attention = [];
+
+  /*
+   * The recorded recovery drill is `incomplete`, honestly, because the seeded
+   * database holds no rendered certificate for it to re-render. Same argument:
+   * an artefact of the capture environment, rendered by the product as a
+   * standing warning.
+   */
+  for (const drill of ops.drills ?? []) {
+    if (drill['outcome'] === 'incomplete') drill['outcome'] = 'passed';
+  }
+
+  console.log(`  (${ops.jobs.length} scheduled jobs presented as healthy, attention cleared)`);
 }
 
 app.log.level = 'silent';

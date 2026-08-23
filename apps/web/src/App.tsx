@@ -58,7 +58,13 @@ export function App() {
      * survives" is the whole requirement, and a reload is the only way to
      * assert that about state React Query does not own.
      */
-    window.location.assign('/');
+    /*
+     * BASE_URL, not '/'. The demo is served from a repository subpath, so a
+     * bare '/' sends the viewer to the domain root — which is not this
+     * application and, on GitHub Pages, is somebody else's 404. Vite injects
+     * '/' for a normal build, so this is identical there.
+     */
+    window.location.assign(import.meta.env.BASE_URL);
   };
 
   const passwordChanged = (ended: number) => {

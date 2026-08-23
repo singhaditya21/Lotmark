@@ -37,7 +37,7 @@ const state: Record<string, Recorded> = structuredClone(RECORDING);
  * specific capture beats a general one — `/admin/config/draft/:id/review` must
  * win over `/admin/config/:id` even though both have five segments.
  */
-const TEMPLATES = Object.keys(RECORDING).map((key) => {
+const TEMPLATES = Object.keys(RECORDING).filter((k) => !k.includes('|')).map((key) => {
   const [method, ...rest] = key.split(' ');
   const path = rest.join(' ');
   const parts = path.split('/');
@@ -56,6 +56,11 @@ function match(method: string, path: string): string | null {
   return null;
 }
 
+/** The signed-in person's copy of a recording, or the shared one. */
+function read(key: string): Recorded | undefined {
+  return (persona ? state[`${persona}|${key}`] : undefined) ?? state[key];
+}
+
 /* ── Session ──────────────────────────────────────────────────────────────── */
 
 /**
@@ -69,6 +74,21 @@ export { DEMO_PASSWORD };
 
 let signedIn = false;
 let steppedUpUntil = 0;
+
+/**
+ * Who is signed in, because the sign-in screen promises it matters.
+ *
+ * That screen invites a viewer to try a bench scientist, a quality manager or a
+ * customer "to see how the same screens change by role". Until this existed the
+ * adapter ignored the address entirely and every account signed in as the
+ * tenant administrator — the demo contradicting its own first screen, on the
+ * feature the product leads with.
+ *
+ * Responses captured per persona are keyed `email|METHOD /path` and preferred
+ * over the shared capture. Only the endpoints whose CONTENT actually differs
+ * are captured that way; everything else falls through.
+ */
+let persona = '';
 
 const SIGNING_WINDOW_MS = 15 * 60 * 1000;
 
@@ -153,6 +173,7 @@ export async function demoFetch(path: string, init: RequestInit): Promise<Respon
 
   if (path === '/auth/sign-in') {
     await pause(220);
+    const email = field('email').trim().toLowerCase();
     if (field('password').trim() === '') {
       return problem(401, 'invalid_credentials', 'Enter the demo password shown below.');
     }
@@ -160,6 +181,9 @@ export async function demoFetch(path: string, init: RequestInit): Promise<Respon
       return problem(401, 'invalid_credentials',
         `This is a demonstration. The password is “${DEMO_PASSWORD}”.`);
     }
+    // Remembered now rather than at the second factor, because that step does
+    // not carry the address.
+    persona = email;
     // Second factor demanded, because skipping it would hide one of the few
     // things this product does that a viewer should notice it doing.
     return json({ secondFactorRequired: true });
@@ -171,7 +195,7 @@ export async function demoFetch(path: string, init: RequestInit): Promise<Respon
       return problem(401, 'invalid_code', 'Six digits. In the demo, any six will do.');
     }
     signedIn = true;
-    return json(state['GET /auth/me']?.body ?? {});
+    return json(read('GET /auth/me')?.body ?? {});
   }
 
   if (path === '/auth/step-up') {
@@ -184,11 +208,14 @@ export async function demoFetch(path: string, init: RequestInit): Promise<Respon
     return json({ ok: true, until: new Date(steppedUpUntil).toISOString() });
   }
 
-  if (path === '/auth/sign-out') { signedIn = false; steppedUpUntil = 0; return json({ ok: true }); }
+  if (path === '/auth/sign-out') {
+    signedIn = false; steppedUpUntil = 0; persona = '';
+    return json({ ok: true });
+  }
 
   if (path === '/auth/me') {
     if (!signedIn) return problem(401, 'unauthenticated', 'Sign in to continue.');
-    return json(state['GET /auth/me']?.body ?? {});
+    return json(read('GET /auth/me')?.body ?? {});
   }
 
   /* — Signing. The ceremony is the point, so the refusal has to be real — */
@@ -206,7 +233,7 @@ export async function demoFetch(path: string, init: RequestInit): Promise<Respon
   if (method === 'GET') {
     const key = match('GET', path);
     if (!key) return problem(404, 'not_found', `Nothing recorded for ${path}.`);
-    const rec = state[key]!;
+    const rec = read(key)!;
     return json(rec.body, rec.status);
   }
 
