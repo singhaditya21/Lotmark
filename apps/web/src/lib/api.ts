@@ -51,20 +51,14 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const headers: Record<string, string> = {
-    'content-type': 'application/json',
-    ...(init.headers as Record<string, string> | undefined),
-  };
-  // An empty content-type means "send none at all" — see api.del.
-  if (headers['content-type'] === '') delete headers['content-type'];
-
-  const res = await fetch(`/api/v1${path}`, {
-    ...init,
-    credentials: 'same-origin',
-    headers,
-  });
-
+/**
+ * Turn a Response into either the parsed body or an ApiError.
+ *
+ * Shared by the real path and the demo path deliberately: error handling is
+ * part of what a demo should show, and a demo that swallowed problems the real
+ * console surfaces would be demonstrating a different product.
+ */
+async function unwrap<T>(res: Response): Promise<T> {
   if (!res.ok) {
     let problem: Problem = {
       type: 'about:blank', title: String(res.status), status: res.status,
@@ -83,6 +77,39 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     throw new ApiError(res.status, problem);
   }
   return res.status === 204 ? (undefined as T) : ((await res.json()) as T);
+}
+
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const headers: Record<string, string> = {
+    'content-type': 'application/json',
+    ...(init.headers as Record<string, string> | undefined),
+  };
+  // An empty content-type means "send none at all" — see api.del.
+  if (headers['content-type'] === '') delete headers['content-type'];
+
+  /**
+   * The demo swap, and the only one.
+   *
+   * `import.meta.env.VITE_DEMO` is a build-time constant, so a normal build
+   * drops this branch entirely — the published console is byte-for-byte what it
+   * would have been. Putting the swap anywhere other than here would mean two
+   * data paths to keep in step, which is how a demo starts lying about the
+   * product it is demonstrating.
+   */
+  if (import.meta.env.VITE_DEMO) {
+    const { demoFetch } = await import('../demo/adapter');
+    const demo = await demoFetch(path, { ...init, headers });
+    return await unwrap<T>(demo);
+  }
+
+  const res = await fetch(`/api/v1${path}`, {
+    ...init,
+    credentials: 'same-origin',
+    headers,
+  });
+
+  return await unwrap<T>(res);
+
 }
 
 export const api = {

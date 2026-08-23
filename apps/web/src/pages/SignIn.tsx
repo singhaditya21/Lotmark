@@ -96,12 +96,38 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
           )}
         </div>
 
+        {/*
+          * The credentials hint differs between the two builds, and must.
+          *
+          * This box used to print the seeded password and the real authenticator
+          * secret unconditionally. In the local development build that is a
+          * convenience; in the published demo it put a working credential pair
+          * for any instance seeded from this repository onto a public page. The
+          * demo build shows its own throwaway password instead, and no secret at
+          * all — the demo accepts any six digits, so there is nothing to copy.
+          */}
         <div className="note" style={{ marginTop: 14 }}>
-          <b>Demonstration data.</b> Password <span className="mono">demo-password-1234</span>.
-          Authenticator secret <span className="mono">JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP</span>.
-          Try <span className="mono">ravi@</span> (bench scientist, team-scoped),
-          {' '}<span className="mono">neha@</span> (quality, tenant-wide) or
-          {' '}<span className="mono">meera@genpharm.example</span> (customer).
+          {import.meta.env.VITE_DEMO ? (
+            <>
+              <b>Demonstration.</b> Every record here is invented and nothing is
+              saved. Password <span className="mono">demo-viewer</span>, then any
+              six digits at the authenticator step.
+              {' '}Try <span className="mono">ravi@</span> (bench scientist,
+              team-scoped), <span className="mono">neha@</span> (quality,
+              tenant-wide) or <span className="mono">meera@genpharm.example</span>
+              {' '}(customer) to see how the same screens change by role.
+            </>
+          ) : (
+            <>
+              <b>Demonstration data.</b> Password{' '}
+              <span className="mono">demo-password-1234</span>.
+              Authenticator secret{' '}
+              <span className="mono">JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP</span>.
+              Try <span className="mono">ravi@</span> (bench scientist, team-scoped),
+              {' '}<span className="mono">neha@</span> (quality, tenant-wide) or
+              {' '}<span className="mono">meera@genpharm.example</span> (customer).
+            </>
+          )}
         </div>
       </div>
     </div>

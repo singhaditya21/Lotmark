@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "capture": "NODE_ENV=development tsx scripts/capture-fixture.mts",
+    "demo": "VITE_DEMO=1 tsc -b && VITE_DEMO=1 vite build"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.7",

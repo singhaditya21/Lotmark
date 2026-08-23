@@ -2,6 +2,13 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+  /**
+   * The demo is published under a repository subpath, so its assets are
+   * requested from `/Lotmark/assets/…` rather than the root. A normal build
+   * keeps `/` — a stray subpath there would break the real deployment, and
+   * silently, because index.html would still load.
+   */
+  base: process.env['VITE_DEMO'] ? '/Lotmark/' : '/',
   plugins: [react()],
   server: {
     port: 5173,

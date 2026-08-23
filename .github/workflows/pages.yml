@@ -1,0 +1,91 @@
+name: Demo
+
+# The static demonstration published at
+# https://singhaditya21.github.io/Lotmark/
+#
+# It is the REAL console — every screen, every guard, the signing ceremony —
+# with the API replaced by a recording. `apps/web/src/demo/fixture.json` was
+# captured from a real seeded run, so the response shapes are correct by
+# construction rather than by care, and it is sanitised at capture time: the
+# producer identity in the fixture is an invention, and the credentials hint on
+# the sign-in screen is a demo password rather than the seeded one.
+#
+# Deliberately separate from ci.yml. A demo that fails to publish must not read
+# as a broken build, and a broken build must not silently keep publishing.
+
+on:
+  push:
+    branches: [main]
+    # Only rebuild when something that reaches the page changes.
+    paths:
+      - 'apps/web/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never two deployments at once, and never cancel one half-done: a cancelled
+# deploy can leave the site serving an index that points at assets from the
+# build that replaced it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The fixture is committed. It is NOT recaptured here — capture needs a
+      # seeded PostgreSQL, and a demo whose contents changed on every push would
+      # make a recorded video stale without anybody deciding to.
+      - name: Build the demo
+        run: pnpm --filter @lotmark/web demo
+
+      # The guard that matters. The seeded database names a real prospective
+      # client; the published bundle must not. Checked here as well as at
+      # capture time, because the console's own source has carried a hard-coded
+      # credential hint before and would have shipped it.
+      - name: Refuse to publish anything that names the client
+        run: |
+          cd apps/web/dist
+          fail=0
+          for term in 'Indian Pharmacopoeia' 'IPRS' 'MeitY' 'STQC' 'GIGW' \
+                      'OpenCart' 'PvPI' 'demo-password-1234' 'JBSWY3DPEHPK3PXP' \
+                      'crore' 'lakh'; do
+            if grep -rilq -- "$term" . ; then
+              echo "::error::the built demo contains '$term'"
+              fail=1
+            fi
+          done
+          exit $fail
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

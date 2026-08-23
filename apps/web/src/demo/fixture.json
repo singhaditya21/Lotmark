@@ -1,0 +1,5237 @@
+{
+  "GET /auth/me": {
+    "status": 200,
+    "body": {
+      "user": {
+        "id": "1789ab9d-979c-5dcb-961b-05cc02d6e13c",
+        "name": "Tenant Administrator",
+        "email": "admin@producer.example"
+      },
+      "roleKinds": [
+        "producer"
+      ],
+      "organisation": {
+        "id": "99c3d0bc-ec77-5ce1-a8c3-a90c6ddd4dc5",
+        "kind": "producer",
+        "name": "Certified Reference Materials Division"
+      },
+      "teams": [
+        {
+          "id": "d5d144d2-2bb3-5bb3-87e3-a5d9f0f42d03",
+          "key": "inorganics",
+          "name": "Inorganics Section"
+        }
+      ],
+      "permissions": [
+        "project:read",
+        "project:manage",
+        "study:run",
+        "study:sign",
+        "value:assign",
+        "value:authorise",
+        "lot:create",
+        "lot:release",
+        "cert:issue",
+        "cert:reissue",
+        "catalogue:manage",
+        "order:create",
+        "order:read_own",
+        "order:read_all",
+        "order:advance",
+        "order:refund",
+        "entitlement:claim",
+        "entitlement:decide",
+        "equipment:manage",
+        "competence:manage",
+        "capa:manage",
+        "subcontractor:manage",
+        "conformance:read",
+        "audit:read",
+        "audit:verify",
+        "audit:export",
+        "pii:contact",
+        "user:manage",
+        "vault:use"
+      ],
+      "permissionsByTeam": {},
+      "secondFactorSatisfied": true,
+      "passwordChangeRequired": false
+    }
+  },
+  "GET /projects": {
+    "status": 200,
+    "body": {
+      "projects": [
+        {
+          "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+          "code": "PRJ-0412",
+          "material": "Paracetamol",
+          "cas": "103-90-2",
+          "sku": "RM-PARA",
+          "stage": "released",
+          "team": "Organics Section"
+        },
+        {
+          "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+          "code": "PRJ-0413",
+          "material": "Metformin Hydrochloride",
+          "cas": "1115-70-4",
+          "sku": "RM-METF",
+          "stage": "released",
+          "team": "Inorganics Section"
+        },
+        {
+          "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+          "code": "PRJ-0414",
+          "material": "Ibuprofen",
+          "cas": "15687-27-1",
+          "sku": "RM-IBUP",
+          "stage": "authorisation",
+          "team": "Organics Section"
+        },
+        {
+          "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+          "code": "PRJ-0415",
+          "material": "Atorvastatin Calcium",
+          "cas": "134523-03-8",
+          "sku": "RM-ATOR",
+          "stage": "study",
+          "team": "Inorganics Section"
+        }
+      ],
+      "scope": "tenant"
+    }
+  },
+  "GET /teams": {
+    "status": 200,
+    "body": {
+      "teams": [
+        {
+          "id": "d5d144d2-2bb3-5bb3-87e3-a5d9f0f42d03",
+          "key": "inorganics",
+          "name": "Inorganics Section"
+        }
+      ]
+    }
+  },
+  "GET /equipment": {
+    "status": 200,
+    "body": {
+      "equipment": [
+        {
+          "id": "485ac3f0-38c0-58e0-92ff-551d7dc226f5",
+          "code": "EQ-01",
+          "name": "HPLC — Agilent 1260",
+          "equipment_type": "Chromatograph",
+          "calibrated_to": "2027-03-31"
+        },
+        {
+          "id": "759af5c3-d079-533e-b9c2-14b5fac4cfa9",
+          "code": "EQ-02",
+          "name": "Analytical balance — XPR205",
+          "equipment_type": "Balance",
+          "calibrated_to": "2026-05-31"
+        },
+        {
+          "id": "53d64cb0-6723-5481-acef-1ae287d4317f",
+          "code": "EQ-03",
+          "name": "Karl Fischer titrator",
+          "equipment_type": "Titrator",
+          "calibrated_to": "2027-01-01"
+        },
+        {
+          "id": "495a3fd6-505a-532d-8952-b3bcb5a57314",
+          "code": "EQ-04",
+          "name": "Stability chamber 5 °C",
+          "equipment_type": "Chamber",
+          "calibrated_to": "2027-02-01"
+        }
+      ]
+    }
+  },
+  "GET /capa": {
+    "status": 200,
+    "body": {
+      "capa": [
+        {
+          "id": "9877cafc-1b0d-4f82-b293-719e123243e7",
+          "code": "NCR-0231",
+          "source": "Temperature excursion",
+          "severity": "Major",
+          "state": "investigation",
+          "raised_on": "2026-06-02",
+          "due_on": null,
+          "root_cause": null,
+          "corrective_action": null,
+          "closed_at": null,
+          "team": "Organics Section",
+          "availableTransitions": [
+            "root_cause"
+          ]
+        }
+      ]
+    }
+  },
+  "GET /capa/workflow": {
+    "status": 200,
+    "body": {
+      "states": [
+        "open",
+        "investigation",
+        "root_cause",
+        "capa",
+        "effectiveness",
+        "closed"
+      ],
+      "initial": "open",
+      "terminal": [
+        "closed"
+      ],
+      "transitions": [
+        {
+          "from": "open",
+          "to": "investigation",
+          "action": "Investigation opened",
+          "requires": "capa:manage"
+        },
+        {
+          "from": "investigation",
+          "to": "root_cause",
+          "action": "Root cause identified",
+          "requires": "capa:manage"
+        },
+        {
+          "from": "root_cause",
+          "to": "capa",
+          "action": "Corrective action raised",
+          "requires": "capa:manage"
+        },
+        {
+          "from": "capa",
+          "to": "effectiveness",
+          "action": "Effectiveness check started",
+          "requires": "capa:manage"
+        },
+        {
+          "from": "effectiveness",
+          "to": "closed",
+          "action": "CAPA closed",
+          "requires": "capa:manage"
+        },
+        {
+          "from": "effectiveness",
+          "to": "capa",
+          "action": "Effectiveness check failed, action reopened",
+          "requires": "capa:manage"
+        }
+      ],
+      "canCloseFromEffectiveness": true
+    }
+  },
+  "GET /audit": {
+    "status": 200,
+    "body": {
+      "entries": [
+        {
+          "seq": "82",
+          "occurred_at": "2026-08-23 21:10:02.088939+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "81",
+          "occurred_at": "2026-08-23 21:10:02.067766+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "80",
+          "occurred_at": "2026-08-23 21:10:02.061736+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "79",
+          "occurred_at": "2026-08-23 21:10:01.939443+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "78",
+          "occurred_at": "2026-08-23 20:34:05.658553+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "77",
+          "occurred_at": "2026-08-23 20:34:05.638657+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "76",
+          "occurred_at": "2026-08-23 20:34:05.634043+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "75",
+          "occurred_at": "2026-08-23 20:34:05.554875+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "74",
+          "occurred_at": "2026-08-23 20:33:07.613443+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "73",
+          "occurred_at": "2026-08-23 20:33:07.59477+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "72",
+          "occurred_at": "2026-08-23 20:33:07.585046+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "71",
+          "occurred_at": "2026-08-23 20:33:07.504828+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "70",
+          "occurred_at": "2026-08-23 20:32:13.313877+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "69",
+          "occurred_at": "2026-08-23 20:32:13.29417+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "68",
+          "occurred_at": "2026-08-23 20:32:13.289261+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "67",
+          "occurred_at": "2026-08-23 20:32:13.205577+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "66",
+          "occurred_at": "2026-08-23 20:31:42.344322+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "65",
+          "occurred_at": "2026-08-23 20:31:42.324859+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "64",
+          "occurred_at": "2026-08-23 20:31:42.320187+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "63",
+          "occurred_at": "2026-08-23 20:31:42.238682+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "62",
+          "occurred_at": "2026-08-23 20:30:13.700648+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "61",
+          "occurred_at": "2026-08-23 20:30:13.68068+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "60",
+          "occurred_at": "2026-08-23 20:30:13.675677+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "59",
+          "occurred_at": "2026-08-23 20:30:13.596522+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "58",
+          "occurred_at": "2026-08-23 20:28:56.690481+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "57",
+          "occurred_at": "2026-08-23 20:28:56.666404+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "56",
+          "occurred_at": "2026-08-23 20:28:56.659723+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "55",
+          "occurred_at": "2026-08-23 20:28:56.471682+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "54",
+          "occurred_at": "2026-08-22 21:59:54.916841+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft discarded",
+          "detail": "version 2 · Probe draft — verifying the designer renders; will be discarded",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "53",
+          "occurred_at": "2026-08-22 21:59:08.676105+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft opened",
+          "detail": "version 2 · Probe draft — verifying the designer renders; will be discarded",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "52",
+          "occurred_at": "2026-08-22 21:58:29.281339+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "51",
+          "occurred_at": "2026-08-22 21:58:10.219411+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "50",
+          "occurred_at": "2026-08-22 21:57:14.201245+05:30",
+          "actor_label": "user",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed out",
+          "detail": "user action",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "49",
+          "occurred_at": "2026-08-22 21:55:56.86816+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "48",
+          "occurred_at": "2026-08-22 21:55:29.067648+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "47",
+          "occurred_at": "2026-08-22 21:54:23.603426+05:30",
+          "actor_label": "user",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed out",
+          "detail": "user action",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "46",
+          "occurred_at": "2026-08-22 21:53:13.06596+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "SECURITY",
+          "action": "Study signing refused at the signing step",
+          "detail": "ST-1022: Re-enter your password and authenticator code before signing.",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "45",
+          "occurred_at": "2026-08-22 21:50:35.685293+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "44",
+          "occurred_at": "2026-08-22 21:50:10.731312+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "43",
+          "occurred_at": "2026-08-22 21:44:52.215537+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "GOVERNANCE",
+          "action": "Assessment pack exported",
+          "detail": "29 requirement(s), 10 section(s), digest 8595d6bdb9abb841…",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "42",
+          "occurred_at": "2026-08-22 21:43:29.039867+05:30",
+          "actor_label": "Arjun Rao",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "1 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "41",
+          "occurred_at": "2026-08-22 21:42:48.773796+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft discarded",
+          "detail": "version 2 · probe: verifying designer endpoints, will be discarded",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "40",
+          "occurred_at": "2026-08-22 21:42:37.058253+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration entry edited",
+          "detail": "field 'filling_line' in a draft",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "39",
+          "occurred_at": "2026-08-22 21:42:22.725533+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration entry edited",
+          "detail": "workflow 'capa' in a draft",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "38",
+          "occurred_at": "2026-08-22 21:42:22.609621+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration entry edited",
+          "detail": "workflow 'capa' in a draft",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "37",
+          "occurred_at": "2026-08-22 21:41:47.972705+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft opened",
+          "detail": "version 2 · probe: verifying designer endpoints, will be discarded",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "36",
+          "occurred_at": "2026-08-22 21:41:06.216769+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "SYSTEM",
+          "action": "Audit chain verification run",
+          "detail": "intact across 35 entries (generation v1)",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "35",
+          "occurred_at": "2026-08-22 21:40:53.89128+05:30",
+          "actor_label": "Sunil Bhatt",
+          "actor_role_id": "—",
+          "kind": "DENY",
+          "action": "Study signing refused",
+          "detail": "ST-1022: You hold no competence authorisation for 'study:sign' as at 2026-08-22.",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "34",
+          "occurred_at": "2026-08-22 21:40:53.834432+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "SECURITY",
+          "action": "Study signing refused at the signing step",
+          "detail": "ST-1022: Re-enter your password and authenticator code before signing.",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "33",
+          "occurred_at": "2026-08-22 21:39:56.718641+05:30",
+          "actor_label": "Suresh Iyer",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "suresh@sdtl.gov.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "32",
+          "occurred_at": "2026-08-22 21:39:56.624375+05:30",
+          "actor_label": "Suresh Iyer",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed in",
+          "detail": "suresh@sdtl.gov.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "31",
+          "occurred_at": "2026-08-22 21:39:56.536674+05:30",
+          "actor_label": "Dr. Meera Raghavan",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "meera@genpharm.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "30",
+          "occurred_at": "2026-08-22 21:39:56.422683+05:30",
+          "actor_label": "Dr. Meera Raghavan",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed in",
+          "detail": "meera@genpharm.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "29",
+          "occurred_at": "2026-08-22 21:39:31.829705+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "28",
+          "occurred_at": "2026-08-22 21:39:31.737335+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "27",
+          "occurred_at": "2026-08-22 21:39:31.664365+05:30",
+          "actor_label": "Vikram Shetty",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "vikram@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "26",
+          "occurred_at": "2026-08-22 21:39:31.581393+05:30",
+          "actor_label": "Vikram Shetty",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "vikram@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "25",
+          "occurred_at": "2026-08-22 21:39:31.504717+05:30",
+          "actor_label": "Arjun Rao",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "arjun@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "24",
+          "occurred_at": "2026-08-22 21:39:31.413707+05:30",
+          "actor_label": "Arjun Rao",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "arjun@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "23",
+          "occurred_at": "2026-08-22 21:39:31.329383+05:30",
+          "actor_label": "Sunil Bhatt",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "sunil@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "22",
+          "occurred_at": "2026-08-22 21:39:31.230668+05:30",
+          "actor_label": "Sunil Bhatt",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "sunil@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "21",
+          "occurred_at": "2026-08-22 21:39:31.148372+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "20",
+          "occurred_at": "2026-08-22 21:39:31.039287+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "19",
+          "occurred_at": "2026-08-22 21:39:30.945224+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "18",
+          "occurred_at": "2026-08-22 21:39:30.849602+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "17",
+          "occurred_at": "2026-08-22 21:39:20.681917+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "16",
+          "occurred_at": "2026-08-22 21:39:20.516955+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "15",
+          "occurred_at": "2026-08-22 21:36:41.23653+05:30",
+          "actor_label": "user",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed out",
+          "detail": "user action",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "14",
+          "occurred_at": "2026-08-22 21:36:25.551009+05:30",
+          "actor_label": "user",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed out",
+          "detail": "user action",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "13",
+          "occurred_at": "2026-08-22 21:36:25.542544+05:30",
+          "actor_label": "Dr. Meera Raghavan",
+          "actor_role_id": "—",
+          "kind": "SECURITY",
+          "action": "Sign-in abandoned after repeated second-factor failures",
+          "detail": "attempt 3 of 3",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "12",
+          "occurred_at": "2026-08-22 21:36:25.537338+05:30",
+          "actor_label": "Dr. Meera Raghavan",
+          "actor_role_id": "—",
+          "kind": "SECURITY",
+          "action": "Second factor rejected",
+          "detail": "attempt 1 of 3",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "11",
+          "occurred_at": "2026-08-22 21:36:25.519818+05:30",
+          "actor_label": "Dr. Meera Raghavan",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed in",
+          "detail": "meera@genpharm.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "10",
+          "occurred_at": "2026-08-22 21:36:25.498731+05:30",
+          "actor_label": "ravi@producer.example",
+          "actor_role_id": "—",
+          "kind": "SECURITY",
+          "action": "Failed sign-in",
+          "detail": "attempt 1 of 5",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "9",
+          "occurred_at": "2026-08-22 21:36:25.477925+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "SECURITY",
+          "action": "Study signing refused at the signing step",
+          "detail": "ST-1030: Re-enter your password and authenticator code before signing.",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "8",
+          "occurred_at": "2026-08-22 21:36:25.464345+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "7",
+          "occurred_at": "2026-08-22 21:36:25.438466+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "6",
+          "occurred_at": "2026-08-22 21:35:51.513374+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signing session opened",
+          "detail": "valid for 15 minutes",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "5",
+          "occurred_at": "2026-08-22 21:35:51.48726+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "SECURITY",
+          "action": "Signing step-up rejected",
+          "detail": "one or both identification components were not accepted",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "4",
+          "occurred_at": "2026-08-22 21:35:32.427943+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "3",
+          "occurred_at": "2026-08-22 21:35:32.341271+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "2",
+          "occurred_at": "2026-08-22 18:32:23.479159+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "tenantadmin",
+          "kind": "CONFIGURATION",
+          "action": "Configuration version 1 published",
+          "detail": "Product defaults, derived from the built-in constants",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "1",
+          "occurred_at": "2026-08-22 18:32:23.479159+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "tenantadmin",
+          "kind": "SYSTEM",
+          "action": "Demonstration tenant seeded",
+          "detail": "Dataset extracted from docs/artefacts/lotmark-app.html",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        }
+      ]
+    }
+  },
+  "GET /ops": {
+    "status": 200,
+    "body": {
+      "jobs": [
+        {
+          "name": "lot-expiry-notices",
+          "description": "Tell holders when a lot approaches expiry, at 90, 30 and 7 days.",
+          "cron": "0 7 * * *",
+          "state": "never_run",
+          "lastStartedAt": null,
+          "lastFinishedAt": null,
+          "lastOutcome": null,
+          "lastError": null,
+          "lastSuccessAt": null,
+          "consecutiveFailures": 0,
+          "hoursSinceSuccess": null,
+          "expectedEveryHours": 36,
+          "advice": "This job has never run for this tenant. Check that the worker process is started (pnpm worker) — nothing it does has ever happened."
+        },
+        {
+          "name": "monitoring-due",
+          "description": "Raise a CAPA where stability monitoring has fallen overdue (ISO 17034 7.8).",
+          "cron": "15 7 * * *",
+          "state": "never_run",
+          "lastStartedAt": null,
+          "lastFinishedAt": null,
+          "lastOutcome": null,
+          "lastError": null,
+          "lastSuccessAt": null,
+          "consecutiveFailures": 0,
+          "hoursSinceSuccess": null,
+          "expectedEveryHours": 36,
+          "advice": "This job has never run for this tenant. Check that the worker process is started (pnpm worker) — nothing it does has ever happened."
+        },
+        {
+          "name": "entitlement-revalidation",
+          "description": "Lapse approved price tiers past their revalidation date, and revert pricing.",
+          "cron": "30 7 * * *",
+          "state": "never_run",
+          "lastStartedAt": null,
+          "lastFinishedAt": null,
+          "lastOutcome": null,
+          "lastError": null,
+          "lastSuccessAt": null,
+          "consecutiveFailures": 0,
+          "hoursSinceSuccess": null,
+          "expectedEveryHours": 36,
+          "advice": "This job has never run for this tenant. Check that the worker process is started (pnpm worker) — nothing it does has ever happened."
+        },
+        {
+          "name": "alert-sweep",
+          "description": "Turn what the system already knows — failing jobs, an unrehearsed or incomplete restore — into deduplicated alerts. It cannot report its own absence: see alert_sweeps.last_swept_at and scripts/prober.mts.",
+          "cron": "*/15 * * * *",
+          "state": "stale",
+          "lastStartedAt": "2026-08-22 19:13:09.611123+05:30",
+          "lastFinishedAt": "2026-08-22 19:13:09.647962+05:30",
+          "lastOutcome": "success",
+          "lastError": null,
+          "lastSuccessAt": "2026-08-22 19:13:09.611123+05:30",
+          "consecutiveFailures": 0,
+          "hoursSinceSuccess": 25.9,
+          "expectedEveryHours": 1,
+          "advice": "It last succeeded 26 hours ago, and is expected at least every 1. Check the worker is running."
+        },
+        {
+          "name": "session-prune",
+          "description": "Remove sessions expired or revoked beyond the tenant's configured session_and_access_log retention. Seven days was hard-coded here once; CERT-In requires 180, and the window is a retention policy now, not a constant.",
+          "cron": "0 3 * * *",
+          "state": "never_run",
+          "lastStartedAt": null,
+          "lastFinishedAt": null,
+          "lastOutcome": null,
+          "lastError": null,
+          "lastSuccessAt": null,
+          "consecutiveFailures": 0,
+          "hoursSinceSuccess": null,
+          "expectedEveryHours": 36,
+          "advice": "This job has never run for this tenant. Check that the worker process is started (pnpm worker) — nothing it does has ever happened."
+        }
+      ],
+      "attention": [
+        "lot-expiry-notices",
+        "monitoring-due",
+        "entitlement-revalidation",
+        "alert-sweep",
+        "session-prune"
+      ],
+      "drills": [
+        {
+          "id": "97592625-9da6-4e84-aa8d-b1402b87b1bd",
+          "startedAt": "2026-08-22 21:49:42.840539+05:30",
+          "finishedAt": "2026-08-22 21:49:42.840539+05:30",
+          "source": "2026-08-22T16-19-41-045Z",
+          "outcome": "incomplete",
+          "checks": [
+            {
+              "ok": true,
+              "name": "a tenant exists in the restored database",
+              "detail": "meridian"
+            },
+            {
+              "ok": true,
+              "name": "audit_ledger row count matches",
+              "detail": "43 → 43"
+            },
+            {
+              "ok": true,
+              "name": "certificate_issues row count matches",
+              "detail": "2 → 2"
+            },
+            {
+              "ok": true,
+              "name": "signatures row count matches",
+              "detail": "0 → 0"
+            },
+            {
+              "ok": true,
+              "name": "users row count matches",
+              "detail": "9 → 9"
+            },
+            {
+              "ok": true,
+              "name": "lots row count matches",
+              "detail": "3 → 3"
+            },
+            {
+              "ok": true,
+              "name": "audit_ledger is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "key_custody_events is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "audit_key_generations is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "PUBLIC can execute no lotmark function",
+              "detail": "0 function(s)"
+            },
+            {
+              "ok": true,
+              "name": "row-level security is enabled and FORCED on every table",
+              "detail": "0 table(s) without it"
+            },
+            {
+              "ok": true,
+              "name": "the audit chain verifies in the restored database",
+              "detail": "43 entries"
+            },
+            {
+              "ok": true,
+              "name": "stored certificates match their recorded digest",
+              "detail": "not run — the database holds no rendered certificate",
+              "skipped": true
+            },
+            {
+              "ok": true,
+              "name": "a certificate re-renders byte-identically",
+              "detail": "not run — no issue was produced by lotmark-pdf-3",
+              "skipped": true
+            },
+            {
+              "ok": true,
+              "name": "the backup set carries key material alongside the database",
+              "detail": "2 file(s) in .keys for 1 registered key(s)"
+            }
+          ],
+          "notes": "Restored into lotmark_drill and verified. Key material and documents were checked from the backup set, not the dump. 2 check(s) could not run."
+        },
+        {
+          "id": "9f8e007d-3b83-414c-ad81-bea06bba1020",
+          "startedAt": "2026-08-22 20:49:31.213069+05:30",
+          "finishedAt": "2026-08-22 20:49:31.213069+05:30",
+          "source": "2026-08-22T15-19-28-363Z",
+          "outcome": "incomplete",
+          "checks": [
+            {
+              "ok": true,
+              "name": "a tenant exists in the restored database",
+              "detail": "meridian"
+            },
+            {
+              "ok": true,
+              "name": "audit_ledger row count matches",
+              "detail": "2 → 2"
+            },
+            {
+              "ok": true,
+              "name": "certificate_issues row count matches",
+              "detail": "2 → 2"
+            },
+            {
+              "ok": true,
+              "name": "signatures row count matches",
+              "detail": "0 → 0"
+            },
+            {
+              "ok": true,
+              "name": "users row count matches",
+              "detail": "9 → 9"
+            },
+            {
+              "ok": true,
+              "name": "lots row count matches",
+              "detail": "3 → 3"
+            },
+            {
+              "ok": true,
+              "name": "audit_ledger is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "key_custody_events is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "audit_key_generations is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "PUBLIC can execute no lotmark function",
+              "detail": "0 function(s)"
+            },
+            {
+              "ok": true,
+              "name": "row-level security is enabled and FORCED on every table",
+              "detail": "0 table(s) without it"
+            },
+            {
+              "ok": true,
+              "name": "the audit chain verifies in the restored database",
+              "detail": "2 entries"
+            },
+            {
+              "ok": true,
+              "name": "stored certificates match their recorded digest",
+              "detail": "not run — the database holds no rendered certificate",
+              "skipped": true
+            },
+            {
+              "ok": true,
+              "name": "a certificate re-renders byte-identically",
+              "detail": "not run — no issue was produced by lotmark-pdf-3",
+              "skipped": true
+            },
+            {
+              "ok": true,
+              "name": "the backup set carries key material alongside the database",
+              "detail": "1 file(s) in .keys for 0 registered key(s)"
+            }
+          ],
+          "notes": "Restored into lotmark_drill and verified. Key material and documents were checked from the backup set, not the dump. 2 check(s) could not run."
+        },
+        {
+          "id": "303f794d-ab2e-4376-9b2e-2a4965e34088",
+          "startedAt": "2026-08-22 18:35:39.840811+05:30",
+          "finishedAt": "2026-08-22 18:35:39.840811+05:30",
+          "source": "2026-08-22T13-05-38-823Z",
+          "outcome": "incomplete",
+          "checks": [
+            {
+              "ok": true,
+              "name": "a tenant exists in the restored database",
+              "detail": "meridian"
+            },
+            {
+              "ok": true,
+              "name": "audit_ledger row count matches",
+              "detail": "2 → 2"
+            },
+            {
+              "ok": true,
+              "name": "certificate_issues row count matches",
+              "detail": "2 → 2"
+            },
+            {
+              "ok": true,
+              "name": "signatures row count matches",
+              "detail": "0 → 0"
+            },
+            {
+              "ok": true,
+              "name": "users row count matches",
+              "detail": "9 → 9"
+            },
+            {
+              "ok": true,
+              "name": "lots row count matches",
+              "detail": "3 → 3"
+            },
+            {
+              "ok": true,
+              "name": "audit_ledger is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "key_custody_events is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "audit_key_generations is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "PUBLIC can execute no lotmark function",
+              "detail": "0 function(s)"
+            },
+            {
+              "ok": true,
+              "name": "row-level security is enabled and FORCED on every table",
+              "detail": "0 table(s) without it"
+            },
+            {
+              "ok": true,
+              "name": "the audit chain verifies in the restored database",
+              "detail": "2 entries"
+            },
+            {
+              "ok": true,
+              "name": "stored certificates match their recorded digest",
+              "detail": "not run — the database holds no rendered certificate",
+              "skipped": true
+            },
+            {
+              "ok": true,
+              "name": "a certificate re-renders byte-identically",
+              "detail": "not run — no issue was produced by lotmark-pdf-2",
+              "skipped": true
+            },
+            {
+              "ok": true,
+              "name": "the backup set carries key material alongside the database",
+              "detail": "1 file(s) in .keys for 0 registered key(s)"
+            }
+          ],
+          "notes": "Restored into lotmark_drill and verified. Key material and documents were checked from the backup set, not the dump. 2 check(s) could not run."
+        },
+        {
+          "id": "a5ddf0c8-5100-4d9e-92c0-1d6cebd82baa",
+          "startedAt": "2026-08-22 18:35:25.377758+05:30",
+          "finishedAt": "2026-08-22 18:35:25.377758+05:30",
+          "source": "2026-08-22T13-05-24-140Z",
+          "outcome": "incomplete",
+          "checks": [
+            {
+              "ok": true,
+              "name": "a tenant exists in the restored database",
+              "detail": "meridian"
+            },
+            {
+              "ok": true,
+              "name": "audit_ledger row count matches",
+              "detail": "2 → 2"
+            },
+            {
+              "ok": true,
+              "name": "certificate_issues row count matches",
+              "detail": "2 → 2"
+            },
+            {
+              "ok": true,
+              "name": "signatures row count matches",
+              "detail": "0 → 0"
+            },
+            {
+              "ok": true,
+              "name": "users row count matches",
+              "detail": "9 → 9"
+            },
+            {
+              "ok": true,
+              "name": "lots row count matches",
+              "detail": "3 → 3"
+            },
+            {
+              "ok": true,
+              "name": "audit_ledger is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "key_custody_events is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "audit_key_generations is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "PUBLIC can execute no lotmark function",
+              "detail": "0 function(s)"
+            },
+            {
+              "ok": true,
+              "name": "row-level security is enabled and FORCED on every table",
+              "detail": "0 table(s) without it"
+            },
+            {
+              "ok": true,
+              "name": "the audit chain verifies in the restored database",
+              "detail": "2 entries"
+            },
+            {
+              "ok": true,
+              "name": "stored certificates match their recorded digest",
+              "detail": "not run — the database holds no rendered certificate",
+              "skipped": true
+            },
+            {
+              "ok": true,
+              "name": "a certificate re-renders byte-identically",
+              "detail": "not run — no issue was produced by lotmark-pdf-2",
+              "skipped": true
+            },
+            {
+              "ok": true,
+              "name": "the backup set carries key material alongside the database",
+              "detail": "1 file(s) in .keys for 0 registered key(s)"
+            }
+          ],
+          "notes": "Restored into lotmark_drill and verified. Key material and documents were checked from the backup set, not the dump. 2 check(s) could not run."
+        },
+        {
+          "id": "d0a98941-45ad-4580-8f52-d9c21d1bb27f",
+          "startedAt": "2026-08-22 18:32:25.577902+05:30",
+          "finishedAt": "2026-08-22 18:32:25.577902+05:30",
+          "source": "2026-08-22T13-02-24-482Z",
+          "outcome": "incomplete",
+          "checks": [
+            {
+              "ok": true,
+              "name": "a tenant exists in the restored database",
+              "detail": "meridian"
+            },
+            {
+              "ok": true,
+              "name": "audit_ledger row count matches",
+              "detail": "2 → 2"
+            },
+            {
+              "ok": true,
+              "name": "certificate_issues row count matches",
+              "detail": "2 → 2"
+            },
+            {
+              "ok": true,
+              "name": "signatures row count matches",
+              "detail": "0 → 0"
+            },
+            {
+              "ok": true,
+              "name": "users row count matches",
+              "detail": "9 → 9"
+            },
+            {
+              "ok": true,
+              "name": "lots row count matches",
+              "detail": "3 → 3"
+            },
+            {
+              "ok": true,
+              "name": "audit_ledger is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "key_custody_events is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "audit_key_generations is append-only for the application role",
+              "detail": "INSERT,SELECT"
+            },
+            {
+              "ok": true,
+              "name": "PUBLIC can execute no lotmark function",
+              "detail": "0 function(s)"
+            },
+            {
+              "ok": true,
+              "name": "row-level security is enabled and FORCED on every table",
+              "detail": "0 table(s) without it"
+            },
+            {
+              "ok": true,
+              "name": "the audit chain verifies in the restored database",
+              "detail": "2 entries"
+            },
+            {
+              "ok": true,
+              "name": "stored certificates match their recorded digest",
+              "detail": "not run — the database holds no rendered certificate",
+              "skipped": true
+            },
+            {
+              "ok": true,
+              "name": "a certificate re-renders byte-identically",
+              "detail": "not run — no issue was produced by lotmark-pdf-2",
+              "skipped": true
+            },
+            {
+              "ok": true,
+              "name": "the backup set carries key material alongside the database",
+              "detail": "1 file(s) in .keys for 0 registered key(s)"
+            }
+          ],
+          "notes": "Restored into lotmark_drill and verified. Key material and documents were checked from the backup set, not the dump. 2 check(s) could not run."
+        }
+      ],
+      "limits": [
+        "These checks run inside the API, so they cannot detect the API being down.",
+        "Nothing pages anyone. A failing job is visible to whoever opens this page."
+      ]
+    }
+  },
+  "GET /conformance": {
+    "status": 200,
+    "body": {
+      "clauses": [
+        {
+          "clause": "21 CFR 11 §11.10(a)",
+          "requirements": [
+            {
+              "id": "REQ-SIG-ROLLBACK",
+              "clause": "21 CFR 11 §11.10(a)",
+              "statement": "A record that could not be signed is not retained as though it had been.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/services/signing.ts",
+                "apps/api/src/services/signing-refusal.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/signing-rollback.test.ts",
+                  "named": "no record behind"
+                }
+              ],
+              "note": "Found in testing: a refused signing used to COMMIT the unsigned record, because returning from inside the transaction resolves it. The refusal is still recorded, on a separate transaction.",
+              "evidence": null
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "21 CFR 11 §11.10(b)",
+          "requirements": [
+            {
+              "id": "REQ-COPIES",
+              "clause": "21 CFR 11 §11.10(b)",
+              "statement": "Accurate and complete copies of records can be produced in human-readable and electronic form.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/services/pdfa.ts",
+                "apps/api/src/services/icc.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/pdfa.test.ts",
+                  "named": "PDF/A"
+                }
+              ],
+              "note": "Built to PDF/A-2b and checked against the structural subset this repository can verify. NOT veraPDF-verified — there is no Java on this machine — and the gate says so rather than printing a pass it did not earn.",
+              "evidence": null
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "21 CFR 11 §11.10(c)",
+          "requirements": [
+            {
+              "id": "REQ-PROTECTION",
+              "clause": "21 CFR 11 §11.10(c)",
+              "statement": "Records are protected to enable accurate retrieval throughout the retention period.",
+              "status": "partial",
+              "code": [
+                "apps/api/scripts/dr-drill.mts",
+                "packages/domain/src/retention.ts"
+              ],
+              "tests": [],
+              "live": "drills",
+              "note": "A rehearsed restore proves the backup, the keys, the documents and the PRIVILEGE POSTURE — a restore with --no-privileges matches every row count while leaving the ledger writable. What is NOT covered: off-site copies, and any retention period longer than this installation has existed.",
+              "evidence": {
+                "key": "drills",
+                "summary": "Last rehearsed restore 2026-08-22: incomplete",
+                "figures": {
+                  "lastDrill": "2026-08-22",
+                  "outcome": "incomplete"
+                },
+                "satisfied": false
+              }
+            }
+          ],
+          "status": "partial"
+        },
+        {
+          "clause": "21 CFR 11 §11.10(d)",
+          "requirements": [
+            {
+              "id": "REQ-ACCESS",
+              "clause": "21 CFR 11 §11.10(d)",
+              "statement": "System access is limited to authorised individuals.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/plugins/session.ts",
+                "packages/db/migrations/0004_row_level_security.sql"
+              ],
+              "tests": [
+                {
+                  "file": "packages/db/src/__tests__/rls.test.ts",
+                  "named": "tenant"
+                },
+                {
+                  "file": "packages/db/src/__tests__/holders.test.ts",
+                  "named": "own orders"
+                }
+              ],
+              "note": "Enforced at the database as well as the service: row-level security is FORCED, so a forgotten WHERE clause returns nothing rather than another organisation's data.",
+              "evidence": null
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "21 CFR 11 §11.10(e)",
+          "requirements": [
+            {
+              "id": "REQ-KEY-ROTATION",
+              "clause": "21 CFR 11 §11.10(e)",
+              "statement": "The integrity key can be changed without invalidating the history it already protects.",
+              "status": "enforced",
+              "code": [
+                "packages/db/migrations/0019_audit_key_generations.sql"
+              ],
+              "tests": [
+                {
+                  "file": "packages/db/src/__tests__/audit-rotation.test.ts",
+                  "named": "unbroken"
+                }
+              ],
+              "note": "A generation carries a COMMITMENT to its key rather than the key. Verification distinguishes \"no key held\" from \"chain broken\", because the two call for opposite responses.",
+              "evidence": null
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "21 CFR 11 §11.10(e) · ISO 17034 §8.4",
+          "requirements": [
+            {
+              "id": "REQ-AUDIT-TRAIL",
+              "clause": "21 CFR 11 §11.10(e) · ISO 17034 §8.4",
+              "statement": "A secure, computer-generated, time-stamped audit trail records operator entries and actions, and does not obscure previously recorded information.",
+              "status": "enforced",
+              "code": [
+                "packages/db/migrations/0002_audit_chain.sql",
+                "apps/api/src/services/audit.ts"
+              ],
+              "tests": [
+                {
+                  "file": "packages/db/src/__tests__/audit-chain.test.ts",
+                  "named": "altered entry"
+                },
+                {
+                  "file": "packages/db/src/__tests__/audit-chain.test.ts",
+                  "named": "append-only"
+                }
+              ],
+              "live": "chain",
+              "note": "Append-only at two layers — privilege and trigger — and hash-chained under a key held OUTSIDE the database, so somebody with SQL access cannot recompute it.",
+              "evidence": {
+                "key": "chain",
+                "summary": "Intact across 82 entries, generation(s) v1",
+                "figures": {
+                  "entries": 82,
+                  "generations": "v1",
+                  "keysMissing": null
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "21 CFR 11 §11.10(f)",
+          "requirements": [
+            {
+              "id": "REQ-SEQUENCING",
+              "clause": "21 CFR 11 §11.10(f)",
+              "statement": "Operational system checks enforce permitted sequencing of steps and events, and the permitted sequence is the tenant’s to declare.",
+              "status": "enforced",
+              "code": [
+                "packages/domain/src/state-machines.ts",
+                "packages/domain/src/config/workflows.ts",
+                "packages/domain/src/config/guards.ts",
+                "apps/api/src/services/workflows.ts"
+              ],
+              "tests": [
+                {
+                  "file": "packages/domain/src/__tests__/workflows.test.ts",
+                  "named": "round trip is lossless"
+                },
+                {
+                  "file": "apps/api/src/__tests__/config-admin.test.ts",
+                  "named": "refuses removing a state records are sitting in"
+                },
+                {
+                  "file": "packages/domain/src/__tests__/guards.test.ts",
+                  "named": "reads nothing but the facts it was handed"
+                },
+                {
+                  "file": "apps/api/src/__tests__/workflow-ceremony.test.ts",
+                  "named": "refuses the move when the condition does not hold"
+                }
+              ],
+              "note": "Every lifecycle is an explicit transition table, and the table now comes from the ACTIVE configuration with the code machine as the fallback. One machine governs every record of an entity at a time, so publication refuses a change that would leave records in a state the new machine does not have. NOT yet extensible for studies: `studies.state` carries a CHECK listing its two states, and publication refuses a third rather than letting the INSERT fail. A transition’s `requiresSignature`, `signatureMeanings` and `systemInitiated` are ENFORCED: a move a tenant marked as signed is refused without one, and a refused signing rolls the move back rather than leaving it unsigned. Configuration can only ADD a signature — `ALWAYS_SIGNED` is a floor publication refuses to lower, whereas `requiresReason` is a DEFAULT a tenant may waive, and is enforced where it stands. `guards` are evaluated too: a small language with no execution, reading only a facts object the route builds — not the database, not other records, not the clock, not the actor — and failing CLOSED, since the safe reading of a rule nobody can apply is that the move is not allowed. Every guard is parsed and checked against the entity’s vocabulary at publication, so a broken one is a sentence at review rather than a refusal at the move.",
+              "evidence": null
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "21 CFR 11 §11.10(g)",
+          "requirements": [
+            {
+              "id": "REQ-AUTHORITY",
+              "clause": "21 CFR 11 §11.10(g)",
+              "statement": "Authority checks ensure only authorised individuals use the system, sign a record, or perform the operation at hand.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/services/guard.ts",
+                "packages/domain/src/sod.ts",
+                "apps/api/src/services/sod.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/guard.test.ts",
+                  "named": "segregation"
+                },
+                {
+                  "file": "apps/api/src/__tests__/sod.test.ts",
+                  "named": "turns a rule ON when the tenant says so"
+                }
+              ],
+              "live": "segregation",
+              "note": "The decision point is called by the SERVICE, never by route middleware, so a job, a CLI or a future mobile API reaches the same check. Segregation of duties is part of it: the rules live in code because they carry the conformance argument, and whether each is ENABLED is the tenant’s — a signed, audited configuration change that now takes effect, having been read by nothing until this. Two rules are declared and NOT enforced, and say so in the register: the refund threshold, because refunds are not modelled at all, and lot-creator-may-not-release, because the only path that releases a lot creates it in the same request so the rule could only ever refuse every release.",
+              "evidence": {
+                "key": "segregation",
+                "summary": "4 of 6 configured rule(s) on; 2 declared without an enforceable subject",
+                "figures": {
+                  "configured": 6,
+                  "enabled": 4,
+                  "enforceable": 4,
+                  "declaredOnly": 2
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "21 CFR 11 §11.200(a)(1)",
+          "requirements": [
+            {
+              "id": "REQ-SIG-COMPONENTS",
+              "clause": "21 CFR 11 §11.200(a)(1)",
+              "statement": "The first signing of a session uses both identification components; subsequent signings in that session may use one.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/services/sessions.ts",
+                "apps/api/src/services/signing.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/signing-rollback.test.ts",
+                  "named": "step-up"
+                }
+              ],
+              "evidence": null
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "21 CFR 11 §11.30",
+          "requirements": [
+            {
+              "id": "REQ-KEY-CUSTODY",
+              "clause": "21 CFR 11 §11.30",
+              "statement": "Signing keys are held so that a compromise of the records does not forge them.",
+              "status": "partial",
+              "code": [
+                "apps/api/src/services/custody.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/custody.test.ts",
+                  "named": "custody"
+                }
+              ],
+              "live": "custody",
+              "note": "The key never enters the database. Custody classes dev_file, env and keychain work; kms and hsm are declared and NOT implemented, and refuse to construct. The class is printed on every certificate, so it cannot overclaim. Production refuses to start on a non-production class.",
+              "evidence": {
+                "key": "custody",
+                "summary": "1 active key(s), custody dev_file",
+                "figures": {
+                  "keys": 1,
+                  "classes": "dev_file"
+                },
+                "satisfied": false
+              }
+            }
+          ],
+          "status": "partial"
+        },
+        {
+          "clause": "21 CFR 11 §11.300(b)",
+          "requirements": [
+            {
+              "id": "REQ-CREDENTIAL-ISSUANCE",
+              "clause": "21 CFR 11 §11.300(b)",
+              "statement": "A password issued to somebody by an administrator is an enrolment credential, not a standing one: the account must replace it before it can act.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/plugins/session.ts",
+                "apps/api/src/routes/auth.ts",
+                "packages/db/migrations/0024_password_change.sql"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/password-change.test.ts",
+                  "named": "refused BEFORE the permission check"
+                },
+                {
+                  "file": "apps/api/src/__tests__/password-change.test.ts",
+                  "named": "has not passed the second factor"
+                }
+              ],
+              "live": "credentials",
+              "note": "The gate is in requireSession, beside the second-factor gate and after it — so a route added tomorrow cannot forget it, and so the person replacing the credential is the one holding the authenticator. Not yet PERIODIC: §11.300(b) also contemplates password aging, and nothing here expires a password the holder chose.",
+              "evidence": {
+                "key": "credentials",
+                "summary": "no account is holding an issued password (9 active)",
+                "figures": {
+                  "accounts": 9,
+                  "owing": 0,
+                  "selfChosen": 0
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "21 CFR 11 §11.50",
+          "requirements": [
+            {
+              "id": "REQ-SIG-MANIFEST",
+              "clause": "21 CFR 11 §11.50",
+              "statement": "A signed record shows the signer, the date and time, and the MEANING of the signature.",
+              "status": "enforced",
+              "code": [
+                "packages/domain/src/signatures.ts",
+                "apps/web/src/components/SignAction.tsx"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/guard.test.ts",
+                  "named": "signature"
+                }
+              ],
+              "live": "signatures",
+              "note": "The meaning is chosen by the signer and never inferred from context.",
+              "evidence": {
+                "key": "signatures",
+                "summary": "0 of 0 signature(s) carry a cryptographic binding",
+                "figures": {
+                  "total": 0,
+                  "bound": 0,
+                  "distinctMeanings": 0
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "21 CFR 11 §11.70",
+          "requirements": [
+            {
+              "id": "REQ-SIG-BINDING",
+              "clause": "21 CFR 11 §11.70",
+              "statement": "Signatures are linked to their records so they cannot be transferred to another record by ordinary means.",
+              "status": "enforced",
+              "code": [
+                "packages/security/src/signing.ts",
+                "apps/api/src/services/signing.ts"
+              ],
+              "tests": [
+                {
+                  "file": "packages/security/src/__tests__/signing.test.ts",
+                  "named": "excision resistance"
+                },
+                {
+                  "file": "packages/security/src/__tests__/signing.test.ts",
+                  "named": "a verifier cannot forge"
+                }
+              ],
+              "note": "Ed25519 over a canonical payload. Asymmetric on purpose: an assessor can verify with the public key alone, holding nothing that could produce a signature. Every HMAC verifier is also a forger.",
+              "evidence": null
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "DPDP Act 2023 · CERT-In 2022",
+          "requirements": [
+            {
+              "id": "REQ-RETENTION",
+              "clause": "DPDP Act 2023 · CERT-In 2022",
+              "statement": "Records are retained for their statutory minimum, and an erasure request cannot remove a record still needed to support a live certificate.",
+              "status": "partial",
+              "code": [
+                "packages/domain/src/retention.ts",
+                "apps/api/src/services/retention.ts",
+                "apps/api/src/jobs/notices.ts"
+              ],
+              "tests": [
+                {
+                  "file": "packages/domain/src/__tests__/invariants.test.ts",
+                  "named": "retention"
+                },
+                {
+                  "file": "apps/api/src/__tests__/retention.test.ts",
+                  "named": "CERT-In"
+                },
+                {
+                  "file": "apps/api/src/__tests__/config-admin.test.ts",
+                  "named": "below the statutory minimum"
+                }
+              ],
+              "live": "retention",
+              "note": "The statutory floor is now enforced in BOTH places the schema always claimed: publication refuses a period below it, naming the regime, and the runtime takes the greater of the stored period and the floor. CORRECTION to what this note used to say — it claimed the schedule was \"enforced where records are deleted\", and the only deletion path in the product removed sessions after SEVEN days against the 180 CERT-In 2022 requires of an access log. That is fixed and tested. Still PARTIAL: there is no erasure-request workflow, so the refusal path has never been exercised by a real request, and nothing actively erases customer contact data once no order is open — DPDP minimisation is declared and not performed.",
+              "evidence": {
+                "key": "retention",
+                "summary": "9 class(es) scheduled, 0 with a tenant period",
+                "figures": {
+                  "classes": 9,
+                  "tenantSet": 0,
+                  "belowFloor": 0,
+                  "shortestDays": 0
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "partial"
+        },
+        {
+          "clause": "GAMP 5 · 21 CFR 11 §11.10(a)",
+          "requirements": [
+            {
+              "id": "REQ-CONFIG-VERSION",
+              "clause": "GAMP 5 · 21 CFR 11 §11.10(a)",
+              "statement": "A change to what the system does is versioned, reviewed, and attributable, and records state which version they were created under.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/services/config-admin.ts",
+                "packages/domain/src/config/registry.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/config-admin.test.ts",
+                  "named": "lock everybody out"
+                }
+              ],
+              "live": "config",
+              "note": "A published version is never edited. Security and behaviour changes require a signature; presentation changes are audited but unsigned, because demanding one to move a field trains people to sign without reading.",
+              "evidence": {
+                "key": "config",
+                "summary": "1 configuration version(s), 0 signed, 1 active",
+                "figures": {
+                  "versions": 1,
+                  "active": 1,
+                  "signed": 0
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "GAMP 5 · interface specification",
+          "requirements": [
+            {
+              "id": "REQ-API-DESCRIPTION",
+              "clause": "GAMP 5 · interface specification",
+              "statement": "The published interface description matches the interface.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/http/operations.ts",
+                "apps/api/src/http/openapi.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/openapi.test.ts",
+                  "named": "undocumented route"
+                }
+              ],
+              "evidence": null
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "GAMP 5 · operational monitoring",
+          "requirements": [
+            {
+              "id": "REQ-JOB-HEALTH",
+              "clause": "GAMP 5 · operational monitoring",
+              "statement": "Unattended work that fails is visible, and a job that has never run is distinguishable from one with nothing to do.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/services/ops.ts",
+                "packages/db/migrations/0021_ops_observability.sql"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/ops.test.ts",
+                  "named": "never run"
+                }
+              ],
+              "live": "jobs",
+              "note": "Nothing pages anyone, and these checks run inside the API so they cannot detect the API being down. Both stated on the Operations page.",
+              "evidence": {
+                "key": "jobs",
+                "summary": "1 job(s) have run; 0 did not last succeed",
+                "figures": {
+                  "reporting": 1,
+                  "unhealthy": 0
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "ISO 17034 §6.3",
+          "requirements": [
+            {
+              "id": "REQ-COMPETENCE",
+              "clause": "ISO 17034 §6.3",
+              "statement": "Personnel performing a reference-material activity are authorised for that activity, and the authorisation is valid on the day they perform it.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/services/guard.ts",
+                "packages/domain/src/permissions.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/guard.test.ts",
+                  "named": "competence"
+                }
+              ],
+              "live": "competence",
+              "note": "Holding the permission is necessary and not sufficient. The basis relied on is COPIED onto the signature, so editing a competence record later cannot rewrite whether a past act was authorised.",
+              "evidence": {
+                "key": "competence",
+                "summary": "8 authorisation(s) valid today, across 4 person(s)",
+                "figures": {
+                  "live": 8,
+                  "total": 9,
+                  "people": 4
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "ISO 17034 §7.10 · ISO Guide 35",
+          "requirements": [
+            {
+              "id": "REQ-UNCERTAINTY",
+              "clause": "ISO 17034 §7.10 · ISO Guide 35",
+              "statement": "The assigned value carries an expanded uncertainty combining every contribution, and is reproducible from the raw measurements.",
+              "status": "enforced",
+              "code": [
+                "packages/stats/src/budget.ts",
+                "apps/api/src/routes/console.ts"
+              ],
+              "tests": [
+                {
+                  "file": "packages/stats/src/__tests__/golden.test.ts",
+                  "named": "uncertainty budget reproduces the prototype"
+                }
+              ],
+              "live": "uncertainty",
+              "note": "Recomputed from raw results on every request. Nothing reads a stored summary and no screen offers a field to type a value into.",
+              "evidence": {
+                "key": "uncertainty",
+                "summary": "2 of 2 authorised value(s) carry an expanded uncertainty",
+                "figures": {
+                  "authorised": 2,
+                  "withUncertainty": 2
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "ISO 17034 §7.11",
+          "requirements": [
+            {
+              "id": "REQ-WITHDRAWAL",
+              "clause": "ISO 17034 §7.11",
+              "statement": "When a certified value is found to be wrong, every holder of the affected certificate is identified and told.",
+              "status": "partial",
+              "code": [
+                "apps/api/src/routes/certificates.ts",
+                "apps/api/src/services/certificate-issue.ts"
+              ],
+              "tests": [
+                {
+                  "file": "packages/db/src/__tests__/holders.test.ts",
+                  "named": "holder list"
+                }
+              ],
+              "live": "holders",
+              "note": "IDENTIFICATION is enforced. The holder set is order lines UNION self-declared vault holdings, because a vial received as a sample or a replacement has no order line, and holders nobody can be addressed at are reported SEPARATELY and never counted as notified. TELLING is not. This said `enforced` on the strength of the first half of its own sentence. Withdrawal writes a row in `notifications` addressed to a user at the holding organisation, and that is the whole of the delivery: there is no email, SMS or webhook path anywhere in this codebase, so a holder who does not sign in is never told. Nothing escalates an unread notice either, though `read_at` and `acknowledged_at` are recorded and would support it. For a §7.11 recall that gap is the difference between informing a customer and filing a note that they were informed.",
+              "evidence": {
+                "key": "holders",
+                "summary": "No reissue or withdrawal has been notified yet",
+                "figures": {
+                  "notices": 0,
+                  "unreachable": 0
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "partial"
+        },
+        {
+          "clause": "ISO 17034 §7.11 · 21 CFR 11 §11.10(b)",
+          "requirements": [
+            {
+              "id": "REQ-REPRODUCIBLE",
+              "clause": "ISO 17034 §7.11 · 21 CFR 11 §11.10(b)",
+              "statement": "A certificate can be reproduced exactly from the record of what was issued.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/services/certificate-pdf.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/certificate-pdf.test.ts",
+                  "named": "byte-identical"
+                },
+                {
+                  "file": "apps/api/src/__tests__/certificate-pdf.test.ts",
+                  "named": "wall clock"
+                }
+              ],
+              "note": "Dates come from the issue rather than the clock, and the document ID from the content digest. Re-rendering an issue made under an EARLIER renderer version legitimately differs; those are covered by the stored digest instead.",
+              "evidence": null
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "ISO 17034 §7.11 · ISO Guide 31",
+          "requirements": [
+            {
+              "id": "REQ-CERTIFICATE",
+              "clause": "ISO 17034 §7.11 · ISO Guide 31",
+              "statement": "The certificate states the assigned value, its uncertainty, the coverage factor, expiry, storage and who authorised it.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/services/certificate-pdf.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/certificate-pdf.test.ts",
+                  "named": "certified figure"
+                }
+              ],
+              "live": "certificates",
+              "evidence": {
+                "key": "certificates",
+                "summary": "2 certificate(s), 2 issue(s), 0 withdrawn",
+                "figures": {
+                  "certificates": 2,
+                  "issues": 2,
+                  "rendered": 0,
+                  "withdrawn": 0
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "ISO 17034 §7.12",
+          "requirements": [
+            {
+              "id": "REQ-STORAGE",
+              "clause": "ISO 17034 §7.12",
+              "statement": "Storage and transport conditions are specified and departures are acted on.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/routes/commerce.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/commerce.test.ts",
+                  "named": "cold chain"
+                }
+              ],
+              "live": "coldchain",
+              "note": "A logger reading outside the shipment class raises a CAPA automatically.",
+              "evidence": {
+                "key": "coldchain",
+                "summary": "2 shipment(s), 13 logger reading(s) held as data",
+                "figures": {
+                  "shipments": 2,
+                  "readings": 13
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "ISO 17034 §7.4",
+          "requirements": [
+            {
+              "id": "REQ-SUBCONTRACT",
+              "clause": "ISO 17034 §7.4",
+              "statement": "Work that may not be subcontracted is identified, and subcontracted work is controlled.",
+              "status": "declared",
+              "code": [
+                "packages/db/src/schema/compliance.ts"
+              ],
+              "tests": [],
+              "note": "DECLARED AND NOT ENFORCED. The schema comment says a forbidden-activity list \"lives in @lotmark/domain and is enforced at the service boundary\". It does not exist — only the subcontractor:manage permission does. This is recorded as a gap rather than described as a control.",
+              "evidence": null
+            }
+          ],
+          "status": "declared"
+        },
+        {
+          "clause": "ISO 17034 §7.7 · ISO Guide 35",
+          "requirements": [
+            {
+              "id": "REQ-HOMOGENEITY",
+              "clause": "ISO 17034 §7.7 · ISO Guide 35",
+              "statement": "Between-unit variation is assessed and contributes to the uncertainty budget.",
+              "status": "enforced",
+              "code": [
+                "packages/stats/src/homogeneity.ts"
+              ],
+              "tests": [
+                {
+                  "file": "packages/stats/src/__tests__/golden.test.ts",
+                  "named": "homogeneity"
+                }
+              ],
+              "live": "homogeneity",
+              "evidence": {
+                "key": "homogeneity",
+                "summary": "3 signed homogeneity studies of 4",
+                "figures": {
+                  "signed": 3,
+                  "total": 4
+                },
+                "satisfied": true
+              }
+            },
+            {
+              "id": "REQ-STABILITY",
+              "clause": "ISO 17034 §7.7 · ISO Guide 35",
+              "statement": "Stability over the shelf life is assessed and contributes to the uncertainty budget.",
+              "status": "enforced",
+              "code": [
+                "packages/stats/src/stability.ts"
+              ],
+              "tests": [
+                {
+                  "file": "packages/stats/src/__tests__/golden.test.ts",
+                  "named": "stability"
+                }
+              ],
+              "live": "stability",
+              "evidence": {
+                "key": "stability",
+                "summary": "3 signed stability studies of 3",
+                "figures": {
+                  "signed": 3,
+                  "total": 3
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "ISO 17034 §7.8",
+          "requirements": [
+            {
+              "id": "REQ-MONITORING",
+              "clause": "ISO 17034 §7.8",
+              "statement": "Stability is monitored after release, and an overdue check is acted on.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/jobs/notices.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/ops.test.ts",
+                  "named": "never run"
+                }
+              ],
+              "live": "monitoring",
+              "note": "A scheduled job raises a CAPA when monitoring falls overdue. Whether that job is running is itself reported — see REQ-JOB-HEALTH.",
+              "evidence": {
+                "key": "monitoring",
+                "summary": "0 monitoring point(s), 0 overdue",
+                "figures": {
+                  "points": 0,
+                  "overdue": 0
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "ISO 17034 §7.9 · ISO Guide 35",
+          "requirements": [
+            {
+              "id": "REQ-CHARACTERISATION",
+              "clause": "ISO 17034 §7.9 · ISO Guide 35",
+              "statement": "The property value is characterised, and the interlaboratory spread contributes to the uncertainty budget.",
+              "status": "enforced",
+              "code": [
+                "packages/stats/src/characterisation.ts"
+              ],
+              "tests": [
+                {
+                  "file": "packages/stats/src/__tests__/golden.test.ts",
+                  "named": "characterisation"
+                }
+              ],
+              "live": "characterisation",
+              "evidence": {
+                "key": "characterisation",
+                "summary": "2 signed characterisation studies of 3",
+                "figures": {
+                  "signed": 2,
+                  "total": 3
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        },
+        {
+          "clause": "ISO 17034 §8.7",
+          "requirements": [
+            {
+              "id": "REQ-CAPA",
+              "clause": "ISO 17034 §8.7",
+              "statement": "Nonconformities are recorded, investigated, corrected and checked for effect.",
+              "status": "enforced",
+              "code": [
+                "apps/api/src/routes/capa.ts",
+                "packages/domain/src/state-machines.ts"
+              ],
+              "tests": [
+                {
+                  "file": "apps/api/src/__tests__/workflow-ceremony.test.ts",
+                  "named": "refuses a CAPA move that does not state why"
+                },
+                {
+                  "file": "apps/web/src/lib/__tests__/capa.test.ts",
+                  "named": "close"
+                }
+              ],
+              "live": "capa",
+              "note": "The register cited only a CONSOLE test for this until an evidence check was tightened to reject that. The server-side rule an assessor cares about — a nonconformity cannot close without a recorded root cause and corrective action — is enforced in the route and is now what is cited.",
+              "evidence": {
+                "key": "capa",
+                "summary": "1 open of 1, 0 past due",
+                "figures": {
+                  "total": 1,
+                  "open": 1,
+                  "overdue": 0
+                },
+                "satisfied": true
+              }
+            }
+          ],
+          "status": "enforced"
+        }
+      ],
+      "summary": {
+        "clauses": 28,
+        "enforced": 23,
+        "weaker": 5
+      }
+    }
+  },
+  "GET /catalogue": {
+    "status": 200,
+    "body": {
+      "items": [
+        {
+          "id": "3e9768bb-8509-5fc4-b729-c4f5b04e437f",
+          "lot_code": "RMP-METF-0518",
+          "expiry_date": "2027-11-30",
+          "stock_units": 9,
+          "storage_condition": "2–8 °C",
+          "cold_chain": true,
+          "unit_price_minor": 500000,
+          "tierable": true,
+          "material_name": "Metformin Hydrochloride",
+          "cas_number": "1115-70-4",
+          "sku": "RM-METF",
+          "certificate_code": "CRT-2042",
+          "assigned_value": 99.41,
+          "expanded_uncertainty": 0.76,
+          "unit": "% w/w",
+          "property_name": "Assay (as is)"
+        },
+        {
+          "id": "3ccd033a-6a97-5310-b553-02fe1ad4dcfa",
+          "lot_code": "RMP-PARA-0421",
+          "expiry_date": "2028-03-31",
+          "stock_units": 48,
+          "storage_condition": "2–8 °C",
+          "cold_chain": true,
+          "unit_price_minor": 500000,
+          "tierable": true,
+          "material_name": "Paracetamol",
+          "cas_number": "103-90-2",
+          "sku": "RM-PARA",
+          "certificate_code": "CRT-2041",
+          "assigned_value": 99.62,
+          "expanded_uncertainty": 0.84,
+          "unit": "% w/w",
+          "property_name": "Assay (as is)"
+        }
+      ],
+      "canManage": true,
+      "canOrder": true
+    }
+  },
+  "GET /orders": {
+    "status": 200,
+    "body": {
+      "orders": [
+        {
+          "id": "f2b8ea62-fb15-507e-8ffb-9705635114fa",
+          "code": "ORD-3303",
+          "state": "placed",
+          "placed_on": "2026-08-12",
+          "total_minor": 500000,
+          "currency": "INR",
+          "courier": null,
+          "tracking_reference": null,
+          "organisation_name": "GenPharm Laboratories Pvt Ltd"
+        },
+        {
+          "id": "653be28d-9266-5d53-8c4f-2975ed9830a8",
+          "code": "ORD-3302",
+          "state": "dispatched",
+          "placed_on": "2026-05-19",
+          "total_minor": 500000,
+          "currency": "INR",
+          "courier": "Delhivery",
+          "tracking_reference": null,
+          "organisation_name": "State Drug Testing Laboratory, Vadodara"
+        },
+        {
+          "id": "459e1656-75e7-5bef-afbe-a4d1c56d2d88",
+          "code": "ORD-3301",
+          "state": "delivered",
+          "placed_on": "2026-03-04",
+          "total_minor": 1000000,
+          "currency": "INR",
+          "courier": "Blue Dart",
+          "tracking_reference": null,
+          "organisation_name": "GenPharm Laboratories Pvt Ltd"
+        }
+      ],
+      "lines": [
+        {
+          "order_id": "459e1656-75e7-5bef-afbe-a4d1c56d2d88",
+          "quantity": 2,
+          "unit_price_minor": 500000,
+          "lot_code": "RMP-PARA-0421",
+          "material_name": "Paracetamol"
+        },
+        {
+          "order_id": "653be28d-9266-5d53-8c4f-2975ed9830a8",
+          "quantity": 1,
+          "unit_price_minor": 500000,
+          "lot_code": "RMP-METF-0518",
+          "material_name": "Metformin Hydrochloride"
+        },
+        {
+          "order_id": "f2b8ea62-fb15-507e-8ffb-9705635114fa",
+          "quantity": 1,
+          "unit_price_minor": 500000,
+          "lot_code": "RMP-METF-0518",
+          "material_name": "Metformin Hydrochloride"
+        }
+      ],
+      "shipments": [
+        {
+          "id": "e09441e4-b485-5964-844d-cbb5d383983e",
+          "order_id": "459e1656-75e7-5bef-afbe-a4d1c56d2d88",
+          "code": "SHP-8830",
+          "temperature_class": "2-8",
+          "dispatched_at": null,
+          "delivered_at": null,
+          "readings": 5,
+          "excursions": 0
+        },
+        {
+          "id": "ec65023e-cd74-5216-8664-0ad5bbe152c7",
+          "order_id": "653be28d-9266-5d53-8c4f-2975ed9830a8",
+          "code": "SHP-8841",
+          "temperature_class": "2-8",
+          "dispatched_at": null,
+          "delivered_at": null,
+          "readings": 8,
+          "excursions": 3
+        }
+      ],
+      "machine": {
+        "name": "order",
+        "states": [
+          "placed",
+          "packed",
+          "dispatched",
+          "delivered",
+          "cancelled"
+        ],
+        "initial": "placed",
+        "terminal": [
+          "delivered",
+          "cancelled"
+        ],
+        "transitions": [
+          {
+            "from": "placed",
+            "to": "packed",
+            "requires": "order:advance",
+            "action": "Order packed",
+            "requiresSignature": false,
+            "signatureMeanings": [],
+            "requiresReason": false,
+            "guards": []
+          },
+          {
+            "from": "packed",
+            "to": "dispatched",
+            "requires": "order:advance",
+            "action": "Order dispatched",
+            "requiresSignature": false,
+            "signatureMeanings": [],
+            "requiresReason": false,
+            "guards": []
+          },
+          {
+            "from": "dispatched",
+            "to": "delivered",
+            "requires": "order:advance",
+            "action": "Order delivered",
+            "requiresSignature": false,
+            "signatureMeanings": [],
+            "requiresReason": false,
+            "guards": []
+          },
+          {
+            "from": "placed",
+            "to": "cancelled",
+            "requires": "order:advance",
+            "action": "Order cancelled",
+            "requiresSignature": false,
+            "signatureMeanings": [],
+            "requiresReason": true,
+            "guards": []
+          },
+          {
+            "from": "packed",
+            "to": "cancelled",
+            "requires": "order:advance",
+            "action": "Order cancelled",
+            "requiresSignature": false,
+            "signatureMeanings": [],
+            "requiresReason": true,
+            "guards": []
+          }
+        ]
+      },
+      "scope": "all",
+      "canAdvance": true,
+      "transitions": [
+        {
+          "from": "placed",
+          "to": "packed",
+          "action": "Order packed"
+        },
+        {
+          "from": "packed",
+          "to": "dispatched",
+          "action": "Order dispatched"
+        },
+        {
+          "from": "dispatched",
+          "to": "delivered",
+          "action": "Order delivered"
+        },
+        {
+          "from": "placed",
+          "to": "cancelled",
+          "action": "Order cancelled"
+        },
+        {
+          "from": "packed",
+          "to": "cancelled",
+          "action": "Order cancelled"
+        }
+      ]
+    }
+  },
+  "GET /entitlements": {
+    "status": 200,
+    "body": {
+      "claims": [
+        {
+          "id": "c4a7ddcf-bc74-44b2-b361-655b2f95317b",
+          "code": "ENT-124",
+          "state": "under_review",
+          "raised_on": "2026-08-04",
+          "supporting_document": "FDCA Gujarat notification FDCA/GJ/2026/771",
+          "decision_note": null,
+          "decided_at": null,
+          "revalidation_due": null,
+          "raised_by": "3760a2e6-3b1b-5ead-8d9c-ab6c810d8ab4",
+          "organisation_name": "State Drug Testing Laboratory, Vadodara",
+          "raised_by_name": "Suresh Iyer"
+        }
+      ],
+      "canDecide": true,
+      "canClaim": true,
+      "tierHasNoPriceEffect": true
+    }
+  },
+  "GET /vault": {
+    "status": 200,
+    "body": {
+      "holdings": [
+        {
+          "id": "c49808de-1a81-4484-8ad6-be78be760edf",
+          "quantity": 1,
+          "storage_location": "Cold room A, shelf 1",
+          "source": "order",
+          "acquired_on": "2025-08-05",
+          "acquired_on_basis": "earliest_possible",
+          "lot_code": "RMP-PARA-0388",
+          "expiry_date": "2026-04-30",
+          "storage_condition": "2–8 °C",
+          "lot_state": "superseded",
+          "material_name": "Paracetamol",
+          "cas_number": "103-90-2",
+          "certificate_id": null,
+          "certificate_code": null,
+          "issue_number": null,
+          "withdrawn": null,
+          "verification_token": null,
+          "assigned_value": null,
+          "expanded_uncertainty": null,
+          "unit": null,
+          "property_name": null
+        },
+        {
+          "id": "31d30118-1b9e-4be3-9a4c-1b8651faaf3f",
+          "quantity": 2,
+          "storage_location": "Cold room A, shelf 3",
+          "source": "order",
+          "acquired_on": "2026-03-04",
+          "acquired_on_basis": "derived_from_order",
+          "lot_code": "RMP-PARA-0421",
+          "expiry_date": "2028-03-31",
+          "storage_condition": "2–8 °C",
+          "lot_state": "released",
+          "material_name": "Paracetamol",
+          "cas_number": "103-90-2",
+          "certificate_id": "0d48de81-0d8b-5420-ba8e-4de678cbc89f",
+          "certificate_code": "CRT-2041",
+          "issue_number": 1,
+          "withdrawn": false,
+          "verification_token": null,
+          "assigned_value": 99.62,
+          "expanded_uncertainty": 0.84,
+          "unit": "% w/w",
+          "property_name": "Assay (as is)"
+        }
+      ],
+      "organisation": "Certified Reference Materials Division",
+      "verifyOrigin": "http://localhost:5173"
+    }
+  },
+  "GET /admin/people": {
+    "status": 200,
+    "body": {
+      "users": [
+        {
+          "id": "ddace021-76e8-5281-96e7-14046979185c",
+          "code": "u-arjun",
+          "email": "arjun@producer.example",
+          "display_name": "Arjun Rao",
+          "deactivated_at": null,
+          "mfa_enrolled": true,
+          "organisation_id": "99c3d0bc-ec77-5ce1-a8c3-a90c6ddd4dc5",
+          "organisation_name": "Certified Reference Materials Division",
+          "organisation_kind": "producer"
+        },
+        {
+          "id": "143b37ab-96ee-5f42-b832-906d1ab600d2",
+          "code": "u-asha",
+          "email": "asha@producer.example",
+          "display_name": "Dr. Asha Pillai",
+          "deactivated_at": null,
+          "mfa_enrolled": true,
+          "organisation_id": "99c3d0bc-ec77-5ce1-a8c3-a90c6ddd4dc5",
+          "organisation_name": "Certified Reference Materials Division",
+          "organisation_kind": "producer"
+        },
+        {
+          "id": "3b9d7f38-2462-5cfe-9a50-ec8f2b7706b6",
+          "code": "u-meera",
+          "email": "meera@genpharm.example",
+          "display_name": "Dr. Meera Raghavan",
+          "deactivated_at": null,
+          "mfa_enrolled": true,
+          "organisation_id": "b3013a2b-bd92-5ce5-beae-7ee49174ddb1",
+          "organisation_name": "GenPharm Laboratories Pvt Ltd",
+          "organisation_kind": "customer"
+        },
+        {
+          "id": "26588c63-c760-57ae-b23c-ad69dd570619",
+          "code": "u-neha",
+          "email": "neha@producer.example",
+          "display_name": "Neha Kulkarni",
+          "deactivated_at": null,
+          "mfa_enrolled": true,
+          "organisation_id": "99c3d0bc-ec77-5ce1-a8c3-a90c6ddd4dc5",
+          "organisation_name": "Certified Reference Materials Division",
+          "organisation_kind": "producer"
+        },
+        {
+          "id": "c56153c2-dcb3-5bde-8af9-ba11ed44787f",
+          "code": "u-ravi",
+          "email": "ravi@producer.example",
+          "display_name": "Ravi Menon",
+          "deactivated_at": null,
+          "mfa_enrolled": true,
+          "organisation_id": "99c3d0bc-ec77-5ce1-a8c3-a90c6ddd4dc5",
+          "organisation_name": "Certified Reference Materials Division",
+          "organisation_kind": "producer"
+        },
+        {
+          "id": "6e389175-e302-52c2-9c1e-b8c559e91fe7",
+          "code": "u-sunil",
+          "email": "sunil@producer.example",
+          "display_name": "Sunil Bhatt",
+          "deactivated_at": null,
+          "mfa_enrolled": true,
+          "organisation_id": "99c3d0bc-ec77-5ce1-a8c3-a90c6ddd4dc5",
+          "organisation_name": "Certified Reference Materials Division",
+          "organisation_kind": "producer"
+        },
+        {
+          "id": "3760a2e6-3b1b-5ead-8d9c-ab6c810d8ab4",
+          "code": "u-suresh",
+          "email": "suresh@sdtl.gov.example",
+          "display_name": "Suresh Iyer",
+          "deactivated_at": null,
+          "mfa_enrolled": true,
+          "organisation_id": "1b2cba26-3fc9-5585-ae50-5919cc463906",
+          "organisation_name": "State Drug Testing Laboratory, Vadodara",
+          "organisation_kind": "customer"
+        },
+        {
+          "id": "1789ab9d-979c-5dcb-961b-05cc02d6e13c",
+          "code": "u-admin",
+          "email": "admin@producer.example",
+          "display_name": "Tenant Administrator",
+          "deactivated_at": null,
+          "mfa_enrolled": true,
+          "organisation_id": "99c3d0bc-ec77-5ce1-a8c3-a90c6ddd4dc5",
+          "organisation_name": "Certified Reference Materials Division",
+          "organisation_kind": "producer"
+        },
+        {
+          "id": "2e5cd5b4-99e2-5053-a0cc-e49d0ada8712",
+          "code": "u-vikram",
+          "email": "vikram@producer.example",
+          "display_name": "Vikram Shetty",
+          "deactivated_at": null,
+          "mfa_enrolled": true,
+          "organisation_id": "99c3d0bc-ec77-5ce1-a8c3-a90c6ddd4dc5",
+          "organisation_name": "Certified Reference Materials Division",
+          "organisation_kind": "producer"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "f70454a0-6451-423f-9600-79aa6eb762f5",
+          "user_id": "c56153c2-dcb3-5bde-8af9-ba11ed44787f",
+          "role_key": "scientist",
+          "team_id": "fa59bbb5-ce47-592a-87b1-1ee2f3b992f0",
+          "valid_from": null,
+          "valid_to": null,
+          "granted_reason": "Initial provisioning",
+          "team_name": "Organics Section"
+        },
+        {
+          "id": "7b8f1507-b901-446c-a16e-47ed213f3f23",
+          "user_id": "6e389175-e302-52c2-9c1e-b8c559e91fe7",
+          "role_key": "prodlead",
+          "team_id": "fa59bbb5-ce47-592a-87b1-1ee2f3b992f0",
+          "valid_from": null,
+          "valid_to": null,
+          "granted_reason": "Initial provisioning",
+          "team_name": "Organics Section"
+        },
+        {
+          "id": "fdc500e6-6f90-458c-a7fe-5ead5ae1327c",
+          "user_id": "143b37ab-96ee-5f42-b832-906d1ab600d2",
+          "role_key": "techmgr",
+          "team_id": "fa59bbb5-ce47-592a-87b1-1ee2f3b992f0",
+          "valid_from": null,
+          "valid_to": null,
+          "granted_reason": "Initial provisioning",
+          "team_name": "Organics Section"
+        },
+        {
+          "id": "d8857be7-5b83-4a61-8f7e-3f98896bd431",
+          "user_id": "26588c63-c760-57ae-b23c-ad69dd570619",
+          "role_key": "quality",
+          "team_id": null,
+          "valid_from": null,
+          "valid_to": null,
+          "granted_reason": "Initial provisioning",
+          "team_name": null
+        },
+        {
+          "id": "a27f43c7-a7ce-44ac-bc1e-6af789138413",
+          "user_id": "ddace021-76e8-5281-96e7-14046979185c",
+          "role_key": "commercial",
+          "team_id": null,
+          "valid_from": null,
+          "valid_to": null,
+          "granted_reason": "Initial provisioning",
+          "team_name": null
+        },
+        {
+          "id": "a4b38d3d-cb46-467e-8d99-202253027de7",
+          "user_id": "2e5cd5b4-99e2-5053-a0cc-e49d0ada8712",
+          "role_key": "dispatch",
+          "team_id": null,
+          "valid_from": null,
+          "valid_to": null,
+          "granted_reason": "Initial provisioning",
+          "team_name": null
+        },
+        {
+          "id": "fa5da4cf-7ff9-44fa-b74b-c08e4ac6cb57",
+          "user_id": "1789ab9d-979c-5dcb-961b-05cc02d6e13c",
+          "role_key": "tenantadmin",
+          "team_id": null,
+          "valid_from": null,
+          "valid_to": null,
+          "granted_reason": "Initial provisioning",
+          "team_name": null
+        },
+        {
+          "id": "91629179-e5ab-49eb-b946-bf6c7b80c0c9",
+          "user_id": "3b9d7f38-2462-5cfe-9a50-ec8f2b7706b6",
+          "role_key": "labqm",
+          "team_id": null,
+          "valid_from": null,
+          "valid_to": null,
+          "granted_reason": "Initial provisioning",
+          "team_name": null
+        },
+        {
+          "id": "5b091291-3649-4f9f-8427-d8702e0a95ca",
+          "user_id": "3760a2e6-3b1b-5ead-8d9c-ab6c810d8ab4",
+          "role_key": "labbuyer",
+          "team_id": null,
+          "valid_from": null,
+          "valid_to": null,
+          "granted_reason": "Initial provisioning",
+          "team_name": null
+        },
+        {
+          "id": "a66f5b19-d20a-4993-9fef-afe4135a7e2b",
+          "user_id": "c56153c2-dcb3-5bde-8af9-ba11ed44787f",
+          "role_key": "scientist",
+          "team_id": "d5d144d2-2bb3-5bb3-87e3-a5d9f0f42d03",
+          "valid_from": "2026-01-01",
+          "valid_to": "2026-12-31",
+          "granted_reason": "Leave cover for the Inorganics section",
+          "team_name": "Inorganics Section"
+        }
+      ],
+      "teams": [
+        {
+          "id": "d5d144d2-2bb3-5bb3-87e3-a5d9f0f42d03",
+          "key": "inorganics",
+          "name": "Inorganics Section",
+          "description": null,
+          "archived_at": null,
+          "members": 4
+        },
+        {
+          "id": "fa59bbb5-ce47-592a-87b1-1ee2f3b992f0",
+          "key": "organics",
+          "name": "Organics Section",
+          "description": null,
+          "archived_at": null,
+          "members": 3
+        }
+      ],
+      "memberships": [
+        {
+          "id": "e77b5e8b-cc55-4fba-9aaf-4992f86233ee",
+          "team_id": "fa59bbb5-ce47-592a-87b1-1ee2f3b992f0",
+          "user_id": "c56153c2-dcb3-5bde-8af9-ba11ed44787f",
+          "joined_on": "2024-01-01"
+        },
+        {
+          "id": "a92a0241-122d-43d0-92c3-0f475d757a39",
+          "team_id": "fa59bbb5-ce47-592a-87b1-1ee2f3b992f0",
+          "user_id": "6e389175-e302-52c2-9c1e-b8c559e91fe7",
+          "joined_on": "2024-01-01"
+        },
+        {
+          "id": "19753d6b-ee8c-4824-ab6b-618c7596ad47",
+          "team_id": "fa59bbb5-ce47-592a-87b1-1ee2f3b992f0",
+          "user_id": "143b37ab-96ee-5f42-b832-906d1ab600d2",
+          "joined_on": "2024-01-01"
+        },
+        {
+          "id": "8be69be2-e307-4f08-87ba-7f7748048261",
+          "team_id": "d5d144d2-2bb3-5bb3-87e3-a5d9f0f42d03",
+          "user_id": "26588c63-c760-57ae-b23c-ad69dd570619",
+          "joined_on": "2024-01-01"
+        },
+        {
+          "id": "0a17377a-f8d1-4b16-bdc0-1f064eb723ca",
+          "team_id": "d5d144d2-2bb3-5bb3-87e3-a5d9f0f42d03",
+          "user_id": "ddace021-76e8-5281-96e7-14046979185c",
+          "joined_on": "2024-01-01"
+        },
+        {
+          "id": "389d10ef-b5d7-4593-b6d2-285c798cd98e",
+          "team_id": "d5d144d2-2bb3-5bb3-87e3-a5d9f0f42d03",
+          "user_id": "2e5cd5b4-99e2-5053-a0cc-e49d0ada8712",
+          "joined_on": "2024-01-01"
+        },
+        {
+          "id": "3a0a4642-bf08-4951-8627-a8889d13a458",
+          "team_id": "d5d144d2-2bb3-5bb3-87e3-a5d9f0f42d03",
+          "user_id": "1789ab9d-979c-5dcb-961b-05cc02d6e13c",
+          "joined_on": "2024-01-01"
+        }
+      ],
+      "organisations": [
+        {
+          "id": "b3013a2b-bd92-5ce5-beae-7ee49174ddb1",
+          "name": "GenPharm Laboratories Pvt Ltd",
+          "kind": "customer"
+        },
+        {
+          "id": "1b2cba26-3fc9-5585-ae50-5919cc463906",
+          "name": "State Drug Testing Laboratory, Vadodara",
+          "kind": "customer"
+        },
+        {
+          "id": "99c3d0bc-ec77-5ce1-a8c3-a90c6ddd4dc5",
+          "name": "Certified Reference Materials Division",
+          "kind": "producer"
+        }
+      ],
+      "competence": [
+        {
+          "id": "f7b3f7f1-95e4-5406-8bdc-85748c30c459",
+          "user_id": "c56153c2-dcb3-5bde-8af9-ba11ed44787f",
+          "activity": "study:sign",
+          "valid_from": "2024-01-01",
+          "valid_to": "2027-12-31",
+          "basis": "Assessed competence record migrated from the prototype",
+          "code": "CMP-001"
+        },
+        {
+          "id": "64a85ed7-6d68-534f-93df-7d88d8931a2d",
+          "user_id": "c56153c2-dcb3-5bde-8af9-ba11ed44787f",
+          "activity": "value:assign",
+          "valid_from": "2024-01-01",
+          "valid_to": "2027-12-31",
+          "basis": "Assessed competence record migrated from the prototype",
+          "code": "CMP-002"
+        },
+        {
+          "id": "4626bd82-ba34-5ddc-8b1c-2f8286eb4758",
+          "user_id": "6e389175-e302-52c2-9c1e-b8c559e91fe7",
+          "activity": "study:sign",
+          "valid_from": "2024-01-01",
+          "valid_to": "2026-06-30",
+          "basis": "Assessed competence record migrated from the prototype",
+          "code": "CMP-003"
+        },
+        {
+          "id": "ec7a515b-504d-538d-8aaa-a0c74ed716d2",
+          "user_id": "1789ab9d-979c-5dcb-961b-05cc02d6e13c",
+          "activity": "study:sign",
+          "valid_from": "2024-01-01",
+          "valid_to": "2028-12-31",
+          "basis": "Assessed competence record migrated from the prototype",
+          "code": "CMP-008"
+        },
+        {
+          "id": "9b546bb7-cc9c-5b51-883e-a01e83e98749",
+          "user_id": "1789ab9d-979c-5dcb-961b-05cc02d6e13c",
+          "activity": "value:assign",
+          "valid_from": "2024-01-01",
+          "valid_to": "2028-12-31",
+          "basis": "Assessed competence record migrated from the prototype",
+          "code": "CMP-009"
+        },
+        {
+          "id": "1340fb46-8cd2-5fb7-ba16-5308e8a66246",
+          "user_id": "1789ab9d-979c-5dcb-961b-05cc02d6e13c",
+          "activity": "value:authorise",
+          "valid_from": "2024-01-01",
+          "valid_to": "2028-12-31",
+          "basis": "Assessed competence record migrated from the prototype",
+          "code": "CMP-006"
+        },
+        {
+          "id": "59f3c93f-bf0a-52f2-b88d-648518ab808f",
+          "user_id": "1789ab9d-979c-5dcb-961b-05cc02d6e13c",
+          "activity": "cert:issue",
+          "valid_from": "2024-01-01",
+          "valid_to": "2028-12-31",
+          "basis": "Assessed competence record migrated from the prototype",
+          "code": "CMP-007"
+        },
+        {
+          "id": "7217317a-48a9-561b-942a-c9f0fe5b76e7",
+          "user_id": "143b37ab-96ee-5f42-b832-906d1ab600d2",
+          "activity": "value:authorise",
+          "valid_from": "2023-01-01",
+          "valid_to": "2028-12-31",
+          "basis": "Assessed competence record migrated from the prototype",
+          "code": "CMP-004"
+        },
+        {
+          "id": "491969b7-c38a-50c5-962a-b05c56fb9811",
+          "user_id": "143b37ab-96ee-5f42-b832-906d1ab600d2",
+          "activity": "cert:issue",
+          "valid_from": "2023-01-01",
+          "valid_to": "2028-12-31",
+          "basis": "Assessed competence record migrated from the prototype",
+          "code": "CMP-005"
+        }
+      ],
+      "roles": [
+        {
+          "key": "commercial",
+          "name": "Commercial",
+          "kind": "producer",
+          "permissions": [
+            "catalogue:manage",
+            "order:read_all",
+            "entitlement:decide",
+            "order:refund",
+            "pii:contact",
+            "audit:read"
+          ]
+        },
+        {
+          "key": "dispatch",
+          "name": "Dispatch",
+          "kind": "producer",
+          "permissions": [
+            "order:read_all",
+            "order:advance",
+            "pii:contact",
+            "audit:read"
+          ]
+        },
+        {
+          "key": "labbuyer",
+          "name": "Laboratory Buyer",
+          "kind": "customer",
+          "permissions": [
+            "order:create",
+            "order:read_own",
+            "vault:use"
+          ]
+        },
+        {
+          "key": "labqm",
+          "name": "Laboratory QM",
+          "kind": "customer",
+          "permissions": [
+            "order:create",
+            "order:read_own",
+            "entitlement:claim",
+            "vault:use"
+          ]
+        },
+        {
+          "key": "prodlead",
+          "name": "Production Lead",
+          "kind": "producer",
+          "permissions": [
+            "project:read",
+            "project:manage",
+            "study:run",
+            "study:sign",
+            "lot:create",
+            "equipment:manage",
+            "audit:read"
+          ]
+        },
+        {
+          "key": "quality",
+          "name": "Quality Manager",
+          "kind": "producer",
+          "permissions": [
+            "project:read",
+            "conformance:read",
+            "capa:manage",
+            "subcontractor:manage",
+            "competence:manage",
+            "audit:read",
+            "audit:verify",
+            "audit:export"
+          ]
+        },
+        {
+          "key": "scientist",
+          "name": "RM Scientist",
+          "kind": "producer",
+          "permissions": [
+            "project:read",
+            "study:run",
+            "study:sign",
+            "value:assign",
+            "audit:read"
+          ]
+        },
+        {
+          "key": "techmgr",
+          "name": "Technical Manager",
+          "kind": "producer",
+          "permissions": [
+            "project:read",
+            "value:authorise",
+            "lot:release",
+            "cert:issue",
+            "cert:reissue",
+            "audit:read"
+          ]
+        },
+        {
+          "key": "tenantadmin",
+          "name": "Tenant Admin",
+          "kind": "producer",
+          "permissions": [
+            "project:read",
+            "project:manage",
+            "study:run",
+            "study:sign",
+            "value:assign",
+            "value:authorise",
+            "lot:create",
+            "lot:release",
+            "cert:issue",
+            "cert:reissue",
+            "catalogue:manage",
+            "order:create",
+            "order:read_own",
+            "order:read_all",
+            "order:advance",
+            "order:refund",
+            "entitlement:claim",
+            "entitlement:decide",
+            "equipment:manage",
+            "competence:manage",
+            "capa:manage",
+            "subcontractor:manage",
+            "conformance:read",
+            "audit:read",
+            "audit:verify",
+            "audit:export",
+            "pii:contact",
+            "user:manage",
+            "vault:use"
+          ]
+        }
+      ],
+      "competenceActivities": [
+        "study:sign",
+        "value:assign",
+        "value:authorise",
+        "cert:issue"
+      ]
+    }
+  },
+  "GET /admin/config": {
+    "status": 200,
+    "body": {
+      "versions": [
+        {
+          "id": "25e409b4-4376-5782-a220-817d21f814eb",
+          "number": 1,
+          "status": "active",
+          "reason": "Initial product configuration, derived from the built-in defaults",
+          "publishedAt": "2026-08-22 18:32:23.479159+05:30",
+          "signed": false,
+          "changeCount": 0
+        }
+      ],
+      "activeId": "25e409b4-4376-5782-a220-817d21f814eb",
+      "draftId": null,
+      "kinds": {
+        "role": {
+          "risk": "security",
+          "signed": true
+        },
+        "workflow": {
+          "risk": "behaviour",
+          "signed": true
+        },
+        "field": {
+          "risk": "behaviour",
+          "signed": true
+        },
+        "picklist": {
+          "risk": "behaviour",
+          "signed": true
+        },
+        "layout": {
+          "risk": "presentation",
+          "signed": false
+        },
+        "view": {
+          "risk": "presentation",
+          "signed": false
+        },
+        "dashboard": {
+          "risk": "presentation",
+          "signed": false
+        },
+        "report": {
+          "risk": "behaviour",
+          "signed": true
+        },
+        "numbering": {
+          "risk": "behaviour",
+          "signed": true
+        },
+        "template": {
+          "risk": "behaviour",
+          "signed": true
+        },
+        "translation": {
+          "risk": "presentation",
+          "signed": false
+        },
+        "sod": {
+          "risk": "security",
+          "signed": true
+        },
+        "retention": {
+          "risk": "security",
+          "signed": true
+        },
+        "flag": {
+          "risk": "behaviour",
+          "signed": true
+        }
+      }
+    }
+  },
+  "GET /projects/:id/studies": {
+    "status": 200,
+    "body": {
+      "studies": [
+        {
+          "id": "f52f3457-b402-554d-bd72-a85d6e58b26a",
+          "code": "ST-1010",
+          "type": "homogeneity",
+          "state": "signed",
+          "uncertainty": 0.15,
+          "signedOn": "2026-02-02"
+        },
+        {
+          "id": "58eb28f0-1a06-509b-a48a-5a86f832c7ad",
+          "code": "ST-1011",
+          "type": "stability",
+          "state": "signed",
+          "uncertainty": 0.2,
+          "signedOn": "2026-03-11"
+        },
+        {
+          "id": "9c75c97d-a3b6-5029-966b-986fae5833bf",
+          "code": "ST-1012",
+          "type": "characterisation",
+          "state": "signed",
+          "uncertainty": 0.28,
+          "signedOn": "2026-04-01"
+        },
+        {
+          "id": "191e9a98-9225-5bfb-a0a7-2e32335621d0",
+          "code": "ST-1013",
+          "type": "confirmatory retest",
+          "state": "signed",
+          "uncertainty": 0.17,
+          "signedOn": "2026-07-15"
+        }
+      ]
+    }
+  },
+  "GET /projects/:id/values": {
+    "status": 200,
+    "body": {
+      "values": [
+        {
+          "id": "2487fb9e-7d0c-5147-a39f-f69c87917e8e",
+          "code": "PV-01",
+          "property_name": "Assay (as is)",
+          "unit": "% w/w",
+          "state": "authorised",
+          "assigned_value": 99.62,
+          "expanded_uncertainty": 0.84,
+          "coverage_factor": 2,
+          "assigned_by": "c56153c2-dcb3-5bde-8af9-ba11ed44787f",
+          "authorised_by": "143b37ab-96ee-5f42-b832-906d1ab600d2"
+        }
+      ]
+    }
+  },
+  "GET /projects/:id/lots": {
+    "status": 200,
+    "body": {
+      "lots": [
+        {
+          "id": "3ccd033a-6a97-5310-b553-02fe1ad4dcfa",
+          "lot_code": "RMP-PARA-0421",
+          "state": "released",
+          "expiry_date": "2028-03-31",
+          "stock_units": 48,
+          "storage_condition": "2–8 °C",
+          "cold_chain": true,
+          "supersedes": "RMP-PARA-0388",
+          "certificate_code": "CRT-2041",
+          "certificate_id": "0d48de81-0d8b-5420-ba8e-4de678cbc89f"
+        },
+        {
+          "id": "f4fc77b6-576e-5637-8aaf-6eb4dc5acde7",
+          "lot_code": "RMP-PARA-0388",
+          "state": "superseded",
+          "expiry_date": "2026-04-30",
+          "stock_units": 0,
+          "storage_condition": "2–8 °C",
+          "cold_chain": true,
+          "supersedes": null,
+          "certificate_code": null,
+          "certificate_id": null
+        }
+      ]
+    }
+  },
+  "GET /projects/:id/budget": {
+    "status": 200,
+    "body": {
+      "project": {
+        "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+        "code": "PRJ-0412"
+      },
+      "assignedValue": 99.6734,
+      "budget": {
+        "uBb": 0.10145959787028631,
+        "uLts": 0.17448407262525772,
+        "uChar": 0.1744060205382824,
+        "uCombined": 0.2667511979352599,
+        "complete": true,
+        "expanded": 0.5335023958705198,
+        "coverageFactor": 2
+      },
+      "components": [
+        {
+          "studyId": "ST-1001",
+          "studyType": "homogeneity",
+          "symbol": "u(bb)",
+          "value": 0.10145959787028631,
+          "basis": "6 units × 2 replicates, one-way ANOVA"
+        },
+        {
+          "studyId": "ST-1002",
+          "studyType": "stability",
+          "symbol": "u(lts)",
+          "value": 0.17448407262525772,
+          "basis": "6 timepoints, slope -0.00878/month (not significant), projected over 28 months"
+        },
+        {
+          "studyId": "ST-1003",
+          "studyType": "characterisation",
+          "symbol": "u(char)",
+          "value": 0.1744060205382824,
+          "basis": "5 laboratories, s = 0.390"
+        }
+      ]
+    }
+  },
+  "GET /certificates/:id": {
+    "status": 200,
+    "body": {
+      "certificate": {
+        "id": "0d48de81-0d8b-5420-ba8e-4de678cbc89f",
+        "code": "CRT-2041",
+        "lotId": "3ccd033a-6a97-5310-b553-02fe1ad4dcfa",
+        "lotCode": "RMP-PARA-0421",
+        "lotState": "released"
+      },
+      "currentIssue": 1,
+      "issues": [
+        {
+          "number": 1,
+          "issuedAt": "2026-02-01 00:00:00+05:30",
+          "issuedBy": "Dr. Asha Pillai",
+          "reissueReason": null,
+          "withdrawn": false,
+          "withdrawnAt": null,
+          "withdrawnReason": null,
+          "propertyName": "Assay (as is)",
+          "assignedValue": 99.62,
+          "expandedUncertainty": 0.84,
+          "coverageFactor": 2,
+          "unit": "% w/w",
+          "documentSha256": null,
+          "verificationToken": null
+        }
+      ]
+    }
+  },
+  "GET /custom-fields/:entity/:recordId": {
+    "status": 200,
+    "body": {
+      "form": {
+        "entity": "project",
+        "layoutKey": null,
+        "sections": [],
+        "picklists": {}
+      },
+      "values": {},
+      "revision": 0,
+      "recordedBy": null,
+      "recordedAt": null,
+      "frozen": true,
+      "parentState": "released"
+    }
+  },
+  "GET /custom-fields/:entity/:recordId/history": {
+    "status": 404,
+    "body": {
+      "type": "https://lotmark.local/problems/not_found",
+      "title": "Not found",
+      "status": 404,
+      "detail": "No such record in this tenant.",
+      "code": "not_found"
+    }
+  },
+  "GET /admin/config/:id": {
+    "status": 200,
+    "body": {
+      "version": {
+        "id": "25e409b4-4376-5782-a220-817d21f814eb",
+        "number": 1,
+        "status": "active",
+        "reason": "Initial product configuration, derived from the built-in defaults",
+        "basedOn": null,
+        "publishedAt": "2026-08-22 18:32:23.479159+05:30",
+        "signed": false,
+        "changeSummary": []
+      },
+      "entries": [
+        {
+          "kind": "field",
+          "key": "ampoules_filled",
+          "payload": {
+            "key": "ampoules_filled",
+            "max": 100000,
+            "min": 1,
+            "type": "integer",
+            "label": "Ampoules filled",
+            "entity": "lot",
+            "required": false,
+            "sortOrder": 3,
+            "immutableType": true,
+            "onCertificate": false
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "field",
+          "key": "batch_origin",
+          "payload": {
+            "key": "batch_origin",
+            "type": "text",
+            "label": "Batch origin",
+            "entity": "lot",
+            "helpText": "Where the bulk material for this lot came from.",
+            "required": true,
+            "maxLength": 120,
+            "sortOrder": 1,
+            "immutableType": true,
+            "onCertificate": false
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "field",
+          "key": "fill_notes",
+          "payload": {
+            "key": "fill_notes",
+            "type": "textarea",
+            "label": "Filling notes",
+            "entity": "lot",
+            "required": false,
+            "maxLength": 2000,
+            "sortOrder": 4,
+            "immutableType": true,
+            "onCertificate": false
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "field",
+          "key": "packaging",
+          "payload": {
+            "key": "packaging",
+            "type": "select",
+            "label": "Packaging",
+            "entity": "lot",
+            "required": true,
+            "sortOrder": 2,
+            "picklistKey": "packaging",
+            "immutableType": true,
+            "onCertificate": true
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "field",
+          "key": "root_cause_category",
+          "payload": {
+            "key": "root_cause_category",
+            "type": "select",
+            "label": "Root cause category",
+            "entity": "capa",
+            "required": false,
+            "sortOrder": 1,
+            "picklistKey": "root_cause",
+            "immutableType": true,
+            "onCertificate": false
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "flag",
+          "key": "bilingual",
+          "payload": {
+            "key": "bilingual",
+            "name": "Bilingual interface and certificates",
+            "enabled": false
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "flag",
+          "key": "gov_tier",
+          "payload": {
+            "key": "gov_tier",
+            "name": "Government price tier",
+            "enabled": false
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "flag",
+          "key": "public_verification",
+          "payload": {
+            "key": "public_verification",
+            "name": "Public certificate verification endpoint",
+            "enabled": true
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "layout",
+          "key": "lot_production",
+          "payload": {
+            "key": "lot_production",
+            "name": "Lot production detail",
+            "roles": [],
+            "entity": "lot",
+            "sections": [
+              {
+                "title": "Origin and packaging",
+                "fields": [
+                  {
+                    "span": 2,
+                    "field": "batch_origin",
+                    "readOnly": false
+                  },
+                  {
+                    "span": 1,
+                    "field": "packaging",
+                    "readOnly": false
+                  },
+                  {
+                    "span": 1,
+                    "field": "ampoules_filled",
+                    "readOnly": false
+                  }
+                ],
+                "columns": 2,
+                "collapsed": false
+              },
+              {
+                "title": "Filling",
+                "fields": [
+                  {
+                    "span": 1,
+                    "field": "fill_notes",
+                    "readOnly": false
+                  }
+                ],
+                "columns": 1,
+                "collapsed": false
+              }
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "numbering",
+          "key": "capa",
+          "payload": {
+            "key": "capa",
+            "padTo": 4,
+            "entity": "capa",
+            "startAt": 1,
+            "template": "NCR-{SEQ}",
+            "resetPolicy": "yearly"
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "numbering",
+          "key": "certificate",
+          "payload": {
+            "key": "certificate",
+            "padTo": 4,
+            "entity": "certificate",
+            "startAt": 1,
+            "template": "CRT-{SEQ}",
+            "resetPolicy": "never"
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "numbering",
+          "key": "lot",
+          "payload": {
+            "key": "lot",
+            "padTo": 4,
+            "entity": "lot",
+            "startAt": 1,
+            "template": "MRM{MAT}{SEQ}",
+            "resetPolicy": "never"
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "numbering",
+          "key": "order",
+          "payload": {
+            "key": "order",
+            "padTo": 4,
+            "entity": "order",
+            "startAt": 1,
+            "template": "ORD-{SEQ}",
+            "resetPolicy": "yearly"
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "numbering",
+          "key": "project",
+          "payload": {
+            "key": "project",
+            "padTo": 4,
+            "entity": "project",
+            "startAt": 1,
+            "template": "PRJ-{SEQ}",
+            "resetPolicy": "never"
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "numbering",
+          "key": "property_value",
+          "payload": {
+            "key": "property_value",
+            "padTo": 2,
+            "entity": "property_value",
+            "startAt": 1,
+            "template": "PV-{SEQ}",
+            "resetPolicy": "never"
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "numbering",
+          "key": "study",
+          "payload": {
+            "key": "study",
+            "padTo": 4,
+            "entity": "study",
+            "startAt": 1,
+            "template": "ST-{SEQ}",
+            "resetPolicy": "never"
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "picklist",
+          "key": "packaging",
+          "payload": {
+            "key": "packaging",
+            "name": "Packaging",
+            "values": [
+              {
+                "label": "2 mL amber ampoule",
+                "value": "ampoule_2ml",
+                "retired": false,
+                "sortOrder": 1
+              },
+              {
+                "label": "10 mL screw-cap vial",
+                "value": "vial_10ml",
+                "retired": false,
+                "sortOrder": 2
+              },
+              {
+                "label": "1 g foil sachet",
+                "value": "sachet_1g",
+                "retired": false,
+                "sortOrder": 3
+              },
+              {
+                "label": "50 mL bottle (withdrawn 2024)",
+                "value": "bottle_50ml",
+                "retired": true,
+                "sortOrder": 4
+              }
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "picklist",
+          "key": "root_cause",
+          "payload": {
+            "key": "root_cause",
+            "name": "Root cause category",
+            "values": [
+              {
+                "label": "Analytical method",
+                "value": "method",
+                "retired": false,
+                "sortOrder": 1
+              },
+              {
+                "label": "Equipment",
+                "value": "equipment",
+                "retired": false,
+                "sortOrder": 2
+              },
+              {
+                "label": "Starting material",
+                "value": "material",
+                "retired": false,
+                "sortOrder": 3
+              },
+              {
+                "label": "Human factors",
+                "value": "human",
+                "retired": false,
+                "sortOrder": 4
+              },
+              {
+                "label": "Supplier",
+                "value": "supplier",
+                "retired": false,
+                "sortOrder": 5
+              }
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "role",
+          "key": "commercial",
+          "payload": {
+            "key": "commercial",
+            "kind": "producer",
+            "name": "Commercial",
+            "system": true,
+            "inherits": [],
+            "permissions": [
+              "catalogue:manage",
+              "order:read_all",
+              "entitlement:decide",
+              "order:refund",
+              "pii:contact",
+              "audit:read"
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "role",
+          "key": "dispatch",
+          "payload": {
+            "key": "dispatch",
+            "kind": "producer",
+            "name": "Dispatch",
+            "system": true,
+            "inherits": [],
+            "permissions": [
+              "order:read_all",
+              "order:advance",
+              "pii:contact",
+              "audit:read"
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "role",
+          "key": "labbuyer",
+          "payload": {
+            "key": "labbuyer",
+            "kind": "customer",
+            "name": "Laboratory Buyer",
+            "system": true,
+            "inherits": [],
+            "permissions": [
+              "order:create",
+              "order:read_own",
+              "vault:use"
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "role",
+          "key": "labqm",
+          "payload": {
+            "key": "labqm",
+            "kind": "customer",
+            "name": "Laboratory QM",
+            "system": true,
+            "inherits": [],
+            "permissions": [
+              "order:create",
+              "order:read_own",
+              "entitlement:claim",
+              "vault:use"
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "role",
+          "key": "prodlead",
+          "payload": {
+            "key": "prodlead",
+            "kind": "producer",
+            "name": "Production Lead",
+            "system": true,
+            "inherits": [],
+            "permissions": [
+              "project:read",
+              "project:manage",
+              "study:run",
+              "study:sign",
+              "lot:create",
+              "equipment:manage",
+              "audit:read"
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "role",
+          "key": "quality",
+          "payload": {
+            "key": "quality",
+            "kind": "producer",
+            "name": "Quality Manager",
+            "system": true,
+            "inherits": [],
+            "permissions": [
+              "project:read",
+              "conformance:read",
+              "capa:manage",
+              "subcontractor:manage",
+              "competence:manage",
+              "audit:read",
+              "audit:verify",
+              "audit:export"
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "role",
+          "key": "scientist",
+          "payload": {
+            "key": "scientist",
+            "kind": "producer",
+            "name": "RM Scientist",
+            "system": true,
+            "inherits": [],
+            "permissions": [
+              "project:read",
+              "study:run",
+              "study:sign",
+              "value:assign",
+              "audit:read"
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "role",
+          "key": "techmgr",
+          "payload": {
+            "key": "techmgr",
+            "kind": "producer",
+            "name": "Technical Manager",
+            "system": true,
+            "inherits": [],
+            "permissions": [
+              "project:read",
+              "value:authorise",
+              "lot:release",
+              "cert:issue",
+              "cert:reissue",
+              "audit:read"
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "role",
+          "key": "tenantadmin",
+          "payload": {
+            "key": "tenantadmin",
+            "kind": "producer",
+            "name": "Tenant Admin",
+            "system": true,
+            "inherits": [],
+            "permissions": [
+              "project:read",
+              "project:manage",
+              "study:run",
+              "study:sign",
+              "value:assign",
+              "value:authorise",
+              "lot:create",
+              "lot:release",
+              "cert:issue",
+              "cert:reissue",
+              "catalogue:manage",
+              "order:create",
+              "order:read_own",
+              "order:read_all",
+              "order:advance",
+              "order:refund",
+              "entitlement:claim",
+              "entitlement:decide",
+              "equipment:manage",
+              "competence:manage",
+              "capa:manage",
+              "subcontractor:manage",
+              "conformance:read",
+              "audit:read",
+              "audit:verify",
+              "audit:export",
+              "pii:contact",
+              "user:manage",
+              "vault:use"
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "sod",
+          "key": "claim-raiser-may-not-decide",
+          "payload": {
+            "ruleId": "claim-raiser-may-not-decide",
+            "enabled": true
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "sod",
+          "key": "lot-creator-may-not-release",
+          "payload": {
+            "ruleId": "lot-creator-may-not-release",
+            "enabled": false
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "sod",
+          "key": "refund-above-threshold-needs-second-approver",
+          "payload": {
+            "ruleId": "refund-above-threshold-needs-second-approver",
+            "enabled": true,
+            "thresholdMinor": 500000,
+            "approversRequired": 2
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "sod",
+          "key": "study-signer-must-hold-competence",
+          "payload": {
+            "ruleId": "study-signer-must-hold-competence",
+            "enabled": true
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "sod",
+          "key": "value-assigner-may-not-authorise",
+          "payload": {
+            "ruleId": "value-assigner-may-not-authorise",
+            "enabled": true
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "sod",
+          "key": "value-assigner-may-not-issue-certificate",
+          "payload": {
+            "ruleId": "value-assigner-may-not-issue-certificate",
+            "enabled": false
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "workflow",
+          "key": "capa",
+          "payload": {
+            "key": "capa",
+            "name": "Capa",
+            "entity": "capa",
+            "states": [
+              {
+                "key": "open",
+                "name": "Open"
+              },
+              {
+                "key": "investigation",
+                "name": "Investigation"
+              },
+              {
+                "key": "root_cause",
+                "name": "Root Cause"
+              },
+              {
+                "key": "capa",
+                "name": "Capa"
+              },
+              {
+                "key": "effectiveness",
+                "name": "Effectiveness"
+              },
+              {
+                "key": "closed",
+                "name": "Closed"
+              }
+            ],
+            "initial": "open",
+            "terminal": [
+              "closed"
+            ],
+            "transitions": [
+              {
+                "to": "investigation",
+                "from": "open",
+                "action": "Investigation opened",
+                "guards": [],
+                "requires": "capa:manage",
+                "requiresReason": true,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "root_cause",
+                "from": "investigation",
+                "action": "Root cause identified",
+                "guards": [],
+                "requires": "capa:manage",
+                "requiresReason": true,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "capa",
+                "from": "root_cause",
+                "action": "Corrective action raised",
+                "guards": [],
+                "requires": "capa:manage",
+                "requiresReason": true,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "effectiveness",
+                "from": "capa",
+                "action": "Effectiveness check started",
+                "guards": [],
+                "requires": "capa:manage",
+                "requiresReason": true,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "closed",
+                "from": "effectiveness",
+                "action": "CAPA closed",
+                "guards": [
+                  "record.severity != 'Major' or record.preventive_action is not empty"
+                ],
+                "requires": "capa:manage",
+                "requiresReason": true,
+                "systemInitiated": false,
+                "requiresSignature": true,
+                "signatureMeanings": [
+                  "approval",
+                  "responsibility"
+                ]
+              },
+              {
+                "to": "capa",
+                "from": "effectiveness",
+                "action": "Effectiveness check failed, action reopened",
+                "guards": [],
+                "requires": "capa:manage",
+                "requiresReason": true,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              }
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "workflow",
+          "key": "entitlement",
+          "payload": {
+            "key": "entitlement",
+            "name": "Entitlement",
+            "entity": "entitlement",
+            "states": [
+              {
+                "key": "under_review",
+                "name": "Under Review"
+              },
+              {
+                "key": "approved",
+                "name": "Approved"
+              },
+              {
+                "key": "rejected",
+                "name": "Rejected"
+              },
+              {
+                "key": "lapsed",
+                "name": "Lapsed"
+              }
+            ],
+            "initial": "under_review",
+            "terminal": [
+              "rejected",
+              "lapsed"
+            ],
+            "transitions": [
+              {
+                "to": "approved",
+                "from": "under_review",
+                "action": "Tier approved",
+                "guards": [],
+                "requires": "entitlement:decide",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "rejected",
+                "from": "under_review",
+                "action": "Tier rejected",
+                "guards": [],
+                "requires": "entitlement:decide",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "lapsed",
+                "from": "approved",
+                "action": "Tier lapsed at revalidation",
+                "guards": [],
+                "requires": "entitlement:decide",
+                "requiresReason": false,
+                "systemInitiated": true,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              }
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "workflow",
+          "key": "lot",
+          "payload": {
+            "key": "lot",
+            "name": "Lot",
+            "entity": "lot",
+            "states": [
+              {
+                "key": "draft",
+                "name": "Draft"
+              },
+              {
+                "key": "released",
+                "name": "Released"
+              },
+              {
+                "key": "superseded",
+                "name": "Superseded"
+              },
+              {
+                "key": "withdrawn",
+                "name": "Withdrawn"
+              }
+            ],
+            "initial": "draft",
+            "terminal": [
+              "superseded",
+              "withdrawn"
+            ],
+            "transitions": [
+              {
+                "to": "released",
+                "from": "draft",
+                "action": "Lot released",
+                "guards": [],
+                "requires": "lot:release",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": true,
+                "signatureMeanings": [
+                  "authorship",
+                  "review",
+                  "approval",
+                  "responsibility"
+                ]
+              },
+              {
+                "to": "superseded",
+                "from": "released",
+                "action": "Lot superseded",
+                "guards": [],
+                "requires": "lot:release",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": true,
+                "signatureMeanings": [
+                  "authorship",
+                  "review",
+                  "approval",
+                  "responsibility"
+                ]
+              },
+              {
+                "to": "withdrawn",
+                "from": "released",
+                "action": "Lot withdrawn",
+                "guards": [],
+                "requires": "cert:reissue",
+                "requiresReason": true,
+                "systemInitiated": false,
+                "requiresSignature": true,
+                "signatureMeanings": [
+                  "authorship",
+                  "review",
+                  "approval",
+                  "responsibility"
+                ]
+              }
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "workflow",
+          "key": "order",
+          "payload": {
+            "key": "order",
+            "name": "Order",
+            "entity": "order",
+            "states": [
+              {
+                "key": "placed",
+                "name": "Placed"
+              },
+              {
+                "key": "packed",
+                "name": "Packed"
+              },
+              {
+                "key": "dispatched",
+                "name": "Dispatched"
+              },
+              {
+                "key": "delivered",
+                "name": "Delivered"
+              },
+              {
+                "key": "cancelled",
+                "name": "Cancelled"
+              }
+            ],
+            "initial": "placed",
+            "terminal": [
+              "delivered",
+              "cancelled"
+            ],
+            "transitions": [
+              {
+                "to": "packed",
+                "from": "placed",
+                "action": "Order packed",
+                "guards": [],
+                "requires": "order:advance",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "dispatched",
+                "from": "packed",
+                "action": "Order dispatched",
+                "guards": [],
+                "requires": "order:advance",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "delivered",
+                "from": "dispatched",
+                "action": "Order delivered",
+                "guards": [],
+                "requires": "order:advance",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "cancelled",
+                "from": "placed",
+                "action": "Order cancelled",
+                "guards": [],
+                "requires": "order:advance",
+                "requiresReason": true,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "cancelled",
+                "from": "packed",
+                "action": "Order cancelled",
+                "guards": [],
+                "requires": "order:advance",
+                "requiresReason": true,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              }
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "workflow",
+          "key": "project",
+          "payload": {
+            "key": "project",
+            "name": "Project",
+            "entity": "project",
+            "states": [
+              {
+                "key": "design",
+                "name": "Design"
+              },
+              {
+                "key": "study",
+                "name": "Study"
+              },
+              {
+                "key": "authorisation",
+                "name": "Authorisation"
+              },
+              {
+                "key": "released",
+                "name": "Released"
+              }
+            ],
+            "initial": "design",
+            "terminal": [
+              "released"
+            ],
+            "transitions": [
+              {
+                "to": "study",
+                "from": "design",
+                "action": "Project moved to study",
+                "guards": [],
+                "requires": "project:manage",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "authorisation",
+                "from": "study",
+                "action": "Project moved to authorisation",
+                "guards": [],
+                "requires": "project:manage",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              },
+              {
+                "to": "released",
+                "from": "authorisation",
+                "action": "Project released",
+                "guards": [],
+                "requires": "lot:release",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": true,
+                "signatureMeanings": [
+                  "authorship",
+                  "review",
+                  "approval",
+                  "responsibility"
+                ]
+              },
+              {
+                "to": "study",
+                "from": "authorisation",
+                "action": "Project returned to study",
+                "guards": [],
+                "requires": "project:manage",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": false,
+                "signatureMeanings": []
+              }
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "workflow",
+          "key": "property_value",
+          "payload": {
+            "key": "property_value",
+            "name": "Property Value",
+            "entity": "property_value",
+            "states": [
+              {
+                "key": "draft",
+                "name": "Draft"
+              },
+              {
+                "key": "assigned",
+                "name": "Assigned"
+              },
+              {
+                "key": "authorised",
+                "name": "Authorised"
+              }
+            ],
+            "initial": "draft",
+            "terminal": [
+              "authorised"
+            ],
+            "transitions": [
+              {
+                "to": "assigned",
+                "from": "draft",
+                "action": "Property value assigned",
+                "guards": [],
+                "requires": "value:assign",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": true,
+                "signatureMeanings": [
+                  "authorship",
+                  "review",
+                  "approval",
+                  "responsibility"
+                ],
+                "requiresCompetence": "value:assign"
+              },
+              {
+                "to": "authorised",
+                "from": "assigned",
+                "action": "Property value authorised",
+                "guards": [],
+                "requires": "value:authorise",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": true,
+                "signatureMeanings": [
+                  "authorship",
+                  "review",
+                  "approval",
+                  "responsibility"
+                ],
+                "requiresCompetence": "value:authorise"
+              },
+              {
+                "to": "draft",
+                "from": "assigned",
+                "action": "Property value returned to assigner",
+                "guards": [],
+                "requires": "value:authorise",
+                "requiresReason": true,
+                "systemInitiated": false,
+                "requiresSignature": true,
+                "signatureMeanings": [
+                  "authorship",
+                  "review",
+                  "approval",
+                  "responsibility"
+                ],
+                "requiresCompetence": "value:authorise"
+              }
+            ]
+          },
+          "overridesDefault": false
+        },
+        {
+          "kind": "workflow",
+          "key": "study",
+          "payload": {
+            "key": "study",
+            "name": "Study",
+            "entity": "study",
+            "states": [
+              {
+                "key": "draft",
+                "name": "Draft"
+              },
+              {
+                "key": "signed",
+                "name": "Signed"
+              }
+            ],
+            "initial": "draft",
+            "terminal": [
+              "signed"
+            ],
+            "transitions": [
+              {
+                "to": "signed",
+                "from": "draft",
+                "action": "Study signed",
+                "guards": [],
+                "requires": "study:sign",
+                "requiresReason": false,
+                "systemInitiated": false,
+                "requiresSignature": true,
+                "signatureMeanings": [
+                  "authorship",
+                  "review",
+                  "approval",
+                  "responsibility"
+                ],
+                "requiresCompetence": "study:sign"
+              }
+            ]
+          },
+          "overridesDefault": false
+        }
+      ]
+    }
+  },
+  "GET /admin/config/draft/:id/review": {
+    "status": 200,
+    "body": {
+      "changes": [],
+      "problems": [],
+      "needsSignature": false,
+      "publishable": false
+    }
+  },
+  "GET /admin/config/draft/:id/workflows": {
+    "status": 200,
+    "body": {
+      "workflows": [
+        {
+          "entity": "capa",
+          "states": [
+            "open",
+            "investigation",
+            "root_cause",
+            "capa",
+            "effectiveness",
+            "closed"
+          ],
+          "initial": "open",
+          "terminal": [
+            "closed"
+          ],
+          "transitions": [
+            {
+              "from": "open",
+              "to": "investigation",
+              "action": "Investigation opened",
+              "requires": "capa:manage",
+              "systemInitiated": false
+            },
+            {
+              "from": "investigation",
+              "to": "root_cause",
+              "action": "Root cause identified",
+              "requires": "capa:manage",
+              "systemInitiated": false
+            },
+            {
+              "from": "root_cause",
+              "to": "capa",
+              "action": "Corrective action raised",
+              "requires": "capa:manage",
+              "systemInitiated": false
+            },
+            {
+              "from": "capa",
+              "to": "effectiveness",
+              "action": "Effectiveness check started",
+              "requires": "capa:manage",
+              "systemInitiated": false
+            },
+            {
+              "from": "effectiveness",
+              "to": "closed",
+              "action": "CAPA closed",
+              "requires": "capa:manage",
+              "systemInitiated": false
+            },
+            {
+              "from": "effectiveness",
+              "to": "capa",
+              "action": "Effectiveness check failed, action reopened",
+              "requires": "capa:manage",
+              "systemInitiated": false
+            }
+          ]
+        },
+        {
+          "entity": "entitlement",
+          "states": [
+            "under_review",
+            "approved",
+            "rejected",
+            "lapsed"
+          ],
+          "initial": "under_review",
+          "terminal": [
+            "rejected",
+            "lapsed"
+          ],
+          "transitions": [
+            {
+              "from": "under_review",
+              "to": "approved",
+              "action": "Tier approved",
+              "requires": "entitlement:decide",
+              "systemInitiated": false
+            },
+            {
+              "from": "under_review",
+              "to": "rejected",
+              "action": "Tier rejected",
+              "requires": "entitlement:decide",
+              "systemInitiated": false
+            },
+            {
+              "from": "approved",
+              "to": "lapsed",
+              "action": "Tier lapsed at revalidation",
+              "requires": "entitlement:decide",
+              "systemInitiated": true
+            }
+          ]
+        },
+        {
+          "entity": "lot",
+          "states": [
+            "draft",
+            "released",
+            "superseded",
+            "withdrawn"
+          ],
+          "initial": "draft",
+          "terminal": [
+            "superseded",
+            "withdrawn"
+          ],
+          "transitions": [
+            {
+              "from": "draft",
+              "to": "released",
+              "action": "Lot released",
+              "requires": "lot:release",
+              "systemInitiated": false
+            },
+            {
+              "from": "released",
+              "to": "superseded",
+              "action": "Lot superseded",
+              "requires": "lot:release",
+              "systemInitiated": false
+            },
+            {
+              "from": "released",
+              "to": "withdrawn",
+              "action": "Lot withdrawn",
+              "requires": "cert:reissue",
+              "systemInitiated": false
+            }
+          ]
+        },
+        {
+          "entity": "order",
+          "states": [
+            "placed",
+            "packed",
+            "dispatched",
+            "delivered",
+            "cancelled"
+          ],
+          "initial": "placed",
+          "terminal": [
+            "delivered",
+            "cancelled"
+          ],
+          "transitions": [
+            {
+              "from": "placed",
+              "to": "packed",
+              "action": "Order packed",
+              "requires": "order:advance",
+              "systemInitiated": false
+            },
+            {
+              "from": "packed",
+              "to": "dispatched",
+              "action": "Order dispatched",
+              "requires": "order:advance",
+              "systemInitiated": false
+            },
+            {
+              "from": "dispatched",
+              "to": "delivered",
+              "action": "Order delivered",
+              "requires": "order:advance",
+              "systemInitiated": false
+            },
+            {
+              "from": "placed",
+              "to": "cancelled",
+              "action": "Order cancelled",
+              "requires": "order:advance",
+              "systemInitiated": false
+            },
+            {
+              "from": "packed",
+              "to": "cancelled",
+              "action": "Order cancelled",
+              "requires": "order:advance",
+              "systemInitiated": false
+            }
+          ]
+        },
+        {
+          "entity": "project",
+          "states": [
+            "design",
+            "study",
+            "authorisation",
+            "released"
+          ],
+          "initial": "design",
+          "terminal": [
+            "released"
+          ],
+          "transitions": [
+            {
+              "from": "design",
+              "to": "study",
+              "action": "Project moved to study",
+              "requires": "project:manage",
+              "systemInitiated": false
+            },
+            {
+              "from": "study",
+              "to": "authorisation",
+              "action": "Project moved to authorisation",
+              "requires": "project:manage",
+              "systemInitiated": false
+            },
+            {
+              "from": "authorisation",
+              "to": "released",
+              "action": "Project released",
+              "requires": "lot:release",
+              "systemInitiated": false
+            },
+            {
+              "from": "authorisation",
+              "to": "study",
+              "action": "Project returned to study",
+              "requires": "project:manage",
+              "systemInitiated": false
+            }
+          ]
+        },
+        {
+          "entity": "property_value",
+          "states": [
+            "draft",
+            "assigned",
+            "authorised"
+          ],
+          "initial": "draft",
+          "terminal": [
+            "authorised"
+          ],
+          "transitions": [
+            {
+              "from": "draft",
+              "to": "assigned",
+              "action": "Property value assigned",
+              "requires": "value:assign",
+              "systemInitiated": false
+            },
+            {
+              "from": "assigned",
+              "to": "authorised",
+              "action": "Property value authorised",
+              "requires": "value:authorise",
+              "systemInitiated": false
+            },
+            {
+              "from": "assigned",
+              "to": "draft",
+              "action": "Property value returned to assigner",
+              "requires": "value:authorise",
+              "systemInitiated": false
+            }
+          ]
+        },
+        {
+          "entity": "study",
+          "states": [
+            "draft",
+            "signed"
+          ],
+          "initial": "draft",
+          "terminal": [
+            "signed"
+          ],
+          "transitions": [
+            {
+              "from": "draft",
+              "to": "signed",
+              "action": "Study signed",
+              "requires": "study:sign",
+              "systemInitiated": false
+            }
+          ]
+        }
+      ],
+      "dropped": []
+    }
+  },
+  "GET /admin/config/draft/:id/form/:entity": {
+    "status": 200,
+    "body": {
+      "form": {
+        "entity": "lot",
+        "layoutKey": "lot_production",
+        "sections": [
+          {
+            "title": "Origin and packaging",
+            "columns": 2,
+            "collapsed": false,
+            "fields": [
+              {
+                "field": {
+                  "key": "batch_origin",
+                  "entity": "lot",
+                  "label": "Batch origin",
+                  "type": "text",
+                  "helpText": "Where the bulk material for this lot came from.",
+                  "required": true,
+                  "immutableType": true,
+                  "maxLength": 120,
+                  "onCertificate": false,
+                  "sortOrder": 1
+                },
+                "span": 2,
+                "readOnly": false
+              },
+              {
+                "field": {
+                  "key": "packaging",
+                  "entity": "lot",
+                  "label": "Packaging",
+                  "type": "select",
+                  "required": true,
+                  "immutableType": true,
+                  "picklistKey": "packaging",
+                  "onCertificate": true,
+                  "sortOrder": 2
+                },
+                "span": 1,
+                "readOnly": false
+              },
+              {
+                "field": {
+                  "key": "ampoules_filled",
+                  "entity": "lot",
+                  "label": "Ampoules filled",
+                  "type": "integer",
+                  "required": false,
+                  "immutableType": true,
+                  "min": 1,
+                  "max": 100000,
+                  "onCertificate": false,
+                  "sortOrder": 3
+                },
+                "span": 1,
+                "readOnly": false
+              }
+            ]
+          },
+          {
+            "title": "Filling",
+            "columns": 1,
+            "collapsed": false,
+            "fields": [
+              {
+                "field": {
+                  "key": "fill_notes",
+                  "entity": "lot",
+                  "label": "Filling notes",
+                  "type": "textarea",
+                  "required": false,
+                  "immutableType": true,
+                  "maxLength": 2000,
+                  "onCertificate": false,
+                  "sortOrder": 4
+                },
+                "span": 1,
+                "readOnly": false
+              }
+            ]
+          }
+        ],
+        "picklists": {
+          "packaging": [
+            {
+              "value": "ampoule_2ml",
+              "label": "2 mL amber ampoule",
+              "retired": false
+            },
+            {
+              "value": "vial_10ml",
+              "label": "10 mL screw-cap vial",
+              "retired": false
+            },
+            {
+              "value": "sachet_1g",
+              "label": "1 g foil sachet",
+              "retired": false
+            },
+            {
+              "value": "bottle_50ml",
+              "label": "50 mL bottle (withdrawn 2024)",
+              "retired": true
+            }
+          ]
+        }
+      }
+    }
+  }
+}

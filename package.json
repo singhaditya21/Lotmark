@@ -23,7 +23,9 @@
     "db:status": "pnpm --filter @lotmark/db migrate:status",
     "worker": "NODE_ENV=development pnpm --filter @lotmark/api worker",
     "job": "NODE_ENV=development pnpm --filter @lotmark/api job",
-    "anchor": "NODE_ENV=development pnpm --filter @lotmark/api anchor"
+    "anchor": "NODE_ENV=development pnpm --filter @lotmark/api anchor",
+    "demo": "pnpm --filter @lotmark/web demo",
+    "demo:capture": "pnpm --filter @lotmark/web capture"
   },
   "devDependencies": {
     "typescript": "^5.7.2",
