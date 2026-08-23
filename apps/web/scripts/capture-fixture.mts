@@ -64,6 +64,14 @@ const SUBSTITUTIONS: ReadonlyArray<readonly [RegExp, string]> = [
   [/\bSTQC[^,.;)\]]*/g, 'security certification'],
   [/\bPvPI\b/g, 'pharmacovigilance'],
   [/\bOpenCart\b/g, 'the legacy storefront'],
+  /*
+   * The console renders `${verifyOrigin}/verify/<token>` as a real link in the
+   * certificate vault. Captured, that origin is a developer's Vite server, so
+   * clicking "check" on the published demo walked the viewer off to a dead
+   * localhost URL. Replaced with a marker the adapter resolves to wherever the
+   * demo is actually being served from.
+   */
+  [/https?:\/\/localhost:5173/g, '__DEMO_ORIGIN__'],
   [/demo1234/g, 'demo-viewer'],
   [/demo-password-1234/g, 'demo-viewer'],
 ];
@@ -254,7 +262,10 @@ for (const id of projects.slice(0, 2)) {
       const issues = (cert as Record<string, unknown> | null)?.['issues'];
       const first = Array.isArray(issues) && issues.length > 0
         ? issues[0] as Record<string, unknown> : null;
-      const n = first?.['issue_number'] ?? first?.['issueNumber'] ?? null;
+      // `number`. It was `issue_number` here, which is what the DATABASE calls
+      // it — the API renames it on the way out, and the holders capture
+      // silently produced nothing for two builds because of the mismatch.
+      const n = first?.['number'] ?? first?.['issue_number'] ?? first?.['issueNumber'] ?? null;
       if (typeof n === 'number') {
         await get(admin, `/certificates/${certId}/issues/${n}/holders`,
           '/certificates/:id/issues/:n/holders');
@@ -263,13 +274,28 @@ for (const id of projects.slice(0, 2)) {
   }
 }
 
-/* Custom fields, for whichever entities the seed actually configures. */
-for (const [entity, list] of [['lot', '/projects'], ['project', '/projects']] as const) {
-  const recs = ids(await get(admin, list));
+/*
+ * Custom fields — the form designer's output, seen on a record.
+ *
+ * The id has to MATCH the entity. The first version asked for
+ * `/custom-fields/lot/<a project id>` and got a 404 for every attempt, so the
+ * demo's records showed no custom fields at all and the form designer
+ * demonstrated a feature with no visible effect anywhere else.
+ */
+const projectIds = ids(await get(admin, '/projects'));
+const lotIds: string[] = [];
+for (const pid of projectIds.slice(0, 3)) {
+  lotIds.push(...ids(await get(admin, `/projects/${pid}/lots`, '/projects/:id/lots')));
+}
+const capaIds = ids(await get(admin, '/capa'));
+
+for (const [entity, recs] of [
+  ['lot', lotIds], ['project', projectIds], ['capa', capaIds],
+] as const) {
   for (const r of recs.slice(0, 2)) {
-    await get(admin, `/custom-fields/${entity}/${r}`, `/custom-fields/:entity/:recordId`);
+    await get(admin, `/custom-fields/${entity}/${r}`, '/custom-fields/:entity/:recordId');
     await get(admin, `/custom-fields/${entity}/${r}/history`,
-      `/custom-fields/:entity/:recordId/history`);
+      '/custom-fields/:entity/:recordId/history');
   }
 }
 

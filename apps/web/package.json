@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "capture": "NODE_ENV=development tsx scripts/capture-fixture.mts",
-    "demo": "VITE_DEMO=1 tsc -b && VITE_DEMO=1 vite build"
+    "demo": "VITE_DEMO=1 tsc -b && VITE_DEMO=1 vite build && cp dist/index.html dist/404.html"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.7",

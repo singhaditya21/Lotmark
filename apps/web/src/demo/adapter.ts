@@ -27,6 +27,28 @@ const RECORDING = fixture as unknown as Record<string, Recorded>;
  */
 const state: Record<string, Recorded> = structuredClone(RECORDING);
 
+/**
+ * Resolve the captured origin marker to wherever this demo is actually served.
+ *
+ * Done once, at load, rather than on every read: the fixture is a few hundred
+ * keys and re-walking it per request to fix one string would be silly. Baking
+ * the deployed URL into the fixture instead would mean a capture that only
+ * works on one host.
+ */
+(() => {
+  const here = `${window.location.origin}${import.meta.env.BASE_URL}`.replace(/\/$/, '');
+  const fix = (v: unknown): unknown => {
+    if (typeof v === 'string') return v.replace(/__DEMO_ORIGIN__/g, here);
+    if (Array.isArray(v)) return v.map(fix);
+    if (v && typeof v === 'object') {
+      return Object.fromEntries(
+        Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, fix(x)]));
+    }
+    return v;
+  };
+  for (const key of Object.keys(state)) state[key]!.body = fix(state[key]!.body);
+})();
+
 /* ── Matching a real path back to the template it was captured under ───────── */
 
 /**
