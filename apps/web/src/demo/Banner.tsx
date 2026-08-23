@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { DEMO_PASSWORD } from './constants';
 
 /**
@@ -11,6 +12,21 @@ import { DEMO_PASSWORD } from './constants';
  * during a take.
  */
 export function DemoBanner() {
+  /*
+   * Reserve the space the bar occupies.
+   *
+   * `position: fixed` takes the bar out of flow, so on a short page it sat on
+   * top of the last table row — measured on the live site, covering a project.
+   * A viewer scrolling to the bottom of any list would find the final row
+   * permanently half-hidden, which on camera reads as a rendering bug in the
+   * product rather than as the demo furniture it is.
+   */
+  useEffect(() => {
+    const previous = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = '68px';
+    return () => { document.body.style.paddingBottom = previous; };
+  }, []);
+
   return (
     <div
       role="note"
