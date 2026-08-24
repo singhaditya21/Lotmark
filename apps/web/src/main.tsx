@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from './App';
 import './styles.css';
 import { DemoBanner } from './demo/Banner';
+import { DemoVerify, verifyTokenFromPath } from './demo/Verify';
 
 /*
  * A build-time constant, so a normal build folds this to `false`, drops the
@@ -30,11 +31,27 @@ const queryClient = new QueryClient({
   },
 });
 
+/*
+ * `/verify/<token>` is a public page, not part of the console.
+ *
+ * In production the API serves it before the SPA ever sees the path; in the
+ * static demo there is no server, so the 404 fallback loads the app here and
+ * this stands in. Guarded by VITE_DEMO and by the path, so a normal build folds
+ * it away and the real console is never affected. It renders without the query
+ * client or the banner — a person checking a certificate is not signed in and
+ * should see nothing of the console around it.
+ */
+const verifyToken = import.meta.env.VITE_DEMO ? verifyTokenFromPath() : null;
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-      {import.meta.env.VITE_DEMO ? <DemoBanner /> : null}
-    </QueryClientProvider>
+    {verifyToken ? (
+      <DemoVerify token={verifyToken} />
+    ) : (
+      <QueryClientProvider client={queryClient}>
+        <App />
+        {import.meta.env.VITE_DEMO ? <DemoBanner /> : null}
+      </QueryClientProvider>
+    )}
   </StrictMode>,
 );

@@ -45,6 +45,7 @@ const find = (ctx: Ctx, keys: string[], id: string) => {
   return null;
 };
 
+
 /**
  * `[pattern, kind, chain]`, tried in order.
  *
@@ -134,6 +135,7 @@ export const CHAINS: ReadonlyArray<readonly [string, Chain]> = [
     /* Holders are told. This is the control the register calls REQ-WITHDRAWAL. */
     const holders = ctx.list('GET /certificates/:id/issues/:n/holders');
     holders?.forEach((h) => { h['notified'] = true; h['notified_at'] = ctx.now(); });
+
     ctx.audit('CERTIFICATE', 'certificate.withdraw',
       `Issue #${n} withdrawn — ${String(payload['reason'] ?? 'value found to be wrong')}; `
       + `${holders?.length ?? 0} holder(s) notified`);

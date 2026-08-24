@@ -423,6 +423,88 @@ app.log.level = 'silent';
 await app.close();
 
 /*
+ * Public certificate verification, which the seed leaves impossible to show.
+ *
+ * A verification token is minted when a certificate is issued and rendered; the
+ * seed inserts the certificate rows directly and mints none, so every token is
+ * null and the vault's VERIFY column is a row of dashes. That is faithful to
+ * the seed — the real product would show the same against it — but it hides one
+ * of the more compelling things this product does: an auditor holding a printed
+ * certificate checks it with no account and no login (see Vault.tsx).
+ *
+ * So a token is synthesised here for each issue that has a certificate, written
+ * onto the vault holding and the certificate detail so the "check" link
+ * appears, and recorded in `__verify` — a token → facts map the demo's
+ * verification page reads. Deterministic, from the certificate code and issue
+ * number, so the committed fixture is stable across captures.
+ */
+function verificationToken(code: string, issue: number): string {
+  return createHmac('sha256', 'lotmark-demo-verify')
+    .update(`${code}#${issue}`).digest('base64url').slice(0, 24);
+}
+
+const verify: Record<string, unknown> = {};
+
+/** The producer, already sanitised on every response; named once here for the page. */
+const PRODUCER = 'Meridian Reference Materials';
+
+const certIssues = (fixture['GET /certificates/:id']?.body as
+  { issues?: Array<Record<string, unknown>> } | undefined)?.issues ?? [];
+
+/*
+ * Every vault capture, not just the shared one.
+ *
+ * A customer signs in and sees their OWN vault — `email|GET /vault`, a
+ * separately captured, persona-scoped response — and the customer is exactly
+ * who verifies a certificate. Tokening only the shared `GET /vault` left the
+ * one holder who would click "check" looking at a row of dashes. Every capture
+ * whose key ends in `GET /vault` is walked, and a given certificate issue keeps
+ * the same token wherever it appears.
+ */
+const holdings = Object.keys(fixture)
+  .filter((k) => k.endsWith('GET /vault'))
+  .flatMap((k) => (fixture[k]!.body as
+    { holdings?: Array<Record<string, unknown>> } | undefined)?.holdings ?? []);
+
+for (const h of holdings) {
+  const code = h['certificate_code'];
+  const issue = h['issue_number'];
+  if (typeof code !== 'string' || typeof issue !== 'number') continue;
+
+  const token = verificationToken(code, issue);
+  h['verification_token'] = token;
+
+  // The same token on the certificate's own issue, so both links agree.
+  const detail = certIssues.find((i) => i['number'] === issue);
+  if (detail) detail['verificationToken'] = token;
+
+  // Deterministic token, so a second holding of the same issue overwrites the
+  // same map entry rather than adding a duplicate.
+  verify[token] = {
+    // `current` unless a later issue exists or this one is withdrawn — the demo
+    // updates this in place when a certificate is withdrawn or reissued, so the
+    // recall journey ends on a page that actually says WITHDRAWN.
+    status: h['withdrawn'] === true ? 'withdrawn' : 'current',
+    certificateCode: code,
+    issueNumber: issue,
+    materialName: h['material_name'],
+    lotCode: h['lot_code'],
+    propertyName: h['property_name'],
+    assignedValue: h['assigned_value'],
+    expandedUncertainty: h['expanded_uncertainty'],
+    coverageFactor: (detail?.['coverageFactor'] as number | undefined) ?? 2,
+    unit: h['unit'],
+    expiryDate: h['expiry_date'],
+    issuedAt: (detail?.['issuedAt'] as string | undefined) ?? h['acquired_on'],
+    producerName: PRODUCER,
+    withdrawnReason: null,
+  };
+}
+
+(fixture as Record<string, unknown>)['__verify'] = { status: 200, body: verify };
+console.log(`  (${Object.keys(verify).length} verification token(s) synthesised)`);
+
+/*
  * Stamp when this was captured.
  *
  * The demo shifts every date it holds by the gap between this and the moment a
