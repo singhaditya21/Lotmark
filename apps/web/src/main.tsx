@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from './App';
 import './styles.css';
 import { DemoBanner } from './demo/Banner';
-import { DemoVerify, verifyTokenFromPath } from './demo/Verify';
+import { DemoVerify, VerifyLanding, verifyTokenFromPath, isVerifyPath } from './demo/Verify';
 
 /*
  * A build-time constant, so a normal build folds this to `false`, drops the
@@ -41,12 +41,18 @@ const queryClient = new QueryClient({
  * client or the banner — a person checking a certificate is not signed in and
  * should see nothing of the console around it.
  */
-const verifyToken = import.meta.env.VITE_DEMO ? verifyTokenFromPath() : null;
+/*
+ * `/verify/<token>` shows the result; the bare `/verify` shows a code box. Both
+ * are demo only — the product serves them from the API — so a normal build
+ * folds the whole branch to `null` and drops the Verify module.
+ */
+const onVerify = import.meta.env.VITE_DEMO && isVerifyPath();
+const verifyToken = onVerify ? verifyTokenFromPath() : null;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {verifyToken ? (
-      <DemoVerify token={verifyToken} />
+    {onVerify ? (
+      verifyToken ? <DemoVerify token={verifyToken} /> : <VerifyLanding />
     ) : (
       <QueryClientProvider client={queryClient}>
         <App />

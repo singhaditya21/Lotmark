@@ -90,5 +90,15 @@ you can film the red "do not rely on this certificate" page directly:
 https://singhaditya21.github.io/Lotmark/verify/p5Sl5-u5OXZ5Snb-7gDAIjiD
 ```
 
+You can also verify by typing a code at the bare landing:
+
+```
+https://singhaditya21.github.io/Lotmark/verify
+```
+
+Enter `CRT-2041`. Both verification pages offer **Download this record**, which
+saves the shown facts as JSON — the demo's stand-in for the signed PDF the real
+product hands over.
+
 The current (green) page is reached from any holder's Certificate vault by
 clicking **check**.

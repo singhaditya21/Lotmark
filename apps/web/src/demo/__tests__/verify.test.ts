@@ -71,3 +71,19 @@ describe('verification tokens', () => {
     }
   });
 });
+
+describe('looking up a certificate by its code', () => {
+  it('resolves a real code to its token, case-insensitively', async () => {
+    const { tokenForCode } = await import('../Verify');
+    const map = verifyMap();
+    const someCode = String(Object.values(map)[0]!['certificateCode']);
+    const token = tokenForCode(someCode.toLowerCase());
+    expect(token, 'a code a holder types should resolve').toBeTruthy();
+    expect(map[token!]!['certificateCode']).toBe(someCode);
+  });
+
+  it('returns null for a code that was never issued', async () => {
+    const { tokenForCode } = await import('../Verify');
+    expect(tokenForCode('CRT-9999')).toBeNull();
+  });
+});

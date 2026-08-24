@@ -178,3 +178,28 @@ label.inline input{margin-top:3px}
    through: the material is still on the shelf and the row still has to be
    readable — what has changed is whether it may be relied on. */
 tr.bad-row { background: var(--badT); }
+
+/* ── Narrow screens ─────────────────────────────────────────────────────────
+ *
+ * Best-effort, and scoped tight so the desktop layout — where this is filmed —
+ * is untouched. Two things break a wide layout on a phone: a horizontal row of
+ * a dozen nav buttons, and a wide table. The nav scrolls sideways rather than
+ * wrapping into three rows, and every table scrolls inside its own card rather
+ * than forcing the whole page sideways. The page body itself never scrolls
+ * horizontally, which on a touch screen reads as the app being broken.
+ */
+@media (max-width: 720px) {
+  html, body { overflow-x: hidden; }
+  header.top { gap: 10px; padding: 8px 12px; }
+  header.top nav {
+    margin-left: 0; overflow-x: auto; flex: 1 1 auto;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  header.top nav::-webkit-scrollbar { display: none; }
+  header.top nav button { white-space: nowrap; }
+  header.top .who { margin-left: 8px; }
+  main { padding-inline: 12px; }
+  /* A wide table scrolls within its card instead of clipping (cards hide
+   * overflow) or dragging the page sideways. */
+  .card { overflow-x: auto; }
+}
