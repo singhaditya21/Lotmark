@@ -158,21 +158,80 @@ export const CHAINS: ReadonlyArray<readonly [string, Chain]> = [
     return capa ?? { id, state: to };
   }],
 
-  /* ── An order advances, and a shipment is raised ────────────────────────── */
+  /* ── A customer places an order, and it works its way to dispatch ───────── */
+  ['POST /orders', (ctx, payload) => {
+    /*
+     * The customer's half of the story, which the generic write left as a bare
+     * row with no code and no state. A real placed order: its own number, the
+     * line count, priced, against the customer's own organisation, and an entry
+     * in the ledger the producer will see. Currency is written as INR rather
+     * than the symbol on purpose — the published bundle is scanned for it.
+     */
+    const lines = (payload['lines'] as Array<{ quantity?: number }> | undefined) ?? [];
+    const units = lines.reduce((n, l) => n + (Number(l.quantity) || 0), 0);
+    const totalMinor = units * 500_000; // INR 5,000 a unit, matching the catalogue.
+    const code = `ORD-${3400 + Math.floor(Math.random() * 500)}`;
+    const me = ctx.body('GET /auth/me') as { organisation?: { name?: string } } | undefined;
+    const order = {
+      id: ctx.id(), code, state: 'placed', placed_on: ctx.now().slice(0, 10),
+      total_minor: totalMinor, currency: 'INR', courier: null,
+      tracking_reference: null,
+      organisation_name: me?.organisation?.name ?? 'the customer',
+    };
+    ctx.list('GET /orders')?.unshift(order);
+    ctx.audit('ORDER', 'order.place',
+      `${code} placed by ${order.organisation_name} — ${units} unit(s), `
+      + `INR ${(totalMinor / 100).toLocaleString('en-IN')}`);
+    return { code, totalMinor };
+  }],
+
   ['POST /orders/:id/advance', (ctx, payload, [id]) => {
     const order = find(ctx, ['GET /orders'], id!);
     const to = String(payload['to'] ?? 'packed');
-    if (order) order['state'] = to;
+    if (order) {
+      order['state'] = to;
+      if (to === 'dispatched') {
+        order['courier'] = payload['courier'] ?? 'Cold-chain courier';
+        order['tracking_reference'] = `CC${100000 + Math.floor(Math.random() * 900000)}`;
+        order['dispatched_at'] = ctx.now();
+      }
+      if (to === 'delivered') order['delivered_at'] = ctx.now();
+    }
     ctx.audit('ORDER', 'order.advance', `${String(order?.['code'] ?? 'order')} → ${to}`);
     return order ?? { id, state: to };
   }],
 
-  ['POST /orders/:id/shipment', (ctx, _payload, [id]) => {
+  ['POST /orders/:id/shipment', (ctx, payload, [id]) => {
     const order = find(ctx, ['GET /orders'], id!);
     if (order) { order['state'] = 'dispatched'; order['dispatched_at'] = ctx.now(); }
+    const code = `SHP-${8000 + Math.floor(Math.random() * 900)}`;
+    const shipment = {
+      id: ctx.id(), order_id: id, code,
+      temperature_class: String(payload['temperatureClass'] ?? '2-8'),
+      dispatched_at: ctx.now(), delivered_at: null, readings: 0, excursions: 0,
+    };
+    const shipments = (ctx.body('GET /orders') as { shipments?: unknown[] } | undefined)?.shipments;
+    if (Array.isArray(shipments)) shipments.unshift(shipment);
     ctx.audit('ORDER', 'shipment.create',
-      `Shipment raised for ${String(order?.['code'] ?? 'order')} — cold chain armed`);
-    return { id: ctx.id(), orderId: id, state: 'in_transit' };
+      `${code} raised for ${String(order?.['code'] ?? 'order')} — cold chain armed at `
+      + `${shipment.temperature_class} °C`);
+    return shipment;
+  }],
+
+  /* ── The cold chain reports in ──────────────────────────────────────────── */
+  ['POST /shipments/:id/readings', (ctx, payload, [id]) => {
+    const shipments = (ctx.body('GET /orders') as
+      { shipments?: Array<Record<string, unknown>> } | undefined)?.shipments;
+    const shipment = shipments?.find((s) => s['id'] === id);
+    const excursion = payload['excursion'] === true;
+    if (shipment) {
+      shipment['readings'] = Number(shipment['readings'] ?? 0) + 1;
+      if (excursion) shipment['excursions'] = Number(shipment['excursions'] ?? 0) + 1;
+    }
+    ctx.audit('SHIPMENT', 'shipment.reading',
+      `${String(shipment?.['code'] ?? 'shipment')} logged a temperature reading`
+      + (excursion ? ' — EXCURSION flagged' : ' — in range'));
+    return shipment ?? { id, readings: 1 };
   }],
 
   /* ── An entitlement is decided ──────────────────────────────────────────── */

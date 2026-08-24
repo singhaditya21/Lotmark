@@ -307,4 +307,46 @@ describe('an act leaves a trace', () => {
     const entries = listIn((await call(fresh.demoFetch, 'GET', '/audit')).body);
     expect(String(entries[0]!['actor_label'])).toContain('Neha');
   });
+
+  it('a customer placing an order gets a coded, priced, recorded order', async () => {
+    /*
+     * The customer's half of the story, which had no chain — a bare row with no
+     * code and no state. It must come back with an order number and a price,
+     * appear at the top of the orders list, and land in the ledger.
+     */
+    const before = listIn((await call(demoFetch, 'GET', '/orders')).body).length;
+    const placed = await call(demoFetch, 'POST', '/orders',
+      { lines: [{ lotId: 'x', quantity: 3 }] });
+    expect(String(placed.body['code'])).toMatch(/^ORD-\d+$/);
+    expect(placed.body['totalMinor']).toBe(1_500_000);
+
+    const orders = listIn((await call(demoFetch, 'GET', '/orders')).body);
+    expect(orders.length).toBe(before + 1);
+    expect(orders[0]!['state']).toBe('placed');
+    expect(String((await auditTop())['detail'])).toMatch(/placed/);
+  });
+
+  it('an order dispatched gets a courier and a tracking reference', async () => {
+    const orders = listIn((await call(demoFetch, 'GET', '/orders')).body);
+    const id = String(orders.find((o) => o['state'] === 'placed')?.['id'] ?? orders[0]!['id']);
+    await call(demoFetch, 'POST', `/orders/${id}/advance`, { to: 'dispatched' });
+    const after = listIn((await call(demoFetch, 'GET', '/orders')).body)
+      .find((o) => o['id'] === id);
+    expect(after?.['state']).toBe('dispatched');
+    expect(after?.['tracking_reference'], 'a dispatched order should be trackable').toBeTruthy();
+  });
+
+  it('a cold-chain reading is logged against its shipment', async () => {
+    const shipments = (((await call(demoFetch, 'GET', '/orders')).body) as
+      { shipments?: Array<Record<string, unknown>> }).shipments ?? [];
+    const s = shipments[0]!;
+    const before = Number(s['readings']);
+    await call(demoFetch, 'POST', `/shipments/${String(s['id'])}/readings`, { excursion: true });
+    const after = (((await call(demoFetch, 'GET', '/orders')).body) as
+      { shipments?: Array<Record<string, unknown>> }).shipments!
+      .find((x) => x['id'] === s['id']);
+    expect(Number(after?.['readings'])).toBe(before + 1);
+    expect(Number(after?.['excursions'])).toBeGreaterThan(0);
+    expect(String((await auditTop())['detail'])).toMatch(/EXCURSION/);
+  });
 });
