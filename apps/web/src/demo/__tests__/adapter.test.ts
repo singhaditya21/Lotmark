@@ -133,6 +133,32 @@ describe('signing', () => {
     expect(refused.status).toBe(401);
     expect(refused.body['code']).toBe('step_up_required');
   });
+
+  it('does NOT demand step-up for a transition the workflow does not sign', async () => {
+    /*
+     * The over-broad guard this pins down. Whether a move needs a signature is
+     * set per-transition — the product enforces `requiresSignature` FROM the
+     * transition — and the seeded CAPA workflow signs none of its moves, only
+     * gating them on the `capa:manage` permission. A blanket rule on every path
+     * ending in `transition` made the demo throw the §11.200 wall in front of a
+     * CAPA progression that the real product completes without ceremony, which
+     * is a refusal the product would never show and a dead end on camera.
+     */
+    await signIn(demoFetch);
+    const capa = listIn((await call(demoFetch, 'GET', '/capa')).body);
+    const before = listIn((await call(demoFetch, 'GET', '/audit')).body)[0]!['seq'];
+
+    // investigation → root_cause: a real move in the seeded workflow, and one
+    // it does not require a signature for.
+    const moved = await call(demoFetch, 'POST',
+      `/capa/${String(capa[0]!['id'])}/transition`,
+      { to: 'root_cause', reason: 'Logger failure confirmed as the cause' });
+
+    expect(moved.status, 'the move was refused for a signature it does not need').toBe(200);
+    const top = listIn((await call(demoFetch, 'GET', '/audit')).body)[0]!;
+    expect(top['seq'], 'and it still recorded the move in the ledger').not.toBe(before);
+    expect(top['kind']).toBe('CAPA');
+  });
 });
 
 describe('an act leaves a trace', () => {

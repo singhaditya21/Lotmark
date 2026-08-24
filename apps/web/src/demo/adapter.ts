@@ -105,6 +105,45 @@ function read(key: string): Recorded | undefined {
   return (persona ? state[`${persona}|${key}`] : undefined) ?? state[key];
 }
 
+/**
+ * Which writes demand a fresh signing window, and which do not.
+ *
+ * The genuine signature acts — signing a study, assigning or authorising a
+ * value, publishing configuration, reissuing or withdrawing a certificate —
+ * always do: each goes through the real product's signing path.
+ *
+ * A workflow TRANSITION is different, and getting it wrong is what this
+ * function exists to prevent. Whether a move needs a signature is a property of
+ * the move, set per-transition in the configuration — the product enforces
+ * `requiresSignature` FROM the transition, not from a blanket rule. The seeded
+ * CAPA workflow requires the `capa:manage` permission on every move and a
+ * signature on none, so guarding all of them unconditionally made the demo
+ * refuse a CAPA progression that the real product completes without ceremony —
+ * a §11.200 wall where there is none. So a transition is consulted against the
+ * captured workflow, and only a move that actually sets `requiresSignature`
+ * asks for one.
+ */
+function needsStepUp(path: string, payload: Record<string, unknown> | null): boolean {
+  if (/\/(sign|authorise|assign|publish|withdraw|reissue)$/.test(path)) return true;
+
+  const capa = /^\/capa\/([^/]+)\/transition$/.exec(path);
+  if (capa) {
+    const from = (listOf(read('GET /capa')?.body) ?? [])
+      .find((c) => (c as Record<string, unknown>)['id'] === capa[1]) as
+      Record<string, unknown> | undefined;
+    const to = payload?.['to'] ?? payload?.['toState'];
+    const moves = (read('GET /capa/workflow')?.body as
+      { transitions?: Array<Record<string, unknown>> } | undefined)?.transitions ?? [];
+    const move = moves.find((m) => m['from'] === from?.['state'] && m['to'] === to);
+    // Default to demanding it: an unknown move is safer refused than waved
+    // through, and it keeps a mislabelled fixture from quietly dropping the
+    // ceremony.
+    return move ? move['requiresSignature'] === true : true;
+  }
+
+  return false;
+}
+
 /* ── Session ──────────────────────────────────────────────────────────────── */
 
 /**
@@ -285,12 +324,12 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
 
   /* — Signing. The ceremony is the point, so the refusal has to be real — */
 
-  if (method === 'POST' && /\/(sign|authorise|assign|publish|withdraw|reissue|transition)$/.test(path)) {
-    if (Date.now() > steppedUpUntil) {
-      return problem(401, 'step_up_required',
-        'Confirm your identity before signing. This is 21 CFR 11 §11.200 — a signature '
-        + 'needs a fresh authentication, not just a live session.');
-    }
+  if (method === 'POST'
+      && needsStepUp(path, payload as Record<string, unknown> | null)
+      && Date.now() > steppedUpUntil) {
+    return problem(401, 'step_up_required',
+      'Confirm your identity before signing. This is 21 CFR 11 §11.200 — a signature '
+      + 'needs a fresh authentication, not just a live session.');
   }
 
   /* — Reads — */
