@@ -34,12 +34,23 @@ jobs:
           --health-retries 20
 
     env:
-      # The test suite builds its own template database and clones one per
-      # worker; it needs the maintenance connection to do that, and the CI
-      # superuser is `postgres` rather than the local developer's own name.
+      # PGHOST/PGUSER, not DATABASE_URL, are what let the privileged connections
+      # work. The API suite's global setup creates a template and clones one
+      # database per worker over `postgres://localhost:5432/...` — no user in the
+      # URL — so it connects as PGUSER, which on the CI service is `postgres`.
       PGHOST: localhost
       PGUSER: postgres
-      DATABASE_URL: postgres://postgres@localhost:5432/lotmark_dev
+
+      # The job default is the APPLICATION role, deliberately not a superuser,
+      # because the db suite's `createClient()` falls back to exactly this
+      # (`client.ts` DEFAULT_URL) and its whole subject is what a non-superuser
+      # can and cannot see. A superuser here bypasses row-level security
+      # UNCONDITIONALLY, so `postgres://postgres@...` — the first value this line
+      # held — turned every isolation and append-only test green-to-red the
+      # moment CI first ran: an unfiltered select returned all six tenants'
+      # rows, and the privilege REVOKEs a superuser ignores stopped throwing.
+      # Migrate and seed, which need DDL and TRUNCATE, override this per step.
+      DATABASE_URL: postgres://lotmark_app@localhost:5432/lotmark_dev
 
     steps:
       - uses: actions/checkout@v4
@@ -66,6 +77,13 @@ jobs:
         run: psql -c 'CREATE DATABASE lotmark_dev'
 
       - name: Migrate and seed it
+        # As the OWNER, not the app role. Migrate runs DDL and seed runs
+        # TRUNCATE, both of which the application role deliberately cannot do —
+        # so this is the one place that overrides the job's non-superuser
+        # default. `migrate()`/`seed` read DATABASE_URL before their ADMIN_URL
+        # fallback, so setting it here is enough.
+        env:
+          DATABASE_URL: postgres://postgres@localhost:5432/lotmark_dev
         run: |
           pnpm --filter @lotmark/db migrate
           pnpm --filter @lotmark/db seed
