@@ -300,7 +300,17 @@ export async function verifyStoredSignature(
   },
 ): Promise<VerificationResult> {
   const [row] = await tx`
-    SELECT s.*, u.display_name, k.custody
+    SELECT s.*,
+           -- The instant, rendered by POSTGRES in the exact form the payload
+           -- was built with -- see the matching to_char in applySignature. The
+           -- driver's own rendering of a timestamptz follows the session
+           -- timezone, and reconstructing this string from it in JS was where a
+           -- UTC session broke: postgres renders a zero offset as plus-zero-zero,
+           -- which Date.parse rejects as NaN, so verification threw "Invalid
+           -- time value" on every server not on a half-hour offset. Read it back
+           -- the way it was written and there is nothing to reconstruct.
+           to_char(s.signed_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS signed_at_utc,
+           u.display_name, k.custody
     FROM lotmark.signatures s
     JOIN lotmark.users u ON u.id = s.signer_user_id
     LEFT JOIN lotmark.signing_keys k
@@ -312,7 +322,7 @@ export async function verifyStoredSignature(
 
   const sig = row as {
     signer_user_id: string; display_name: string; meaning: string;
-    signed_at: string; signature_value: string | null; key_version: string;
+    signed_at_utc: string; signature_value: string | null; key_version: string;
     algorithm: string; canonical_version: string; custody: string | null;
   } | undefined;
 
@@ -368,7 +378,7 @@ export async function verifyStoredSignature(
     return inconclusive('unverifiable', `signing key ${sig.key_version} is not registered`);
   }
 
-  const signedAt = normaliseInstant(sig.signed_at);
+  const signedAt = sig.signed_at_utc;
   const payload = signaturePayload({
     signable: args.signable,
     signerUserId: sig.signer_user_id,
@@ -389,12 +399,6 @@ export async function verifyStoredSignature(
         custody: sig.custody ?? 'unknown',
       }
     : inconclusive('invalid', 'the record was altered after it was signed');
-}
-
-/** Render a stored instant in the exact form the payload was built with. */
-function normaliseInstant(value: string): string {
-  const ms = Date.parse(value.includes('T') ? value : value.replace(' ', 'T'));
-  return new Date(ms).toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
 export { canonicalMaterial };
