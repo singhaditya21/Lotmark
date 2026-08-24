@@ -1,5 +1,7 @@
 import fixture from './fixture.json';
 import { DEMO_PASSWORD } from './constants';
+import { rebase, deltaFrom } from './rebase';
+import { matchChain, type Ctx } from './chains';
 
 /**
  * The console, with the API replaced by a recording.
@@ -36,7 +38,27 @@ const state: Record<string, Recorded> = structuredClone(RECORDING);
  * works on one host.
  */
 (() => {
-  const here = `${window.location.origin}${import.meta.env.BASE_URL}`.replace(/\/$/, '');
+  /*
+   * Move every recorded date forward by the gap since capture, so a demo filmed
+   * months from now still opens on a ledger whose newest entry is minutes old.
+   * See ./rebase.ts for why the shift is uniform.
+   */
+  const delta = deltaFrom((RECORDING['__capturedAt'] as unknown as { body?: unknown })?.body);
+  if (delta !== 0) {
+    for (const key of Object.keys(state)) {
+      if (key === '__capturedAt') continue;
+      state[key]!.body = rebase(state[key]!.body, delta);
+    }
+  }
+
+  /*
+   * Guarded, because this module is also loaded by its own tests under node,
+   * where there is no window. Falling back to the marker's own text leaves the
+   * link inert rather than throwing on import and taking every assertion with
+   * it.
+   */
+  const origin = typeof window === 'undefined' ? '' : window.location.origin;
+  const here = `${origin}${import.meta.env.BASE_URL ?? '/'}`.replace(/\/$/, '');
   const fix = (v: unknown): unknown => {
     if (typeof v === 'string') return v.replace(/__DEMO_ORIGIN__/g, here);
     if (Array.isArray(v)) return v.map(fix);
@@ -141,6 +163,13 @@ const newId = (): string => {
     () => hex[Math.floor(Math.random() * 16)]).join('');
   return `${pick(8)}-${pick(4)}-5${pick(3)}-b${pick(3)}-${pick(12)}`;
 };
+
+/** The signed-in person's display name, for the audit trail's actor column. */
+function actorLabel(): string {
+  const me = (persona ? state[`${persona}|GET /auth/me`] : undefined) ?? state['GET /auth/me'];
+  const user = (me?.body as { user?: { name?: string } } | undefined)?.user;
+  return user?.name ?? 'Demonstration user';
+}
 
 /** The first array-valued property of a recorded body — the API's envelopes vary. */
 function listOf(body: unknown): unknown[] | null {
@@ -322,6 +351,43 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
     }
     return json({ ok: true, published: true });
   }
+
+  /**
+   * A write that changes what the next screen shows.
+   *
+   * `remember()` alone puts the new row at the top of a list, which is enough
+   * for a screenshot. What sells this product is the trace: sign a study and it
+   * reads `signed`, withdraw a certificate and its holders are marked notified,
+   * and every one of those acts appears in the audit ledger seconds later under
+   * the person who did it. See ./chains.ts.
+   */
+  const ctx: Ctx = {
+    body: (key) => state[key]?.body,
+    list: (key) => listOf(state[key]?.body) as Array<Record<string, unknown>> | null,
+    actor: actorLabel(),
+    now: () => new Date().toISOString(),
+    id: newId,
+    audit: (kind, action, detail) => {
+      const entries = listOf(state['GET /audit']?.body);
+      if (!entries) return;
+      const top = entries[0] as Record<string, unknown> | undefined;
+      entries.unshift({
+        seq: String(Number(top?.['seq'] ?? 0) + 1),
+        occurred_at: new Date().toISOString(),
+        actor_label: actorLabel(),
+        actor_role_id: '—',
+        kind, action, detail,
+        // Carried from the recording so the columns stay populated and
+        // consistent with every entry above them.
+        time_source: top?.['time_source'] ?? 'time.example.org (stratum 1)',
+        region: top?.['region'] ?? 'ap-south-1',
+      });
+    },
+  };
+
+  const chained = matchChain(method, path);
+  if (chained) return json(chained.chain(ctx, (payload ?? {}) as Record<string, unknown>,
+    chained.params) ?? { ok: true }, 200);
 
   const created = remember(path, payload);
   return json(created, 200);

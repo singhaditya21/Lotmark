@@ -422,6 +422,18 @@ if (ops?.jobs) {
 app.log.level = 'silent';
 await app.close();
 
+/*
+ * Stamp when this was captured.
+ *
+ * The demo shifts every date it holds by the gap between this and the moment a
+ * viewer loads the page, so a recording made six months from now still opens on
+ * an audit ledger whose newest entry is minutes old rather than visibly stale.
+ * Shifting uniformly keeps the data internally consistent: a lot expiring
+ * eighteen months after capture still expires eighteen months after viewing.
+ */
+(fixture as Record<string, unknown>)['__capturedAt'] =
+  { status: 200, body: new Date().toISOString() };
+
 mkdirSync(path.dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify(fixture, null, 2));
 
