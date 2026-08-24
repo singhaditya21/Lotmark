@@ -369,4 +369,43 @@ describe('an act leaves a trace', () => {
     expect(Number(after?.['excursions'])).toBeGreaterThan(0);
     expect(String((await auditTop())['detail'])).toMatch(/EXCURSION/);
   });
+
+  it('publishing a configuration draft makes it the active version', async () => {
+    /*
+     * The change-control loop. A pending draft carries changes; publishing it
+     * has to make the draft the active version, supersede the one it replaces,
+     * close the draft, and leave the act in the ledger — otherwise the button
+     * "works" and the configuration screen shows the same state as before.
+     */
+    const before = (await call(demoFetch, 'GET', '/admin/config')).body as
+      { versions: Array<Record<string, unknown>>; activeId: string; draftId: string | null };
+    const draft = before.versions.find((v) => v['id'] === before.draftId)!;
+    expect(draft, 'a draft must be waiting to publish').toBeTruthy();
+    const wasActive = before.activeId;
+
+    const res = await call(demoFetch, 'POST',
+      `/admin/config/draft/${String(before.draftId)}/publish`, { meaning: 'approval' });
+    expect(res.status).toBe(200);
+    expect(res.body['signed']).toBe(true);
+    expect(res.body['number']).toBe(draft['number']);
+
+    const after = (await call(demoFetch, 'GET', '/admin/config')).body as
+      { versions: Array<Record<string, unknown>>; activeId: string; draftId: string | null };
+    expect(after.draftId, 'the draft must be closed').toBe(null);
+    expect(after.activeId, 'the published draft must be active now').toBe(draft['id']);
+    const supersededOld = after.versions.find((v) => v['id'] === wasActive);
+    expect(supersededOld?.['status']).toBe('superseded');
+    expect(String((await auditTop())['detail'])).toMatch(/published under signature/);
+  });
+
+  it('refuses to publish without an open signing window', async () => {
+    /* The ceremony is the point: a fresh session, no step-up, must be turned away. */
+    const solo = await load();
+    await signIn(solo.demoFetch);
+    const cfg = (await call(solo.demoFetch, 'GET', '/admin/config')).body as { draftId: string };
+    const res = await call(solo.demoFetch, 'POST',
+      `/admin/config/draft/${String(cfg.draftId)}/publish`, { meaning: 'approval' });
+    expect(res.status).toBe(401);
+    expect(String(res.body['code'] ?? res.body['type'])).toMatch(/step_up/);
+  });
 });

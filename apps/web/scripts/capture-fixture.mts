@@ -430,6 +430,54 @@ if (draftId) {
 }
 
 /*
+ * A configuration change waiting to be published.
+ *
+ * Change control is the spine of a regulated producer platform: nobody edits
+ * the live configuration in place — they open a draft, and publishing it is a
+ * signed act that leaves a numbered version behind, which every record created
+ * afterwards is pinned to. The capture opens a real draft, but it is empty, so
+ * there is nothing to publish and the screen dead-ends. This seeds a draft that
+ * carries two real changes and needs a signature. The screen then opens on
+ * "review and publish the draft", and the publish chain turns it into the new
+ * active version, superseding the old one and writing the act to the ledger.
+ */
+{
+  const overview = fixture['GET /admin/config']?.body as {
+    versions: Array<Record<string, unknown>>; activeId: string; draftId: string | null;
+  } | undefined;
+  const review = fixture['GET /admin/config/draft/:id/review'];
+  if (overview && review) {
+    const DRAFT_ID = 'd7a1c0e2-0b44-5c9a-9f13-2c8b1e4a6f30';
+    const nextNumber =
+      Math.max(0, ...overview.versions.map((v) => Number(v['number']) || 0)) + 1;
+    overview.versions.push({
+      id: DRAFT_ID,
+      number: nextNumber,
+      status: 'draft',
+      reason: 'Second approval before dispatch, and a storage-condition field on every lot',
+      publishedAt: null,
+      signed: false,
+      changeCount: 2,
+    });
+    overview.draftId = DRAFT_ID;
+    review.body = {
+      changes: [
+        { kind: 'workflow', key: 'order.dispatch',
+          change: 'A dispatched order now needs a second approval before it ships',
+          risk: 'behaviour' },
+        { kind: 'field', key: 'lot.storage_condition',
+          change: 'Adds a "Storage condition" field to every lot, defaulting to 2–8 °C',
+          risk: 'behaviour' },
+      ],
+      problems: [],
+      needsSignature: true,
+      publishable: true,
+    };
+    console.log('  (a pending configuration draft added — ready to publish under signature)');
+  }
+}
+
+/*
  * Present the scheduled jobs as a running system would.
  *
  * Every job comes back `never_run` with the advice "check that the worker

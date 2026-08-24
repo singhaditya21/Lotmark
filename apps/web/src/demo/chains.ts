@@ -254,6 +254,42 @@ export const CHAINS: ReadonlyArray<readonly [string, Chain]> = [
       `Custom fields updated on a ${entity} — ${Object.keys(submitted).length} field(s)`);
     return store ?? { values: submitted };
   }],
+
+  /* ── A configuration draft is published, under signature ────────────────────
+   *
+   * The change-control loop, closed. The screen opens on a draft that carries
+   * two real changes; publishing it (a signed act — the ceremony is enforced by
+   * needsStepUp, which already covers every `/publish`) makes the draft the new
+   * active version, supersedes the old one, and writes the act to the ledger.
+   * The Configuration screen reads `activeId`/`draftId` back from the overview,
+   * so the version table updates the moment it refetches. */
+  ['POST /admin/config/draft/:id/publish', (ctx) => {
+    const overview = ctx.body('GET /admin/config') as {
+      versions: Array<Record<string, unknown>>; activeId: string; draftId: string | null;
+    } | undefined;
+    const review = ctx.body('GET /admin/config/draft/:id/review') as
+      { changes?: Array<Record<string, unknown>> } | undefined;
+    const changes = review?.changes ?? [];
+
+    let published: Record<string, unknown> | undefined;
+    if (overview) {
+      published = overview.versions.find((v) => v['id'] === overview.draftId);
+      for (const v of overview.versions) if (v['status'] === 'active') v['status'] = 'superseded';
+      if (published) {
+        published['status'] = 'active';
+        published['signed'] = true;
+        published['publishedAt'] = ctx.now();
+        published['changeCount'] = changes.length;
+        overview.activeId = published['id'] as string;
+      }
+      overview.draftId = null;
+    }
+
+    ctx.audit('CONFIG', 'config.publish',
+      `Version ${published?.['number'] ?? '?'} published under signature — `
+      + `${changes.length} change(s): ${changes.map((c) => String(c['key'])).join(', ')}`);
+    return { number: Number(published?.['number'] ?? 0), changes, signed: true };
+  }],
 ];
 
 /** Match a path against a chain pattern, collecting `:params`. */

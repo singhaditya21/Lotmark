@@ -455,20 +455,12 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
     return json({ ok: true });
   }
 
-  if (method === 'POST' && /^\/admin\/config\/draft\/[^/]+\/publish$/.test(path) && overview) {
-    overview.draftId = null;
-    for (const v of overview.versions ?? []) {
-      const row = v as Record<string, unknown>;
-      if (row['status'] === 'draft') {
-        row['status'] = 'active';
-        row['signed'] = true;
-        row['publishedAt'] = new Date().toISOString();
-      } else if (row['status'] === 'active') {
-        row['status'] = 'superseded';
-      }
-    }
-    return json({ ok: true, published: true });
-  }
+  /*
+   * Publishing a draft is NOT handled here. It returns the exact shape the
+   * screen reads back — `{ number, changes, signed }` — and writes the act to
+   * the ledger, which is a chain's job, not a scalar poke. See the
+   * `POST /admin/config/draft/:id/publish` chain in ./chains.ts.
+   */
 
   /**
    * A write that changes what the next screen shows.
