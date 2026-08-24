@@ -107,3 +107,29 @@ clicking **check**.
 between two producer tenants running the same platform with isolated,
 differently-named data — a different lab, different materials, different people.
 It is how multi-tenancy looks from the inside.
+
+**A first login that must change its password.** Sign in as
+`newuser@producer.example` (password `demo-viewer`, any six digits). Because the
+account still carries the password it was issued, the console opens straight on
+"Set your own password" and will not go anywhere else until a new one is set —
+the enrolment screen no seeded account otherwise reaches. Set any twelve-plus
+characters and it lands on the bench scientist's console with a "Password
+changed" notice.
+
+**A customer's order, placed on camera.** Sign in as a customer —
+`meera@genpharm.example` or `suresh@sdtl.gov.example` — open **Catalogue**, set a
+quantity and **Place order**. The order comes back with its own number, priced
+per unit, against the customer's own organisation, and appears in **My orders**;
+it also lands in the producer's audit ledger. On the producer side, **Orders &
+dispatch** can advance it — dispatching attaches a courier and a tracking
+reference, and a shipment logs cold-chain readings, flagging an excursion in the
+ledger.
+
+**Publishing a configuration change, under signature.** As `admin@`, open
+**Configuration**. A draft (version 2) is waiting with two real changes — a
+second approval before dispatch, and a storage-condition field on every lot.
+**Review and publish the draft** → **Sign and publish** triggers the 21 CFR 11
+§11.200 step-up ceremony; complete it and publish. Version 2 becomes active,
+version 1 is superseded, and the act is written to the audit ledger as
+`config.publish`, naming both changed keys. This is the change-control loop the
+whole platform turns on, filmable in four clicks.
