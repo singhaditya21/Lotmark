@@ -96,6 +96,26 @@ describe('reading', () => {
   });
 });
 
+describe('resetting for a re-take', () => {
+  it('unwinds a mutation back to the recorded starting point', async () => {
+    const mod = await load();
+    await signIn(mod.demoFetch);
+    await stepUp(mod.demoFetch);
+
+    const auditLen = async () =>
+      listIn((await call(mod.demoFetch, 'GET', '/audit')).body).length;
+    const before = await auditLen();
+
+    const capa = listIn((await call(mod.demoFetch, 'GET', '/capa')).body);
+    await call(mod.demoFetch, 'POST', `/capa/${String(capa[0]!['id'])}/transition`,
+      { to: 'root_cause', reason: 'moved so reset has something to undo' });
+    expect(await auditLen(), 'the move should have grown the ledger').toBe(before + 1);
+
+    mod.resetData();
+    expect(await auditLen(), 'reset must return the ledger to where it started').toBe(before);
+  });
+});
+
 describe('who is signed in', () => {
   let demoFetch: (p: string, i: RequestInit) => Promise<Response>;
   beforeEach(async () => { ({ demoFetch } = await load()); });

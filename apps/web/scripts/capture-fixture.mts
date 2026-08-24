@@ -528,6 +528,35 @@ for (const h of holdings) {
   };
 }
 
+/*
+ * A withdrawn certificate to check, without withdrawing one first.
+ *
+ * The recall is the product's §7.11 story, and its verification page — the red
+ * "do not rely on this certificate" — is the more striking of the two states.
+ * But the demo saves nothing across a page navigation, so a withdrawal done in
+ * the console cannot be what the standalone verify page shows. So a
+ * certificate that was withdrawn is seeded here, reachable at a fixed token, so
+ * the red page can be filmed alongside the green one. Its token is stable and
+ * documented in docs/demo/README.md.
+ */
+const WITHDRAWN_TOKEN = verificationToken('CRT-2039', 1);
+verify[WITHDRAWN_TOKEN] = {
+  status: 'withdrawn',
+  certificateCode: 'CRT-2039',
+  issueNumber: 1,
+  materialName: 'Metformin Hydrochloride',
+  lotCode: 'RMP-METF-0402',
+  propertyName: 'Assay (as is)',
+  assignedValue: 99.1,
+  expandedUncertainty: 0.9,
+  coverageFactor: 2,
+  unit: '% w/w',
+  expiryDate: '2027-11-30',
+  issuedAt: '2026-01-15 00:00:00+05:30',
+  producerName: PRODUCER,
+  withdrawnReason: 'A homogeneity re-assessment invalidated the assigned value.',
+};
+
 (fixture as Record<string, unknown>)['__verify'] = { status: 200, body: verify };
 console.log(`  (${Object.keys(verify).length} verification token(s) synthesised)`);
 

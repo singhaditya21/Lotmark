@@ -63,3 +63,32 @@ recording.
 
 A separate demo application would drift from the product within a release, and
 the drift would show up as a demonstration of software that no longer exists.
+
+
+## Recording shortcuts
+
+Deep-link straight to a screen so a take starts where you want it:
+
+```
+https://singhaditya21.github.io/Lotmark/?screen=conformance
+```
+
+Any surface id works: `projects`, `capa`, `orders`, `catalogue`, `tiers`,
+`audit`, `conformance`, `people`, `configuration`, `forms`, `flows`,
+`operations` (producer), and `shop`, `my-orders`, `vault`, `my-tiers`
+(customer). An unknown id falls back to the default screen.
+
+**Reset** — the "Reset" link in the demo bar unwinds everything done this
+session to the recorded starting point, without signing out or reloading, for a
+clean re-take between recordings.
+
+**A withdrawn certificate to film.** The public verification page has two
+faces; the striking one is the recall. This certificate is seeded withdrawn, so
+you can film the red "do not rely on this certificate" page directly:
+
+```
+https://singhaditya21.github.io/Lotmark/verify/p5Sl5-u5OXZ5Snb-7gDAIjiD
+```
+
+The current (green) page is reached from any holder's Certificate vault by
+clicking **check**.

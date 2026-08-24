@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { DEMO_PASSWORD } from './constants';
 
 /**
@@ -72,7 +73,50 @@ export function DemoBanner() {
           </code>
           , then any six digits.
         </span>
+        <span style={{ opacity: 0.55 }}>·</span>
+        <ResetButton />
       </div>
     </div>
+  );
+}
+
+/**
+ * Start over without signing in again.
+ *
+ * A re-take control: unwind everything done this session to the recorded
+ * starting point, while staying signed in on the current screen. `resetData()`
+ * rebuilds the adapter's copy of the fixture; clearing the query cache makes
+ * every screen refetch from it, so the change is visible immediately without a
+ * page reload — which would drop the session and the current screen.
+ */
+function ResetButton() {
+  const qc = useQueryClient();
+  /*
+   * Imported lazily, in the handler, NOT at the top of this file.
+   *
+   * The adapter runs `hydrate()` when it loads — a module side effect Rollup
+   * will not tree-shake — so a static import here would drag the adapter and
+   * the whole fixture into the NORMAL build, where the banner never renders.
+   * Measured: it did exactly that. A dynamic import keeps the dependency inside
+   * the demo, where it belongs.
+   */
+  const reset = async () => {
+    const { resetData } = await import('./adapter');
+    resetData();
+    void qc.resetQueries();
+  };
+  return (
+    <button
+      type="button"
+      onClick={reset}
+      style={{
+        pointerEvents: 'auto', cursor: 'pointer',
+        font: 'inherit', color: 'inherit',
+        background: 'transparent', border: 'none', padding: 0,
+        textDecoration: 'underline', textUnderlineOffset: 2, opacity: 0.85,
+      }}
+    >
+      Reset
+    </button>
   );
 }

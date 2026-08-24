@@ -21,23 +21,16 @@ type Recorded = { status: number; body: unknown };
 const RECORDING = fixture as unknown as Record<string, Recorded>;
 
 /**
- * A mutable copy, so the demo can remember.
+ * A fresh, hydrated copy of the recording.
  *
- * The difference between a demo and a slideshow is whether creating something
- * changes what the next screen shows. Mutations are applied here and every
- * later GET reads from it.
+ * Rebasing (dates shifted forward to now) and origin resolution are applied
+ * here rather than per request — the fixture is hundreds of keys and re-walking
+ * it on every read would be silly. Extracted into a function, and not inlined,
+ * so `resetData()` can build a clean copy for a re-take without a page reload.
  */
-const state: Record<string, Recorded> = structuredClone(RECORDING);
+function hydrate(): Record<string, Recorded> {
+  const s = structuredClone(RECORDING);
 
-/**
- * Resolve the captured origin marker to wherever this demo is actually served.
- *
- * Done once, at load, rather than on every read: the fixture is a few hundred
- * keys and re-walking it per request to fix one string would be silly. Baking
- * the deployed URL into the fixture instead would mean a capture that only
- * works on one host.
- */
-(() => {
   /*
    * Move every recorded date forward by the gap since capture, so a demo filmed
    * months from now still opens on a ledger whose newest entry is minutes old.
@@ -45,17 +38,16 @@ const state: Record<string, Recorded> = structuredClone(RECORDING);
    */
   const delta = deltaFrom((RECORDING['__capturedAt'] as unknown as { body?: unknown })?.body);
   if (delta !== 0) {
-    for (const key of Object.keys(state)) {
+    for (const key of Object.keys(s)) {
       if (key === '__capturedAt') continue;
-      state[key]!.body = rebase(state[key]!.body, delta);
+      s[key]!.body = rebase(s[key]!.body, delta);
     }
   }
 
   /*
    * Guarded, because this module is also loaded by its own tests under node,
    * where there is no window. Falling back to the marker's own text leaves the
-   * link inert rather than throwing on import and taking every assertion with
-   * it.
+   * link inert rather than throwing on import and taking every assertion with it.
    */
   const origin = typeof window === 'undefined' ? '' : window.location.origin;
   const here = `${origin}${import.meta.env.BASE_URL ?? '/'}`.replace(/\/$/, '');
@@ -68,8 +60,28 @@ const state: Record<string, Recorded> = structuredClone(RECORDING);
     }
     return v;
   };
-  for (const key of Object.keys(state)) state[key]!.body = fix(state[key]!.body);
-})();
+  for (const key of Object.keys(s)) s[key]!.body = fix(s[key]!.body);
+  return s;
+}
+
+/**
+ * The demo's memory. `let`, not `const`, so a reset can replace it wholesale —
+ * every helper reads this binding by name, so they all see the new copy.
+ */
+let state: Record<string, Recorded> = hydrate();
+
+/**
+ * Throw away everything done this session and start from the recording.
+ *
+ * For a re-take mid-recording: signed in, on the same screen, but the data
+ * unwound — the study unsigned again, the ledger back to where it was captured.
+ * The session (who is signed in, whether they have stepped up) is deliberately
+ * kept, so the operator does not re-do the login between takes. The caller
+ * clears the query cache so every screen refetches from the fresh copy.
+ */
+export function resetData(): void {
+  state = hydrate();
+}
 
 /* ── Matching a real path back to the template it was captured under ───────── */
 

@@ -62,7 +62,7 @@
     "status": 200,
     "body": {
       "ok": true,
-      "entries": 254,
+      "entries": 272,
       "brokenAt": null,
       "reason": null,
       "generations": [
@@ -246,6 +246,204 @@
     "status": 200,
     "body": {
       "entries": [
+        {
+          "seq": "273",
+          "occurred_at": "2026-08-24 12:22:36.461912+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "SYSTEM",
+          "action": "Audit chain verification run",
+          "detail": "intact across 272 entries (generation v1)",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "272",
+          "occurred_at": "2026-08-24 12:22:36.446815+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "271",
+          "occurred_at": "2026-08-24 12:22:36.427821+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "270",
+          "occurred_at": "2026-08-24 12:22:36.423132+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "269",
+          "occurred_at": "2026-08-24 12:22:36.33784+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "268",
+          "occurred_at": "2026-08-24 12:11:26.066997+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft discarded",
+          "detail": "version 2 · Captured to record the designer screens",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "267",
+          "occurred_at": "2026-08-24 12:11:26.042467+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft opened",
+          "detail": "version 2 · Captured to record the designer screens",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "266",
+          "occurred_at": "2026-08-24 12:11:26.01651+05:30",
+          "actor_label": "Dr. Meera Raghavan",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed in",
+          "detail": "meera@genpharm.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "265",
+          "occurred_at": "2026-08-24 12:11:26.007005+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "264",
+          "occurred_at": "2026-08-24 12:11:25.995122+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "263",
+          "occurred_at": "2026-08-24 12:11:25.985164+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "262",
+          "occurred_at": "2026-08-24 12:11:25.972966+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "261",
+          "occurred_at": "2026-08-24 12:11:25.963972+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "260",
+          "occurred_at": "2026-08-24 12:11:25.950451+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "259",
+          "occurred_at": "2026-08-24 12:11:25.938492+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "258",
+          "occurred_at": "2026-08-24 12:11:25.924109+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "257",
+          "occurred_at": "2026-08-24 12:11:25.887023+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "2 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "256",
+          "occurred_at": "2026-08-24 12:11:25.879879+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "1 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
         {
           "seq": "255",
           "occurred_at": "2026-08-24 12:11:25.638559+05:30",
@@ -1147,204 +1345,6 @@
           "detail": "ravi@producer.example",
           "time_source": "time.example.org (stratum 1)",
           "region": "ap-south-1"
-        },
-        {
-          "seq": "173",
-          "occurred_at": "2026-08-24 09:21:37.474145+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "172",
-          "occurred_at": "2026-08-24 09:21:37.458696+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "171",
-          "occurred_at": "2026-08-24 09:21:37.443653+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "170",
-          "occurred_at": "2026-08-24 09:21:37.42536+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "169",
-          "occurred_at": "2026-08-24 09:21:37.378997+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "PII",
-          "action": "Certificate holder contacts read",
-          "detail": "2 holder(s) of issue #1",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "168",
-          "occurred_at": "2026-08-24 09:21:37.370938+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "PII",
-          "action": "Certificate holder contacts read",
-          "detail": "1 holder(s) of issue #1",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "167",
-          "occurred_at": "2026-08-24 09:21:37.149699+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "166",
-          "occurred_at": "2026-08-24 09:21:37.130189+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "165",
-          "occurred_at": "2026-08-24 09:21:37.122888+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "164",
-          "occurred_at": "2026-08-24 09:21:37.035281+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "163",
-          "occurred_at": "2026-08-23 23:03:50.681906+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "CONFIGURATION",
-          "action": "Configuration draft discarded",
-          "detail": "version 2 · Captured to record the designer screens",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "162",
-          "occurred_at": "2026-08-23 23:03:50.656098+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "CONFIGURATION",
-          "action": "Configuration draft opened",
-          "detail": "version 2 · Captured to record the designer screens",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "161",
-          "occurred_at": "2026-08-23 23:03:50.628597+05:30",
-          "actor_label": "Dr. Meera Raghavan",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Signed in",
-          "detail": "meera@genpharm.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "160",
-          "occurred_at": "2026-08-23 23:03:50.617385+05:30",
-          "actor_label": "Neha Kulkarni",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "neha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "159",
-          "occurred_at": "2026-08-23 23:03:50.605949+05:30",
-          "actor_label": "Neha Kulkarni",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "neha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "158",
-          "occurred_at": "2026-08-23 23:03:50.596538+05:30",
-          "actor_label": "Ravi Menon",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "ravi@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "157",
-          "occurred_at": "2026-08-23 23:03:50.585187+05:30",
-          "actor_label": "Ravi Menon",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "ravi@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "156",
-          "occurred_at": "2026-08-23 23:03:50.574535+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
         }
       ]
     }
@@ -1358,11 +1358,11 @@
           "description": "Tell holders when a lot approaches expiry, at 90, 30 and 7 days.",
           "cron": "0 7 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-24T06:00:26.070Z",
-          "lastFinishedAt": "2026-08-24T06:01:26.070Z",
+          "lastStartedAt": "2026-08-24T06:11:36.925Z",
+          "lastFinishedAt": "2026-08-24T06:12:36.925Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-24T06:01:26.070Z",
+          "lastSuccessAt": "2026-08-24T06:12:36.925Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 0.67,
           "expectedEveryHours": 36,
@@ -1373,11 +1373,11 @@
           "description": "Raise a CAPA where stability monitoring has fallen overdue (ISO 17034 7.8).",
           "cron": "15 7 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-24T05:43:26.070Z",
-          "lastFinishedAt": "2026-08-24T05:44:26.070Z",
+          "lastStartedAt": "2026-08-24T05:54:36.925Z",
+          "lastFinishedAt": "2026-08-24T05:55:36.925Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-24T05:44:26.070Z",
+          "lastSuccessAt": "2026-08-24T05:55:36.925Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 0.95,
           "expectedEveryHours": 36,
@@ -1388,11 +1388,11 @@
           "description": "Lapse approved price tiers past their revalidation date, and revert pricing.",
           "cron": "30 7 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-24T05:26:26.070Z",
-          "lastFinishedAt": "2026-08-24T05:27:26.070Z",
+          "lastStartedAt": "2026-08-24T05:37:36.925Z",
+          "lastFinishedAt": "2026-08-24T05:38:36.925Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-24T05:27:26.070Z",
+          "lastSuccessAt": "2026-08-24T05:38:36.925Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 1.23,
           "expectedEveryHours": 36,
@@ -1403,11 +1403,11 @@
           "description": "Turn what the system already knows — failing jobs, an unrehearsed or incomplete restore — into deduplicated alerts. It cannot report its own absence: see alert_sweeps.last_swept_at and scripts/prober.mts.",
           "cron": "*/15 * * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-24T05:09:26.070Z",
-          "lastFinishedAt": "2026-08-24T05:10:26.070Z",
+          "lastStartedAt": "2026-08-24T05:20:36.925Z",
+          "lastFinishedAt": "2026-08-24T05:21:36.925Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-24T05:10:26.070Z",
+          "lastSuccessAt": "2026-08-24T05:21:36.925Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 1.52,
           "expectedEveryHours": 1,
@@ -1418,11 +1418,11 @@
           "description": "Remove sessions expired or revoked beyond the tenant's configured session_and_access_log retention. Seven days was hard-coded here once; CERT-In requires 180, and the window is a retention policy now, not a constant.",
           "cron": "0 3 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-24T04:52:26.070Z",
-          "lastFinishedAt": "2026-08-24T04:53:26.070Z",
+          "lastStartedAt": "2026-08-24T05:03:36.925Z",
+          "lastFinishedAt": "2026-08-24T05:04:36.925Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-24T04:53:26.070Z",
+          "lastSuccessAt": "2026-08-24T05:04:36.925Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 1.8,
           "expectedEveryHours": 36,
@@ -2030,9 +2030,9 @@
               "note": "Append-only at two layers — privilege and trigger — and hash-chained under a key held OUTSIDE the database, so somebody with SQL access cannot recompute it.",
               "evidence": {
                 "key": "chain",
-                "summary": "Intact across 255 entries, generation(s) v1",
+                "summary": "Intact across 273 entries, generation(s) v1",
                 "figures": {
-                  "entries": 255,
+                  "entries": 273,
                   "generations": "v1",
                   "keysMissing": null
                 },
@@ -6637,6 +6637,22 @@
         "issuedAt": "2026-02-01 00:00:00+05:30",
         "producerName": "Meridian Reference Materials",
         "withdrawnReason": null
+      },
+      "p5Sl5-u5OXZ5Snb-7gDAIjiD": {
+        "status": "withdrawn",
+        "certificateCode": "CRT-2039",
+        "issueNumber": 1,
+        "materialName": "Metformin Hydrochloride",
+        "lotCode": "RMP-METF-0402",
+        "propertyName": "Assay (as is)",
+        "assignedValue": 99.1,
+        "expandedUncertainty": 0.9,
+        "coverageFactor": 2,
+        "unit": "% w/w",
+        "expiryDate": "2027-11-30",
+        "issuedAt": "2026-01-15 00:00:00+05:30",
+        "producerName": "Meridian Reference Materials",
+        "withdrawnReason": "A homogeneity re-assessment invalidated the assigned value."
       }
     }
   },
@@ -6768,9 +6784,9 @@
           "note": "Append-only at two layers — privilege and trigger — and hash-chained under a key held OUTSIDE the database, so somebody with SQL access cannot recompute it.",
           "evidence": {
             "key": "chain",
-            "summary": "Intact across 255 entries, generation(s) v1",
+            "summary": "Intact across 273 entries, generation(s) v1",
             "figures": {
-              "entries": 255,
+              "entries": 273,
               "generations": "v1",
               "keysMissing": null
             },
@@ -7426,7 +7442,7 @@
         ],
         "auditChain": {
           "intact": true,
-          "entries": 254,
+          "entries": 272,
           "generations": [
             "v1"
           ]
@@ -7881,8 +7897,8 @@
         ]
       },
       "manifest": {
-        "packDigest": "ae26ffd0d36c731db262dee05208772d70da1eaa21d04cc4c1741e4fcd4a7815",
-        "generatedAt": "2026-08-24T06:41:26.074Z",
+        "packDigest": "c5cae7f1e6608851c80ce92ceb45be33f9a815686ae973d8eaa189458476ea41",
+        "generatedAt": "2026-08-24T06:52:36.929Z",
         "requirementCount": 29,
         "enforced": 24,
         "howToVerify": [
@@ -7895,6 +7911,6 @@
   },
   "__capturedAt": {
     "status": 200,
-    "body": "2026-08-24T06:41:26.074Z"
+    "body": "2026-08-24T06:52:36.929Z"
   }
 }

@@ -23,7 +23,17 @@ import { Entitlements } from './pages/Entitlements';
 
 export function App() {
   const qc = useQueryClient();
-  const [requested, setRequested] = useState<string | null>(null);
+  /*
+   * A deep-link entry point, demo only: `?screen=conformance` starts the app on
+   * that surface, so a recording can begin already on the right screen instead
+   * of clicking there in every take. The id is a surface id (see surfaces.ts);
+   * an unknown one resolves to the default, so a stale link is harmless.
+   */
+  const [requested, setRequested] = useState<string | null>(
+    import.meta.env.VITE_DEMO
+      ? new URLSearchParams(window.location.search).get('screen')
+      : null,
+  );
   const [open, setOpen] = useState<Project | null>(null);
   const [changingPassword, setChangingPassword] = useState(false);
   const [passwordNotice, setPasswordNotice] = useState<string | null>(null);

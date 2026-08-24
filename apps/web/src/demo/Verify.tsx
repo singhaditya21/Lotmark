@@ -59,7 +59,11 @@ const dateOnly = (v: unknown) => String(v ?? '').slice(0, 10) || '—';
 export function DemoVerify({ token }: { token: string }) {
   const v = lookup(token);
   const status = v?.status ?? 'unknown';
-  const verdict = VERDICT[status] ?? VERDICT['unknown']!;
+  const base = VERDICT[status] ?? VERDICT['unknown']!;
+  // A withdrawn certificate says WHY, when the producer recorded a reason.
+  const reason = typeof v?.['withdrawnReason'] === 'string' ? v['withdrawnReason'] as string : '';
+  const verdict = status === 'withdrawn' && reason
+    ? { ...base, note: reason } : base;
 
   const rows: Array<[string, string]> = v ? [
     ['Certificate', `${fmt(v['certificateCode'])} · issue #${fmt(v['issueNumber'])}`],
