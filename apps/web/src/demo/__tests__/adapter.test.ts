@@ -70,6 +70,27 @@ describe('reading', () => {
     expect(studies.status).toBe(200);
   });
 
+  it('serves the compute-on-demand POSTs as their captured result', async () => {
+    /*
+     * Verify the chain and assemble the pack are POSTs that change nothing.
+     * Before they were recorded, the generic write path handed the button its
+     * own submitted body back, and both broke on the shape. They must return
+     * the recorded result — a ChainResult with an entry count, and a pack with
+     * a digest and its requirements.
+     */
+    await signIn(demoFetch);
+    const chain = await call(demoFetch, 'POST', '/audit/verify');
+    expect(chain.status).toBe(200);
+    expect(chain.body['ok']).toBe(true);
+    expect(Number(chain.body['entries'])).toBeGreaterThan(0);
+
+    const pack = await call(demoFetch, 'POST', '/conformance/pack');
+    expect(pack.status).toBe(200);
+    const manifest = pack.body['manifest'] as Record<string, unknown>;
+    expect(String(manifest['packDigest'])).toMatch(/^[0-9a-f]{64}$/);
+    expect((pack.body['requirements'] as unknown[]).length).toBeGreaterThan(0);
+  });
+
   it('refuses everything before sign-in', async () => {
     expect((await call(demoFetch, 'GET', '/auth/me')).status).toBe(401);
   });
@@ -173,6 +194,21 @@ describe('an act leaves a trace', () => {
     const entries = listIn((await call(demoFetch, 'GET', '/audit')).body);
     return entries[0]!;
   };
+
+  it('reissuing a certificate adds an issue and records it', async () => {
+    const cert = (await call(demoFetch, 'GET', '/certificates/x')).body as
+      { issues?: Array<Record<string, unknown>> };
+    const before = cert.issues?.length ?? 0;
+
+    const res = await call(demoFetch, 'POST', '/certificates/x/reissue',
+      { reason: 'Uncertainty budget corrected' });
+    expect(res.status).toBe(200);
+
+    const after = (await call(demoFetch, 'GET', '/certificates/x')).body as
+      { issues?: Array<Record<string, unknown>> };
+    expect(after.issues?.length ?? 0).toBe(before + 1);
+    expect(String((await auditTop())['detail'])).toMatch(/reissued/i);
+  });
 
   it('signing a study marks it signed AND writes to the ledger', async () => {
     /*

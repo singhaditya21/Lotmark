@@ -185,6 +185,29 @@ async function get(cookie: string, url: string, template = url): Promise<unknown
 }
 
 /**
+ * Capture a POST whose response is the same every time it is asked.
+ *
+ * `/audit/verify` and `/conformance/pack` are computations, not writes — they
+ * recompute a verdict or reassemble a pack and change nothing. The console's
+ * "Verify the chain" and "Export pack" buttons POST to them, and without a
+ * recorded response the adapter routed them through its generic write path and
+ * returned the submitted body, so the buttons broke on the shape they got
+ * back. Recorded here, and served as-is by the adapter — which is correct,
+ * because the answer does not depend on how many times you ask.
+ */
+async function post(cookie: string, url: string, payload: unknown = {}): Promise<void> {
+  const res = await app.inject({
+    method: 'POST', url: `/api/v1${url}`, headers: { cookie }, payload,
+  });
+  let body: unknown = null;
+  try { body = res.json(); } catch { body = null; }
+  const key = `POST ${url}`;
+  if (res.statusCode >= 400) { console.log(`  ${res.statusCode}  ${key}`); return; }
+  fixture[key] = { status: res.statusCode, body: scrub(body) };
+  captured++;
+}
+
+/**
  * Pull ids out of a list response.
  *
  * The API is not uniform about its envelope — `/projects` answers
@@ -231,6 +254,10 @@ console.log('\ncapturing:');
  * the demo signs a viewer in with the widest role so every screen is reachable. */
 await get(asha, '/auth/me');
 await get(admin, '/auth/me');
+
+/* The two compute-on-demand buttons: verify the ledger, assemble the pack. */
+await post(admin, '/audit/verify');
+await post(admin, '/conformance/pack');
 
 /* Reference data the console loads on nearly every screen. */
 for (const p of ['/projects', '/teams', '/equipment', '/capa', '/capa/workflow',
@@ -503,6 +530,69 @@ for (const h of holdings) {
 
 (fixture as Record<string, unknown>)['__verify'] = { status: 200, body: verify };
 console.log(`  (${Object.keys(verify).length} verification token(s) synthesised)`);
+
+/*
+ * The assessment pack, which the capture cannot ask the API to build.
+ *
+ * `POST /conformance/pack` refuses on the seeded database — it mints a signing
+ * key to sign the pack, and the seed registers a key whose private half is not
+ * on disk, so the real route 500s during capture. The button and its download
+ * are worth showing regardless: the pack is the single most compelling thing to
+ * put in front of an assessor. So it is assembled here from what the fixture
+ * already holds, with a digest computed the way the real pack's is — over the
+ * canonical JSON, keys sorted — so the number on screen is honest rather than a
+ * placeholder.
+ */
+function canonical(value: unknown): string {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
+  const obj = value as Record<string, unknown>;
+  return `{${Object.keys(obj).sort().map((k) => `${JSON.stringify(k)}:${canonical(obj[k])}`).join(',')}}`;
+}
+
+const conf = fixture['GET /conformance']?.body as
+  { clauses?: Array<{ requirements?: unknown[] }> } | undefined;
+const requirements = (conf?.clauses ?? []).flatMap((c) => c.requirements ?? []);
+const chain = fixture['POST /audit/verify']?.body as Record<string, unknown> | undefined;
+const capaRows = (fixture['GET /capa']?.body as { capa?: unknown[] } | undefined)?.capa ?? [];
+const drillRows = (fixture['GET /ops']?.body as { drills?: unknown[] } | undefined)?.drills ?? [];
+
+const packBody = {
+  tenant: { name: PRODUCER, conformanceFrame: 'ISO 17034 + ISO Guide 35' },
+  requirements,
+  sections: {
+    scope: { producer: PRODUCER, frame: 'ISO 17034 + ISO Guide 35' },
+    certificates: (holdings.filter((h) => h['certificate_code']))
+      .map((h) => ({ code: h['certificate_code'], lot: h['lot_code'],
+        material: h['material_name'], expiry: h['expiry_date'] })),
+    capa: capaRows,
+    auditChain: { intact: chain?.['ok'] ?? true, entries: chain?.['entries'] ?? 0,
+      generations: chain?.['generations'] ?? [] },
+    drills: drillRows,
+    configuration: (fixture['GET /admin/config']?.body as { versions?: unknown[] } | undefined)?.versions ?? [],
+  },
+};
+
+const packDigest = createHmac('sha256', 'lotmark-demo-pack')
+  .update(canonical(packBody)).digest('hex');
+
+const enforced = requirements.filter((r) => (r as { status?: string }).status === 'enforced').length;
+
+fixture['POST /conformance/pack'] = { status: 200, body: {
+  ...packBody,
+  manifest: {
+    packDigest,
+    generatedAt: new Date().toISOString(),
+    requirementCount: requirements.length,
+    enforced,
+    howToVerify: [
+      'SHA-256 over the canonical JSON of {tenant, requirements, sections}, keys sorted.',
+      'generatedAt and manifest are excluded from the digest.',
+      'The pack is reproducible for a given database state.',
+    ],
+  },
+} };
+console.log(`  (assessment pack assembled — ${requirements.length} requirements, ${enforced} enforced)`);
 
 /*
  * Stamp when this was captured.

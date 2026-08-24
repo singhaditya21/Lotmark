@@ -346,6 +346,17 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
   await pause(160);
 
   /**
+   * A POST that only computes — verify the chain, assemble the pack.
+   *
+   * These change nothing and return the same thing every time, so a recorded
+   * response is the whole answer. Served before the write paths below, which
+   * would otherwise route them through `remember()` and hand the button back the
+   * body it submitted — which is not the shape it asked for, and how both broke.
+   */
+  const recorded = state[`POST ${path}`];
+  if (recorded) return json(recorded.body, recorded.status);
+
+  /**
    * Configuration drafts, which the generic rule cannot serve.
    *
    * The two designers are the low-code story and the best thing in the product

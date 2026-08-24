@@ -58,6 +58,20 @@
       "passwordChangeRequired": false
     }
   },
+  "POST /audit/verify": {
+    "status": 200,
+    "body": {
+      "ok": true,
+      "entries": 254,
+      "brokenAt": null,
+      "reason": null,
+      "generations": [
+        "v1"
+      ],
+      "keysMissing": [],
+      "unverified": false
+    }
+  },
   "GET /projects": {
     "status": 200,
     "body": {
@@ -232,6 +246,600 @@
     "status": 200,
     "body": {
       "entries": [
+        {
+          "seq": "255",
+          "occurred_at": "2026-08-24 12:11:25.638559+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "SYSTEM",
+          "action": "Audit chain verification run",
+          "detail": "intact across 254 entries (generation v1)",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "254",
+          "occurred_at": "2026-08-24 12:11:25.621924+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "253",
+          "occurred_at": "2026-08-24 12:11:25.603713+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "252",
+          "occurred_at": "2026-08-24 12:11:25.599173+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "251",
+          "occurred_at": "2026-08-24 12:11:25.514747+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "250",
+          "occurred_at": "2026-08-24 12:08:51.621634+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft discarded",
+          "detail": "version 2 · Captured to record the designer screens",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "249",
+          "occurred_at": "2026-08-24 12:08:51.591882+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft opened",
+          "detail": "version 2 · Captured to record the designer screens",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "248",
+          "occurred_at": "2026-08-24 12:08:51.552002+05:30",
+          "actor_label": "Dr. Meera Raghavan",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed in",
+          "detail": "meera@genpharm.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "247",
+          "occurred_at": "2026-08-24 12:08:51.538248+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "246",
+          "occurred_at": "2026-08-24 12:08:51.492452+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "245",
+          "occurred_at": "2026-08-24 12:08:51.466773+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "244",
+          "occurred_at": "2026-08-24 12:08:51.42443+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "243",
+          "occurred_at": "2026-08-24 12:08:51.406465+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "242",
+          "occurred_at": "2026-08-24 12:08:51.380434+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "241",
+          "occurred_at": "2026-08-24 12:08:51.355626+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "240",
+          "occurred_at": "2026-08-24 12:08:51.337601+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "239",
+          "occurred_at": "2026-08-24 12:08:51.293674+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "2 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "238",
+          "occurred_at": "2026-08-24 12:08:51.286042+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "1 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "237",
+          "occurred_at": "2026-08-24 12:08:50.823316+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "SYSTEM",
+          "action": "Audit chain verification run",
+          "detail": "intact across 236 entries (generation v1)",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "236",
+          "occurred_at": "2026-08-24 12:08:50.746346+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "235",
+          "occurred_at": "2026-08-24 12:08:50.710314+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "234",
+          "occurred_at": "2026-08-24 12:08:50.693739+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "233",
+          "occurred_at": "2026-08-24 12:08:50.55089+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "232",
+          "occurred_at": "2026-08-24 12:08:32.304801+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft discarded",
+          "detail": "version 2 · Captured to record the designer screens",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "231",
+          "occurred_at": "2026-08-24 12:08:32.279738+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft opened",
+          "detail": "version 2 · Captured to record the designer screens",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "230",
+          "occurred_at": "2026-08-24 12:08:32.246694+05:30",
+          "actor_label": "Dr. Meera Raghavan",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed in",
+          "detail": "meera@genpharm.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "229",
+          "occurred_at": "2026-08-24 12:08:32.236279+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "228",
+          "occurred_at": "2026-08-24 12:08:32.222416+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "227",
+          "occurred_at": "2026-08-24 12:08:32.207761+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "226",
+          "occurred_at": "2026-08-24 12:08:32.194573+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "225",
+          "occurred_at": "2026-08-24 12:08:32.184903+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "224",
+          "occurred_at": "2026-08-24 12:08:32.169654+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "223",
+          "occurred_at": "2026-08-24 12:08:32.155123+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "222",
+          "occurred_at": "2026-08-24 12:08:32.141209+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "221",
+          "occurred_at": "2026-08-24 12:08:32.101481+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "2 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "220",
+          "occurred_at": "2026-08-24 12:08:32.092739+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "1 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "219",
+          "occurred_at": "2026-08-24 12:08:31.84574+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "SYSTEM",
+          "action": "Audit chain verification run",
+          "detail": "intact across 218 entries (generation v1)",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "218",
+          "occurred_at": "2026-08-24 12:08:31.820568+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "217",
+          "occurred_at": "2026-08-24 12:08:31.798472+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "216",
+          "occurred_at": "2026-08-24 12:08:31.793287+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "215",
+          "occurred_at": "2026-08-24 12:08:31.680168+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "214",
+          "occurred_at": "2026-08-24 11:53:31.259083+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft discarded",
+          "detail": "version 2 · Captured to record the designer screens",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "213",
+          "occurred_at": "2026-08-24 11:53:31.221166+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft opened",
+          "detail": "version 2 · Captured to record the designer screens",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "212",
+          "occurred_at": "2026-08-24 11:53:31.185213+05:30",
+          "actor_label": "Dr. Meera Raghavan",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed in",
+          "detail": "meera@genpharm.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "211",
+          "occurred_at": "2026-08-24 11:53:31.172563+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "210",
+          "occurred_at": "2026-08-24 11:53:31.153256+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "209",
+          "occurred_at": "2026-08-24 11:53:31.133043+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "208",
+          "occurred_at": "2026-08-24 11:53:31.117779+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "207",
+          "occurred_at": "2026-08-24 11:53:31.106952+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "206",
+          "occurred_at": "2026-08-24 11:53:31.093018+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "205",
+          "occurred_at": "2026-08-24 11:53:31.078497+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "204",
+          "occurred_at": "2026-08-24 11:53:31.059873+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "203",
+          "occurred_at": "2026-08-24 11:53:31.003182+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "2 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "202",
+          "occurred_at": "2026-08-24 11:53:30.995556+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "1 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
         {
           "seq": "201",
           "occurred_at": "2026-08-24 11:53:30.726597+05:30",
@@ -737,600 +1345,6 @@
           "detail": "asha@producer.example",
           "time_source": "time.example.org (stratum 1)",
           "region": "ap-south-1"
-        },
-        {
-          "seq": "155",
-          "occurred_at": "2026-08-23 23:03:50.559829+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "154",
-          "occurred_at": "2026-08-23 23:03:50.54495+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "153",
-          "occurred_at": "2026-08-23 23:03:50.526193+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "152",
-          "occurred_at": "2026-08-23 23:03:50.479288+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "PII",
-          "action": "Certificate holder contacts read",
-          "detail": "2 holder(s) of issue #1",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "151",
-          "occurred_at": "2026-08-23 23:03:50.472092+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "PII",
-          "action": "Certificate holder contacts read",
-          "detail": "1 holder(s) of issue #1",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "150",
-          "occurred_at": "2026-08-23 23:03:50.284658+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "149",
-          "occurred_at": "2026-08-23 23:03:50.267179+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "148",
-          "occurred_at": "2026-08-23 23:03:50.262802+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "147",
-          "occurred_at": "2026-08-23 23:03:50.191521+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "146",
-          "occurred_at": "2026-08-23 22:59:33.197944+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "CONFIGURATION",
-          "action": "Configuration draft discarded",
-          "detail": "version 2 · Captured to record the designer screens",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "145",
-          "occurred_at": "2026-08-23 22:59:33.168974+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "CONFIGURATION",
-          "action": "Configuration draft opened",
-          "detail": "version 2 · Captured to record the designer screens",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "144",
-          "occurred_at": "2026-08-23 22:59:33.133225+05:30",
-          "actor_label": "Dr. Meera Raghavan",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Signed in",
-          "detail": "meera@genpharm.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "143",
-          "occurred_at": "2026-08-23 22:59:33.123466+05:30",
-          "actor_label": "Neha Kulkarni",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "neha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "142",
-          "occurred_at": "2026-08-23 22:59:33.110171+05:30",
-          "actor_label": "Neha Kulkarni",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "neha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "141",
-          "occurred_at": "2026-08-23 22:59:33.098037+05:30",
-          "actor_label": "Ravi Menon",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "ravi@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "140",
-          "occurred_at": "2026-08-23 22:59:33.082057+05:30",
-          "actor_label": "Ravi Menon",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "ravi@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "139",
-          "occurred_at": "2026-08-23 22:59:33.071739+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "138",
-          "occurred_at": "2026-08-23 22:59:33.055474+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "137",
-          "occurred_at": "2026-08-23 22:59:33.041075+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "136",
-          "occurred_at": "2026-08-23 22:59:33.024624+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "135",
-          "occurred_at": "2026-08-23 22:59:32.977801+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "PII",
-          "action": "Certificate holder contacts read",
-          "detail": "2 holder(s) of issue #1",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "134",
-          "occurred_at": "2026-08-23 22:59:32.970449+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "PII",
-          "action": "Certificate holder contacts read",
-          "detail": "1 holder(s) of issue #1",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "133",
-          "occurred_at": "2026-08-23 22:59:32.788066+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "132",
-          "occurred_at": "2026-08-23 22:59:32.769378+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "131",
-          "occurred_at": "2026-08-23 22:59:32.764672+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "130",
-          "occurred_at": "2026-08-23 22:59:32.692059+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "129",
-          "occurred_at": "2026-08-23 22:45:01.303736+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "CONFIGURATION",
-          "action": "Configuration draft discarded",
-          "detail": "version 2 · Captured to record the designer screens",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "128",
-          "occurred_at": "2026-08-23 22:45:01.279554+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "CONFIGURATION",
-          "action": "Configuration draft opened",
-          "detail": "version 2 · Captured to record the designer screens",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "127",
-          "occurred_at": "2026-08-23 22:45:01.253286+05:30",
-          "actor_label": "Dr. Meera Raghavan",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Signed in",
-          "detail": "meera@genpharm.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "126",
-          "occurred_at": "2026-08-23 22:45:01.244079+05:30",
-          "actor_label": "Neha Kulkarni",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "neha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "125",
-          "occurred_at": "2026-08-23 22:45:01.228295+05:30",
-          "actor_label": "Neha Kulkarni",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "neha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "124",
-          "occurred_at": "2026-08-23 22:45:01.218483+05:30",
-          "actor_label": "Ravi Menon",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "ravi@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "123",
-          "occurred_at": "2026-08-23 22:45:01.202687+05:30",
-          "actor_label": "Ravi Menon",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "ravi@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "122",
-          "occurred_at": "2026-08-23 22:45:01.193119+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "121",
-          "occurred_at": "2026-08-23 22:45:01.179505+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "120",
-          "occurred_at": "2026-08-23 22:45:01.16331+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "119",
-          "occurred_at": "2026-08-23 22:45:01.148956+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "118",
-          "occurred_at": "2026-08-23 22:45:00.948505+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "117",
-          "occurred_at": "2026-08-23 22:45:00.929942+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "116",
-          "occurred_at": "2026-08-23 22:45:00.925332+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "115",
-          "occurred_at": "2026-08-23 22:45:00.852553+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "114",
-          "occurred_at": "2026-08-23 22:23:38.92007+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "CONFIGURATION",
-          "action": "Configuration draft discarded",
-          "detail": "version 2 · Captured to record the designer screens",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "113",
-          "occurred_at": "2026-08-23 22:23:38.885201+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "CONFIGURATION",
-          "action": "Configuration draft opened",
-          "detail": "version 2 · Captured to record the designer screens",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "112",
-          "occurred_at": "2026-08-23 22:23:38.850296+05:30",
-          "actor_label": "Dr. Meera Raghavan",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Signed in",
-          "detail": "meera@genpharm.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "111",
-          "occurred_at": "2026-08-23 22:23:38.840114+05:30",
-          "actor_label": "Neha Kulkarni",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "neha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "110",
-          "occurred_at": "2026-08-23 22:23:38.823951+05:30",
-          "actor_label": "Neha Kulkarni",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "neha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "109",
-          "occurred_at": "2026-08-23 22:23:38.813853+05:30",
-          "actor_label": "Ravi Menon",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "ravi@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "108",
-          "occurred_at": "2026-08-23 22:23:38.797538+05:30",
-          "actor_label": "Ravi Menon",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "ravi@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "107",
-          "occurred_at": "2026-08-23 22:23:38.78626+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "106",
-          "occurred_at": "2026-08-23 22:23:38.771579+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "105",
-          "occurred_at": "2026-08-23 22:23:38.753862+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "104",
-          "occurred_at": "2026-08-23 22:23:38.738862+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "103",
-          "occurred_at": "2026-08-23 22:23:38.52743+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "102",
-          "occurred_at": "2026-08-23 22:23:38.507707+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
         }
       ]
     }
@@ -1344,11 +1358,11 @@
           "description": "Tell holders when a lot approaches expiry, at 90, 30 and 7 days.",
           "cron": "0 7 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-24T05:42:31.265Z",
-          "lastFinishedAt": "2026-08-24T05:43:31.265Z",
+          "lastStartedAt": "2026-08-24T06:00:26.070Z",
+          "lastFinishedAt": "2026-08-24T06:01:26.070Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-24T05:43:31.265Z",
+          "lastSuccessAt": "2026-08-24T06:01:26.070Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 0.67,
           "expectedEveryHours": 36,
@@ -1359,11 +1373,11 @@
           "description": "Raise a CAPA where stability monitoring has fallen overdue (ISO 17034 7.8).",
           "cron": "15 7 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-24T05:25:31.265Z",
-          "lastFinishedAt": "2026-08-24T05:26:31.265Z",
+          "lastStartedAt": "2026-08-24T05:43:26.070Z",
+          "lastFinishedAt": "2026-08-24T05:44:26.070Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-24T05:26:31.265Z",
+          "lastSuccessAt": "2026-08-24T05:44:26.070Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 0.95,
           "expectedEveryHours": 36,
@@ -1374,11 +1388,11 @@
           "description": "Lapse approved price tiers past their revalidation date, and revert pricing.",
           "cron": "30 7 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-24T05:08:31.265Z",
-          "lastFinishedAt": "2026-08-24T05:09:31.265Z",
+          "lastStartedAt": "2026-08-24T05:26:26.070Z",
+          "lastFinishedAt": "2026-08-24T05:27:26.070Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-24T05:09:31.265Z",
+          "lastSuccessAt": "2026-08-24T05:27:26.070Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 1.23,
           "expectedEveryHours": 36,
@@ -1389,11 +1403,11 @@
           "description": "Turn what the system already knows — failing jobs, an unrehearsed or incomplete restore — into deduplicated alerts. It cannot report its own absence: see alert_sweeps.last_swept_at and scripts/prober.mts.",
           "cron": "*/15 * * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-24T04:51:31.265Z",
-          "lastFinishedAt": "2026-08-24T04:52:31.265Z",
+          "lastStartedAt": "2026-08-24T05:09:26.070Z",
+          "lastFinishedAt": "2026-08-24T05:10:26.070Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-24T04:52:31.265Z",
+          "lastSuccessAt": "2026-08-24T05:10:26.070Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 1.52,
           "expectedEveryHours": 1,
@@ -1404,11 +1418,11 @@
           "description": "Remove sessions expired or revoked beyond the tenant's configured session_and_access_log retention. Seven days was hard-coded here once; CERT-In requires 180, and the window is a retention policy now, not a constant.",
           "cron": "0 3 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-24T04:34:31.265Z",
-          "lastFinishedAt": "2026-08-24T04:35:31.265Z",
+          "lastStartedAt": "2026-08-24T04:52:26.070Z",
+          "lastFinishedAt": "2026-08-24T04:53:26.070Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-24T04:35:31.265Z",
+          "lastSuccessAt": "2026-08-24T04:53:26.070Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 1.8,
           "expectedEveryHours": 36,
@@ -2016,9 +2030,9 @@
               "note": "Append-only at two layers — privilege and trigger — and hash-chained under a key held OUTSIDE the database, so somebody with SQL access cannot recompute it.",
               "evidence": {
                 "key": "chain",
-                "summary": "Intact across 201 entries, generation(s) v1",
+                "summary": "Intact across 255 entries, generation(s) v1",
                 "figures": {
-                  "entries": 201,
+                  "entries": 255,
                   "generations": "v1",
                   "keysMissing": null
                 },
@@ -6626,8 +6640,1261 @@
       }
     }
   },
+  "POST /conformance/pack": {
+    "status": 200,
+    "body": {
+      "tenant": {
+        "name": "Meridian Reference Materials",
+        "conformanceFrame": "ISO 17034 + ISO Guide 35"
+      },
+      "requirements": [
+        {
+          "id": "REQ-SIG-ROLLBACK",
+          "clause": "21 CFR 11 §11.10(a)",
+          "statement": "A record that could not be signed is not retained as though it had been.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/services/signing.ts",
+            "apps/api/src/services/signing-refusal.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/signing-rollback.test.ts",
+              "named": "no record behind"
+            }
+          ],
+          "note": "Found in testing: a refused signing used to COMMIT the unsigned record, because returning from inside the transaction resolves it. The refusal is still recorded, on a separate transaction.",
+          "evidence": null
+        },
+        {
+          "id": "REQ-COPIES",
+          "clause": "21 CFR 11 §11.10(b)",
+          "statement": "Accurate and complete copies of records can be produced in human-readable and electronic form.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/services/pdfa.ts",
+            "apps/api/src/services/icc.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/pdfa.test.ts",
+              "named": "PDF/A"
+            }
+          ],
+          "note": "Built to PDF/A-2b and checked against the structural subset this repository can verify. NOT veraPDF-verified — there is no Java on this machine — and the gate says so rather than printing a pass it did not earn.",
+          "evidence": null
+        },
+        {
+          "id": "REQ-PROTECTION",
+          "clause": "21 CFR 11 §11.10(c)",
+          "statement": "Records are protected to enable accurate retrieval throughout the retention period.",
+          "status": "partial",
+          "code": [
+            "apps/api/scripts/dr-drill.mts",
+            "packages/domain/src/retention.ts"
+          ],
+          "tests": [],
+          "live": "drills",
+          "note": "A rehearsed restore proves the backup, the keys, the documents and the PRIVILEGE POSTURE — a restore with --no-privileges matches every row count while leaving the ledger writable. What is NOT covered: off-site copies, and any retention period longer than this installation has existed.",
+          "evidence": {
+            "key": "drills",
+            "summary": "Last rehearsed restore 2026-08-22: incomplete",
+            "figures": {
+              "lastDrill": "2026-08-22",
+              "outcome": "incomplete"
+            },
+            "satisfied": false
+          }
+        },
+        {
+          "id": "REQ-ACCESS",
+          "clause": "21 CFR 11 §11.10(d)",
+          "statement": "System access is limited to authorised individuals.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/plugins/session.ts",
+            "packages/db/migrations/0004_row_level_security.sql"
+          ],
+          "tests": [
+            {
+              "file": "packages/db/src/__tests__/rls.test.ts",
+              "named": "tenant"
+            },
+            {
+              "file": "packages/db/src/__tests__/holders.test.ts",
+              "named": "own orders"
+            }
+          ],
+          "note": "Enforced at the database as well as the service: row-level security is FORCED, so a forgotten WHERE clause returns nothing rather than another organisation's data.",
+          "evidence": null
+        },
+        {
+          "id": "REQ-KEY-ROTATION",
+          "clause": "21 CFR 11 §11.10(e)",
+          "statement": "The integrity key can be changed without invalidating the history it already protects.",
+          "status": "enforced",
+          "code": [
+            "packages/db/migrations/0019_audit_key_generations.sql"
+          ],
+          "tests": [
+            {
+              "file": "packages/db/src/__tests__/audit-rotation.test.ts",
+              "named": "unbroken"
+            }
+          ],
+          "note": "A generation carries a COMMITMENT to its key rather than the key. Verification distinguishes \"no key held\" from \"chain broken\", because the two call for opposite responses.",
+          "evidence": null
+        },
+        {
+          "id": "REQ-AUDIT-TRAIL",
+          "clause": "21 CFR 11 §11.10(e) · ISO 17034 §8.4",
+          "statement": "A secure, computer-generated, time-stamped audit trail records operator entries and actions, and does not obscure previously recorded information.",
+          "status": "enforced",
+          "code": [
+            "packages/db/migrations/0002_audit_chain.sql",
+            "apps/api/src/services/audit.ts"
+          ],
+          "tests": [
+            {
+              "file": "packages/db/src/__tests__/audit-chain.test.ts",
+              "named": "altered entry"
+            },
+            {
+              "file": "packages/db/src/__tests__/audit-chain.test.ts",
+              "named": "append-only"
+            }
+          ],
+          "live": "chain",
+          "note": "Append-only at two layers — privilege and trigger — and hash-chained under a key held OUTSIDE the database, so somebody with SQL access cannot recompute it.",
+          "evidence": {
+            "key": "chain",
+            "summary": "Intact across 255 entries, generation(s) v1",
+            "figures": {
+              "entries": 255,
+              "generations": "v1",
+              "keysMissing": null
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-SEQUENCING",
+          "clause": "21 CFR 11 §11.10(f)",
+          "statement": "Operational system checks enforce permitted sequencing of steps and events, and the permitted sequence is the tenant’s to declare.",
+          "status": "enforced",
+          "code": [
+            "packages/domain/src/state-machines.ts",
+            "packages/domain/src/config/workflows.ts",
+            "packages/domain/src/config/guards.ts",
+            "apps/api/src/services/workflows.ts"
+          ],
+          "tests": [
+            {
+              "file": "packages/domain/src/__tests__/workflows.test.ts",
+              "named": "round trip is lossless"
+            },
+            {
+              "file": "apps/api/src/__tests__/config-admin.test.ts",
+              "named": "refuses removing a state records are sitting in"
+            },
+            {
+              "file": "packages/domain/src/__tests__/guards.test.ts",
+              "named": "reads nothing but the facts it was handed"
+            },
+            {
+              "file": "apps/api/src/__tests__/workflow-ceremony.test.ts",
+              "named": "refuses the move when the condition does not hold"
+            }
+          ],
+          "note": "Every lifecycle is an explicit transition table, and the table now comes from the ACTIVE configuration with the code machine as the fallback. One machine governs every record of an entity at a time, so publication refuses a change that would leave records in a state the new machine does not have. NOT yet extensible for studies: `studies.state` carries a CHECK listing its two states, and publication refuses a third rather than letting the INSERT fail. A transition’s `requiresSignature`, `signatureMeanings` and `systemInitiated` are ENFORCED: a move a tenant marked as signed is refused without one, and a refused signing rolls the move back rather than leaving it unsigned. Configuration can only ADD a signature — `ALWAYS_SIGNED` is a floor publication refuses to lower, whereas `requiresReason` is a DEFAULT a tenant may waive, and is enforced where it stands. `guards` are evaluated too: a small language with no execution, reading only a facts object the route builds — not the database, not other records, not the clock, not the actor — and failing CLOSED, since the safe reading of a rule nobody can apply is that the move is not allowed. Every guard is parsed and checked against the entity’s vocabulary at publication, so a broken one is a sentence at review rather than a refusal at the move.",
+          "evidence": null
+        },
+        {
+          "id": "REQ-AUTHORITY",
+          "clause": "21 CFR 11 §11.10(g)",
+          "statement": "Authority checks ensure only authorised individuals use the system, sign a record, or perform the operation at hand.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/services/guard.ts",
+            "packages/domain/src/sod.ts",
+            "apps/api/src/services/sod.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/guard.test.ts",
+              "named": "segregation"
+            },
+            {
+              "file": "apps/api/src/__tests__/sod.test.ts",
+              "named": "turns a rule ON when the tenant says so"
+            }
+          ],
+          "live": "segregation",
+          "note": "The decision point is called by the SERVICE, never by route middleware, so a job, a CLI or a future mobile API reaches the same check. Segregation of duties is part of it: the rules live in code because they carry the conformance argument, and whether each is ENABLED is the tenant’s — a signed, audited configuration change that now takes effect, having been read by nothing until this. Two rules are declared and NOT enforced, and say so in the register: the refund threshold, because refunds are not modelled at all, and lot-creator-may-not-release, because the only path that releases a lot creates it in the same request so the rule could only ever refuse every release.",
+          "evidence": {
+            "key": "segregation",
+            "summary": "4 of 6 configured rule(s) on; 2 declared without an enforceable subject",
+            "figures": {
+              "configured": 6,
+              "enabled": 4,
+              "enforceable": 4,
+              "declaredOnly": 2
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-SIG-COMPONENTS",
+          "clause": "21 CFR 11 §11.200(a)(1)",
+          "statement": "The first signing of a session uses both identification components; subsequent signings in that session may use one.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/services/sessions.ts",
+            "apps/api/src/services/signing.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/signing-rollback.test.ts",
+              "named": "step-up"
+            }
+          ],
+          "evidence": null
+        },
+        {
+          "id": "REQ-KEY-CUSTODY",
+          "clause": "21 CFR 11 §11.30",
+          "statement": "Signing keys are held so that a compromise of the records does not forge them.",
+          "status": "partial",
+          "code": [
+            "apps/api/src/services/custody.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/custody.test.ts",
+              "named": "custody"
+            }
+          ],
+          "live": "custody",
+          "note": "The key never enters the database. Custody classes dev_file, env and keychain work; kms and hsm are declared and NOT implemented, and refuse to construct. The class is printed on every certificate, so it cannot overclaim. Production refuses to start on a non-production class.",
+          "evidence": {
+            "key": "custody",
+            "summary": "1 active key(s), custody dev_file",
+            "figures": {
+              "keys": 1,
+              "classes": "dev_file"
+            },
+            "satisfied": false
+          }
+        },
+        {
+          "id": "REQ-CREDENTIAL-ISSUANCE",
+          "clause": "21 CFR 11 §11.300(b)",
+          "statement": "A password issued to somebody by an administrator is an enrolment credential, not a standing one: the account must replace it before it can act.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/plugins/session.ts",
+            "apps/api/src/routes/auth.ts",
+            "packages/db/migrations/0024_password_change.sql"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/password-change.test.ts",
+              "named": "refused BEFORE the permission check"
+            },
+            {
+              "file": "apps/api/src/__tests__/password-change.test.ts",
+              "named": "has not passed the second factor"
+            }
+          ],
+          "live": "credentials",
+          "note": "The gate is in requireSession, beside the second-factor gate and after it — so a route added tomorrow cannot forget it, and so the person replacing the credential is the one holding the authenticator. Not yet PERIODIC: §11.300(b) also contemplates password aging, and nothing here expires a password the holder chose.",
+          "evidence": {
+            "key": "credentials",
+            "summary": "no account is holding an issued password (9 active)",
+            "figures": {
+              "accounts": 9,
+              "owing": 0,
+              "selfChosen": 0
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-SIG-MANIFEST",
+          "clause": "21 CFR 11 §11.50",
+          "statement": "A signed record shows the signer, the date and time, and the MEANING of the signature.",
+          "status": "enforced",
+          "code": [
+            "packages/domain/src/signatures.ts",
+            "apps/web/src/components/SignAction.tsx"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/guard.test.ts",
+              "named": "signature"
+            }
+          ],
+          "live": "signatures",
+          "note": "The meaning is chosen by the signer and never inferred from context.",
+          "evidence": {
+            "key": "signatures",
+            "summary": "0 of 0 signature(s) carry a cryptographic binding",
+            "figures": {
+              "total": 0,
+              "bound": 0,
+              "distinctMeanings": 0
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-SIG-BINDING",
+          "clause": "21 CFR 11 §11.70",
+          "statement": "Signatures are linked to their records so they cannot be transferred to another record by ordinary means.",
+          "status": "enforced",
+          "code": [
+            "packages/security/src/signing.ts",
+            "apps/api/src/services/signing.ts"
+          ],
+          "tests": [
+            {
+              "file": "packages/security/src/__tests__/signing.test.ts",
+              "named": "excision resistance"
+            },
+            {
+              "file": "packages/security/src/__tests__/signing.test.ts",
+              "named": "a verifier cannot forge"
+            }
+          ],
+          "note": "Ed25519 over a canonical payload. Asymmetric on purpose: an assessor can verify with the public key alone, holding nothing that could produce a signature. Every HMAC verifier is also a forger.",
+          "evidence": null
+        },
+        {
+          "id": "REQ-RETENTION",
+          "clause": "DPDP Act 2023 · CERT-In 2022",
+          "statement": "Records are retained for their statutory minimum, and an erasure request cannot remove a record still needed to support a live certificate.",
+          "status": "partial",
+          "code": [
+            "packages/domain/src/retention.ts",
+            "apps/api/src/services/retention.ts",
+            "apps/api/src/jobs/notices.ts"
+          ],
+          "tests": [
+            {
+              "file": "packages/domain/src/__tests__/invariants.test.ts",
+              "named": "retention"
+            },
+            {
+              "file": "apps/api/src/__tests__/retention.test.ts",
+              "named": "CERT-In"
+            },
+            {
+              "file": "apps/api/src/__tests__/config-admin.test.ts",
+              "named": "below the statutory minimum"
+            }
+          ],
+          "live": "retention",
+          "note": "The statutory floor is now enforced in BOTH places the schema always claimed: publication refuses a period below it, naming the regime, and the runtime takes the greater of the stored period and the floor. CORRECTION to what this note used to say — it claimed the schedule was \"enforced where records are deleted\", and the only deletion path in the product removed sessions after SEVEN days against the 180 CERT-In 2022 requires of an access log. That is fixed and tested. Still PARTIAL: there is no erasure-request workflow, so the refusal path has never been exercised by a real request, and nothing actively erases customer contact data once no order is open — DPDP minimisation is declared and not performed.",
+          "evidence": {
+            "key": "retention",
+            "summary": "9 class(es) scheduled, 0 with a tenant period",
+            "figures": {
+              "classes": 9,
+              "tenantSet": 0,
+              "belowFloor": 0,
+              "shortestDays": 0
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-CONFIG-VERSION",
+          "clause": "GAMP 5 · 21 CFR 11 §11.10(a)",
+          "statement": "A change to what the system does is versioned, reviewed, and attributable, and records state which version they were created under.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/services/config-admin.ts",
+            "packages/domain/src/config/registry.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/config-admin.test.ts",
+              "named": "lock everybody out"
+            }
+          ],
+          "live": "config",
+          "note": "A published version is never edited. Security and behaviour changes require a signature; presentation changes are audited but unsigned, because demanding one to move a field trains people to sign without reading.",
+          "evidence": {
+            "key": "config",
+            "summary": "1 configuration version(s), 0 signed, 1 active",
+            "figures": {
+              "versions": 1,
+              "active": 1,
+              "signed": 0
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-API-DESCRIPTION",
+          "clause": "GAMP 5 · interface specification",
+          "statement": "The published interface description matches the interface.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/http/operations.ts",
+            "apps/api/src/http/openapi.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/openapi.test.ts",
+              "named": "undocumented route"
+            }
+          ],
+          "evidence": null
+        },
+        {
+          "id": "REQ-JOB-HEALTH",
+          "clause": "GAMP 5 · operational monitoring",
+          "statement": "Unattended work that fails is visible, and a job that has never run is distinguishable from one with nothing to do.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/services/ops.ts",
+            "packages/db/migrations/0021_ops_observability.sql"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/ops.test.ts",
+              "named": "never run"
+            }
+          ],
+          "live": "jobs",
+          "note": "Nothing pages anyone, and these checks run inside the API so they cannot detect the API being down. Both stated on the Operations page.",
+          "evidence": {
+            "key": "jobs",
+            "summary": "1 job(s) have run; 0 did not last succeed",
+            "figures": {
+              "reporting": 1,
+              "unhealthy": 0
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-COMPETENCE",
+          "clause": "ISO 17034 §6.3",
+          "statement": "Personnel performing a reference-material activity are authorised for that activity, and the authorisation is valid on the day they perform it.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/services/guard.ts",
+            "packages/domain/src/permissions.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/guard.test.ts",
+              "named": "competence"
+            }
+          ],
+          "live": "competence",
+          "note": "Holding the permission is necessary and not sufficient. The basis relied on is COPIED onto the signature, so editing a competence record later cannot rewrite whether a past act was authorised.",
+          "evidence": {
+            "key": "competence",
+            "summary": "8 authorisation(s) valid today, across 4 person(s)",
+            "figures": {
+              "live": 8,
+              "total": 9,
+              "people": 4
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-UNCERTAINTY",
+          "clause": "ISO 17034 §7.10 · ISO Guide 35",
+          "statement": "The assigned value carries an expanded uncertainty combining every contribution, and is reproducible from the raw measurements.",
+          "status": "enforced",
+          "code": [
+            "packages/stats/src/budget.ts",
+            "apps/api/src/routes/console.ts"
+          ],
+          "tests": [
+            {
+              "file": "packages/stats/src/__tests__/golden.test.ts",
+              "named": "uncertainty budget reproduces the prototype"
+            }
+          ],
+          "live": "uncertainty",
+          "note": "Recomputed from raw results on every request. Nothing reads a stored summary and no screen offers a field to type a value into.",
+          "evidence": {
+            "key": "uncertainty",
+            "summary": "2 of 2 authorised value(s) carry an expanded uncertainty",
+            "figures": {
+              "authorised": 2,
+              "withUncertainty": 2
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-WITHDRAWAL",
+          "clause": "ISO 17034 §7.11",
+          "statement": "When a certified value is found to be wrong, every holder of the affected certificate is identified and told.",
+          "status": "partial",
+          "code": [
+            "apps/api/src/routes/certificates.ts",
+            "apps/api/src/services/certificate-issue.ts"
+          ],
+          "tests": [
+            {
+              "file": "packages/db/src/__tests__/holders.test.ts",
+              "named": "holder list"
+            }
+          ],
+          "live": "holders",
+          "note": "IDENTIFICATION is enforced. The holder set is order lines UNION self-declared vault holdings, because a vial received as a sample or a replacement has no order line, and holders nobody can be addressed at are reported SEPARATELY and never counted as notified. TELLING is not. This said `enforced` on the strength of the first half of its own sentence. Withdrawal writes a row in `notifications` addressed to a user at the holding organisation, and that is the whole of the delivery: there is no email, SMS or webhook path anywhere in this codebase, so a holder who does not sign in is never told. Nothing escalates an unread notice either, though `read_at` and `acknowledged_at` are recorded and would support it. For a §7.11 recall that gap is the difference between informing a customer and filing a note that they were informed.",
+          "evidence": {
+            "key": "holders",
+            "summary": "No reissue or withdrawal has been notified yet",
+            "figures": {
+              "notices": 0,
+              "unreachable": 0
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-REPRODUCIBLE",
+          "clause": "ISO 17034 §7.11 · 21 CFR 11 §11.10(b)",
+          "statement": "A certificate can be reproduced exactly from the record of what was issued.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/services/certificate-pdf.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/certificate-pdf.test.ts",
+              "named": "byte-identical"
+            },
+            {
+              "file": "apps/api/src/__tests__/certificate-pdf.test.ts",
+              "named": "wall clock"
+            }
+          ],
+          "note": "Dates come from the issue rather than the clock, and the document ID from the content digest. Re-rendering an issue made under an EARLIER renderer version legitimately differs; those are covered by the stored digest instead.",
+          "evidence": null
+        },
+        {
+          "id": "REQ-CERTIFICATE",
+          "clause": "ISO 17034 §7.11 · ISO Guide 31",
+          "statement": "The certificate states the assigned value, its uncertainty, the coverage factor, expiry, storage and who authorised it.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/services/certificate-pdf.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/certificate-pdf.test.ts",
+              "named": "certified figure"
+            }
+          ],
+          "live": "certificates",
+          "evidence": {
+            "key": "certificates",
+            "summary": "2 certificate(s), 2 issue(s), 0 withdrawn",
+            "figures": {
+              "certificates": 2,
+              "issues": 2,
+              "rendered": 0,
+              "withdrawn": 0
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-STORAGE",
+          "clause": "ISO 17034 §7.12",
+          "statement": "Storage and transport conditions are specified and departures are acted on.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/routes/commerce.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/commerce.test.ts",
+              "named": "cold chain"
+            }
+          ],
+          "live": "coldchain",
+          "note": "A logger reading outside the shipment class raises a CAPA automatically.",
+          "evidence": {
+            "key": "coldchain",
+            "summary": "2 shipment(s), 13 logger reading(s) held as data",
+            "figures": {
+              "shipments": 2,
+              "readings": 13
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-SUBCONTRACT",
+          "clause": "ISO 17034 §7.4",
+          "statement": "Work that may not be subcontracted is identified, and subcontracted work is controlled.",
+          "status": "declared",
+          "code": [
+            "packages/db/src/schema/compliance.ts"
+          ],
+          "tests": [],
+          "note": "DECLARED AND NOT ENFORCED. The schema comment says a forbidden-activity list \"lives in @lotmark/domain and is enforced at the service boundary\". It does not exist — only the subcontractor:manage permission does. This is recorded as a gap rather than described as a control.",
+          "evidence": null
+        },
+        {
+          "id": "REQ-HOMOGENEITY",
+          "clause": "ISO 17034 §7.7 · ISO Guide 35",
+          "statement": "Between-unit variation is assessed and contributes to the uncertainty budget.",
+          "status": "enforced",
+          "code": [
+            "packages/stats/src/homogeneity.ts"
+          ],
+          "tests": [
+            {
+              "file": "packages/stats/src/__tests__/golden.test.ts",
+              "named": "homogeneity"
+            }
+          ],
+          "live": "homogeneity",
+          "evidence": {
+            "key": "homogeneity",
+            "summary": "3 signed homogeneity studies of 4",
+            "figures": {
+              "signed": 3,
+              "total": 4
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-STABILITY",
+          "clause": "ISO 17034 §7.7 · ISO Guide 35",
+          "statement": "Stability over the shelf life is assessed and contributes to the uncertainty budget.",
+          "status": "enforced",
+          "code": [
+            "packages/stats/src/stability.ts"
+          ],
+          "tests": [
+            {
+              "file": "packages/stats/src/__tests__/golden.test.ts",
+              "named": "stability"
+            }
+          ],
+          "live": "stability",
+          "evidence": {
+            "key": "stability",
+            "summary": "3 signed stability studies of 3",
+            "figures": {
+              "signed": 3,
+              "total": 3
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-MONITORING",
+          "clause": "ISO 17034 §7.8",
+          "statement": "Stability is monitored after release, and an overdue check is acted on.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/jobs/notices.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/ops.test.ts",
+              "named": "never run"
+            }
+          ],
+          "live": "monitoring",
+          "note": "A scheduled job raises a CAPA when monitoring falls overdue. Whether that job is running is itself reported — see REQ-JOB-HEALTH.",
+          "evidence": {
+            "key": "monitoring",
+            "summary": "0 monitoring point(s), 0 overdue",
+            "figures": {
+              "points": 0,
+              "overdue": 0
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-CHARACTERISATION",
+          "clause": "ISO 17034 §7.9 · ISO Guide 35",
+          "statement": "The property value is characterised, and the interlaboratory spread contributes to the uncertainty budget.",
+          "status": "enforced",
+          "code": [
+            "packages/stats/src/characterisation.ts"
+          ],
+          "tests": [
+            {
+              "file": "packages/stats/src/__tests__/golden.test.ts",
+              "named": "characterisation"
+            }
+          ],
+          "live": "characterisation",
+          "evidence": {
+            "key": "characterisation",
+            "summary": "2 signed characterisation studies of 3",
+            "figures": {
+              "signed": 2,
+              "total": 3
+            },
+            "satisfied": true
+          }
+        },
+        {
+          "id": "REQ-CAPA",
+          "clause": "ISO 17034 §8.7",
+          "statement": "Nonconformities are recorded, investigated, corrected and checked for effect.",
+          "status": "enforced",
+          "code": [
+            "apps/api/src/routes/capa.ts",
+            "packages/domain/src/state-machines.ts"
+          ],
+          "tests": [
+            {
+              "file": "apps/api/src/__tests__/workflow-ceremony.test.ts",
+              "named": "refuses a CAPA move that does not state why"
+            },
+            {
+              "file": "apps/web/src/lib/__tests__/capa.test.ts",
+              "named": "close"
+            }
+          ],
+          "live": "capa",
+          "note": "The register cited only a CONSOLE test for this until an evidence check was tightened to reject that. The server-side rule an assessor cares about — a nonconformity cannot close without a recorded root cause and corrective action — is enforced in the route and is now what is cited.",
+          "evidence": {
+            "key": "capa",
+            "summary": "1 open of 1, 0 past due",
+            "figures": {
+              "total": 1,
+              "open": 1,
+              "overdue": 0
+            },
+            "satisfied": true
+          }
+        }
+      ],
+      "sections": {
+        "scope": {
+          "producer": "Meridian Reference Materials",
+          "frame": "ISO 17034 + ISO Guide 35"
+        },
+        "certificates": [
+          {
+            "code": "CRT-2041",
+            "lot": "RMP-PARA-0421",
+            "material": "Paracetamol",
+            "expiry": "2028-03-31"
+          },
+          {
+            "code": "CRT-2041",
+            "lot": "RMP-PARA-0421",
+            "material": "Paracetamol",
+            "expiry": "2028-03-31"
+          },
+          {
+            "code": "CRT-2041",
+            "lot": "RMP-PARA-0421",
+            "material": "Paracetamol",
+            "expiry": "2028-03-31"
+          }
+        ],
+        "capa": [
+          {
+            "id": "9877cafc-1b0d-4f82-b293-719e123243e7",
+            "code": "NCR-0231",
+            "source": "Temperature excursion",
+            "severity": "Major",
+            "state": "investigation",
+            "raised_on": "2026-06-02",
+            "due_on": null,
+            "root_cause": null,
+            "corrective_action": null,
+            "closed_at": null,
+            "team": "Organics Section",
+            "availableTransitions": [
+              "root_cause"
+            ]
+          }
+        ],
+        "auditChain": {
+          "intact": true,
+          "entries": 254,
+          "generations": [
+            "v1"
+          ]
+        },
+        "drills": [
+          {
+            "id": "97592625-9da6-4e84-aa8d-b1402b87b1bd",
+            "startedAt": "2026-08-22 21:49:42.840539+05:30",
+            "finishedAt": "2026-08-22 21:49:42.840539+05:30",
+            "source": "2026-08-22T16-19-41-045Z",
+            "outcome": "passed",
+            "checks": [
+              {
+                "ok": true,
+                "name": "a tenant exists in the restored database",
+                "detail": "meridian"
+              },
+              {
+                "ok": true,
+                "name": "audit_ledger row count matches",
+                "detail": "43 → 43"
+              },
+              {
+                "ok": true,
+                "name": "certificate_issues row count matches",
+                "detail": "2 → 2"
+              },
+              {
+                "ok": true,
+                "name": "signatures row count matches",
+                "detail": "0 → 0"
+              },
+              {
+                "ok": true,
+                "name": "users row count matches",
+                "detail": "9 → 9"
+              },
+              {
+                "ok": true,
+                "name": "lots row count matches",
+                "detail": "3 → 3"
+              },
+              {
+                "ok": true,
+                "name": "audit_ledger is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "key_custody_events is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "audit_key_generations is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "PUBLIC can execute no lotmark function",
+                "detail": "0 function(s)"
+              },
+              {
+                "ok": true,
+                "name": "row-level security is enabled and FORCED on every table",
+                "detail": "0 table(s) without it"
+              },
+              {
+                "ok": true,
+                "name": "the audit chain verifies in the restored database",
+                "detail": "43 entries"
+              },
+              {
+                "ok": true,
+                "name": "stored certificates match their recorded digest",
+                "detail": "not run — the database holds no rendered certificate",
+                "skipped": true
+              },
+              {
+                "ok": true,
+                "name": "a certificate re-renders byte-identically",
+                "detail": "not run — no issue was produced by lotmark-pdf-3",
+                "skipped": true
+              },
+              {
+                "ok": true,
+                "name": "the backup set carries key material alongside the database",
+                "detail": "2 file(s) in .keys for 1 registered key(s)"
+              }
+            ],
+            "notes": "Restored into lotmark_drill and verified. Key material and documents were checked from the backup set, not the dump. 2 check(s) could not run."
+          },
+          {
+            "id": "9f8e007d-3b83-414c-ad81-bea06bba1020",
+            "startedAt": "2026-08-22 20:49:31.213069+05:30",
+            "finishedAt": "2026-08-22 20:49:31.213069+05:30",
+            "source": "2026-08-22T15-19-28-363Z",
+            "outcome": "passed",
+            "checks": [
+              {
+                "ok": true,
+                "name": "a tenant exists in the restored database",
+                "detail": "meridian"
+              },
+              {
+                "ok": true,
+                "name": "audit_ledger row count matches",
+                "detail": "2 → 2"
+              },
+              {
+                "ok": true,
+                "name": "certificate_issues row count matches",
+                "detail": "2 → 2"
+              },
+              {
+                "ok": true,
+                "name": "signatures row count matches",
+                "detail": "0 → 0"
+              },
+              {
+                "ok": true,
+                "name": "users row count matches",
+                "detail": "9 → 9"
+              },
+              {
+                "ok": true,
+                "name": "lots row count matches",
+                "detail": "3 → 3"
+              },
+              {
+                "ok": true,
+                "name": "audit_ledger is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "key_custody_events is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "audit_key_generations is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "PUBLIC can execute no lotmark function",
+                "detail": "0 function(s)"
+              },
+              {
+                "ok": true,
+                "name": "row-level security is enabled and FORCED on every table",
+                "detail": "0 table(s) without it"
+              },
+              {
+                "ok": true,
+                "name": "the audit chain verifies in the restored database",
+                "detail": "2 entries"
+              },
+              {
+                "ok": true,
+                "name": "stored certificates match their recorded digest",
+                "detail": "not run — the database holds no rendered certificate",
+                "skipped": true
+              },
+              {
+                "ok": true,
+                "name": "a certificate re-renders byte-identically",
+                "detail": "not run — no issue was produced by lotmark-pdf-3",
+                "skipped": true
+              },
+              {
+                "ok": true,
+                "name": "the backup set carries key material alongside the database",
+                "detail": "1 file(s) in .keys for 0 registered key(s)"
+              }
+            ],
+            "notes": "Restored into lotmark_drill and verified. Key material and documents were checked from the backup set, not the dump. 2 check(s) could not run."
+          },
+          {
+            "id": "303f794d-ab2e-4376-9b2e-2a4965e34088",
+            "startedAt": "2026-08-22 18:35:39.840811+05:30",
+            "finishedAt": "2026-08-22 18:35:39.840811+05:30",
+            "source": "2026-08-22T13-05-38-823Z",
+            "outcome": "passed",
+            "checks": [
+              {
+                "ok": true,
+                "name": "a tenant exists in the restored database",
+                "detail": "meridian"
+              },
+              {
+                "ok": true,
+                "name": "audit_ledger row count matches",
+                "detail": "2 → 2"
+              },
+              {
+                "ok": true,
+                "name": "certificate_issues row count matches",
+                "detail": "2 → 2"
+              },
+              {
+                "ok": true,
+                "name": "signatures row count matches",
+                "detail": "0 → 0"
+              },
+              {
+                "ok": true,
+                "name": "users row count matches",
+                "detail": "9 → 9"
+              },
+              {
+                "ok": true,
+                "name": "lots row count matches",
+                "detail": "3 → 3"
+              },
+              {
+                "ok": true,
+                "name": "audit_ledger is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "key_custody_events is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "audit_key_generations is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "PUBLIC can execute no lotmark function",
+                "detail": "0 function(s)"
+              },
+              {
+                "ok": true,
+                "name": "row-level security is enabled and FORCED on every table",
+                "detail": "0 table(s) without it"
+              },
+              {
+                "ok": true,
+                "name": "the audit chain verifies in the restored database",
+                "detail": "2 entries"
+              },
+              {
+                "ok": true,
+                "name": "stored certificates match their recorded digest",
+                "detail": "not run — the database holds no rendered certificate",
+                "skipped": true
+              },
+              {
+                "ok": true,
+                "name": "a certificate re-renders byte-identically",
+                "detail": "not run — no issue was produced by lotmark-pdf-2",
+                "skipped": true
+              },
+              {
+                "ok": true,
+                "name": "the backup set carries key material alongside the database",
+                "detail": "1 file(s) in .keys for 0 registered key(s)"
+              }
+            ],
+            "notes": "Restored into lotmark_drill and verified. Key material and documents were checked from the backup set, not the dump. 2 check(s) could not run."
+          },
+          {
+            "id": "a5ddf0c8-5100-4d9e-92c0-1d6cebd82baa",
+            "startedAt": "2026-08-22 18:35:25.377758+05:30",
+            "finishedAt": "2026-08-22 18:35:25.377758+05:30",
+            "source": "2026-08-22T13-05-24-140Z",
+            "outcome": "passed",
+            "checks": [
+              {
+                "ok": true,
+                "name": "a tenant exists in the restored database",
+                "detail": "meridian"
+              },
+              {
+                "ok": true,
+                "name": "audit_ledger row count matches",
+                "detail": "2 → 2"
+              },
+              {
+                "ok": true,
+                "name": "certificate_issues row count matches",
+                "detail": "2 → 2"
+              },
+              {
+                "ok": true,
+                "name": "signatures row count matches",
+                "detail": "0 → 0"
+              },
+              {
+                "ok": true,
+                "name": "users row count matches",
+                "detail": "9 → 9"
+              },
+              {
+                "ok": true,
+                "name": "lots row count matches",
+                "detail": "3 → 3"
+              },
+              {
+                "ok": true,
+                "name": "audit_ledger is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "key_custody_events is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "audit_key_generations is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "PUBLIC can execute no lotmark function",
+                "detail": "0 function(s)"
+              },
+              {
+                "ok": true,
+                "name": "row-level security is enabled and FORCED on every table",
+                "detail": "0 table(s) without it"
+              },
+              {
+                "ok": true,
+                "name": "the audit chain verifies in the restored database",
+                "detail": "2 entries"
+              },
+              {
+                "ok": true,
+                "name": "stored certificates match their recorded digest",
+                "detail": "not run — the database holds no rendered certificate",
+                "skipped": true
+              },
+              {
+                "ok": true,
+                "name": "a certificate re-renders byte-identically",
+                "detail": "not run — no issue was produced by lotmark-pdf-2",
+                "skipped": true
+              },
+              {
+                "ok": true,
+                "name": "the backup set carries key material alongside the database",
+                "detail": "1 file(s) in .keys for 0 registered key(s)"
+              }
+            ],
+            "notes": "Restored into lotmark_drill and verified. Key material and documents were checked from the backup set, not the dump. 2 check(s) could not run."
+          },
+          {
+            "id": "d0a98941-45ad-4580-8f52-d9c21d1bb27f",
+            "startedAt": "2026-08-22 18:32:25.577902+05:30",
+            "finishedAt": "2026-08-22 18:32:25.577902+05:30",
+            "source": "2026-08-22T13-02-24-482Z",
+            "outcome": "passed",
+            "checks": [
+              {
+                "ok": true,
+                "name": "a tenant exists in the restored database",
+                "detail": "meridian"
+              },
+              {
+                "ok": true,
+                "name": "audit_ledger row count matches",
+                "detail": "2 → 2"
+              },
+              {
+                "ok": true,
+                "name": "certificate_issues row count matches",
+                "detail": "2 → 2"
+              },
+              {
+                "ok": true,
+                "name": "signatures row count matches",
+                "detail": "0 → 0"
+              },
+              {
+                "ok": true,
+                "name": "users row count matches",
+                "detail": "9 → 9"
+              },
+              {
+                "ok": true,
+                "name": "lots row count matches",
+                "detail": "3 → 3"
+              },
+              {
+                "ok": true,
+                "name": "audit_ledger is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "key_custody_events is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "audit_key_generations is append-only for the application role",
+                "detail": "INSERT,SELECT"
+              },
+              {
+                "ok": true,
+                "name": "PUBLIC can execute no lotmark function",
+                "detail": "0 function(s)"
+              },
+              {
+                "ok": true,
+                "name": "row-level security is enabled and FORCED on every table",
+                "detail": "0 table(s) without it"
+              },
+              {
+                "ok": true,
+                "name": "the audit chain verifies in the restored database",
+                "detail": "2 entries"
+              },
+              {
+                "ok": true,
+                "name": "stored certificates match their recorded digest",
+                "detail": "not run — the database holds no rendered certificate",
+                "skipped": true
+              },
+              {
+                "ok": true,
+                "name": "a certificate re-renders byte-identically",
+                "detail": "not run — no issue was produced by lotmark-pdf-2",
+                "skipped": true
+              },
+              {
+                "ok": true,
+                "name": "the backup set carries key material alongside the database",
+                "detail": "1 file(s) in .keys for 0 registered key(s)"
+              }
+            ],
+            "notes": "Restored into lotmark_drill and verified. Key material and documents were checked from the backup set, not the dump. 2 check(s) could not run."
+          }
+        ],
+        "configuration": [
+          {
+            "id": "25e409b4-4376-5782-a220-817d21f814eb",
+            "number": 1,
+            "status": "active",
+            "reason": "Initial product configuration, derived from the built-in defaults",
+            "publishedAt": "2026-08-22 18:32:23.479159+05:30",
+            "signed": false,
+            "changeCount": 0
+          }
+        ]
+      },
+      "manifest": {
+        "packDigest": "ae26ffd0d36c731db262dee05208772d70da1eaa21d04cc4c1741e4fcd4a7815",
+        "generatedAt": "2026-08-24T06:41:26.074Z",
+        "requirementCount": 29,
+        "enforced": 24,
+        "howToVerify": [
+          "SHA-256 over the canonical JSON of {tenant, requirements, sections}, keys sorted.",
+          "generatedAt and manifest are excluded from the digest.",
+          "The pack is reproducible for a given database state."
+        ]
+      }
+    }
+  },
   "__capturedAt": {
     "status": 200,
-    "body": "2026-08-24T06:23:31.271Z"
+    "body": "2026-08-24T06:41:26.074Z"
   }
 }
