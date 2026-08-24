@@ -74,6 +74,9 @@ export function DemoBanner() {
           , then any six digits.
         </span>
         <span style={{ opacity: 0.55 }}>·</span>
+        <button type="button" onClick={() => window.dispatchEvent(new Event('demo:start-tour'))}
+          style={linkButton}>Guided tour</button>
+        <span style={{ opacity: 0.55 }}>·</span>
         <ResetButton />
       </div>
     </div>
@@ -89,6 +92,12 @@ export function DemoBanner() {
  * every screen refetch from it, so the change is visible immediately without a
  * page reload — which would drop the session and the current screen.
  */
+const linkButton: React.CSSProperties = {
+  pointerEvents: 'auto', cursor: 'pointer', font: 'inherit', color: 'inherit',
+  background: 'transparent', border: 'none', padding: 0,
+  textDecoration: 'underline', textUnderlineOffset: 2, opacity: 0.85,
+};
+
 function ResetButton() {
   const qc = useQueryClient();
   /*
@@ -109,12 +118,7 @@ function ResetButton() {
     <button
       type="button"
       onClick={reset}
-      style={{
-        pointerEvents: 'auto', cursor: 'pointer',
-        font: 'inherit', color: 'inherit',
-        background: 'transparent', border: 'none', padding: 0,
-        textDecoration: 'underline', textUnderlineOffset: 2, opacity: 0.85,
-      }}
+      style={linkButton}
     >
       Reset
     </button>

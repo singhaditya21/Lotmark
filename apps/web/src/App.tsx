@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { DemoTour } from './demo/Tour';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, type Me, type Project } from './lib/api';
 import { visibleSurfaces, resolveRoute, type Viewer } from './lib/surfaces';
@@ -37,6 +38,24 @@ export function App() {
   const [open, setOpen] = useState<Project | null>(null);
   const [changingPassword, setChangingPassword] = useState(false);
   const [passwordNotice, setPasswordNotice] = useState<string | null>(null);
+
+  /*
+   * The guided tour. Demo only, and folded away entirely in the product build:
+   * the state seeds false there, the listener never registers, and the render
+   * is behind a folded constant so Rollup drops the import. Declared here, above
+   * every early return, so the hook order never changes between renders —
+   * placing it lower tripped React error #310 the first time. Started by the
+   * demo bar's "Tour" button (a window event, so the bar need not reach into
+   * this component) or by ?tour=1.
+   */
+  const [tour, setTour] = useState(import.meta.env.VITE_DEMO
+    && new URLSearchParams(window.location.search).get('tour') === '1');
+  useEffect(() => {
+    if (!import.meta.env.VITE_DEMO) return;
+    const start = () => setTour(true);
+    window.addEventListener('demo:start-tour', start);
+    return () => window.removeEventListener('demo:start-tour', start);
+  }, []);
 
   const me = useQuery({
     queryKey: ['me'],
@@ -208,6 +227,8 @@ export function App() {
           <Projects onOpen={setOpen} canCreate={held.has('project:manage')} />
         )}
       </main>
+      {import.meta.env.VITE_DEMO && tour
+        ? <DemoTour onGoTo={go} onClose={() => setTour(false)} /> : null}
     </>
   );
 }
