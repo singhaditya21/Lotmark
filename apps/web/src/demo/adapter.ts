@@ -182,7 +182,21 @@ function remember(path: string, payload: unknown): unknown {
 
 /* ── The adapter ──────────────────────────────────────────────────────────── */
 
-export async function demoFetch(path: string, init: RequestInit): Promise<Response> {
+export async function demoFetch(rawPath: string, init: RequestInit): Promise<Response> {
+  /**
+   * Drop the query string before matching.
+   *
+   * The audit ledger asks for `/audit?limit=200`, and `match()` compares path
+   * SEGMENTS — so the last segment was `audit?limit=200`, which matches nothing
+   * recorded, and the most data-rich screen in the demo rendered empty while
+   * the fixture held sixty-two entries. It failed silently, as a 404 on a list
+   * endpoint does: an empty table looks like a quiet day rather than a fault.
+   *
+   * Recorded under the bare path, because the demo has one recording per
+   * endpoint and a limit it cannot honour anyway.
+   */
+  const path = rawPath.split('?')[0]!;
+
   const method = (init.method ?? 'GET').toUpperCase();
   const payload = typeof init.body === 'string' && init.body
     ? JSON.parse(init.body) as unknown : null;
