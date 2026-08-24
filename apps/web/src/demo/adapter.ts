@@ -373,6 +373,18 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
     return json({ ok: true });
   }
 
+  if (path === '/auth/password') {
+    await pause(200);
+    /*
+     * Clear the forced-change flag on the signed-in person's own /auth/me, so
+     * the next refetch drops the change screen and the console appears. This is
+     * what makes the first-login journey complete rather than loop.
+     */
+    const me = read('GET /auth/me')?.body as { passwordChangeRequired?: boolean } | undefined;
+    if (me) me.passwordChangeRequired = false;
+    return json({ changed: true, otherSessionsEnded: 0 });
+  }
+
   if (path === '/auth/me') {
     if (!signedIn) return problem(401, 'unauthenticated', 'Sign in to continue.');
     return json(forTenant(read('GET /auth/me')?.body ?? {}));

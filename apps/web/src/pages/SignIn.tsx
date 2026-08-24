@@ -118,7 +118,8 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
               {' '}<span className="mono">vikram@</span> (dispatch), or a customer:
               {' '}<span className="mono">meera@genpharm.example</span> and
               {' '}<span className="mono">suresh@sdtl.gov.example</span>, who each
-              see only their own laboratory.
+              see only their own laboratory — or <span className="mono">newuser@</span>,
+              a first login that must change its password.
             </>
           ) : (
             <>

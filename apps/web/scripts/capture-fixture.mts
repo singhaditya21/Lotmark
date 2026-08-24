@@ -369,6 +369,32 @@ for (const email of PERSONAS) {
 console.log(`  (${PERSONAS.length} personas captured)`);
 
 /*
+ * A first-login account, to film the forced password change.
+ *
+ * The product makes a newly-created user change the issued password before it
+ * does anything else — a distinctive first screen that no seeded account
+ * triggers, because none carries the flag. So a new hire is cloned from the
+ * bench scientist (a normal console to land on afterwards), given a fresh
+ * identity, and flagged. Signing in as newuser@ opens on the change-password
+ * screen; the adapter clears the flag when the change is submitted, and the
+ * console appears.
+ */
+const NEW = 'newuser@producer.example';
+const RAVI = 'ravi@producer.example';
+for (const key of Object.keys(fixture)) {
+  const prefix = `${RAVI}|`;
+  if (!key.startsWith(prefix)) continue;
+  const cloned = JSON.parse(JSON.stringify(fixture[key])) as { status: number; body: unknown };
+  if (key.endsWith('GET /auth/me') && cloned.body && typeof cloned.body === 'object') {
+    const me = cloned.body as Record<string, unknown>;
+    me['passwordChangeRequired'] = true;
+    me['user'] = { ...(me['user'] as object), name: 'Priya Deshmukh', email: NEW };
+  }
+  fixture[key.replace(prefix, `${NEW}|`)] = cloned;
+}
+console.log('  (first-login account added — newuser@producer.example)');
+
+/*
  * The two designers, which is where the low-code story lives.
  *
  * Their screens hang off a DRAFT configuration version, so there is nothing to

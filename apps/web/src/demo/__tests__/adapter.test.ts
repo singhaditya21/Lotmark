@@ -146,6 +146,26 @@ describe('who is signed in', () => {
     expect(adminProjects.length).toBeGreaterThan(0);
   });
 
+  it('makes a first-login account change its password before anything else', async () => {
+    /*
+     * The forced-change journey. newuser@ carries passwordChangeRequired, so
+     * the console opens on the change screen; submitting a change clears the
+     * flag, and the next /auth/me lets the shell through.
+     */
+    await signIn(demoFetch, 'newuser@producer.example');
+    const before = (await call(demoFetch, 'GET', '/auth/me')).body as
+      { passwordChangeRequired?: boolean };
+    expect(before.passwordChangeRequired).toBe(true);
+
+    const changed = await call(demoFetch, 'POST', '/auth/password',
+      { currentPassword: 'demo-viewer', newPassword: 'a-new-one-1234' });
+    expect(changed.body['changed']).toBe(true);
+
+    const after = (await call(demoFetch, 'GET', '/auth/me')).body as
+      { passwordChangeRequired?: boolean };
+    expect(after.passwordChangeRequired, 'the change must release the console').toBe(false);
+  });
+
   it('rejects an empty password, and says what the right one is', async () => {
     const empty = await call(demoFetch, 'POST', '/auth/sign-in',
       { email: 'admin@producer.example', password: '  ' });
