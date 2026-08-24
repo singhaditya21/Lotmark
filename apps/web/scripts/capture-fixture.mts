@@ -561,6 +561,47 @@ verify[WITHDRAWN_TOKEN] = {
 console.log(`  (${Object.keys(verify).length} verification token(s) synthesised)`);
 
 /*
+ * A second producer, so multi-tenancy is something a viewer can see.
+ *
+ * The product's isolation is already visible on the customer side — a customer
+ * sees only their own holdings — but not between producers. Rather than carry a
+ * whole second dataset, the demo transforms the first tenant's responses into a
+ * second producer's at runtime: same platform, same structure, isolated data
+ * under a different identity, which is exactly what multi-tenancy looks like.
+ * Only the RULES live here; the adapter applies them to string values (never to
+ * ids or digests) when the second tenant is selected. Order matters only in
+ * that no replacement's OUTPUT is another's input, so nothing chains.
+ */
+(fixture as Record<string, unknown>)['__tenantB'] = { status: 200, body: {
+  name: 'Aurora Standards Ltd',
+  rules: [
+    ['Meridian Reference Materials', 'Aurora Standards Ltd'],
+    ['Certified Reference Materials Division', 'Reference Standards Unit'],
+    ['Organics Section', 'Assay Group'],
+    ['Inorganics Section', 'Impurities Group'],
+    // Materials — chosen so none appears in the first tenant's set.
+    ['Metformin Hydrochloride', 'Aspirin'],
+    ['Atorvastatin Calcium', 'Glucose Anhydrous'],
+    ['Paracetamol', 'Caffeine'],
+    ['Ibuprofen', 'Sodium Benzoate'],
+    // The producer's people.
+    ['Dr. Asha Pillai', 'Dr. Priya Nair'],
+    ['Asha Pillai', 'Priya Nair'],
+    ['Ravi Menon', 'Karan Shah'],
+    ['Neha Kulkarni', 'Anjali Rao'],
+    ['Arjun Rao', 'Vivek Iyer'],
+    ['Sunil Bhatt', 'Rohan Das'],
+    ['Vikram Shetty', 'Sameer Roy'],
+    // Codes — shifted consistently so links still resolve within the tenant.
+    ['RMP-', 'ASL-'],
+    ['PRJ-0', 'PRJ-7'],
+    ['CRT-2', 'CRT-6'],
+    ['CRT-51', 'CRT-64'],
+  ],
+} };
+console.log('  (second tenant rules added — Aurora Standards Ltd)');
+
+/*
  * A lot at each stage of its life, so the state machine is visible in one look.
  *
  * The seed leaves two lots — one released, one superseded — so the lots table

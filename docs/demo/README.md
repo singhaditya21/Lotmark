@@ -102,3 +102,8 @@ product hands over.
 
 The current (green) page is reached from any holder's Certificate vault by
 clicking **check**.
+
+**Two producers.** The demo bar's "Switch to Aurora Standards Ltd" toggles
+between two producer tenants running the same platform with isolated,
+differently-named data — a different lab, different materials, different people.
+It is how multi-tenancy looks from the inside.

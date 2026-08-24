@@ -83,6 +83,50 @@ export function resetData(): void {
   state = hydrate();
 }
 
+/* ── A second producer, projected from the first ──────────────────────────── */
+
+/**
+ * Which producer tenant the console is showing. `A` is the recorded one; `B`
+ * projects it into a second producer at the response boundary — see the rules
+ * in the capture. A projection, not a copy: mutations still land on A's stored
+ * state, and B is what a reader sees over it.
+ */
+let demoTenant: 'A' | 'B' = 'A';
+
+const tenantRules = (): Array<[string, string]> =>
+  ((state['__tenantB']?.body as { rules?: Array<[string, string]> } | undefined)?.rules) ?? [];
+
+/** Rewrite string VALUES only — ids and digests carry none of these words. */
+function toTenantB(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return tenantRules().reduce((s, [from, to]) => s.split(from).join(to), value);
+  }
+  if (Array.isArray(value)) return value.map(toTenantB);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, toTenantB(v)]));
+  }
+  return value;
+}
+
+/** The identity being shown, for the demo bar. */
+export function tenantName(): string {
+  return demoTenant === 'B'
+    ? String((state['__tenantB']?.body as { name?: string } | undefined)?.name ?? 'Tenant B')
+    : 'Meridian Reference Materials';
+}
+
+/** Switch producer tenant. The caller resets the query cache to refetch. */
+export function switchTenant(): 'A' | 'B' {
+  demoTenant = demoTenant === 'A' ? 'B' : 'A';
+  return demoTenant;
+}
+
+/** Project a response into the current tenant. A no-op for tenant A. */
+function forTenant(body: unknown): unknown {
+  return demoTenant === 'B' ? toTenantB(body) : body;
+}
+
 /* ── Matching a real path back to the template it was captured under ───────── */
 
 /**
@@ -311,7 +355,7 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
       return problem(401, 'invalid_code', 'Six digits. In the demo, any six will do.');
     }
     signedIn = true;
-    return json(read('GET /auth/me')?.body ?? {});
+    return json(forTenant(read('GET /auth/me')?.body ?? {}));
   }
 
   if (path === '/auth/step-up') {
@@ -331,7 +375,7 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
 
   if (path === '/auth/me') {
     if (!signedIn) return problem(401, 'unauthenticated', 'Sign in to continue.');
-    return json(read('GET /auth/me')?.body ?? {});
+    return json(forTenant(read('GET /auth/me')?.body ?? {}));
   }
 
   /* — Signing. The ceremony is the point, so the refusal has to be real — */
@@ -350,7 +394,7 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
     const key = match('GET', path);
     if (!key) return problem(404, 'not_found', `Nothing recorded for ${path}.`);
     const rec = read(key)!;
-    return json(rec.body, rec.status);
+    return json(forTenant(rec.body), rec.status);
   }
 
   /* — Writes — */
@@ -366,7 +410,7 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
    * body it submitted — which is not the shape it asked for, and how both broke.
    */
   const recorded = state[`POST ${path}`];
-  if (recorded) return json(recorded.body, recorded.status);
+  if (recorded) return json(forTenant(recorded.body), recorded.status);
 
   /**
    * Configuration drafts, which the generic rule cannot serve.

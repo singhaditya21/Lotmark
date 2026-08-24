@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DEMO_PASSWORD } from './constants';
 
@@ -77,6 +77,8 @@ export function DemoBanner() {
         <button type="button" onClick={() => window.dispatchEvent(new Event('demo:start-tour'))}
           style={linkButton}>Guided tour</button>
         <span style={{ opacity: 0.55 }}>·</span>
+        <TenantButton />
+        <span style={{ opacity: 0.55 }}>·</span>
         <ResetButton />
       </div>
     </div>
@@ -121,6 +123,29 @@ function ResetButton() {
       style={linkButton}
     >
       Reset
+    </button>
+  );
+}
+
+/**
+ * Switch producer tenants, to show the isolation between two labs on one
+ * platform. Lazy-imports the adapter for the same reason ResetButton does.
+ */
+function TenantButton() {
+  const qc = useQueryClient();
+  const [other, setOther] = useState('Aurora Standards Ltd');
+  const switchTo = async () => {
+    const { switchTenant, tenantName } = await import('./adapter');
+    switchTenant();
+    await qc.resetQueries();
+    // Show the name of the tenant you can switch BACK to.
+    const nowShowing = tenantName();
+    setOther(nowShowing === 'Aurora Standards Ltd'
+      ? 'Meridian Reference Materials' : 'Aurora Standards Ltd');
+  };
+  return (
+    <button type="button" onClick={switchTo} style={linkButton}>
+      Switch to {other}
     </button>
   );
 }
