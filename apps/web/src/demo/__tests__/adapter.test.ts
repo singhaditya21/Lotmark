@@ -370,6 +370,44 @@ describe('an act leaves a trace', () => {
     expect(String((await auditTop())['detail'])).toMatch(/EXCURSION/);
   });
 
+  it('signs a draft study, filling its date and the ledger', async () => {
+    /*
+     * The release chain needs a pending signature to film. A draft study is
+     * seeded for exactly that; signing it must flip the state, fill the Signed
+     * column (signedOn, which the project screen reads), and leave a SIGNATURE
+     * trace.
+     */
+    const studies = (await call(demoFetch, 'GET', '/projects/p/studies')).body as
+      { studies: Array<Record<string, unknown>> };
+    const draft = studies.studies.find((s) => s['state'] === 'draft')!;
+    expect(draft, 'a draft study must be waiting to sign').toBeTruthy();
+
+    const res = await call(demoFetch, 'POST', `/studies/${String(draft['id'])}/sign`,
+      { meaning: 'approval', reason: 'measurements reviewed' });
+    expect(res.status).toBe(200);
+
+    const after = ((await call(demoFetch, 'GET', '/projects/p/studies')).body as
+      { studies: Array<Record<string, unknown>> }).studies.find((s) => s['id'] === draft['id']);
+    expect(after?.['state']).toBe('signed');
+    expect(String(after?.['signedOn']), 'the Signed column must fill').toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(String((await auditTop())['detail'])).toMatch(/signed/i);
+  });
+
+  it('authorises an assigned value and moves a lot towards release', async () => {
+    const values = (await call(demoFetch, 'GET', '/projects/p/values')).body as
+      { values: Array<Record<string, unknown>> };
+    const assigned = values.values.find((v) => v['state'] === 'assigned')!;
+    expect(assigned, 'an assigned value must be waiting to authorise').toBeTruthy();
+
+    const res = await call(demoFetch, 'POST', `/values/${String(assigned['id'])}/authorise`, {});
+    expect(res.status).toBe(200);
+
+    const after = ((await call(demoFetch, 'GET', '/projects/p/values')).body as
+      { values: Array<Record<string, unknown>> }).values.find((v) => v['id'] === assigned['id']);
+    expect(after?.['state']).toBe('authorised');
+    expect(String((await auditTop())['detail'])).toMatch(/authorised/i);
+  });
+
   it('publishing a configuration draft makes it the active version', async () => {
     /*
      * The change-control loop. A pending draft carries changes; publishing it

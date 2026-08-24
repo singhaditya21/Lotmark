@@ -57,7 +57,9 @@ export const CHAINS: ReadonlyArray<readonly [string, Chain]> = [
     const study = find(ctx, ['GET /projects/:id/studies'], id!);
     if (study) {
       study['state'] = 'signed';
-      study['signed'] = ctx.now().slice(0, 10);
+      // The project screen reads `signedOn` for the Signed column; set that, so
+      // a study signed on camera fills its date in rather than staying a dash.
+      study['signedOn'] = ctx.now().slice(0, 10);
       study['signedBy'] = ctx.actor;
     }
     ctx.audit('SIGNATURE', 'study.sign',

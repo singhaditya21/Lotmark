@@ -478,6 +478,43 @@ if (draftId) {
 }
 
 /*
+ * A study to sign and a value to authorise, on camera.
+ *
+ * The seeded studies are all already signed and the one property value already
+ * authorised, so the release chain had no pending signature to film — only the
+ * certificate reissue. This adds one DRAFT study (the project screen shows a
+ * Sign button for `state: 'draft'`, which opens the step-up ceremony) and one
+ * ASSIGNED value (an Authorise button for `state: 'assigned'`, which on
+ * authorising flips a lot towards releasable and writes to the ledger). The
+ * assign/authorise/sign spine of the release chain becomes a live click-through
+ * rather than narration over records that are already in their end state.
+ */
+{
+  const studies = (fixture['GET /projects/:id/studies']?.body as
+    { studies?: Array<Record<string, unknown>> } | undefined)?.studies;
+  const values = (fixture['GET /projects/:id/values']?.body as
+    { values?: Array<Record<string, unknown>> } | undefined)?.values;
+  if (studies) {
+    studies.push({
+      id: '8a71c4e0-2f6b-5d18-9c33-1e7a4b0f92d5',
+      code: 'ST-1014', type: 'confirmatory retest',
+      state: 'draft', uncertainty: 0.19, signedOn: null,
+    });
+    console.log('  (a draft study added to sign on camera — ST-1014)');
+  }
+  if (values) {
+    values.unshift({
+      id: 'b3e5d9a2-7c41-5e6f-8a20-9d1c2f3e4b56',
+      code: 'PV-02', property_name: 'Water content (Karl Fischer)',
+      unit: '% w/w', state: 'assigned',
+      assigned_value: 0.42, expanded_uncertainty: 0.05, coverage_factor: 2,
+      assigned_by: 'c56153c2-dcb3-5bde-8af9-ba11ed44787f', authorised_by: null,
+    });
+    console.log('  (an assigned value added to authorise on camera — PV-02)');
+  }
+}
+
+/*
  * Present the scheduled jobs as a running system would.
  *
  * Every job comes back `never_run` with the advice "check that the worker

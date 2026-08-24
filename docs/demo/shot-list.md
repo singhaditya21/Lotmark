@@ -29,24 +29,34 @@ certificate, and every hand on it signs.
 **PRJ-0412 · Paracetamol**.
 
 **Steps:**
-1. **Property values** — point at `PV-01 · Assay (as is) · 99.62 % w/w ± 0.84`,
-   state **authorised**. Say: an authorised value is what makes a lot
-   releasable.
-2. **Lot register** — show the lifecycle across states
-   (study → authorisation → released → withdrawn). This is the machine.
-3. **Issues & reissue** (top of the project) → **Reissue** the certificate,
-   reason "uncertainty budget corrected" → the **Confirm your identity**
-   step-up ceremony appears (21 CFR 11 §11.200) → complete it → a new issue is
-   recorded and the holders are marked notified.
-4. `?screen=audit` — the **Audit ledger** now carries that act at the top,
-   under *Tenant Administrator*, with the time source and region.
+1. **Studies** — `ST-1014 · confirmatory retest` is in state **draft** with a
+   **Sign** button. Click it → choose a meaning → **Sign**. The first signature
+   opens the **Confirm your identity** step-up ceremony ("You are about to Sign
+   study ST-1014" — 21 CFR 11 §11.200); complete it, then **Sign again** to
+   finish. The row flips to **signed** with today's date, and the "still
+   unsigned" note clears.
+2. **Property values** — `PV-02 · Water content (Karl Fischer)` is in state
+   **assigned** with an **Authorise** button. Authorise it → because the signing
+   session opened in step 1 is still live, this goes straight through, no second
+   ceremony → the value reads **authorised** and a lot moves towards releasable.
+   (`PV-01` is already authorised, for contrast.)
+3. **Lot register** — show the lifecycle across states
+   (study → authorisation → released → withdrawn).
+4. **Issues & reissue** (top of the project) → **Reissue…** the certificate,
+   reason "uncertainty budget corrected" → a new issue is recorded and the
+   holders are marked notified. (Or **Withdraw issue #1…** for a recall — which
+   sets up journey 2.)
+5. `?screen=audit` — the **Audit ledger** now carries all of it at the top,
+   under *Tenant Administrator*: `study.sign`, `value.authorise`, and the
+   certificate act, each with the time source and region.
 
-**Capture:** the step-up dialog, and the fresh ledger row seconds later.
+**Capture:** the step-up dialog once; the study row flipping to signed with its
+date; the stacked ledger rows seconds later.
 
-> **Note — live sign target.** On the seeded data the studies (ST-1010–1013)
-> are already *signed* and PV-01 is already *authorised*, so the live signed
-> act in this clip is the certificate **reissue/withdraw**. If you want a fresh
-> **"sign this study"** ceremony too, see the one-line fix at the bottom.
+> **The ceremony shows once.** The first signed act opens a signing session that
+> stays live for a few minutes, so steps 2 and 4 don't re-prompt — sign the
+> study, and the authorise and reissue flow without interruption. That is the
+> intended 21 CFR 11 rhythm, not a glitch.
 
 ---
 
@@ -159,13 +169,3 @@ move and its reason land in the ledger.
 
 **Start:** any producer sign-in → demo bar **"Guided tour"** → arrow keys
 through the six stops (projects, conformance, audit, flows, forms, operations).
-
----
-
-## Optional: make the release chain's *sign* act live
-
-If you want journey 1 to include a fresh **"sign this study"** ceremony (not
-just the certificate reissue), one pending record needs seeding — a study in a
-signable state and a value in *assigned* state — the same way the configuration
-draft was seeded. It's a small capture change plus a rebuild and redeploy. Say
-the word and I'll add it.
