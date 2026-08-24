@@ -561,6 +561,79 @@ verify[WITHDRAWN_TOKEN] = {
 console.log(`  (${Object.keys(verify).length} verification token(s) synthesised)`);
 
 /*
+ * A lot at each stage of its life, so the state machine is visible in one look.
+ *
+ * The seed leaves two lots — one released, one superseded — so the lots table
+ * shows the end of the story and none of the middle. A material moves study →
+ * authorisation → released → (expiring) → withdrawn, and that progression is
+ * the point of the workflow the flow designer configures. Synthesised here and
+ * prepended, so opening a project shows the whole arc across its rows.
+ *
+ * These carry no certificate id, so nothing links them to the verification
+ * data; they are there to be read, not clicked through.
+ */
+const lotsBody = fixture['GET /projects/:id/lots']?.body as
+  { lots?: Array<Record<string, unknown>> } | undefined;
+if (lotsBody?.lots) {
+  const soon = new Date();
+  soon.setMonth(soon.getMonth() + 2);
+  const lifecycle: Array<Record<string, unknown>> = [
+    {
+      id: 'life-study', lot_code: 'RMP-PARA-0507', state: 'study',
+      expiry_date: '2029-02-28', stock_units: 0, storage_condition: '2–8 °C',
+      cold_chain: true, supersedes: null, certificate_code: null, certificate_id: null,
+    },
+    {
+      id: 'life-auth', lot_code: 'RMP-PARA-0489', state: 'authorisation',
+      expiry_date: '2028-12-31', stock_units: 60, storage_condition: '2–8 °C',
+      cold_chain: true, supersedes: null, certificate_code: null, certificate_id: null,
+    },
+    {
+      id: 'life-expiring', lot_code: 'RMP-PARA-0455', state: 'released',
+      expiry_date: soon.toISOString().slice(0, 10), stock_units: 7,
+      storage_condition: '2–8 °C', cold_chain: true, supersedes: null,
+      certificate_code: 'CRT-2036', certificate_id: null,
+    },
+    {
+      id: 'life-withdrawn', lot_code: 'RMP-PARA-0402', state: 'withdrawn',
+      expiry_date: '2027-11-30', stock_units: 0, storage_condition: '2–8 °C',
+      cold_chain: true, supersedes: null, certificate_code: 'CRT-2039', certificate_id: null,
+    },
+  ];
+  lotsBody.lots = [...lifecycle, ...lotsBody.lots];
+  console.log(`  (${lifecycle.length} lifecycle lots added — study → withdrawn)`);
+}
+
+/*
+ * The form designer's output, showing on a record.
+ *
+ * The custom fields the designer defines — batch origin, packaging, ampoules
+ * filled — come back with an EMPTY `values` map, so a lot shows the fields as
+ * blank boxes and the low-code story has no visible effect anywhere. Filling
+ * them for a record closes the loop: this is the designer's work, live on the
+ * thing it was designed for. Keyed by the field keys the form actually defines,
+ * so a value only appears where a field was designed to hold one.
+ */
+const cf = fixture['GET /custom-fields/:entity/:recordId']?.body as
+  { form?: { sections?: Array<{ fields?: Array<{ field?: { key?: string; type?: string } }> }> };
+    values?: Record<string, unknown> } | undefined;
+if (cf?.form) {
+  const sample: Record<string, unknown> = {
+    batch_origin: 'Bulk API — a licensed manufacturer, lot BA-2291',
+    packaging: 'ampoule_2ml', // the picklist's stored value; label is '2 mL amber ampoule'
+    ampoules_filled: 1200,
+    fill_notes: 'Filled under laminar flow; no temperature excursions recorded.',
+  };
+  const known = new Set((cf.form.sections ?? [])
+    .flatMap((s) => s.fields ?? [])
+    .map((f) => f.field?.key)
+    .filter(Boolean));
+  cf.values = Object.fromEntries(
+    Object.entries(sample).filter(([k]) => known.has(k)));
+  console.log(`  (${Object.keys(cf.values).length} custom-field values populated on a record)`);
+}
+
+/*
  * The assessment pack, which the capture cannot ask the API to build.
  *
  * `POST /conformance/pack` refuses on the seeded database — it mints a signing
