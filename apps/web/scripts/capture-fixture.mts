@@ -238,22 +238,35 @@ const ids = (v: unknown, key = 'id'): string[] => {
  */
 const PERSONAS = [
   'admin@producer.example',   // tenant administrator — sees everything
-  'asha@producer.example',    // quality — tenant-wide, signs things
+  'asha@producer.example',    // technical manager — tenant-wide, signs things
   'ravi@producer.example',    // bench scientist — team-scoped
   'neha@producer.example',    // quality manager
-  'meera@genpharm.example',   // a CUSTOMER: a different world entirely
+  'arjun@producer.example',   // commercial — pricing, orders, entitlements
+  'sunil@producer.example',   // production lead — lots and dispatch prep
+  'vikram@producer.example',  // dispatch — shipments and cold chain
+  'meera@genpharm.example',   // a CUSTOMER (GenPharm) — a different world
+  'suresh@sdtl.gov.example',  // a SECOND customer (a government lab) — isolation
 ] as const;
 
+/*
+ * Sign every persona in ONCE, and reuse the cookie.
+ *
+ * Sign-in is rate-limited to ten attempts per minute per IP — a real control,
+ * and the capture drives everything from one address (127.0.0.1). Signing the
+ * administrator in at the top AND again inside the persona loop pushed the count
+ * to eleven, and the eleventh — the second customer — came back 429, so their
+ * whole console was captured as a 401 and fell back to the administrator's data.
+ * One sign-in each keeps it at nine, under the limit, and is less work besides.
+ */
 console.log('signing in…');
-const asha = await signIn('asha@producer.example');
-const admin = await signIn('admin@producer.example');
+const cookies: Record<string, string> = {};
+for (const email of PERSONAS) {
+  try { cookies[email] = await signIn(email); }
+  catch { console.log(`  (${email}: cannot sign in)`); }
+}
+const admin = cookies['admin@producer.example']!;
 
 console.log('\ncapturing:');
-
-/* Shell and identity. Captured for BOTH sessions; the admin one wins, because
- * the demo signs a viewer in with the widest role so every screen is reachable. */
-await get(asha, '/auth/me');
-await get(admin, '/auth/me');
 
 /* The two compute-on-demand buttons: verify the ledger, assemble the pack. */
 await post(admin, '/audit/verify');
@@ -340,12 +353,16 @@ for (const v of ids(versions).slice(0, 3)) {
  * screens where the difference is the point are these.
  */
 for (const email of PERSONAS) {
-  let cookie: string;
-  try { cookie = await signIn(email); } catch { console.log(`  (${email}: cannot sign in)`); continue; }
-  for (const p of ['/auth/me', '/projects', '/vault', '/orders', '/catalogue', '/entitlements']) {
+  const cookie = cookies[email];
+  if (!cookie) continue;
+  for (const p of ['/auth/me', '/projects', '/vault', '/orders', '/catalogue',
+    '/entitlements', '/capa']) {
     const res = await app.inject({ method: 'GET', url: `/api/v1${p}`, headers: { cookie } });
     let body: unknown = null;
     try { body = res.json(); } catch { body = null; }
+    // A 403 is recorded too: a role that cannot see a screen should not be
+    // handed the administrator's data for it. The adapter serves the recorded
+    // status, so the console renders the same refusal the product would.
     fixture[`${email}|GET ${p}`] = { status: res.statusCode, body: scrub(body) };
   }
 }

@@ -468,13 +468,18 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
    * the person who did it. See ./chains.ts.
    */
   const ctx: Ctx = {
-    body: (key) => state[key]?.body,
-    list: (key) => listOf(state[key]?.body) as Array<Record<string, unknown>> | null,
+    // Persona-aware, so a chain mutates the SAME body a signed-in persona
+    // reads. Once some screens were captured per persona (a producer role sees
+    // its own CAPA list), a chain writing to the shared copy while the reader
+    // took the persona-scoped one meant the move never showed. `read()` is the
+    // one lookup that resolves persona-scoped first, then shared.
+    body: (key) => read(key)?.body,
+    list: (key) => listOf(read(key)?.body) as Array<Record<string, unknown>> | null,
     actor: actorLabel(),
     now: () => new Date().toISOString(),
     id: newId,
     audit: (kind, action, detail) => {
-      const entries = listOf(state['GET /audit']?.body);
+      const entries = listOf(read('GET /audit')?.body);
       if (!entries) return;
       const top = entries[0] as Record<string, unknown> | undefined;
       entries.unshift({

@@ -292,13 +292,19 @@ describe('an act leaves a trace', () => {
   });
 
   it('records the ledger entry against the person who acted', async () => {
+    /*
+     * Neha, the quality manager — not Asha, the technical manager, who now
+     * (correctly) gets a 403 on CAPA, because she does not hold capa:manage.
+     * That refusal is the per-persona capture working; the actor test just
+     * needs someone who can actually make the move.
+     */
     const fresh = await load();
-    await signIn(fresh.demoFetch, 'asha@producer.example');
+    await signIn(fresh.demoFetch, 'neha@producer.example');
     await stepUp(fresh.demoFetch);
     const capa = listIn((await call(fresh.demoFetch, 'GET', '/capa')).body);
     await call(fresh.demoFetch, 'POST', `/capa/${String(capa[0]!['id'])}/transition`,
       { to: 'containment' });
     const entries = listIn((await call(fresh.demoFetch, 'GET', '/audit')).body);
-    expect(String(entries[0]!['actor_label'])).toContain('Asha');
+    expect(String(entries[0]!['actor_label'])).toContain('Neha');
   });
 });

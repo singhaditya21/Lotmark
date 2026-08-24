@@ -111,11 +111,14 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
             <>
               <b>Demonstration.</b> Every record here is invented and nothing is
               saved. Password <span className="mono">demo-viewer</span>, then any
-              six digits at the authenticator step.
-              {' '}Try <span className="mono">ravi@</span> (bench scientist,
-              team-scoped), <span className="mono">neha@</span> (quality,
-              tenant-wide) or <span className="mono">meera@genpharm.example</span>
-              {' '}(customer) to see how the same screens change by role.
+              six digits at the authenticator step. The same screens change by
+              role — try <span className="mono">admin@</span> (sees everything),
+              {' '}<span className="mono">ravi@</span> (bench scientist,
+              team-scoped), <span className="mono">arjun@</span> (commercial),
+              {' '}<span className="mono">vikram@</span> (dispatch), or a customer:
+              {' '}<span className="mono">meera@genpharm.example</span> and
+              {' '}<span className="mono">suresh@sdtl.gov.example</span>, who each
+              see only their own laboratory.
             </>
           ) : (
             <>
