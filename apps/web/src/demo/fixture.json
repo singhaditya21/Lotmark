@@ -3,7 +3,7 @@
     "status": 200,
     "body": {
       "ok": true,
-      "entries": 555,
+      "entries": 576,
       "brokenAt": null,
       "reason": null,
       "generations": [
@@ -47,6 +47,388 @@
         "capaOverdue": 0,
         "ordersToDispatch": 0
       }
+    }
+  },
+  "GET /search": {
+    "status": 200,
+    "body": {
+      "items": [
+        {
+          "kind": "project",
+          "code": "PRJ-0412",
+          "label": "Paracetamol",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0413",
+          "label": "Metformin Hydrochloride",
+          "detail": "project · Inorganics Section",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0414",
+          "label": "Ibuprofen",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0415",
+          "label": "Atorvastatin Calcium",
+          "detail": "project · Inorganics Section",
+          "surface": "projects",
+          "project": {
+            "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+            "code": "PRJ-0415",
+            "material": "Atorvastatin Calcium",
+            "cas": "134523-03-8",
+            "sku": "RM-ATOR",
+            "stage": "study",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0421",
+          "label": "Paracetamol",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0388",
+          "label": "Paracetamol",
+          "detail": "lot · superseded",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-METF-0518",
+          "label": "Metformin Hydrochloride",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2042",
+          "label": "Metformin Hydrochloride",
+          "detail": "certificate · lot RMP-METF-0518",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2041",
+          "label": "Paracetamol",
+          "detail": "certificate · lot RMP-PARA-0421",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1001",
+          "label": "Paracetamol",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1002",
+          "label": "Paracetamol",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1003",
+          "label": "Paracetamol",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1010",
+          "label": "Metformin Hydrochloride",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1011",
+          "label": "Metformin Hydrochloride",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1012",
+          "label": "Metformin Hydrochloride",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1013",
+          "label": "Metformin Hydrochloride",
+          "detail": "confirmatory retest study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1020",
+          "label": "Ibuprofen",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1021",
+          "label": "Ibuprofen",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1022",
+          "label": "Ibuprofen",
+          "detail": "characterisation study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1030",
+          "label": "Atorvastatin Calcium",
+          "detail": "homogeneity study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+            "code": "PRJ-0415",
+            "material": "Atorvastatin Calcium",
+            "cas": "134523-03-8",
+            "sku": "RM-ATOR",
+            "stage": "study",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-01",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0412",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-02",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0413",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-03",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0414",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "capa",
+          "code": "NCR-0231",
+          "label": "Temperature excursion",
+          "detail": "Major CAPA",
+          "surface": "capa"
+        }
+      ]
     }
   },
   "GET /projects": {
@@ -223,6 +605,237 @@
     "status": 200,
     "body": {
       "entries": [
+        {
+          "seq": "577",
+          "occurred_at": "2026-08-25 10:21:50.693202+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "SYSTEM",
+          "action": "Audit chain verification run",
+          "detail": "intact across 576 entries (generation v1)",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "576",
+          "occurred_at": "2026-08-25 10:21:50.669463+05:30",
+          "actor_label": "Suresh Iyer",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed in",
+          "detail": "suresh@sdtl.gov.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "575",
+          "occurred_at": "2026-08-25 10:21:50.65523+05:30",
+          "actor_label": "Dr. Meera Raghavan",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Signed in",
+          "detail": "meera@genpharm.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "574",
+          "occurred_at": "2026-08-25 10:21:50.651922+05:30",
+          "actor_label": "Vikram Shetty",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "vikram@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "573",
+          "occurred_at": "2026-08-25 10:21:50.63665+05:30",
+          "actor_label": "Vikram Shetty",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "vikram@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "572",
+          "occurred_at": "2026-08-25 10:21:50.631569+05:30",
+          "actor_label": "Sunil Bhatt",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "sunil@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "571",
+          "occurred_at": "2026-08-25 10:21:50.616192+05:30",
+          "actor_label": "Sunil Bhatt",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "sunil@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "570",
+          "occurred_at": "2026-08-25 10:21:50.61138+05:30",
+          "actor_label": "Arjun Rao",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "arjun@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "569",
+          "occurred_at": "2026-08-25 10:21:50.596263+05:30",
+          "actor_label": "Arjun Rao",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "arjun@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "568",
+          "occurred_at": "2026-08-25 10:21:50.592795+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "567",
+          "occurred_at": "2026-08-25 10:21:50.576718+05:30",
+          "actor_label": "Neha Kulkarni",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "neha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "566",
+          "occurred_at": "2026-08-25 10:21:50.572959+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "565",
+          "occurred_at": "2026-08-25 10:21:50.557084+05:30",
+          "actor_label": "Ravi Menon",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "ravi@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "564",
+          "occurred_at": "2026-08-25 10:21:50.554873+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "563",
+          "occurred_at": "2026-08-25 10:21:50.53873+05:30",
+          "actor_label": "Dr. Asha Pillai",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "asha@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "562",
+          "occurred_at": "2026-08-25 10:21:50.534012+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Second factor verified",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "561",
+          "occurred_at": "2026-08-25 10:21:50.46734+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "AUTH",
+          "action": "Password accepted, second factor required",
+          "detail": "admin@producer.example",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "560",
+          "occurred_at": "2026-08-25 10:07:04.883087+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft discarded",
+          "detail": "version 2 · Captured to record the designer screens",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "559",
+          "occurred_at": "2026-08-25 10:07:04.86259+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "CONFIGURATION",
+          "action": "Configuration draft opened",
+          "detail": "version 2 · Captured to record the designer screens",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "558",
+          "occurred_at": "2026-08-25 10:07:04.738352+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "2 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
+        {
+          "seq": "557",
+          "occurred_at": "2026-08-25 10:07:04.728541+05:30",
+          "actor_label": "Tenant Administrator",
+          "actor_role_id": "—",
+          "kind": "PII",
+          "action": "Certificate holder contacts read",
+          "detail": "1 holder(s) of issue #1",
+          "time_source": "time.example.org (stratum 1)",
+          "region": "ap-south-1"
+        },
         {
           "seq": "556",
           "occurred_at": "2026-08-25 10:07:04.373159+05:30",
@@ -1091,237 +1704,6 @@
           "detail": "admin@producer.example",
           "time_source": "time.example.org (stratum 1)",
           "region": "ap-south-1"
-        },
-        {
-          "seq": "477",
-          "occurred_at": "2026-08-24 14:36:57.823761+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "476",
-          "occurred_at": "2026-08-24 14:35:13.38878+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "CONFIGURATION",
-          "action": "Configuration draft discarded",
-          "detail": "version 2 · Captured to record the designer screens",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "475",
-          "occurred_at": "2026-08-24 14:35:13.308835+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "CONFIGURATION",
-          "action": "Configuration draft opened",
-          "detail": "version 2 · Captured to record the designer screens",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "474",
-          "occurred_at": "2026-08-24 14:35:13.085401+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "PII",
-          "action": "Certificate holder contacts read",
-          "detail": "2 holder(s) of issue #1",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "473",
-          "occurred_at": "2026-08-24 14:35:13.062641+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "PII",
-          "action": "Certificate holder contacts read",
-          "detail": "1 holder(s) of issue #1",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "472",
-          "occurred_at": "2026-08-24 14:35:12.288189+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "SYSTEM",
-          "action": "Audit chain verification run",
-          "detail": "intact across 471 entries (generation v1)",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "471",
-          "occurred_at": "2026-08-24 14:35:12.25413+05:30",
-          "actor_label": "Suresh Iyer",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Signed in",
-          "detail": "suresh@sdtl.gov.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "470",
-          "occurred_at": "2026-08-24 14:35:12.233856+05:30",
-          "actor_label": "Dr. Meera Raghavan",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Signed in",
-          "detail": "meera@genpharm.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "469",
-          "occurred_at": "2026-08-24 14:35:12.23087+05:30",
-          "actor_label": "Vikram Shetty",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "vikram@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "468",
-          "occurred_at": "2026-08-24 14:35:12.213108+05:30",
-          "actor_label": "Vikram Shetty",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "vikram@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "467",
-          "occurred_at": "2026-08-24 14:35:12.207868+05:30",
-          "actor_label": "Sunil Bhatt",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "sunil@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "466",
-          "occurred_at": "2026-08-24 14:35:12.182981+05:30",
-          "actor_label": "Sunil Bhatt",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "sunil@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "465",
-          "occurred_at": "2026-08-24 14:35:12.165828+05:30",
-          "actor_label": "Arjun Rao",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "arjun@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "464",
-          "occurred_at": "2026-08-24 14:35:12.143861+05:30",
-          "actor_label": "Arjun Rao",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "arjun@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "463",
-          "occurred_at": "2026-08-24 14:35:12.139588+05:30",
-          "actor_label": "Neha Kulkarni",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "neha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "462",
-          "occurred_at": "2026-08-24 14:35:12.117327+05:30",
-          "actor_label": "Neha Kulkarni",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "neha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "461",
-          "occurred_at": "2026-08-24 14:35:12.113532+05:30",
-          "actor_label": "Ravi Menon",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "ravi@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "460",
-          "occurred_at": "2026-08-24 14:35:12.092545+05:30",
-          "actor_label": "Ravi Menon",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "ravi@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "459",
-          "occurred_at": "2026-08-24 14:35:12.088958+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "458",
-          "occurred_at": "2026-08-24 14:35:12.066567+05:30",
-          "actor_label": "Dr. Asha Pillai",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Password accepted, second factor required",
-          "detail": "asha@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
-        },
-        {
-          "seq": "457",
-          "occurred_at": "2026-08-24 14:35:12.060903+05:30",
-          "actor_label": "Tenant Administrator",
-          "actor_role_id": "—",
-          "kind": "AUTH",
-          "action": "Second factor verified",
-          "detail": "admin@producer.example",
-          "time_source": "time.example.org (stratum 1)",
-          "region": "ap-south-1"
         }
       ]
     }
@@ -1335,11 +1717,11 @@
           "description": "Tell holders when a lot approaches expiry, at 90, 30 and 7 days.",
           "cron": "0 7 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-25T03:56:04.885Z",
-          "lastFinishedAt": "2026-08-25T03:57:04.885Z",
+          "lastStartedAt": "2026-08-25T04:10:51.242Z",
+          "lastFinishedAt": "2026-08-25T04:11:51.242Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-25T03:57:04.885Z",
+          "lastSuccessAt": "2026-08-25T04:11:51.242Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 0.67,
           "expectedEveryHours": 36,
@@ -1350,11 +1732,11 @@
           "description": "Raise a CAPA where stability monitoring has fallen overdue (ISO 17034 7.8).",
           "cron": "15 7 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-25T03:39:04.885Z",
-          "lastFinishedAt": "2026-08-25T03:40:04.885Z",
+          "lastStartedAt": "2026-08-25T03:53:51.242Z",
+          "lastFinishedAt": "2026-08-25T03:54:51.242Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-25T03:40:04.885Z",
+          "lastSuccessAt": "2026-08-25T03:54:51.242Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 0.95,
           "expectedEveryHours": 36,
@@ -1365,11 +1747,11 @@
           "description": "Lapse approved price tiers past their revalidation date, and revert pricing.",
           "cron": "30 7 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-25T03:22:04.885Z",
-          "lastFinishedAt": "2026-08-25T03:23:04.885Z",
+          "lastStartedAt": "2026-08-25T03:36:51.242Z",
+          "lastFinishedAt": "2026-08-25T03:37:51.242Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-25T03:23:04.885Z",
+          "lastSuccessAt": "2026-08-25T03:37:51.242Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 1.23,
           "expectedEveryHours": 36,
@@ -1380,11 +1762,11 @@
           "description": "Turn what the system already knows — failing jobs, an unrehearsed or incomplete restore — into deduplicated alerts. It cannot report its own absence: see alert_sweeps.last_swept_at and scripts/prober.mts.",
           "cron": "*/15 * * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-25T03:05:04.885Z",
-          "lastFinishedAt": "2026-08-25T03:06:04.885Z",
+          "lastStartedAt": "2026-08-25T03:19:51.242Z",
+          "lastFinishedAt": "2026-08-25T03:20:51.242Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-25T03:06:04.885Z",
+          "lastSuccessAt": "2026-08-25T03:20:51.242Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 1.52,
           "expectedEveryHours": 1,
@@ -1395,11 +1777,11 @@
           "description": "Remove sessions expired or revoked beyond the tenant's configured session_and_access_log retention. Seven days was hard-coded here once; CERT-In requires 180, and the window is a retention policy now, not a constant.",
           "cron": "0 3 * * *",
           "state": "healthy",
-          "lastStartedAt": "2026-08-25T02:48:04.885Z",
-          "lastFinishedAt": "2026-08-25T02:49:04.885Z",
+          "lastStartedAt": "2026-08-25T03:02:51.242Z",
+          "lastFinishedAt": "2026-08-25T03:03:51.242Z",
           "lastOutcome": "success",
           "lastError": null,
-          "lastSuccessAt": "2026-08-25T02:49:04.885Z",
+          "lastSuccessAt": "2026-08-25T03:03:51.242Z",
           "consecutiveFailures": 0,
           "hoursSinceSuccess": 1.8,
           "expectedEveryHours": 36,
@@ -2007,9 +2389,9 @@
               "note": "Append-only at two layers — privilege and trigger — and hash-chained under a key held OUTSIDE the database, so somebody with SQL access cannot recompute it.",
               "evidence": {
                 "key": "chain",
-                "summary": "Intact across 556 entries, generation(s) v1",
+                "summary": "Intact across 577 entries, generation(s) v1",
                 "figures": {
-                  "entries": 556,
+                  "entries": 577,
                   "generations": "v1",
                   "keysMissing": null
                 },
@@ -5304,6 +5686,388 @@
       }
     }
   },
+  "admin@producer.example|GET /search": {
+    "status": 200,
+    "body": {
+      "items": [
+        {
+          "kind": "project",
+          "code": "PRJ-0412",
+          "label": "Paracetamol",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0413",
+          "label": "Metformin Hydrochloride",
+          "detail": "project · Inorganics Section",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0414",
+          "label": "Ibuprofen",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0415",
+          "label": "Atorvastatin Calcium",
+          "detail": "project · Inorganics Section",
+          "surface": "projects",
+          "project": {
+            "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+            "code": "PRJ-0415",
+            "material": "Atorvastatin Calcium",
+            "cas": "134523-03-8",
+            "sku": "RM-ATOR",
+            "stage": "study",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0421",
+          "label": "Paracetamol",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0388",
+          "label": "Paracetamol",
+          "detail": "lot · superseded",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-METF-0518",
+          "label": "Metformin Hydrochloride",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2042",
+          "label": "Metformin Hydrochloride",
+          "detail": "certificate · lot RMP-METF-0518",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2041",
+          "label": "Paracetamol",
+          "detail": "certificate · lot RMP-PARA-0421",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1001",
+          "label": "Paracetamol",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1002",
+          "label": "Paracetamol",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1003",
+          "label": "Paracetamol",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1010",
+          "label": "Metformin Hydrochloride",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1011",
+          "label": "Metformin Hydrochloride",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1012",
+          "label": "Metformin Hydrochloride",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1013",
+          "label": "Metformin Hydrochloride",
+          "detail": "confirmatory retest study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1020",
+          "label": "Ibuprofen",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1021",
+          "label": "Ibuprofen",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1022",
+          "label": "Ibuprofen",
+          "detail": "characterisation study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1030",
+          "label": "Atorvastatin Calcium",
+          "detail": "homogeneity study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+            "code": "PRJ-0415",
+            "material": "Atorvastatin Calcium",
+            "cas": "134523-03-8",
+            "sku": "RM-ATOR",
+            "stage": "study",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-01",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0412",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-02",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0413",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-03",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0414",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "capa",
+          "code": "NCR-0231",
+          "label": "Temperature excursion",
+          "detail": "Major CAPA",
+          "surface": "capa"
+        }
+      ]
+    }
+  },
   "admin@producer.example|GET /projects": {
     "status": 200,
     "body": {
@@ -5727,6 +6491,221 @@
       }
     }
   },
+  "asha@producer.example|GET /search": {
+    "status": 200,
+    "body": {
+      "items": [
+        {
+          "kind": "project",
+          "code": "PRJ-0412",
+          "label": "Paracetamol",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0414",
+          "label": "Ibuprofen",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0421",
+          "label": "Paracetamol",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0388",
+          "label": "Paracetamol",
+          "detail": "lot · superseded",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2041",
+          "label": "Paracetamol",
+          "detail": "certificate · lot RMP-PARA-0421",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1001",
+          "label": "Paracetamol",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1002",
+          "label": "Paracetamol",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1003",
+          "label": "Paracetamol",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1020",
+          "label": "Ibuprofen",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1021",
+          "label": "Ibuprofen",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1022",
+          "label": "Ibuprofen",
+          "detail": "characterisation study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-01",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0412",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-03",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0414",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        }
+      ]
+    }
+  },
   "asha@producer.example|GET /projects": {
     "status": 200,
     "body": {
@@ -5874,6 +6853,381 @@
         "capaOverdue": 0,
         "ordersToDispatch": 0
       }
+    }
+  },
+  "ravi@producer.example|GET /search": {
+    "status": 200,
+    "body": {
+      "items": [
+        {
+          "kind": "project",
+          "code": "PRJ-0412",
+          "label": "Paracetamol",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0413",
+          "label": "Metformin Hydrochloride",
+          "detail": "project · Inorganics Section",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0414",
+          "label": "Ibuprofen",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0415",
+          "label": "Atorvastatin Calcium",
+          "detail": "project · Inorganics Section",
+          "surface": "projects",
+          "project": {
+            "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+            "code": "PRJ-0415",
+            "material": "Atorvastatin Calcium",
+            "cas": "134523-03-8",
+            "sku": "RM-ATOR",
+            "stage": "study",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0421",
+          "label": "Paracetamol",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0388",
+          "label": "Paracetamol",
+          "detail": "lot · superseded",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-METF-0518",
+          "label": "Metformin Hydrochloride",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2042",
+          "label": "Metformin Hydrochloride",
+          "detail": "certificate · lot RMP-METF-0518",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2041",
+          "label": "Paracetamol",
+          "detail": "certificate · lot RMP-PARA-0421",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1001",
+          "label": "Paracetamol",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1002",
+          "label": "Paracetamol",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1003",
+          "label": "Paracetamol",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1010",
+          "label": "Metformin Hydrochloride",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1011",
+          "label": "Metformin Hydrochloride",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1012",
+          "label": "Metformin Hydrochloride",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1013",
+          "label": "Metformin Hydrochloride",
+          "detail": "confirmatory retest study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1020",
+          "label": "Ibuprofen",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1021",
+          "label": "Ibuprofen",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1022",
+          "label": "Ibuprofen",
+          "detail": "characterisation study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1030",
+          "label": "Atorvastatin Calcium",
+          "detail": "homogeneity study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+            "code": "PRJ-0415",
+            "material": "Atorvastatin Calcium",
+            "cas": "134523-03-8",
+            "sku": "RM-ATOR",
+            "stage": "study",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-01",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0412",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-02",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0413",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-03",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0414",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        }
+      ]
     }
   },
   "ravi@producer.example|GET /projects": {
@@ -6028,6 +7382,388 @@
         "capaOverdue": 0,
         "ordersToDispatch": 0
       }
+    }
+  },
+  "neha@producer.example|GET /search": {
+    "status": 200,
+    "body": {
+      "items": [
+        {
+          "kind": "project",
+          "code": "PRJ-0412",
+          "label": "Paracetamol",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0413",
+          "label": "Metformin Hydrochloride",
+          "detail": "project · Inorganics Section",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0414",
+          "label": "Ibuprofen",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0415",
+          "label": "Atorvastatin Calcium",
+          "detail": "project · Inorganics Section",
+          "surface": "projects",
+          "project": {
+            "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+            "code": "PRJ-0415",
+            "material": "Atorvastatin Calcium",
+            "cas": "134523-03-8",
+            "sku": "RM-ATOR",
+            "stage": "study",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0421",
+          "label": "Paracetamol",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0388",
+          "label": "Paracetamol",
+          "detail": "lot · superseded",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-METF-0518",
+          "label": "Metformin Hydrochloride",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2042",
+          "label": "Metformin Hydrochloride",
+          "detail": "certificate · lot RMP-METF-0518",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2041",
+          "label": "Paracetamol",
+          "detail": "certificate · lot RMP-PARA-0421",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1001",
+          "label": "Paracetamol",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1002",
+          "label": "Paracetamol",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1003",
+          "label": "Paracetamol",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1010",
+          "label": "Metformin Hydrochloride",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1011",
+          "label": "Metformin Hydrochloride",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1012",
+          "label": "Metformin Hydrochloride",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1013",
+          "label": "Metformin Hydrochloride",
+          "detail": "confirmatory retest study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1020",
+          "label": "Ibuprofen",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1021",
+          "label": "Ibuprofen",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1022",
+          "label": "Ibuprofen",
+          "detail": "characterisation study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1030",
+          "label": "Atorvastatin Calcium",
+          "detail": "homogeneity study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+            "code": "PRJ-0415",
+            "material": "Atorvastatin Calcium",
+            "cas": "134523-03-8",
+            "sku": "RM-ATOR",
+            "stage": "study",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-01",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0412",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-02",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0413",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-03",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0414",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "capa",
+          "code": "NCR-0231",
+          "label": "Temperature excursion",
+          "detail": "Major CAPA",
+          "surface": "capa"
+        }
+      ]
     }
   },
   "neha@producer.example|GET /projects": {
@@ -6185,6 +7921,12 @@
         "capaOverdue": 0,
         "ordersToDispatch": 0
       }
+    }
+  },
+  "arjun@producer.example|GET /search": {
+    "status": 200,
+    "body": {
+      "items": []
     }
   },
   "arjun@producer.example|GET /projects": {
@@ -6524,6 +8266,221 @@
       }
     }
   },
+  "sunil@producer.example|GET /search": {
+    "status": 200,
+    "body": {
+      "items": [
+        {
+          "kind": "project",
+          "code": "PRJ-0412",
+          "label": "Paracetamol",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0414",
+          "label": "Ibuprofen",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0421",
+          "label": "Paracetamol",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0388",
+          "label": "Paracetamol",
+          "detail": "lot · superseded",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2041",
+          "label": "Paracetamol",
+          "detail": "certificate · lot RMP-PARA-0421",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1001",
+          "label": "Paracetamol",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1002",
+          "label": "Paracetamol",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1003",
+          "label": "Paracetamol",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1020",
+          "label": "Ibuprofen",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1021",
+          "label": "Ibuprofen",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1022",
+          "label": "Ibuprofen",
+          "detail": "characterisation study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-01",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0412",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-03",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0414",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        }
+      ]
+    }
+  },
   "sunil@producer.example|GET /projects": {
     "status": 200,
     "body": {
@@ -6646,6 +8603,12 @@
         "capaOverdue": 0,
         "ordersToDispatch": 0
       }
+    }
+  },
+  "vikram@producer.example|GET /search": {
+    "status": 200,
+    "body": {
+      "items": []
     }
   },
   "vikram@producer.example|GET /projects": {
@@ -6951,6 +8914,12 @@
         "capaOverdue": 0,
         "ordersToDispatch": 0
       }
+    }
+  },
+  "meera@genpharm.example|GET /search": {
+    "status": 200,
+    "body": {
+      "items": []
     }
   },
   "meera@genpharm.example|GET /projects": {
@@ -7273,6 +9242,12 @@
       }
     }
   },
+  "suresh@sdtl.gov.example|GET /search": {
+    "status": 200,
+    "body": {
+      "items": []
+    }
+  },
   "suresh@sdtl.gov.example|GET /projects": {
     "status": 200,
     "body": {
@@ -7559,6 +9534,381 @@
         "capaOverdue": 0,
         "ordersToDispatch": 0
       }
+    }
+  },
+  "newuser@producer.example|GET /search": {
+    "status": 200,
+    "body": {
+      "items": [
+        {
+          "kind": "project",
+          "code": "PRJ-0412",
+          "label": "Paracetamol",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0413",
+          "label": "Metformin Hydrochloride",
+          "detail": "project · Inorganics Section",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0414",
+          "label": "Ibuprofen",
+          "detail": "project · Organics Section",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "project",
+          "code": "PRJ-0415",
+          "label": "Atorvastatin Calcium",
+          "detail": "project · Inorganics Section",
+          "surface": "projects",
+          "project": {
+            "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+            "code": "PRJ-0415",
+            "material": "Atorvastatin Calcium",
+            "cas": "134523-03-8",
+            "sku": "RM-ATOR",
+            "stage": "study",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0421",
+          "label": "Paracetamol",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-PARA-0388",
+          "label": "Paracetamol",
+          "detail": "lot · superseded",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "lot",
+          "code": "RMP-METF-0518",
+          "label": "Metformin Hydrochloride",
+          "detail": "lot · released",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2042",
+          "label": "Metformin Hydrochloride",
+          "detail": "certificate · lot RMP-METF-0518",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "certificate",
+          "code": "CRT-2041",
+          "label": "Paracetamol",
+          "detail": "certificate · lot RMP-PARA-0421",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1001",
+          "label": "Paracetamol",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1002",
+          "label": "Paracetamol",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1003",
+          "label": "Paracetamol",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1010",
+          "label": "Metformin Hydrochloride",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1011",
+          "label": "Metformin Hydrochloride",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1012",
+          "label": "Metformin Hydrochloride",
+          "detail": "characterisation study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1013",
+          "label": "Metformin Hydrochloride",
+          "detail": "confirmatory retest study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1020",
+          "label": "Ibuprofen",
+          "detail": "homogeneity study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1021",
+          "label": "Ibuprofen",
+          "detail": "stability study · signed",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1022",
+          "label": "Ibuprofen",
+          "detail": "characterisation study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "study",
+          "code": "ST-1030",
+          "label": "Atorvastatin Calcium",
+          "detail": "homogeneity study · draft",
+          "surface": "projects",
+          "project": {
+            "id": "2a6a53d3-d59e-5039-88a5-e2c9690aa530",
+            "code": "PRJ-0415",
+            "material": "Atorvastatin Calcium",
+            "cas": "134523-03-8",
+            "sku": "RM-ATOR",
+            "stage": "study",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-01",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0412",
+          "surface": "projects",
+          "project": {
+            "id": "6fd0c3fb-deed-5c3b-8d58-755431574962",
+            "code": "PRJ-0412",
+            "material": "Paracetamol",
+            "cas": "103-90-2",
+            "sku": "RM-PARA",
+            "stage": "released",
+            "team": "Organics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-02",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0413",
+          "surface": "projects",
+          "project": {
+            "id": "a2b7bfc0-b3d6-5cea-b607-b09436ca4539",
+            "code": "PRJ-0413",
+            "material": "Metformin Hydrochloride",
+            "cas": "1115-70-4",
+            "sku": "RM-METF",
+            "stage": "released",
+            "team": "Inorganics Section"
+          }
+        },
+        {
+          "kind": "value",
+          "code": "PV-03",
+          "label": "Assay (as is)",
+          "detail": "value · PRJ-0414",
+          "surface": "projects",
+          "project": {
+            "id": "c66130ed-9bdf-5dc0-bff7-efed521d836a",
+            "code": "PRJ-0414",
+            "material": "Ibuprofen",
+            "cas": "15687-27-1",
+            "sku": "RM-IBUP",
+            "stage": "authorisation",
+            "team": "Organics Section"
+          }
+        }
+      ]
     }
   },
   "newuser@producer.example|GET /projects": {
@@ -8328,9 +10678,9 @@
           "note": "Append-only at two layers — privilege and trigger — and hash-chained under a key held OUTSIDE the database, so somebody with SQL access cannot recompute it.",
           "evidence": {
             "key": "chain",
-            "summary": "Intact across 556 entries, generation(s) v1",
+            "summary": "Intact across 577 entries, generation(s) v1",
             "figures": {
-              "entries": 556,
+              "entries": 577,
               "generations": "v1",
               "keysMissing": null
             },
@@ -8986,7 +11336,7 @@
         ],
         "auditChain": {
           "intact": true,
-          "entries": 555,
+          "entries": 576,
           "generations": [
             "v1"
           ]
@@ -9450,8 +11800,8 @@
         ]
       },
       "manifest": {
-        "packDigest": "3eedde693cd2c39810c619a2f38e2227a93ec80e023a0c6cf990e32b1b501a45",
-        "generatedAt": "2026-08-25T04:37:04.890Z",
+        "packDigest": "af6f670e2cbfaa37c1149335205ac1a359b14d38b9ffbf3700baaf0a7060c077",
+        "generatedAt": "2026-08-25T04:51:51.246Z",
         "requirementCount": 29,
         "enforced": 24,
         "howToVerify": [
@@ -9464,6 +11814,6 @@
   },
   "__capturedAt": {
     "status": 200,
-    "body": "2026-08-25T04:37:04.890Z"
+    "body": "2026-08-25T04:51:51.246Z"
   }
 }

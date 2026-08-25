@@ -7,6 +7,7 @@ import { createDb, type Sql } from './db';
 import { registerAuthRoutes } from './routes/auth';
 import { registerConsoleRoutes } from './routes/console';
 import { registerHomeRoutes } from './routes/home';
+import { registerSearchRoutes } from './routes/search';
 import { registerWorkflowRoutes } from './routes/workflow';
 import { registerValueRoutes } from './routes/values';
 import { registerLotRoutes } from './routes/lots';
@@ -207,6 +208,7 @@ export async function buildApp(overrides: Partial<AppConfig> = {}): Promise<Fast
   await app.register(registerAuthRoutes, { prefix: '/api/v1/auth' });
   await app.register(registerConsoleRoutes, { prefix: '/api/v1' });
   await app.register(registerHomeRoutes, { prefix: '/api/v1' });
+  await app.register(registerSearchRoutes, { prefix: '/api/v1' });
   await app.register(registerWorkflowRoutes, { prefix: '/api/v1' });
   await app.register(registerValueRoutes, { prefix: '/api/v1' });
   await app.register(registerLotRoutes, { prefix: '/api/v1' });

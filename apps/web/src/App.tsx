@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DemoTour } from './demo/Tour';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, ApiError, type Me, type Project, type HomeView } from './lib/api';
+import { api, ApiError, type Me, type Project, type HomeView, type SearchIndex, type SearchItem } from './lib/api';
 import { visibleSurfaces, resolveRoute, type Viewer } from './lib/surfaces';
 import { SignIn } from './pages/SignIn';
 import { ChangePassword } from './pages/ChangePassword';
@@ -9,6 +9,7 @@ import { Access } from './pages/Access';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { Home } from './pages/Home';
+import { CommandPalette } from './components/CommandPalette';
 import { Audit } from './pages/Audit';
 import { Capa } from './pages/Capa';
 import { People } from './pages/People';
@@ -39,6 +40,22 @@ export function App() {
   const [open, setOpen] = useState<Project | null>(null);
   const [changingPassword, setChangingPassword] = useState(false);
   const [passwordNotice, setPasswordNotice] = useState<string | null>(null);
+
+  /*
+   * The command palette (⌘K / Ctrl-K). The listener is top-level so the hook
+   * order never changes; the palette itself only renders once signed in.
+   */
+  const [palette, setPalette] = useState(false);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPalette((p) => !p);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   /*
    * The guided tour. Demo only, and folded away entirely in the product build:
@@ -74,6 +91,15 @@ export function App() {
     queryKey: ['home'],
     queryFn: () => api.get<HomeView>('/home'),
     enabled: !!me.data,
+    retry: false,
+  });
+
+  // The jump-to-code index, fetched once the palette is first opened (and then
+  // cached) — no need to pull it for a session that never presses ⌘K.
+  const search = useQuery({
+    queryKey: ['search'],
+    queryFn: () => api.get<SearchIndex>('/search'),
+    enabled: !!me.data && palette,
     retry: false,
   });
 
@@ -157,6 +183,14 @@ export function App() {
 
   const go = (id: string) => { setRequested(id); setOpen(null); };
 
+  // Selecting a code: open its project if it has one (a lot, study, value or
+  // certificate lives inside its project detail), otherwise land on its surface.
+  const jump = (item: SearchItem) => {
+    setPalette(false);
+    if (item.project) { setOpen(item.project); setRequested('projects'); }
+    else { setOpen(null); setRequested(item.surface); }
+  };
+
   return (
     <>
       {/* Keyboard users reach content without tabbing the whole section nav. */}
@@ -179,6 +213,9 @@ export function App() {
           ))}
         </nav>
         <div className="who">
+          <button className="cmdk-open" onClick={() => setPalette(true)} aria-label="Jump to a record">
+            Jump to…<span className="kbd">⌘K</span>
+          </button>
           <span className="muted">
             {me.data.user.name}
             {me.data.teams.length > 0 && (
@@ -251,6 +288,12 @@ export function App() {
           <Projects onOpen={setOpen} canCreate={held.has('project:manage')} />
         )}
       </main>
+      <CommandPalette
+        open={palette}
+        items={search.data?.items ?? []}
+        onClose={() => setPalette(false)}
+        onSelect={jump}
+      />
       {import.meta.env.VITE_DEMO && tour
         ? <DemoTour onGoTo={go} onClose={() => setTour(false)} /> : null}
     </>

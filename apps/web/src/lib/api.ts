@@ -641,3 +641,15 @@ export interface HomeView {
     capaOpen: number; capaOverdue: number; ordersToDispatch: number;
   };
 }
+
+export interface SearchItem {
+  kind: 'project' | 'lot' | 'study' | 'value' | 'certificate' | 'capa' | 'order';
+  code: string;
+  label: string;
+  detail: string;
+  surface: string;
+  project?: Project;
+}
+export interface SearchIndex {
+  items: SearchItem[];
+}

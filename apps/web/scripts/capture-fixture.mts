@@ -273,7 +273,7 @@ await post(admin, '/audit/verify');
 await post(admin, '/conformance/pack');
 
 /* Reference data the console loads on nearly every screen. */
-for (const p of ['/home', '/projects', '/teams', '/equipment', '/capa', '/capa/workflow',
+for (const p of ['/home', '/search', '/projects', '/teams', '/equipment', '/capa', '/capa/workflow',
   '/audit', '/ops', '/conformance', '/catalogue', '/orders', '/entitlements',
   '/vault', '/admin/people', '/admin/config']) {
   await get(admin, p);
@@ -355,7 +355,7 @@ for (const v of ids(versions).slice(0, 3)) {
 for (const email of PERSONAS) {
   const cookie = cookies[email];
   if (!cookie) continue;
-  for (const p of ['/auth/me', '/home', '/projects', '/vault', '/orders', '/catalogue',
+  for (const p of ['/auth/me', '/home', '/search', '/projects', '/vault', '/orders', '/catalogue',
     '/entitlements', '/capa']) {
     const res = await app.inject({ method: 'GET', url: `/api/v1${p}`, headers: { cookie } });
     let body: unknown = null;

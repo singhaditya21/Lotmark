@@ -155,6 +155,11 @@ export const OPERATIONS: readonly Operation[] = [
     'No single permission: the counts are each filtered by the act permission that ' +
     'would clear them (study:sign, value:authorise, …), so a caller holding none ' +
     'gets an empty inbox rather than a 403.'),
+  sessionOp('GET', '/api/v1/search', 'Production',
+    'The jump-to-code index for the command palette — every code the caller may see',
+    'No single permission: each kind is scoped by its own read permission ' +
+    '(project:read, capa:manage, order:read_all/own), so the index only ever ' +
+    'contains records the caller could already open.'),
   op('GET', '/api/v1/projects', 'Production', 'Projects visible to the caller', 'project:read',
     'Filtered by the teams the caller holds project:read in, derived from the ' +
     'same authority object the guard uses.'),
