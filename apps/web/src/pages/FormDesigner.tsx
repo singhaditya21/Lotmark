@@ -140,6 +140,11 @@ export function FormDesigner() {
   const layout = entries.filter((e) => e.kind === 'layout')
     .map((e) => e.payload as LayoutPayload)
     .find((l) => l.entity === entity) ?? null;
+  // The tenant's configured roles, so a layout can be scoped to them. They are
+  // already in the draft (kind 'role') — no separate fetch.
+  const allRoles = entries.filter((e) => e.kind === 'role')
+    .map((e) => e.payload as { key: string; name: string })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   /* ── No draft: the one thing to do ──────────────────────────────────────── */
 
@@ -297,6 +302,7 @@ export function FormDesigner() {
             entity={entity}
             layout={layout}
             fields={fields}
+            allRoles={allRoles}
             onSave={(payload) => putEntry.mutate({ kind: 'layout', key: payload.key, payload })}
             onRemove={(key) => removeEntry.mutate({ kind: 'layout', key })}
             busy={putEntry.isPending}
@@ -568,11 +574,12 @@ function PicklistDialog({
 /* ── Arranging them ───────────────────────────────────────────────────────── */
 
 function LayoutEditor({
-  entity, layout, fields, onSave, onRemove, busy,
+  entity, layout, fields, allRoles, onSave, onRemove, busy,
 }: {
   entity: string;
   layout: LayoutPayload | null;
   fields: FieldPayload[];
+  allRoles: Array<{ key: string; name: string }>;
   onSave: (l: LayoutPayload) => void;
   onRemove: (key: string) => void;
   busy: boolean;
@@ -614,6 +621,36 @@ function LayoutEditor({
 
       {working && (
         <div className="pad" style={{ paddingTop: 0 }}>
+          {/* Who the layout is for. The runtime resolves a role-scoped layout
+              ahead of the unscoped one, so a layout naming roles applies only to
+              them. See resolveFormLayout in @lotmark/domain. */}
+          <div className="preview" style={{ marginBottom: 10 }}>
+            <div className="lab">Who sees this layout</div>
+            <div className="row" style={{ gap: 12, marginBottom: 6 }}>
+              {allRoles.length === 0 ? (
+                <span className="muted" style={{ fontSize: 'var(--fs-note)' }}>
+                  No roles are configured to scope to.
+                </span>
+              ) : allRoles.map((r) => (
+                <label key={r.key} className="inline">
+                  <input type="checkbox" checked={working.roles.includes(r.key)}
+                         onChange={(e) => setDraft({
+                           ...working,
+                           roles: e.target.checked
+                             ? [...working.roles, r.key]
+                             : working.roles.filter((k) => k !== r.key),
+                         })} />
+                  <span style={{ fontSize: 'var(--fs-note)' }}>{r.name}</span>
+                </label>
+              ))}
+            </div>
+            <p className="muted" style={{ fontSize: 'var(--fs-xs)', margin: 0 }}>
+              {working.roles.length === 0
+                ? 'Shown to everyone. Choose roles to scope it — anyone else then sees the default: every field in one section.'
+                : `Shown only to ${allRoles.filter((r) => working.roles.includes(r.key)).map((r) => r.name).join(', ')}. Everyone else sees the default rendering.`}
+            </p>
+          </div>
+
           {working.sections.map((section, si) => (
             <div key={si} className="preview" style={{ marginBottom: 10 }}>
               <div className="row" style={{ marginBottom: 8 }}>
