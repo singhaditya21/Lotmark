@@ -80,7 +80,47 @@ let state: Record<string, Recorded> = hydrate();
  * clears the query cache so every screen refetches from the fresh copy.
  */
 export function resetData(): void {
+  try { window.sessionStorage.removeItem(CARRY_KEY); } catch { /* no storage */ }
   state = hydrate();
+}
+
+/* ── Surviving a reload ───────────────────────────────────────────────────────
+ *
+ * Signing out reloads the page — deliberately, so no state from the previous
+ * user can survive it (see signOut in App.tsx). In the demo that had a cost
+ * nobody intended: switching persona to see how the same screens change by role
+ * is one of the first things a visitor does, and it silently threw away
+ * everything they had just done. The study they signed was unsigned again.
+ *
+ * So the demo carries its state across a reload in SESSION storage: continuity
+ * within a visit, which is what a person expects, and a clean slate on the next
+ * one, which is what a demo should open with. `resetData()` still wipes it, and
+ * the product build contains none of this.
+ */
+const CARRY_KEY = 'lotmark.demo.state';
+
+function carry(): void {
+  try {
+    window.sessionStorage.setItem(CARRY_KEY, JSON.stringify(state));
+  } catch {
+    // Quota, private mode, no storage — continuity is a nicety, never a
+    // requirement. The demo still works, it just starts fresh after a reload.
+  }
+}
+
+function resume(): Record<string, Recorded> | null {
+  try {
+    const saved = window.sessionStorage.getItem(CARRY_KEY);
+    return saved ? JSON.parse(saved) as Record<string, Recorded> : null;
+  } catch { return null; }
+}
+
+if (typeof window !== 'undefined') {
+  const restored = resume();
+  if (restored) state = restored;
+  // `pagehide` rather than `beforeunload`: it fires on the bfcache path too,
+  // which `beforeunload` does not, and it is the one mobile Safari honours.
+  window.addEventListener('pagehide', carry);
 }
 
 /* ── A second producer, projected from the first ──────────────────────────── */

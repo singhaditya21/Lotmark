@@ -226,6 +226,186 @@ const ACT_I: Beat[] = [
   },
 ];
 
-export const BEATS: Beat[] = [...ACT_I];
+
+/* ── Act II — Sell ───────────────────────────────────────────────────────── */
+
+const ACT_II: Beat[] = [
+  {
+    id: '10-buyer',
+    act: 'Act II — Sell',
+    chapter: 'Sell',
+    script: 'A laboratory buys that material. She signs in to the same platform '
+      + 'and sees an entirely different world — her own.',
+    run: async (page) => {
+      await switchTo(page, 'meera@genpharm.example');
+    },
+    hold: 1800,
+  },
+  {
+    id: '11-order',
+    act: 'Act II — Sell',
+    script: 'The catalogue carries only released lots with an authorised value, '
+      + 'each with its certificate. She orders two units.',
+    run: async (page) => {
+      await page.locator('input[type=number]').first().fill('2');
+      await page.getByRole('button', { name: 'Place order' }).click();
+      await page.locator('.toast').first().waitFor({ state: 'visible', timeout: 10_000 });
+    },
+    hold: 2500,
+  },
+  {
+    id: '12-dispatch',
+    act: 'Act II — Sell',
+    script: 'On the producer side, dispatch packs it and sends it. '
+      + 'A courier and a tracking reference are attached as it goes.',
+    run: async (page) => {
+      await switchTo(page, 'vikram@producer.example');
+      await go(page, /Orders/);
+      await page.getByRole('button', { name: 'packed', exact: true }).first().click();
+      await page.getByRole('button', { name: 'dispatched', exact: true }).first()
+        .waitFor({ state: 'visible', timeout: 10_000 });
+      await page.getByRole('button', { name: 'dispatched', exact: true }).first().click();
+    },
+    hold: 2500,
+  },
+  {
+    id: '13-excursion',
+    act: 'Act II — Sell',
+    script: 'This material ships between two and eight degrees. '
+      + 'The logger comes back with a reading at fourteen.',
+    run: async (page) => {
+      await page.getByRole('button', { name: 'readings' }).first().click();
+      await modal(page).first().waitFor({ state: 'visible' });
+      await modal(page).locator('textarea').fill('2026-08-25T09:00:00Z, 14.2');
+      await modal(page).getByRole('button', { name: 'Record', exact: true }).click();
+      await page.locator('.toast').first().waitFor({ state: 'visible', timeout: 10_000 });
+    },
+    hold: 3500,
+  },
+];
+
+/* ── Act III — Fail well ─────────────────────────────────────────────────── */
+
+const ACT_III: Beat[] = [
+  {
+    id: '14-capa-raised',
+    act: 'Act III — Fail well',
+    chapter: 'Fail well',
+    script: 'Nobody had to notice that. The excursion raised a corrective action by itself, '
+      + 'because the readings are data rather than a document somebody files.',
+    run: async (page) => {
+      await switchTo(page, 'neha@producer.example');
+      await go(page, /Complaints/);
+      await page.locator('.capa').first().waitFor({ state: 'visible' });
+    },
+    hold: 2500,
+  },
+  {
+    id: '15-investigate',
+    act: 'Act III — Fail well',
+    script: 'Quality moves it into investigation. Every move is signed, states why, '
+      + 'and joins a history the card carries with it.',
+    run: async (page) => {
+      const card = page.locator('.capa').first();
+      await signedAction(page,
+        () => card.getByRole('button', { name: /Move to/ }).first().click(),
+        /^Move|^Record|^Confirm/);
+      await page.locator('details.capa-history').first().click().catch(() => {});
+    },
+    hold: 3000,
+  },
+  {
+    id: '16-withdraw',
+    act: 'Act III — Fail well',
+    script: 'And if the material itself is in doubt, its certificate is withdrawn — '
+      + 'and every laboratory holding it is told.',
+    run: async (page) => {
+      await switchTo(page, 'admin@producer.example');
+      await go(page, /^Projects$/);
+      await page.getByRole('button', { name: /PRJ-0412/ }).click();
+      await page.getByRole('button', { name: /Issues & reissue/ }).first().click();
+      await modal(page).first().waitFor({ state: 'visible' });
+      await modal(page).getByRole('button', { name: /Withdraw issue/ }).click();
+      await modal(page).locator('input.t, textarea.t').first()
+        .fill('Homogeneity re-assessment invalidated the assigned value.');
+      await modal(page).getByRole('button', { name: /^Withdraw issue/ }).click();
+      await stepUpIfAsked(page);
+      await modal(page).getByRole('button', { name: /^Withdraw issue/ }).click().catch(() => {});
+    },
+    hold: 3000,
+  },
+];
+
+/* ── Act IV — Prove it ───────────────────────────────────────────────────── */
+
+const ACT_IV: Beat[] = [
+  {
+    id: '17-ledger',
+    act: 'Act IV — Prove it',
+    chapter: 'Prove it',
+    script: 'Everything you have just watched is in the ledger — every act, '
+      + 'under the person who did it.',
+    run: async (page) => {
+      await modal(page).first().getByRole('button', { name: 'Close' }).click().catch(() => {});
+      await go(page, /Audit ledger/);
+      await page.locator('.ledger .e').first().waitFor({ state: 'visible' });
+    },
+    hold: 2000,
+  },
+  {
+    id: '18-verify-chain',
+    act: 'Act IV — Prove it',
+    script: 'Each entry is hash-linked to the one before it. Removing or altering one '
+      + 'breaks every link that follows, and the console will say so.',
+    run: async (page) => {
+      await page.getByRole('button', { name: /Verify the chain/ }).click();
+      await page.locator('.note.okbox, .note.warn, .note.deny').first()
+        .waitFor({ state: 'visible', timeout: 15_000 });
+    },
+    hold: 3000,
+  },
+  {
+    id: '19-config',
+    act: 'Act IV — Prove it',
+    script: 'Even the configuration changes under signature. '
+      + 'A draft is reviewed, signed, and becomes a numbered version records are pinned to.',
+    run: async (page) => {
+      await go(page, /Configuration/);
+      await page.getByRole('button', { name: /Review and publish/ }).click();
+      await modal(page).first().waitFor({ state: 'visible' });
+      await modal(page).getByRole('button', { name: /Sign and publish/ }).click();
+      if (await stepUpIfAsked(page)) {
+        await page.getByRole('button', { name: /Review and publish/ }).click();
+        await modal(page).first().waitFor({ state: 'visible' });
+        await modal(page).getByRole('button', { name: /Sign and publish/ }).click();
+      }
+    },
+    hold: 3000,
+  },
+];
+
+/* ── The closing shot ────────────────────────────────────────────────────────
+ *
+ * Deliberately last. It leaves the console for the public page, and the demo
+ * rebuilds its state from the fixture on any page load — so anything recorded
+ * after this would start from a blank slate. */
+
+const FINALE: Beat[] = [
+  {
+    id: '20-public-verify',
+    act: 'Finale',
+    script: 'And the certificate can be checked by anyone holding it. No account, no login — '
+      + 'an assessor with a printed certificate should not need one.',
+    run: async (page) => {
+      const base = new globalThis.URL(page.url());
+      await page.goto(`${base.origin}${base.pathname.replace(/\/$/, '')}/verify/p5Sl5-u5OXZ5Snb-7gDAIjiD`,
+        { waitUntil: 'networkidle' });
+      await page.getByText(/WITHDRAWN/i).first().waitFor({ state: 'visible', timeout: 15_000 });
+    },
+    hold: 4000,
+  },
+];
+
+export const BEATS: Beat[] = [...ACT_I, ...ACT_II, ...ACT_III, ...ACT_IV, ...FINALE];
 
 export const ACTS = [...new Set(BEATS.map((b) => b.act))];
