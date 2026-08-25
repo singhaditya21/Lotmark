@@ -192,10 +192,20 @@ export const CHAINS: ReadonlyArray<readonly [string, Chain]> = [
     const capa = find(ctx, ['GET /capa'], id!);
     const to = String(payload['to'] ?? payload['toState'] ?? 'containment');
     if (capa) {
+      const from = String(capa['state'] ?? '') || null;
       capa['state'] = to;
       if (to === 'closed') capa['closed_at'] = ctx.now();
       if (payload['rootCause']) capa['root_cause'] = payload['rootCause'];
       if (payload['correctiveAction']) capa['corrective_action'] = payload['correctiveAction'];
+      // Grow the move history the card's timeline reads, so the move the viewer
+      // just made shows up there too.
+      const history = Array.isArray(capa['transitions'])
+        ? (capa['transitions'] as unknown[])
+        : (capa['transitions'] = []);
+      history.push({
+        fromState: from, toState: to, occurredAt: ctx.now(),
+        actor: ctx.actor, reason: payload['reason'] ?? null, signed: true,
+      });
     }
     ctx.audit('CAPA', 'capa.transition',
       `${String(capa?.['code'] ?? 'CAPA')} → ${to}`

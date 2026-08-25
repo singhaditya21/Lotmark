@@ -82,17 +82,41 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
     });
     if (!verdict.allowed) return sendProblem(reply, forbidden(verdict.reason, verdict.message));
 
-    const { rows, machine } = await inTenantTransaction(
-      db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => ({
-        rows: await tx`SELECT c.id, c.code, c.source, c.severity, c.state, c.raised_on, c.due_on,
+    const { rows, machine, transitions } = await inTenantTransaction(
+      db, { tenantId: ctx.tenantId, auditKey: cfg.LOTMARK_AUDIT_KEY }, async (tx) => {
+        const rows = await tx`SELECT c.id, c.code, c.source, c.severity, c.state, c.raised_on, c.due_on,
                               c.root_cause, c.corrective_action, c.closed_at, t.name AS team
                        FROM lotmark.capa c LEFT JOIN lotmark.teams t ON t.id = c.owner_team_id
-                       WHERE c.tenant_id = ${ctx.tenantId} ORDER BY c.raised_on DESC, c.code DESC`,
+                       WHERE c.tenant_id = ${ctx.tenantId} ORDER BY c.raised_on DESC, c.code DESC`;
         // Resolved from THIS tenant's configuration, falling back to the code
         // machine. Read in the same transaction as the rows, so the moves
         // offered belong to the same configuration the states were read under.
-        machine: await machineForEntity(tx, ctx.tenantId, 'capa', (m) => app.log.warn(m)),
-      }));
+        const machine = await machineForEntity(tx, ctx.tenantId, 'capa', (m) => app.log.warn(m));
+        // The move history, so how a CAPA reached its state is on the card
+        // rather than something to reconstruct from the ledger. Every move is
+        // already recorded here (ISO 17034 7.11); this just surfaces it.
+        const ids = rows.map((r) => (r as Record<string, unknown>)['id'] as string);
+        const transitions = ids.length ? await tx`
+          SELECT st.subject_id, st.from_state, st.to_state, st.occurred_at, st.reason,
+                 u.display_name AS actor, (st.signature_id IS NOT NULL) AS signed
+          FROM lotmark.state_transitions st
+          LEFT JOIN lotmark.users u ON u.id = st.actor_user_id
+          WHERE st.tenant_id = ${ctx.tenantId} AND st.subject_type = 'capa'
+            AND st.subject_id = ANY(${ids})
+          ORDER BY st.occurred_at` : [];
+        return { rows, machine, transitions };
+      });
+
+    const byCapa = new Map<string, unknown[]>();
+    for (const t of transitions) {
+      const row = t as Record<string, unknown>;
+      const list = byCapa.get(row['subject_id'] as string) ?? [];
+      list.push({
+        fromState: row['from_state'], toState: row['to_state'], occurredAt: row['occurred_at'],
+        actor: row['actor'], reason: row['reason'], signed: row['signed'] === true,
+      });
+      byCapa.set(row['subject_id'] as string, list);
+    }
 
     return reply.send({
       capa: rows.map((r) => {
@@ -102,6 +126,7 @@ export async function registerCapaRoutes(app: FastifyInstance): Promise<void> {
           // The UI should offer only moves the machine permits, and the machine
           // is the authority on that — not a hardcoded list in the console.
           availableTransitions: machine ? nextStates(machine, c['state'] as string) : [],
+          transitions: byCapa.get(c['id'] as string) ?? [],
         };
       }),
     });

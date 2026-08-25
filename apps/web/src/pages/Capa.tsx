@@ -118,6 +118,37 @@ export function Capa({ canManage }: { canManage: boolean }) {
                   </dl>
                 )}
 
+                {/* How it reached its state — recorded on every move (ISO 17034
+                    7.11), collapsed so the card stays scannable. */}
+                {c.transitions.length > 0 && (
+                  <details className="capa-history">
+                    <summary>
+                      History · {c.transitions.length} move{c.transitions.length === 1 ? '' : 's'}
+                    </summary>
+                    <ol className="capa-timeline">
+                      {c.transitions.map((t, i) => (
+                        <li key={i}>
+                          <div className="tl-line">
+                            <span className="tl-move">
+                              {t.fromState && (
+                                <span className="muted">
+                                  {(CAPA_STATE_LABEL as Record<string, string>)[t.fromState] ?? t.fromState} →{' '}
+                                </span>
+                              )}
+                              <b>{(CAPA_STATE_LABEL as Record<string, string>)[t.toState] ?? t.toState}</b>
+                              {t.signed && <span className="chip ok" style={{ marginLeft: 6 }}>signed</span>}
+                            </span>
+                            <span className="tl-meta muted">
+                              {t.actor ?? '—'} · {when(t.occurredAt)}
+                            </span>
+                          </div>
+                          {t.reason && <div className="tl-reason muted">“{t.reason}”</div>}
+                        </li>
+                      ))}
+                    </ol>
+                  </details>
+                )}
+
                 <div className="capa-actions">
                   {c.closed_at ? (
                     <span className="muted">Closed {when(c.closed_at)}</span>

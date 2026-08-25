@@ -478,6 +478,34 @@ if (draftId) {
 }
 
 /*
+ * A move history for the CAPA, so the card's timeline is not empty.
+ *
+ * The seed raises CAPAs but never moves them, so state_transitions holds
+ * nothing and the register returns [] for every transitions array. NCR-0231 is
+ * shown in the investigation state, which it can only have reached by a move;
+ * this records that move — with who, why and when — so the reviewer sees how it
+ * got there rather than an empty history.
+ */
+{
+  let added = 0;
+  for (const key of Object.keys(fixture)) {
+    if (!key.endsWith('GET /capa')) continue;
+    const capa = (fixture[key].body as { capa?: Array<Record<string, unknown>> }).capa;
+    const ncr = capa?.find((c) => c['code'] === 'NCR-0231');
+    if (ncr && Array.isArray(ncr['transitions']) && (ncr['transitions'] as unknown[]).length === 0) {
+      ncr['transitions'] = [{
+        fromState: 'open', toState: 'investigation',
+        occurredAt: '2026-06-03T11:20:00+05:30', actor: 'Neha Kulkarni',
+        reason: 'Excursion confirmed against the logger export; opening a formal investigation.',
+        signed: true,
+      }];
+      added += 1;
+    }
+  }
+  if (added) console.log(`  (a CAPA move history added — NCR-0231, ${added} view(s))`);
+}
+
+/*
  * A study to sign and a value to authorise, on camera.
  *
  * The seeded studies are all already signed and the one property value already

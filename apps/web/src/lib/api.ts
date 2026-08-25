@@ -219,6 +219,17 @@ export interface Capa {
    * enforced, and the drift would show up as buttons that 409.
    */
   availableTransitions: CapaState[];
+  /** The recorded move history, oldest first — how it reached its state. */
+  transitions: CapaTransitionEntry[];
+}
+
+export interface CapaTransitionEntry {
+  fromState: string | null;
+  toState: string;
+  occurredAt: string;
+  actor: string | null;
+  reason: string | null;
+  signed: boolean;
 }
 
 export type CapaState =
