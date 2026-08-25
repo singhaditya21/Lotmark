@@ -92,6 +92,49 @@ export const CHAINS: ReadonlyArray<readonly [string, Chain]> = [
     return value ?? { id, state: 'authorised' };
   }],
 
+  /* ── A lot is released from the authorised value ────────────────────────────
+   *
+   * The step the product turned on but never wired a screen to. It creates a
+   * new released lot, supersedes the one it replaces (so "which lot replaced
+   * which" stays a traversal), and returns the shape the release dialog reads
+   * back. Storage and cold chain are the API's default here — the real server
+   * derives them from the stability study. */
+  ['POST /projects/:id/release-lot', (ctx, payload) => {
+    const lots = ctx.list('GET /projects/:id/lots');
+    const authorised = ctx.list('GET /projects/:id/values')?.find((v) => v['state'] === 'authorised');
+    const previous = lots?.find((l) => l['state'] === 'released');
+    if (previous) previous['state'] = 'superseded';
+
+    const nums = (lots ?? []).map((l) => Number(/(\d+)$/.exec(String(l['lot_code']))?.[1] ?? 0));
+    const code = `RMP-PARA-${String(Math.max(0, ...nums) + 1).padStart(4, '0')}`;
+    const storage = 'Room temperature';
+    const lot = {
+      id: ctx.id(), lot_code: code, state: 'released',
+      expiry_date: String(payload['expiryDate'] ?? ''),
+      storage_condition: storage, cold_chain: false,
+      supersedes: previous ? previous['lot_code'] : null,
+      certificate_code: null, certificate_id: null,
+      stock_units: Number(payload['stockUnits']) || 0,
+      unit_price_minor: Number(payload['unitPriceMinor']) || 0,
+    };
+    lots?.unshift(lot);
+    ctx.audit('WORKFLOW', 'lot.release',
+      `${code} released${previous ? ` · supersedes ${String(previous['lot_code'])}` : ''}`
+      + ` · storage ${storage}`);
+    return {
+      lot: {
+        id: lot.id, lotCode: code, state: 'released', expiryDate: lot.expiry_date,
+        storageCondition: storage, coldChain: false, supersedes: lot.supersedes,
+      },
+      value: authorised ? {
+        code: authorised['code'], assignedValue: authorised['assigned_value'],
+        expandedUncertainty: authorised['expanded_uncertainty'],
+        unit: authorised['unit'], coverageFactor: authorised['coverage_factor'],
+      } : null,
+      signature: { id: ctx.id(), signedAt: ctx.now(), keyVersion: 1 },
+    };
+  }],
+
   /* ── A certificate is issued from a lot ─────────────────────────────────── */
   ['POST /lots/:id/certificate', (ctx, _payload, [id]) => {
     const lot = find(ctx, ['GET /projects/:id/lots'], id!);

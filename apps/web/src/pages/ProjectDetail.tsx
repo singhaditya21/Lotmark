@@ -11,7 +11,7 @@ import { RecordResults } from '../components/RecordResults';
 import { Dialog, Field } from '../components/Dialog';
 import { CertificatePanel } from '../components/CertificatePanel';
 import { CustomFieldsDialog } from '../components/CustomFields';
-import type { Meaning } from '../lib/meanings';
+import { ALL_MEANINGS, type Meaning } from '../lib/meanings';
 
 type Pending =
   | { kind: 'sign-study'; id: string; code: string }
@@ -21,12 +21,14 @@ type Pending =
   | null;
 
 export function ProjectDetail({
-  project, onBack, canReissue, canRecordLotFields,
+  project, onBack, canReissue, canRelease, canRecordLotFields,
 }: {
   project: Project;
   onBack: () => void;
   /** Whether to offer reissue and withdrawal. The server re-checks regardless. */
   canReissue: boolean;
+  /** Whether to offer releasing a lot from the authorised value. `lot:release`. */
+  canRelease: boolean;
   /**
    * Whether to offer the custom-field form as editable. `lot:create` is what
    * governs a lot, so it is what governs what a lot says — the server decides
@@ -44,6 +46,10 @@ export function ProjectDetail({
   const [newValue, setNewValue] = useState(false);
   const [valueName, setValueName] = useState('Assay (as is)');
   const [valueUnit, setValueUnit] = useState('% w/w');
+  const [releasing, setReleasing] = useState(false);
+  const [rel, setRel] = useState<{
+    expiryDate: string; stockUnits: string; unitPrice: string; reason: string; meaning: Meaning;
+  }>({ expiryDate: '', stockUnits: '', unitPrice: '', reason: '', meaning: 'approval' });
   const [error, setError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
 
@@ -97,6 +103,34 @@ export function ProjectDetail({
     },
   });
 
+  /**
+   * Release a lot — the step that turns an authorised value into a released lot
+   * a certificate can be issued for. A signed act, so it goes through the same
+   * step-up ceremony; storage and cold chain are derived server-side from the
+   * stability study, not entered here.
+   */
+  const release = useMutation({
+    mutationFn: () => api.post<{ lot: { lotCode: string; supersedes: string | null } }>(
+      `/projects/${project.id}/release-lot`, {
+        meaning: rel.meaning,
+        expiryDate: rel.expiryDate,
+        stockUnits: Number(rel.stockUnits) || 0,
+        unitPriceMinor: Math.round((Number(rel.unitPrice) || 0) * 100),
+        reason: rel.reason || undefined,
+      }),
+    onSuccess: (r) => {
+      setReleasing(false); setError(null);
+      setFlash(`Lot ${r.lot.lotCode} released and signed`
+        + (r.lot.supersedes ? `, superseding ${r.lot.supersedes}` : '')
+        + ' — recorded in the ledger.');
+      refresh();
+    },
+    onError: (e) => {
+      if (e instanceof ApiError && e.needsStepUp) { setStepUpFor('Release a lot'); return; }
+      setError(e instanceof ApiError ? e.problem.detail : 'The lot could not be released.');
+    },
+  });
+
   const createValue = useMutation({
     mutationFn: () => api.post(`/projects/${project.id}/values`, {
       propertyName: valueName, unit: valueUnit, coverageFactor: 2,
@@ -107,6 +141,9 @@ export function ProjectDetail({
 
   const draftStudies = (studies.data?.studies ?? []).filter((s) => s.state === 'draft');
   const b = budget.data?.budget;
+  // A lot is released against the authorised value; without one the server
+  // refuses, so the control says why rather than failing on click.
+  const authorisedValue = (values.data?.values ?? []).find((v) => v.state === 'authorised');
 
   return (
     <>
@@ -257,8 +294,18 @@ export function ProjectDetail({
       </div>
 
       <div className="card">
-        <div className="pad" style={{ paddingBottom: 0 }}>
-          <h2 style={{ marginTop: 0 }}>Lot register</h2>
+        <div className="pad" style={{ paddingBottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ marginTop: 0, marginBottom: 0 }}>Lot register</h2>
+          {canRelease && (
+            <button className="btn sm" disabled={!authorisedValue}
+                    title={authorisedValue ? '' : 'Authorise a property value first'}
+                    onClick={() => {
+                      setRel({ expiryDate: '', stockUnits: '', unitPrice: '', reason: '', meaning: 'approval' });
+                      setReleasing(true); setError(null);
+                    }}>
+              Release a lot
+            </button>
+          )}
         </div>
         <div className="scroll">
           <table>
@@ -324,6 +371,54 @@ export function ProjectDetail({
         onCancel={() => { setPending(null); setError(null); }}
         onSign={(meaning, reason) => pending && act.mutate({ p: pending, meaning, reason })}
       />
+
+      <Dialog
+        open={releasing}
+        title="Release a lot"
+        lede={authorisedValue
+          ? `A new lot is released against ${authorisedValue.code} — ${sig(authorisedValue.assigned_value, 7)} `
+            + `${authorisedValue.unit ?? ''}. Releasing is a signed act and supersedes the current lot.`
+          : 'Releasing needs an authorised property value.'}
+        onClose={() => setReleasing(false)}
+        footer={<>
+          <button className="btn" disabled={release.isPending || !rel.expiryDate || !authorisedValue}
+                  onClick={() => release.mutate()}>
+            {release.isPending ? 'Releasing…' : 'Sign and release'}
+          </button>
+          <button className="btn ghost" onClick={() => setReleasing(false)}>Cancel</button>
+        </>}
+      >
+        <div className="grid2">
+          <Field label="Expiry date">
+            <input className="t mono" type="date" value={rel.expiryDate}
+                   onChange={(e) => setRel({ ...rel, expiryDate: e.target.value })} />
+          </Field>
+          <Field label="Meaning of this signature">
+            <select className="t" value={rel.meaning}
+                    onChange={(e) => setRel({ ...rel, meaning: e.target.value as Meaning })}>
+              {ALL_MEANINGS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+            </select>
+          </Field>
+          <Field label="Stock units" hint="units available to order; 0 if none yet">
+            <input className="t mono" type="number" min={0} value={rel.stockUnits}
+                   onChange={(e) => setRel({ ...rel, stockUnits: e.target.value })} />
+          </Field>
+          <Field label="Unit price (INR)" hint="0 if not for sale">
+            <input className="t mono" type="number" min={0} step="0.01" value={rel.unitPrice}
+                   onChange={(e) => setRel({ ...rel, unitPrice: e.target.value })} />
+          </Field>
+        </div>
+        <Field label="Reason" hint="optional; recorded with the release">
+          <input className="t" value={rel.reason}
+                 onChange={(e) => setRel({ ...rel, reason: e.target.value })}
+                 placeholder="First release for sale" />
+        </Field>
+        <div className="note info">
+          Storage condition and cold chain are taken from the stability study, not
+          entered here — a person typing them could disagree with the data.
+        </div>
+        {error && <div className="note deny" role="alert">{error}</div>}
+      </Dialog>
 
       <NewStudy open={newStudy} projectId={project.id} onClose={() => setNewStudy(false)} />
 

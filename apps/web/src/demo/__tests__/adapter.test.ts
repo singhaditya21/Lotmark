@@ -408,6 +408,31 @@ describe('an act leaves a trace', () => {
     expect(String((await auditTop())['detail'])).toMatch(/authorised/i);
   });
 
+  it('releases a lot from the authorised value, superseding the previous one', async () => {
+    /*
+     * The step the console never had a screen for. Releasing must create a new
+     * released lot with its own code, supersede the lot it replaces, and leave a
+     * WORKFLOW trace — the whole point of wiring the button.
+     */
+    const lotsBefore = listIn((await call(demoFetch, 'GET', '/projects/p/lots')).body);
+    const prevReleased = lotsBefore.find((l) => l['state'] === 'released');
+    expect(prevReleased, 'a released lot must exist to supersede').toBeTruthy();
+
+    const res = await call(demoFetch, 'POST', '/projects/p/release-lot',
+      { meaning: 'approval', expiryDate: '2029-06-30', stockUnits: 40, unitPriceMinor: 500000 });
+    expect(res.status).toBe(200);
+    const newCode = String((res.body['lot'] as Record<string, unknown>)['lotCode']);
+    expect(newCode, 'a lot code is minted').toMatch(/^RMP-PARA-\d{4}$/);
+
+    const lotsAfter = listIn((await call(demoFetch, 'GET', '/projects/p/lots')).body);
+    const released = lotsAfter.find((l) => l['lot_code'] === newCode);
+    expect(released?.['state']).toBe('released');
+    expect(released?.['supersedes']).toBe(prevReleased!['lot_code']);
+    const supersededNow = lotsAfter.find((l) => l['lot_code'] === prevReleased!['lot_code']);
+    expect(supersededNow?.['state'], 'the replaced lot is superseded').toBe('superseded');
+    expect(String((await auditTop())['detail'])).toMatch(/released/i);
+  });
+
   it('publishing a configuration draft makes it the active version', async () => {
     /*
      * The change-control loop. A pending draft carries changes; publishing it

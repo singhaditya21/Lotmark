@@ -180,7 +180,7 @@ function read(key: string): Recorded | undefined {
  * asks for one.
  */
 function needsStepUp(path: string, payload: Record<string, unknown> | null): boolean {
-  if (/\/(sign|authorise|assign|publish|withdraw|reissue)$/.test(path)) return true;
+  if (/\/(sign|authorise|assign|publish|withdraw|reissue|release-lot)$/.test(path)) return true;
 
   const capa = /^\/capa\/([^/]+)\/transition$/.exec(path);
   if (capa) {
