@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useToast } from '../components/Toast';
 import { api, ApiError, type ConformanceView, type ConformanceRequirement } from '../lib/api';
 
 /**
@@ -29,7 +30,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 export function Conformance({ canExport }: { canExport: boolean }) {
   const [open, setOpen] = useState<string | null>(null);
-  const [flash, setFlash] = useState<string | null>(null);
+  const toast = useToast();
   const [error, setError] = useState<string | null>(null);
   // The page exists to find where enforcement and evidence disagree, so the gap
   // count is also the control that isolates them.
@@ -45,7 +46,7 @@ export function Conformance({ canExport }: { canExport: boolean }) {
       '/conformance/pack'),
     onSuccess: (pack) => {
       setError(null);
-      setFlash(
+      toast.success(
         `Pack assembled: ${pack.requirements.length} requirements, digest ` +
         `${pack.manifest.packDigest.slice(0, 16)}…`,
       );
@@ -77,7 +78,6 @@ export function Conformance({ canExport }: { canExport: boolean }) {
         disagree — and where they do, that is the finding.
       </p>
 
-      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
       {error && <div className="note deny" role="alert">{error}</div>}
 
       {v && (

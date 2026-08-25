@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '../components/Toast';
 import {
   api, ApiError, type Project, type Study, type PropertyValue, type Lot, type Budget,
 } from '../lib/api';
@@ -51,7 +52,7 @@ export function ProjectDetail({
     expiryDate: string; stockUnits: string; unitPrice: string; reason: string; meaning: Meaning;
   }>({ expiryDate: '', stockUnits: '', unitPrice: '', reason: '', meaning: 'approval' });
   const [error, setError] = useState<string | null>(null);
-  const [flash, setFlash] = useState<string | null>(null);
+  const toast = useToast();
 
   const studies = useQuery({
     queryKey: ['studies', project.id],
@@ -88,7 +89,7 @@ export function ProjectDetail({
     },
     onSuccess: (_r, vars) => {
       setPending(null); setError(null);
-      setFlash(`${describe(vars.p)} — signed and recorded in the ledger.`);
+      toast.success(`${describe(vars.p)} — signed and recorded in the ledger.`);
       refresh();
     },
     onError: (e, vars) => {
@@ -120,7 +121,7 @@ export function ProjectDetail({
       }),
     onSuccess: (r) => {
       setReleasing(false); setError(null);
-      setFlash(`Lot ${r.lot.lotCode} released and signed`
+      toast.success(`Lot ${r.lot.lotCode} released and signed`
         + (r.lot.supersedes ? `, superseding ${r.lot.supersedes}` : '')
         + ' — recorded in the ledger.');
       refresh();
@@ -135,7 +136,7 @@ export function ProjectDetail({
     mutationFn: () => api.post(`/projects/${project.id}/values`, {
       propertyName: valueName, unit: valueUnit, coverageFactor: 2,
     }),
-    onSuccess: () => { setNewValue(false); setError(null); refresh(); },
+    onSuccess: () => { setNewValue(false); setError(null); toast.success('Property value created.'); refresh(); },
     onError: (e) => setError(e instanceof ApiError ? e.problem.detail : 'Could not create the value.'),
   });
 
@@ -154,7 +155,6 @@ export function ProjectDetail({
         stage <b>{project.stage}</b>
       </p>
 
-      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
       {/* When a signing dialog is open its own failure belongs INSIDE it, not on
           the page body behind the backdrop where the user cannot see it. */}
       {error && pending === null && <div className="note deny" role="alert">{error}</div>}
@@ -457,7 +457,7 @@ export function ProjectDetail({
         open={stepUpFor !== null}
         purpose={stepUpFor ?? ''}
         onClose={() => setStepUpFor(null)}
-        onUnlocked={() => { setStepUpFor(null); setFlash('Signing session open. Try the action again.'); }}
+        onUnlocked={() => { setStepUpFor(null); toast.success('Signing session open. Try the action again.'); }}
       />
     </>
   );

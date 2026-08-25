@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from '../lib/api';
 import { Dialog, Field, useFieldErrors } from './Dialog';
+import { useToast } from './Toast';
 
 type StudyType = 'homogeneity' | 'stability' | 'characterisation' | 'confirmatory retest';
 
@@ -16,6 +17,7 @@ export function NewStudy({
   open, projectId, onClose,
 }: { open: boolean; projectId: string; onClose: () => void }) {
   const qc = useQueryClient();
+  const toast = useToast();
   const [studyType, setType] = useState<StudyType>('homogeneity');
   const [equipmentIds, setEquipment] = useState<string[]>([]);
   const [shelfLifeTo, setShelf] = useState('');
@@ -42,6 +44,7 @@ export function NewStudy({
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['studies', projectId] });
       void qc.invalidateQueries({ queryKey: ['audit'] });
+      toast.success('Study created. Record its measurements, then sign it.');
       reset(); onClose();
     },
     onError: (e) => setProblem(e instanceof ApiError ? e.problem : null),

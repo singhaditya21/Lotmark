@@ -262,3 +262,30 @@ tr.bad-row { background: var(--badT); }
   .cmdk-open .kbd { display: none; }
   .cmdk-detail { display: none; }
 }
+
+/* ── Toasts: one transient confirmation surface ────────────────────────────── */
+.toast-viewport {
+  position: fixed; z-index: 60; right: 16px; bottom: 16px;
+  display: flex; flex-direction: column; gap: 8px; max-width: min(380px, calc(100vw - 32px));
+}
+.toast {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 11px 12px 11px 14px; border-radius: 9px; border: 1px solid var(--line);
+  background: var(--panel); color: var(--ink); font-size: 13px; line-height: 1.45;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24); border-left-width: 3px;
+  animation: toast-in 0.16s ease-out;
+}
+.toast-success { border-left-color: var(--ok); }
+.toast-error   { border-left-color: var(--bad); }
+.toast-info    { border-left-color: var(--pri); }
+.toast-msg { flex: 1; min-width: 0; }
+.toast-x {
+  border: 0; background: transparent; color: var(--muted); cursor: pointer;
+  font-size: 17px; line-height: 1; padding: 0 2px; margin-top: -1px;
+}
+.toast-x:hover { color: var(--ink); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .toast { animation: none; } }
+@media (max-width: 720px) {
+  .toast-viewport { left: 12px; right: 12px; bottom: 12px; max-width: none; }
+}

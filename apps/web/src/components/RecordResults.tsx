@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, type Study } from '../lib/api';
 import { Dialog, Field } from './Dialog';
+import { useToast } from './Toast';
 
 /**
  * Measurement entry.
@@ -16,6 +17,7 @@ export function RecordResults({
   open, study, onClose,
 }: { open: boolean; study: Study; onClose: () => void }) {
   const qc = useQueryClient();
+  const toast = useToast();
   const [text, setText] = useState('');
   const [unit, setUnit] = useState('% w/w');
   const [replace, setReplace] = useState(false);
@@ -52,6 +54,7 @@ export function RecordResults({
     }),
     onSuccess: () => {
       void qc.invalidateQueries();
+      toast.success(`Recorded ${parsed.rows.length} measurement${parsed.rows.length === 1 ? '' : 's'} for ${study.code}.`);
       setText(''); setProblem(null); onClose();
     },
     onError: (e) => setProblem(e instanceof ApiError ? e.problem : null),

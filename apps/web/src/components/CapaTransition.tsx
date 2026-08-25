@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, type Capa, type CapaState } from '../lib/api';
 import { CAPA_STATE_LABEL, CAPA_STEP_PROMPT, missingToClose } from '../lib/capa';
 import { Dialog, Field } from './Dialog';
+import { useToast } from './Toast';
 
 /**
  * Advancing a nonconformity.
@@ -24,6 +25,7 @@ export function CapaTransition({
   capa, to, onClose,
 }: { capa: Capa | null; to: CapaState | null; onClose: () => void }) {
   const qc = useQueryClient();
+  const toast = useToast();
   const [reason, setReason] = useState('');
   const [detail, setDetail] = useState('');
   const [rootCause, setRootCause] = useState('');
@@ -55,6 +57,9 @@ export function CapaTransition({
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['capa'] });
       void qc.invalidateQueries({ queryKey: ['audit'] });
+      toast.success(closing
+        ? `${capa?.code ?? 'CAPA'} closed — the reasoning is recorded.`
+        : `${capa?.code ?? 'CAPA'} moved to ${to ? CAPA_STATE_LABEL[to] : 'the next step'}.`);
       onClose();
     },
     onError: (e) => setProblem(e instanceof ApiError ? e.problem : null),

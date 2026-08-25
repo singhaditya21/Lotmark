@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '../components/Toast';
 import { api, ApiError, type Catalogue as CatalogueData, type CatalogueItem } from '../lib/api';
 import { sig } from '../lib/format';
 import { Dialog, Field } from '../components/Dialog';
@@ -22,7 +23,7 @@ export function Catalogue() {
   const [price, setPrice] = useState('');
   const [tierable, setTierable] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [flash, setFlash] = useState<string | null>(null);
+  const toast = useToast();
 
   const cat = useQuery({
     queryKey: ['catalogue'],
@@ -47,7 +48,7 @@ export function Catalogue() {
       setBasket({}); setError(null);
       // Currency as a code, never the ₹ glyph: this bundle is published
       // world-readable and scanned for it. Matches how Orders shows a total.
-      setFlash(`Order ${r.code} placed — ${(r.totalMinor / 100).toFixed(2)} INR.`);
+      toast.success(`Order ${r.code} placed — ${(r.totalMinor / 100).toFixed(2)} INR.`);
       refresh();
     },
     onError,
@@ -58,7 +59,7 @@ export function Catalogue() {
       unitPriceMinor: Math.round(Number(price) * 100),
       tierable,
     }),
-    onSuccess: () => { setPricing(null); setError(null); setFlash('Price updated.'); refresh(); },
+    onSuccess: () => { setPricing(null); setError(null); toast.success('Price updated.'); refresh(); },
     onError,
   });
 
@@ -78,7 +79,6 @@ export function Catalogue() {
         certificate has been withdrawn is not here at all.
       </p>
 
-      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
       {error && <div className="note deny" role="alert">{error}</div>}
 
       {cat.data?.canOrder && inBasket > 0 && (

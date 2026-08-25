@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '../components/Toast';
 import { api, ApiError, type ConfigOverview, type ConfigVersionDetail, type ConfigReview } from '../lib/api';
 import { Dialog, Field, useFieldErrors } from '../components/Dialog';
 import { FormPreview, type Section } from '../components/CustomFields';
@@ -72,7 +73,7 @@ export function FormDesigner() {
   const [editingList, setEditingList] = useState<PicklistPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [problem, setProblem] = useState<ApiError['problem'] | null>(null);
-  const [flash, setFlash] = useState<string | null>(null);
+  const toast = useToast();
 
   const overview = useQuery({
     queryKey: ['config'], queryFn: () => api.get<ConfigOverview>('/admin/config'),
@@ -108,7 +109,7 @@ export function FormDesigner() {
 
   const openDraft = useMutation({
     mutationFn: () => api.post<{ id: string }>('/admin/config/draft', { changeReason: reason }),
-    onSuccess: () => { setReason(''); setFlash('Draft opened. Nothing you do here is live until it is published.'); refresh(); },
+    onSuccess: () => { setReason(''); toast.success('Draft opened. Nothing you do here is live until it is published.'); refresh(); },
     onError: (e) => setError(e instanceof ApiError ? e.problem.detail : 'Could not open a draft.'),
   });
 
@@ -182,7 +183,6 @@ export function FormDesigner() {
         when it is published. Go to <b>Configuration</b> to review and sign it.
       </p>
 
-      {flash && <div className="note okbox">{flash}</div>}
       {error && <div className="note deny">{error}</div>}
 
       {problems.length > 0 && (

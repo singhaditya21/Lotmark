@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useToast } from './Toast';
 import { api, ApiError } from '../lib/api';
 import { Dialog, Field } from './Dialog';
 import { offered, stillNeeded, toInstant, type Option } from '../lib/custom-fields';
@@ -74,7 +75,7 @@ export function CustomFieldsDialog({
   const [values, setValues] = useState<Record<string, unknown>>({});
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [flash, setFlash] = useState<string | null>(null);
+  const toast = useToast();
   const [showHistory, setShowHistory] = useState(false);
 
   // Seeded from the server, and re-seeded whenever the revision moves — which
@@ -92,12 +93,11 @@ export function CustomFieldsDialog({
     onSuccess: (r) => {
       setError(null);
       setReason('');
-      setFlash(`Saved as revision ${r.revision}.`);
+      toast.success(`Saved as revision ${r.revision}.`);
       void qc.invalidateQueries({ queryKey: key });
       void qc.invalidateQueries({ queryKey: ['audit'] });
     },
     onError: (e) => {
-      setFlash(null);
       setError(e instanceof ApiError ? e.problem.detail : 'Could not save.');
       // A conflict means somebody else moved the record on. Refetching is what
       // lets the person see their changes before deciding what to do.
@@ -193,7 +193,6 @@ export function CustomFieldsDialog({
         </Field>
       )}
 
-      {flash && <div className="note okbox">{flash}</div>}
       {error && <div className="note deny">{error}</div>}
 
       {loaded.data && loaded.data.revision > 0 && (

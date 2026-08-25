@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '../components/Toast';
 import { api, ApiError, type EntitlementsView } from '../lib/api';
 import { Dialog, Field } from '../components/Dialog';
 
@@ -26,7 +27,7 @@ export function Entitlements() {
   const [note, setNote] = useState('');
   const [revalidationDue, setRevalidationDue] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [flash, setFlash] = useState<string | null>(null);
+  const toast = useToast();
 
   const view = useQuery({
     queryKey: ['entitlements'],
@@ -44,7 +45,7 @@ export function Entitlements() {
     mutationFn: () => api.post<{ code: string }>('/entitlements', { supportingDocument: document }),
     onSuccess: (r) => {
       setClaiming(false); setDocument(''); setError(null);
-      setFlash(`Claim ${r.code} raised. It is under review.`);
+      toast.success(`Claim ${r.code} raised. It is under review.`);
       refresh();
     },
     onError,
@@ -60,7 +61,7 @@ export function Entitlements() {
       api.post(`/entitlements/${deciding}/decide`, decideOn(approve)),
     onSuccess: () => {
       setDeciding(null); setNote(''); setRevalidationDue(''); setError(null);
-      setFlash('Decision recorded.');
+      toast.success('Decision recorded.');
       refresh();
     },
     onError,
@@ -85,7 +86,6 @@ export function Entitlements() {
         </div>
       )}
 
-      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
       {error && <div className="note deny" role="alert">{error}</div>}
 
       {v?.canClaim && (

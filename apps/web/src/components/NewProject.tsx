@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, type Project } from '../lib/api';
 import { Dialog, Field, useFieldErrors } from './Dialog';
+import { useToast } from './Toast';
 
 export function NewProject({
   open, onClose, onCreated,
 }: { open: boolean; onClose: () => void; onCreated: (p: Project) => void }) {
   const qc = useQueryClient();
+  const toast = useToast();
   const [materialName, setMaterial] = useState('');
   const [casNumber, setCas] = useState('');
   const [sku, setSku] = useState('');
@@ -34,6 +36,7 @@ export function NewProject({
     }),
     onSuccess: (r) => {
       void qc.invalidateQueries({ queryKey: ['projects'] });
+      toast.success(`Project ${r.project.code} created.`);
       reset();
       onCreated(r.project);
     },

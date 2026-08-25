@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from './App';
+import { ToastProvider } from './components/Toast';
 import './styles.css';
 import { DemoBanner } from './demo/Banner';
 import { DemoVerify, VerifyLanding, verifyTokenFromPath, isVerifyPath } from './demo/Verify';
@@ -55,8 +56,10 @@ createRoot(document.getElementById('root')!).render(
       verifyToken ? <DemoVerify token={verifyToken} /> : <VerifyLanding />
     ) : (
       <QueryClientProvider client={queryClient}>
-        <App />
-        {import.meta.env.VITE_DEMO ? <DemoBanner /> : null}
+        <ToastProvider>
+          <App />
+          {import.meta.env.VITE_DEMO ? <DemoBanner /> : null}
+        </ToastProvider>
       </QueryClientProvider>
     )}
   </StrictMode>,

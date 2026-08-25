@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '../components/Toast';
 import {
   api, ApiError,
   type ConfigOverview, type ConfigVersionDetail, type ConfigReview, type ConfigChange,
@@ -36,7 +37,7 @@ export function Configuration() {
   const [reviewing, setReviewing] = useState(false);
   const [meaning, setMeaning] = useState<Meaning>('approval');
   const [error, setError] = useState<string | null>(null);
-  const [flash, setFlash] = useState<string | null>(null);
+  const toast = useToast();
   const [stepUpFor, setStepUpFor] = useState<string | null>(null);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
@@ -76,7 +77,7 @@ export function Configuration() {
     mutationFn: () => api.post<{ id: string; number: number }>('/admin/config/draft', { changeReason: reason }),
     onSuccess: (r) => {
       setNewDraft(false); setReason(''); setError(null);
-      setFlash(`Draft version ${r.number} is open. Nothing changes until you publish it.`);
+      toast.success(`Draft version ${r.number} is open. Nothing changes until you publish it.`);
       refresh();
     },
     onError: (e) => fail(e, 'open a configuration draft'),
@@ -89,7 +90,7 @@ export function Configuration() {
       ),
     onSuccess: (r) => {
       setReviewing(false); setError(null);
-      setFlash(
+      toast.success(
         `Version ${r.number} is now active — ${r.changes.length} change(s), ` +
         `${r.signed ? 'signed' : 'presentation only, so unsigned'}.`,
       );
@@ -102,7 +103,7 @@ export function Configuration() {
     mutationFn: () => api.del(`/admin/config/draft/${draftId}`),
     onSuccess: () => {
       setReviewing(false); setConfirmDiscard(false); setError(null);
-      setFlash('The draft was discarded. The active configuration is unchanged.');
+      toast.success('The draft was discarded. The active configuration is unchanged.');
       refresh();
     },
     onError: (e) => fail(e, 'discard a draft'),
@@ -118,7 +119,6 @@ export function Configuration() {
         this certificate issued" answerable years later.
       </p>
 
-      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
       {error && <div className="note deny" role="alert">{error}</div>}
 
       <div className="row" style={{ margin: '12px 0' }}>
@@ -353,7 +353,7 @@ export function Configuration() {
         open={stepUpFor !== null}
         purpose={stepUpFor ?? ''}
         onClose={() => setStepUpFor(null)}
-        onUnlocked={() => { setStepUpFor(null); setFlash('Signing session open. Try again.'); }}
+        onUnlocked={() => { setStepUpFor(null); toast.success('Signing session open. Try again.'); }}
       />
     </>
   );

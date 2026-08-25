@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '../components/Toast';
 import { api, ApiError, type Directory, type NewUserResult } from '../lib/api';
 import { Dialog, Field } from '../components/Dialog';
 
@@ -25,7 +26,7 @@ import { Dialog, Field } from '../components/Dialog';
 export function People() {
   const qc = useQueryClient();
   const [error, setError] = useState<string | null>(null);
-  const [flash, setFlash] = useState<string | null>(null);
+  const toast = useToast();
   const [newUser, setNewUser] = useState(false);
   const [created, setCreated] = useState<NewUserResult | null>(null);
   const [grantFor, setGrantFor] = useState<string | null>(null);
@@ -70,7 +71,7 @@ export function People() {
     onSuccess: () => {
       setGrantFor(null); setError(null);
       setGrant({ roleKey: '', teamId: '', validTo: '', reason: '' });
-      setFlash('Role granted. It takes effect on their next request.');
+      toast.success('Role granted. It takes effect on their next request.');
       refresh();
     },
     onError,
@@ -79,7 +80,7 @@ export function People() {
   const revoke = useMutation({
     mutationFn: (a: { userId: string; id: string }) =>
       api.del(`/admin/users/${a.userId}/roles/${a.id}`),
-    onSuccess: () => { setError(null); setFlash('Role revoked.'); refresh(); },
+    onSuccess: () => { setError(null); toast.success('Role revoked.'); refresh(); },
     onError,
   });
 
@@ -87,7 +88,7 @@ export function People() {
     mutationFn: (id: string) => api.post(`/admin/users/${id}/deactivate`),
     onSuccess: () => {
       setError(null);
-      setFlash('Account deactivated: sessions ended and role assignments revoked.');
+      toast.success('Account deactivated: sessions ended and role assignments revoked.');
       refresh();
     },
     onError,
@@ -98,7 +99,7 @@ export function People() {
     onSuccess: () => {
       setCompetenceFor(null); setError(null);
       setComp({ activity: '', validFrom: '', validTo: '', basis: '' });
-      setFlash('Competence authorisation recorded.');
+      toast.success('Competence authorisation recorded.');
       refresh();
     },
     onError,
@@ -110,7 +111,7 @@ export function People() {
     }),
     onSuccess: () => {
       setNewTeam(false); setError(null); setTeam({ key: '', name: '', description: '' });
-      setFlash('Team created. Membership grants nothing on its own — assign a role scoped to it.');
+      toast.success('Team created. Membership grants nothing on its own — assign a role scoped to it.');
       refresh();
     },
     onError,
@@ -130,7 +131,6 @@ export function People() {
         needed, and none of them implies another.
       </p>
 
-      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
       {/* A dialog's own failure is shown inside it (below); on the page body it
           would sit behind the backdrop, unseen, while the user re-clicks. */}
       {error && !(newUser || grantFor !== null || competenceFor !== null || newTeam) && (

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '../components/Toast';
 import { api, ApiError, type OrdersView, type OrderRow } from '../lib/api';
 import { Dialog, Field } from '../components/Dialog';
 
@@ -20,7 +21,7 @@ import { Dialog, Field } from '../components/Dialog';
 export function Orders() {
   const qc = useQueryClient();
   const [error, setError] = useState<string | null>(null);
-  const [flash, setFlash] = useState<string | null>(null);
+  const toast = useToast();
   const [shipFor, setShipFor] = useState<OrderRow | null>(null);
   const [temperatureClass, setTemperatureClass] = useState('2-8');
   const [readingsFor, setReadingsFor] = useState<string | null>(null);
@@ -43,13 +44,13 @@ export function Orders() {
   const advance = useMutation({
     mutationFn: (a: { id: string; to: string }) =>
       api.post(`/orders/${a.id}/advance`, { to: a.to, courier: courier || undefined }),
-    onSuccess: (_r, a) => { setError(null); setCourier(''); setFlash(`Order moved to ${a.to}.`); refresh(); },
+    onSuccess: (_r, a) => { setError(null); setCourier(''); toast.success(`Order moved to ${a.to}.`); refresh(); },
     onError,
   });
 
   const createShipment = useMutation({
     mutationFn: () => api.post<{ code: string }>(`/orders/${shipFor!.id}/shipment`, { temperatureClass }),
-    onSuccess: (r) => { setShipFor(null); setError(null); setFlash(`Shipment ${r.code} created.`); refresh(); },
+    onSuccess: (r) => { setShipFor(null); setError(null); toast.success(`Shipment ${r.code} created.`); refresh(); },
     onError,
   });
 
@@ -71,7 +72,7 @@ export function Orders() {
     ),
     onSuccess: (r) => {
       setReadingsFor(null); setReadings(''); setError(null);
-      setFlash(
+      toast.success(
         r.excursions === 0
           ? 'Readings recorded — all within the temperature class.'
           : `${r.excursions} excursion(s) recorded. CAPA ${r.capaRaised} was raised automatically.`,
@@ -96,7 +97,6 @@ export function Orders() {
           : 'Every order in the tenant, and the cold chain behind each shipment.'}
       </p>
 
-      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
       {error && <div className="note deny" role="alert">{error}</div>}
 
       {view.isLoading ? <div className="spinner">Loading…</div> : (v?.orders ?? []).length === 0 ? (
