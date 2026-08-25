@@ -274,19 +274,65 @@ export const CHAINS: ReadonlyArray<readonly [string, Chain]> = [
   }],
 
   /* ── The cold chain reports in ──────────────────────────────────────────── */
+  /* ── Cold-chain readings, and the CAPA an excursion raises ─────────────────
+   *
+   * Two things were wrong here. The chain read an `excursion` boolean the
+   * console never sends — it posts `{ readings: [{ readAt, celsius }] }` — so
+   * logging a genuine out-of-range reading from the screen flagged nothing. And
+   * the real API RAISES A CAPA when a reading leaves the temperature class
+   * (see the excursion branch in routes/commerce.ts); the demo did not, so the
+   * one causal link between dispatch and the quality system was missing.
+   *
+   * Now the range is parsed from the shipment's own class ("2-8"), excursions
+   * are derived from the readings, and an excursion opens a Major CAPA against
+   * the shipment — the same shape the register already holds. */
   ['POST /shipments/:id/readings', (ctx, payload, [id]) => {
     const shipments = (ctx.body('GET /orders') as
       { shipments?: Array<Record<string, unknown>> } | undefined)?.shipments;
     const shipment = shipments?.find((s) => s['id'] === id);
-    const excursion = payload['excursion'] === true;
+
+    const [lo, hi] = String(shipment?.['temperature_class'] ?? '2-8')
+      .split('-').map((n) => Number(n.trim()));
+    const submitted = Array.isArray(payload['readings'])
+      ? (payload['readings'] as Array<Record<string, unknown>>) : [];
+    // `excursion: true` with no readings is the shorthand the tests use.
+    const readings = submitted.length > 0 ? submitted
+      : [{ celsius: payload['excursion'] === true ? (hi ?? 8) + 6 : (lo ?? 2) + 1 }];
+    const out = readings.filter((r) => {
+      const c = Number(r['celsius']);
+      return Number.isFinite(c) && (c < (lo ?? 2) || c > (hi ?? 8));
+    });
+
     if (shipment) {
-      shipment['readings'] = Number(shipment['readings'] ?? 0) + 1;
-      if (excursion) shipment['excursions'] = Number(shipment['excursions'] ?? 0) + 1;
+      shipment['readings'] = Number(shipment['readings'] ?? 0) + readings.length;
+      shipment['excursions'] = Number(shipment['excursions'] ?? 0) + out.length;
     }
-    ctx.audit('SHIPMENT', 'shipment.reading',
-      `${String(shipment?.['code'] ?? 'shipment')} logged a temperature reading`
-      + (excursion ? ' — EXCURSION flagged' : ' — in range'));
-    return shipment ?? { id, readings: 1 };
+
+    let capaRaised: string | null = null;
+    if (out.length > 0) {
+      const register = ctx.list('GET /capa');
+      const worst = out.reduce((a, b) => (Math.abs(Number(b['celsius'])) > Math.abs(Number(a['celsius'])) ? b : a));
+      const nums = (register ?? []).map((c) => Number(/(\d+)$/.exec(String(c['code']))?.[1] ?? 0));
+      capaRaised = `NCR-${String(Math.max(230, ...nums) + 1).padStart(4, '0')}`;
+      const raisedOn = ctx.now().slice(0, 10);
+      register?.unshift({
+        id: ctx.id(), code: capaRaised, source: 'Cold chain excursion',
+        severity: 'Major', state: 'open', raised_on: raisedOn,
+        due_on: new Date(Date.parse(raisedOn) + 14 * 864e5).toISOString().slice(0, 10),
+        root_cause: null, corrective_action: null, closed_at: null,
+        team: shipment?.['team'] ?? null,
+        availableTransitions: ['investigation'], transitions: [],
+      });
+      ctx.audit('WORKFLOW', 'capa.raised',
+        `${capaRaised} · ${String(shipment?.['code'] ?? 'shipment')} · ${out.length} reading(s) outside `
+        + `${String(shipment?.['temperature_class'] ?? '2-8')} °C, worst ${String(worst['celsius'])} °C`);
+    }
+
+    ctx.audit('WORKFLOW', 'shipment.readings',
+      `${String(shipment?.['code'] ?? 'shipment')} · ${readings.length} reading(s)`
+      + (out.length > 0 ? ` · ${out.length} EXCURSION(S)` : ' · all within class'));
+
+    return { excursions: out.length, capaRaised };
   }],
 
   /* ── An entitlement is decided ──────────────────────────────────────────── */

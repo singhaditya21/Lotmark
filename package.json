@@ -2,7 +2,7 @@
   "name": "lotmark",
   "version": "0.1.0",
   "private": true,
-  "description": "Lotmark \u2014 ISO 17034 reference material producer platform",
+  "description": "Lotmark — ISO 17034 reference material producer platform",
   "engines": {
     "node": ">=22"
   },
@@ -25,11 +25,17 @@
     "job": "NODE_ENV=development pnpm --filter @lotmark/api job",
     "anchor": "NODE_ENV=development pnpm --filter @lotmark/api anchor",
     "demo": "pnpm --filter @lotmark/web demo",
-    "demo:capture": "pnpm --filter @lotmark/web capture"
+    "demo:capture": "pnpm --filter @lotmark/web capture",
+    "demo:narrate": "node tools/video/narrate.mts",
+    "demo:record": "node tools/video/record.mts",
+    "demo:assemble": "node tools/video/assemble.mts",
+    "demo:film": "pnpm demo:narrate && pnpm demo:record && pnpm demo:assemble"
   },
   "devDependencies": {
+    "kokoro-js": "^1.2.1",
+    "playwright": "^1.62.1",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8",
-    "tsx": "^4.19.2"
+    "vitest": "^2.1.8"
   }
 }

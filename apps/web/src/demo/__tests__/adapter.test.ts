@@ -433,6 +433,44 @@ describe('an act leaves a trace', () => {
     expect(String((await auditTop())['detail'])).toMatch(/released/i);
   });
 
+  it('raises a CAPA when a reading leaves the temperature class', async () => {
+    /*
+     * The causal link the demo was missing: dispatch and the quality system are
+     * joined by the cold chain. A reading outside the shipment's class opens a
+     * Major CAPA against it, exactly as the API does — so the register grows and
+     * the console can name the CAPA it raised.
+     */
+    const shipments = ((await call(demoFetch, 'GET', '/orders')).body as
+      { shipments?: Array<Record<string, unknown>> }).shipments ?? [];
+    const s = shipments[0]!;
+    const before = listIn((await call(demoFetch, 'GET', '/capa')).body).length;
+
+    // 14 °C against a 2–8 class is unambiguously out of range.
+    const res = await call(demoFetch, 'POST', `/shipments/${String(s['id'])}/readings`,
+      { readings: [{ readAt: '2026-08-25T09:00:00Z', celsius: 14 }] });
+    expect(res.status).toBe(200);
+    expect(res.body['excursions']).toBe(1);
+    const code = String(res.body['capaRaised']);
+    expect(code, 'the console names the CAPA it raised').toMatch(/^NCR-\d{4}$/);
+
+    const after = listIn((await call(demoFetch, 'GET', '/capa')).body);
+    expect(after.length, 'the register grew').toBe(before + 1);
+    const raised = after.find((c) => c['code'] === code);
+    expect(raised?.['source']).toBe('Cold chain excursion');
+    expect(raised?.['state']).toBe('open');
+  });
+
+  it('logs an in-range reading without raising anything', async () => {
+    const shipments = ((await call(demoFetch, 'GET', '/orders')).body as
+      { shipments?: Array<Record<string, unknown>> }).shipments ?? [];
+    const before = listIn((await call(demoFetch, 'GET', '/capa')).body).length;
+    const res = await call(demoFetch, 'POST', `/shipments/${String(shipments[0]!['id'])}/readings`,
+      { readings: [{ readAt: '2026-08-25T09:00:00Z', celsius: 5 }] });
+    expect(res.body['excursions']).toBe(0);
+    expect(res.body['capaRaised']).toBe(null);
+    expect(listIn((await call(demoFetch, 'GET', '/capa')).body).length).toBe(before);
+  });
+
   it('adds and removes a team member, moving the roster and the count', async () => {
     /*
      * Belonging, not authority. Joining pushes a membership and bumps the team's
