@@ -11,9 +11,10 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
+import { pickFilm } from './beats.mts';
 
 const HERE = import.meta.dirname;
-const FILM = process.env['FILM'] ?? 'main';
+const { name: FILM, beats: BEATS } = pickFilm();
 const BUILD = path.join(HERE, 'build', FILM);
 const SEGMENTS = path.join(BUILD, 'segments');
 const FPS = 30;
@@ -41,6 +42,18 @@ const stamp = (s: number) => {
   const sec = Math.floor(s % 60), ms = Math.round((s % 1) * 1000);
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:`
     + `${String(sec).padStart(2, '0')},${String(ms).padStart(3, '0')}`;
+};
+
+/** Break a line near `width` characters, on word boundaries. */
+const wrap = (text: string, width: number): string => {
+  const out: string[] = [];
+  let line = '';
+  for (const word of text.split(/\s+/)) {
+    if (line && (line + ' ' + word).length > width) { out.push(line); line = word; }
+    else line = line ? `${line} ${word}` : word;
+  }
+  if (line) out.push(line);
+  return out.join('\n');
 };
 
 let elapsed = 0;
@@ -98,10 +111,18 @@ for (const [i, beat] of marks.entries()) {
   videoList.push(`file '${out}'`);
   audioList.push(`file '${path.join(BUILD, 'audio', `${beat.id}.wav`)}'`);
 
+  /*
+   * The NARRATION, not the beat id.
+   *
+   * This wrote `beat.id`, so every subtitle file said "01-catalogue" — the one
+   * artefact whose entire job is to carry the words was carrying the filenames.
+   * Wrapped near 42 characters so a line does not run the width of the frame.
+   */
+  const spoken = BEATS.find((b) => b.id === beat.id)?.script ?? beat.id;
   srt.push(
     String(i + 1),
     `${stamp(elapsed)} --> ${stamp(elapsed + beat.audio)}`,
-    beat.id, '',
+    wrap(spoken, 42), '',
   );
   elapsed += beat.audio;
   console.log(`  ${beat.id.padEnd(20)} ${mine.length.toString().padStart(4)} frames → ${beat.audio.toFixed(2)}s`

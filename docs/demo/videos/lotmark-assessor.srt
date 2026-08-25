@@ -1,0 +1,59 @@
+1
+00:00:00,000 --> 00:00:08,700
+An assessment is not a document you write
+the week before. It is a question about
+records, and the records are already here.
+
+2
+00:00:08,700 --> 00:00:18,300
+An assessor arrives with a checklist. This
+is that checklist, reported from the
+records rather than from a specification
+with ticks beside it.
+
+3
+00:00:18,300 --> 00:00:29,625
+Each requirement carries two separate
+facts: what the code enforces, and what
+the records currently show. They can
+disagree, and the disagreement is the
+finding.
+
+4
+00:00:29,625 --> 00:00:37,750
+Nothing here rounds a gap up to a pass.
+The gaps are counted, and the count is the
+control that isolates them.
+
+5
+00:00:37,750 --> 00:00:48,075
+The whole assessment leaves as one signed
+pack, with a digest — so what was handed
+over can be checked against what the
+ledger says was exported.
+
+6
+00:00:48,075 --> 00:00:54,175
+Behind it is the ledger. Every act,
+appended and hash-linked to the one before
+it.
+
+7
+00:00:54,175 --> 00:01:05,700
+And verifying it has three outcomes, not
+two. Intact, broken — or not checked,
+because a key was rotated and this server
+no longer holds the old one.
+
+8
+00:01:05,700 --> 00:01:15,475
+The unattended half is reported too. A job
+that failed every night for a week used to
+look exactly like one with nothing to do.
+
+9
+00:01:15,475 --> 00:01:26,725
+Including the restores. A backup nobody
+has ever restored is a hypothesis — and
+this page says so, in as many words, when
+no drill has been run.

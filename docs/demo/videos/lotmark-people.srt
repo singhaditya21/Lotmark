@@ -1,0 +1,58 @@
+1
+00:00:00,000 --> 00:00:10,600
+Permission, competence and belonging are
+three different questions. Conflating them
+is how somebody ends up able to do what
+nobody decided they could.
+
+2
+00:00:10,600 --> 00:00:17,825
+Three things decide whether somebody may
+do something here, and this platform
+refuses to conflate them.
+
+3
+00:00:17,825 --> 00:00:27,175
+A role is authority, at a scope. Granting
+one demands a reason, and the reason is
+recorded against your account, not theirs.
+
+4
+00:00:27,175 --> 00:00:38,100
+It can also be dated. Leave cover that
+depends on somebody remembering to revoke
+it usually is not revoked — so a dated
+grant expires on its own.
+
+5
+00:00:38,100 --> 00:00:49,875
+Holding the permission is necessary, and
+not sufficient. ISO seventeen thousand and
+thirty four also asks whether they are
+competent to perform it, on the day.
+
+6
+00:00:49,875 --> 00:00:57,425
+And membership is simply belonging. It
+grants nothing at all — it is the scope a
+role can be granted in.
+
+7
+00:00:57,425 --> 00:01:08,525
+The consequence is visible immediately.
+The same console, a different person, and
+the navigation itself is smaller — you
+cannot open what you do not hold.
+
+8
+00:01:08,525 --> 00:01:17,025
+A laboratory customer sees no producer
+screens whatsoever — only their own
+catalogue, orders and certificates.
+
+9
+00:01:17,025 --> 00:01:26,350
+And a second producer runs on the same
+platform, seeing none of the first.
+Different laboratory, different materials,
+different people.

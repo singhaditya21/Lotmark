@@ -1,0 +1,133 @@
+1
+00:00:00,000 --> 00:00:09,175
+A reference material, followed from the
+bench to a laboratory that buys it,
+through a recall, to an assessor asking
+how you know.
+
+2
+00:00:09,175 --> 00:00:20,000
+This is Lotmark, a platform for producers
+of certified reference materials. A
+scientist signs in, and the console opens
+on their own work.
+
+3
+00:00:20,000 --> 00:00:28,850
+Two things are waiting: studies that need
+his signature. Nothing here is a to-do
+list somebody typed. It is the work
+itself.
+
+4
+00:00:28,850 --> 00:00:34,400
+He opens the paracetamol project and finds
+the study still in draft.
+
+5
+00:00:34,400 --> 00:00:43,050
+Signing it is not a click. The system asks
+him to prove who he is, with his password
+and a fresh authenticator code.
+
+6
+00:00:43,050 --> 00:00:55,875
+That is twenty one C F R part eleven: a
+signature needs a fresh authentication,
+not just a live session. Now the study is
+signed, and it says who signed it and
+when.
+
+7
+00:00:55,875 --> 00:01:00,850
+The scientist has done their part. Now
+somebody else takes over.
+
+8
+00:01:00,850 --> 00:01:11,375
+A second person authorises the certified
+value. Whoever assigns a value never
+authorises it — four eyes, enforced by the
+server.
+
+9
+00:01:11,375 --> 00:01:19,250
+With an authorised value, a lot can be
+released. It takes its own number and
+supersedes the batch before it.
+
+10
+00:01:19,250 --> 00:01:26,975
+And the lot gets its certificate — the
+document a laboratory will one day hold in
+its hands and want to check.
+
+11
+00:01:26,975 --> 00:01:35,775
+A laboratory buys that material. She signs
+in to the same platform and sees an
+entirely different world — her own.
+
+12
+00:01:35,775 --> 00:01:44,150
+The catalogue carries only released lots
+with an authorised value, each with its
+certificate. She orders two units.
+
+13
+00:01:44,150 --> 00:01:52,200
+On the producer side, dispatch packs it
+and sends it. A courier and a tracking
+reference are attached as it goes.
+
+14
+00:01:52,200 --> 00:01:59,225
+This material ships between two and eight
+degrees. The logger comes back with a
+reading at fourteen.
+
+15
+00:01:59,225 --> 00:02:10,150
+Nobody had to notice that. The excursion
+raised a corrective action by itself,
+because the readings are data rather than
+a document somebody files.
+
+16
+00:02:10,150 --> 00:02:19,025
+Quality moves it into investigation. Every
+move is signed, states why, and joins a
+history the card carries with it.
+
+17
+00:02:19,025 --> 00:02:27,350
+And if the material itself is in doubt,
+its certificate is withdrawn — and every
+laboratory holding it is told.
+
+18
+00:02:27,350 --> 00:02:33,525
+Everything you have just watched is in the
+ledger — every act, under the person who
+did it.
+
+19
+00:02:33,525 --> 00:02:43,575
+Each entry is hash-linked to the one
+before it. Removing or altering one breaks
+every link that follows, and the console
+will say so.
+
+20
+00:02:43,575 --> 00:02:53,425
+Even the configuration changes under
+signature. A draft is reviewed, signed,
+and becomes a numbered version records are
+pinned to.
+
+21
+00:02:53,425 --> 00:03:03,100
+And the certificate can be checked by
+anyone holding it. No account, no login —
+an assessor with a printed certificate
+should not need one.

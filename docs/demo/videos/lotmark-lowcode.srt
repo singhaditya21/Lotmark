@@ -1,0 +1,60 @@
+1
+00:00:00,000 --> 00:00:10,575
+What a laboratory records, and how its
+work moves, differs from producer to
+producer. Here that is configuration
+rather than a change request.
+
+2
+00:00:10,575 --> 00:00:21,150
+Fields, option lists, layouts and
+workflows are configuration, not code.
+They are designed in a draft, and nothing
+is live until it is signed.
+
+3
+00:00:21,150 --> 00:00:29,750
+A new field on a lot: what it is called,
+what type it takes, whether it is
+required, and whether it belongs on the
+certificate.
+
+4
+00:00:29,750 --> 00:00:38,700
+The preview beside it is not a mock-up. It
+is the same renderer the record screens
+use, drawing the draft you are editing.
+
+5
+00:00:38,700 --> 00:00:49,025
+A layout decides what is shown and where —
+and it can be scoped to particular roles,
+so a dispatcher and a scientist need not
+see the same form.
+
+6
+00:00:49,025 --> 00:00:58,350
+The flow designer does the same for the
+state machines. These are the moves the
+server will actually enforce — not a
+diagram of them.
+
+7
+00:00:58,350 --> 00:01:08,975
+Each move can demand an electronic
+signature, or a guard condition — and the
+machine on the right is what the runtime
+resolved from this draft.
+
+8
+00:01:08,975 --> 00:01:19,150
+None of it is live yet. Publishing is a
+signed act that leaves a numbered version
+behind — and every record created
+afterwards is pinned to it.
+
+9
+00:01:19,150 --> 00:01:26,950
+Which is what makes "under what rules was
+this certificate issued" a question you
+can still answer years later.

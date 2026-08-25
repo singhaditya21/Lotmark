@@ -1,0 +1,45 @@
+1
+00:00:00,000 --> 00:00:09,475
+An account is created, enrolled, given
+authority, and one day taken away again.
+Each of those is a deliberate, recorded
+act.
+
+2
+00:00:09,475 --> 00:00:18,550
+An administrator creates the account. The
+credentials are shown exactly once and are
+deliberately never written to the audit
+ledger.
+
+3
+00:00:18,550 --> 00:00:27,025
+And what they are given is an enrolment
+credential, not a standing one. It works
+to sign in once, and for nothing else.
+
+4
+00:00:27,025 --> 00:00:36,000
+Because somebody else chose that password
+and may still know it, the console opens
+here and goes nowhere else until it is
+replaced.
+
+5
+00:00:36,000 --> 00:00:44,075
+The length rule is enforced before
+anything is sent, and changing it ends
+every other session that account had open.
+
+6
+00:00:44,075 --> 00:00:54,175
+Only now does the console appear — and it
+shows exactly what this person holds,
+which so far is a bench scientist’s work
+and nothing more.
+
+7
+00:00:54,175 --> 00:01:03,450
+And when somebody leaves, deactivating the
+account ends their sessions and revokes
+every role they held, in one recorded act.
