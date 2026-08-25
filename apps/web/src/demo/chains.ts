@@ -181,10 +181,31 @@ export const CHAINS: ReadonlyArray<readonly [string, Chain]> = [
     const holders = ctx.list('GET /certificates/:id/issues/:n/holders');
     holders?.forEach((h) => { h['notified'] = true; h['notified_at'] = ctx.now(); });
 
+    /*
+     * The shape the panel actually reads — a WithdrawResult, whose `notified`
+     * and `unreachable` are LISTS OF PARTIES, not counts.
+     *
+     * This returned `notified` as a number, so the panel's `r.notified.map(...)`
+     * threw and took the whole console down to a white screen the moment anyone
+     * withdrew a certificate from the UI. It survived unnoticed because the
+     * recall was only ever demonstrated from the public verification page,
+     * which reads a seeded withdrawal rather than performing one.
+     */
+    const party = (h: Record<string, unknown>) => ({
+      organisation: h['organisation'], basis: h['basis'], quantity: h['quantity'],
+    });
+    const notified = (holders ?? []).filter((h) => h['reachable'] !== false).map(party);
+    const unreachable = (holders ?? []).filter((h) => h['reachable'] === false).map(party);
+
     ctx.audit('CERTIFICATE', 'certificate.withdraw',
       `Issue #${n} withdrawn — ${String(payload['reason'] ?? 'value found to be wrong')}; `
-      + `${holders?.length ?? 0} holder(s) notified`);
-    return { withdrawn: true, notified: holders?.length ?? 0 };
+      + `${notified.length} holder(s) notified`
+      + (unreachable.length > 0 ? `, ${unreachable.length} unreachable` : ''));
+    return {
+      certificate: String((ctx.body('GET /certificates/:id') as { certificate?: { code?: string } } | undefined)
+        ?.certificate?.code ?? 'certificate'),
+      issue: Number(n), withdrawn: true, notified, unreachable,
+    };
   }],
 
   /* ── A CAPA moves through its machine ───────────────────────────────────── */

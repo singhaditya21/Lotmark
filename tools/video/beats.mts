@@ -104,6 +104,25 @@ export async function signedAction(
   await modal(page).first().waitFor({ state: 'hidden', timeout: 15_000 }).catch(() => {});
 }
 
+/**
+ * Close whatever modal is open.
+ *
+ * A native <dialog> opened with showModal() makes the rest of the document
+ * INERT, so the navigation is not just visually covered — it is absent from the
+ * accessibility tree, and getByRole simply never finds it. Any beat that
+ * navigates after a dialog has to close it first.
+ */
+export async function closeDialogs(page: Page): Promise<void> {
+  for (let i = 0; i < 3; i++) {
+    const open = modal(page).first();
+    if (!await open.isVisible().catch(() => false)) return;
+    const close = open.getByRole('button', { name: /^(Close|Done|Cancel)$/ }).last();
+    if (await close.isVisible().catch(() => false)) await close.click().catch(() => {});
+    else await page.keyboard.press('Escape').catch(() => {});
+    await open.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+  }
+}
+
 /* ── Act I — Certify ─────────────────────────────────────────────────────── */
 
 const ACT_I: Beat[] = [
@@ -306,11 +325,28 @@ const ACT_III: Beat[] = [
     script: 'Quality moves it into investigation. Every move is signed, states why, '
       + 'and joins a history the card carries with it.',
     run: async (page) => {
-      const card = page.locator('.capa').first();
-      await signedAction(page,
-        () => card.getByRole('button', { name: /Move to/ }).first().click(),
-        /^Move|^Record|^Confirm/);
-      await page.locator('details.capa-history').first().click().catch(() => {});
+      /*
+       * A CAPA move is refused until it says WHY — the confirm button stays
+       * disabled while the reason is empty, which is the point of the screen.
+       * So the dialog is filled, not just clicked through.
+       */
+      const move = async () => {
+        await page.locator('.capa').first()
+          .getByRole('button', { name: /Move to/ }).first().click();
+        await modal(page).first().waitFor({ state: 'visible' });
+        const step = modal(page).locator('textarea.t').first();
+        if (await step.isVisible().catch(() => false)) {
+          await step.fill('Logger export reviewed; the excursion is confirmed.');
+        }
+        await modal(page).locator('input.t').first()
+          .fill('Assigned to the Organics section for investigation.');
+        await modal(page).getByRole('button', { name: /^Move to|^Close this CAPA/ }).click();
+      };
+      await move();
+      if (await stepUpIfAsked(page)) await move();
+      await modal(page).first().waitFor({ state: 'hidden', timeout: 15_000 }).catch(() => {});
+      // Open the history the move just wrote.
+      await page.locator('details.capa-history summary').first().click().catch(() => {});
     },
     hold: 3000,
   },
@@ -346,7 +382,7 @@ const ACT_IV: Beat[] = [
     script: 'Everything you have just watched is in the ledger — every act, '
       + 'under the person who did it.',
     run: async (page) => {
-      await modal(page).first().getByRole('button', { name: 'Close' }).click().catch(() => {});
+      await closeDialogs(page);
       await go(page, /Audit ledger/);
       await page.locator('.ledger .e').first().waitFor({ state: 'visible' });
     },

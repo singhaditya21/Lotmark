@@ -433,6 +433,27 @@ describe('an act leaves a trace', () => {
     expect(String((await auditTop())['detail'])).toMatch(/released/i);
   });
 
+  it('withdrawing an issue returns the holders, not a count', async () => {
+    /*
+     * The panel renders `notified.map(...)`. This chain used to return a NUMBER
+     * there, so withdrawing a certificate from the console threw and took the
+     * whole app down to a white screen — survived unnoticed because the recall
+     * was only ever shown from the public page, which reads a seeded withdrawal
+     * rather than performing one.
+     */
+    const res = await call(demoFetch, 'POST', '/certificates/x/issues/1/withdraw',
+      { reason: 'Homogeneity re-assessment invalidated the assigned value.' });
+    expect(res.status).toBe(200);
+    expect(res.body['withdrawn']).toBe(true);
+    expect(Array.isArray(res.body['notified']), 'notified is a list of parties').toBe(true);
+    expect(Array.isArray(res.body['unreachable'])).toBe(true);
+    for (const h of res.body['notified'] as Array<Record<string, unknown>>) {
+      expect(typeof h['organisation']).toBe('string');
+      expect(typeof h['basis']).toBe('string');
+    }
+    expect(String((await auditTop())['detail'])).toMatch(/withdrawn/i);
+  });
+
   it('raises a CAPA when a reading leaves the temperature class', async () => {
     /*
      * The causal link the demo was missing: dispatch and the quality system are
