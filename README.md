@@ -13,6 +13,27 @@ what keep one customer's orders away from another's. See
 [`services/tenancy.ts`](apps/api/src/services/tenancy.ts) for the reasoning and
 for what going multi-tenant would take.
 
+## See it working
+
+**Live demo — <https://singhaditya21.github.io/Lotmark/>**
+
+Sign in with any account listed on the sign-in screen: password `demo-viewer`,
+then any six digits at the authenticator step. Try `admin@producer.example` to
+see everything, `ravi@producer.example` for a team-scoped bench scientist, or
+`meera@genpharm.example` for a laboratory that buys from this producer — the
+same screens change by role.
+
+The screens, navigation, guards and the signing ceremony are the real
+application; behind them is a recording captured from the real API, so nothing
+is mocked up. See [`docs/demo/`](docs/demo) for how that is built and kept
+honest.
+
+- **[Seven narrated films](docs/demo/videos/README.md)** — about ten minutes,
+  covering certification, the customer side, governance, the low-code designers
+  and an assessment.
+- **[The demo script](docs/demo/script.md)** — a talk track for showing it to
+  somebody live, with the questions you will be asked and honest answers.
+
 ## Running it
 
 PostgreSQL 16+ must be running. **No Docker required** — this runs as native
