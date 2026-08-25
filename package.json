@@ -29,7 +29,8 @@
     "demo:narrate": "node tools/video/narrate.mts",
     "demo:record": "node tools/video/record.mts",
     "demo:assemble": "node tools/video/assemble.mts",
-    "demo:film": "pnpm demo:narrate && pnpm demo:record && pnpm demo:assemble"
+    "demo:film": "pnpm demo:narrate && pnpm demo:record && pnpm demo:assemble",
+    "demo:films": "for f in main people lowcode assessor; do FILM=$f pnpm demo:narrate && FILM=$f pnpm demo:record && FILM=$f pnpm demo:assemble; done"
   },
   "devDependencies": {
     "kokoro-js": "^1.2.1",

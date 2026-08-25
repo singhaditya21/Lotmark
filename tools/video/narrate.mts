@@ -12,9 +12,11 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { KokoroTTS } from 'kokoro-js';
-import { BEATS } from './beats.mts';
+import { pickFilm } from './beats.mts';
 
-const OUT = path.join(import.meta.dirname, 'build', 'audio');
+const { name: FILM, beats: BEATS } = pickFilm();
+const BUILD = path.join(import.meta.dirname, 'build', FILM);
+const OUT = path.join(BUILD, 'audio');
 const VOICE = process.env['VOICE'] ?? 'am_michael';
 const MODEL = 'onnx-community/Kokoro-82M-v1.0-ONNX';
 
@@ -40,10 +42,10 @@ for (const beat of BEATS) {
 }
 
 writeFileSync(
-  path.join(import.meta.dirname, 'build', 'durations.json'),
+  path.join(BUILD, 'durations.json'),
   JSON.stringify(durations, null, 2),
 );
 
 const total = Object.values(durations).reduce((a, b) => a + b, 0);
-console.log(`\n${BEATS.length} beats · ${total.toFixed(1)}s of narration · voice ${VOICE}`);
-console.log('written to build/durations.json');
+console.log(`\n${FILM}: ${BEATS.length} beats · ${total.toFixed(1)}s of narration · voice ${VOICE}`);
+console.log(`written to build/${FILM}/durations.json`);

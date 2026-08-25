@@ -21,10 +21,11 @@
 import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright';
-import { BEATS } from './beats.mts';
+import { pickFilm } from './beats.mts';
 
 const HERE = import.meta.dirname;
-const BUILD = path.join(HERE, 'build');
+const { name: FILM, beats: BEATS } = pickFilm();
+const BUILD = path.join(HERE, 'build', FILM);
 const FRAMES = path.join(BUILD, 'frames');
 const URL = process.env['DEMO_URL'] ?? 'https://singhaditya21.github.io/Lotmark/';
 /*
@@ -44,7 +45,7 @@ const ONLY = process.env['ONLY'];
 
 const durationsPath = path.join(BUILD, 'durations.json');
 if (!existsSync(durationsPath)) {
-  console.error('No build/durations.json — run `pnpm demo:narrate` first.');
+  console.error(`No build/${FILM}/durations.json — run \`pnpm demo:narrate\` first.`);
   process.exit(1);
 }
 const durations = JSON.parse(readFileSync(durationsPath, 'utf8')) as Record<string, number>;
@@ -178,4 +179,4 @@ await browser.close();
 
 writeFileSync(path.join(BUILD, 'marks.json'), JSON.stringify({ frames, marks, width: WIDTH * SCALE, height: HEIGHT * SCALE }, null, 2));
 console.log(`\n${frames.length} frames · ${marks.length} beats · ${((Date.now() - t0) / 1000).toFixed(1)}s`);
-console.log('written to build/marks.json');
+console.log(`written to build/${FILM}/marks.json`);

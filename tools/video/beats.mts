@@ -133,6 +133,27 @@ export async function closeDialogs(page: Page): Promise<void> {
   }
 }
 
+/**
+ * Publish the open configuration draft.
+ *
+ * The review dialog stays OPEN when the step-up refuses the act — unlike the
+ * signing dialogs, which close themselves — so the retry is another press of
+ * the same button, not a re-open. Re-opening finds the dialog still in front of
+ * it and stalls on an intercepted click.
+ */
+export async function publishDraft(page: Page): Promise<void> {
+  const press = async () => {
+    if (!await modal(page).first().isVisible().catch(() => false)) {
+      await page.getByRole('button', { name: /Review and publish/ }).click();
+      await modal(page).first().waitFor({ state: 'visible', timeout: 10_000 });
+    }
+    await modal(page).getByRole('button', { name: /Sign and publish/ }).click();
+  };
+  await press();
+  if (await stepUpIfAsked(page)) await press();
+  await modal(page).first().waitFor({ state: 'hidden', timeout: 15_000 }).catch(() => {});
+}
+
 /* ── Act I — Certify ─────────────────────────────────────────────────────── */
 
 const ACT_I: Beat[] = [
@@ -427,14 +448,7 @@ const ACT_IV: Beat[] = [
       + 'A draft is reviewed, signed, and becomes a numbered version records are pinned to.',
     run: async (page) => {
       await go(page, /Configuration/);
-      await page.getByRole('button', { name: /Review and publish/ }).click();
-      await modal(page).first().waitFor({ state: 'visible' });
-      await modal(page).getByRole('button', { name: /Sign and publish/ }).click();
-      if (await stepUpIfAsked(page)) {
-        await page.getByRole('button', { name: /Review and publish/ }).click();
-        await modal(page).first().waitFor({ state: 'visible' });
-        await modal(page).getByRole('button', { name: /Sign and publish/ }).click();
-      }
+      await publishDraft(page);
     },
     hold: 3000,
   },
@@ -462,6 +476,340 @@ const FINALE: Beat[] = [
   },
 ];
 
-export const BEATS: Beat[] = [...ACT_I, ...ACT_II, ...ACT_III, ...ACT_IV, ...FINALE];
 
-export const ACTS = [...new Set(BEATS.map((b) => b.act))];
+/* ── Film: Who may act ───────────────────────────────────────────────────────
+ *
+ * Permission, competence and belonging are three different things, and the
+ * product keeps them apart on purpose. That distinction is too slow for the
+ * main film and too important to leave out of the set. */
+
+const PEOPLE: Beat[] = [
+  {
+    id: '01-three-things',
+    act: 'Who may act',
+    chapter: 'Who may act',
+    script: 'Three things decide whether somebody may do something here, '
+      + 'and this platform refuses to conflate them.',
+    run: async (page) => {
+      await signIn(page, 'admin@producer.example');
+      await go(page, /^People$/);
+      await page.locator('main table').first().waitFor({ state: 'visible' });
+    },
+    hold: 2200,
+  },
+  {
+    id: '02-role',
+    act: 'Who may act',
+    script: 'A role is authority, at a scope. Granting one demands a reason, '
+      + 'and the reason is recorded against your account, not theirs.',
+    run: async (page) => {
+      await page.getByRole('button', { name: 'Grant role' }).first().click();
+      await modal(page).first().waitFor({ state: 'visible' });
+      await modal(page).locator('select').first().selectOption({ index: 1 });
+      await modal(page).locator('input.t').last()
+        .fill('Covering the section lead through the September audit.');
+    },
+    hold: 2500,
+  },
+  {
+    id: '03-dated',
+    act: 'Who may act',
+    script: 'It can also be dated. Leave cover that depends on somebody remembering '
+      + 'to revoke it usually is not revoked — so a dated grant expires on its own.',
+    run: async (page) => {
+      await modal(page).locator('input[type=date]').first().fill('2026-09-30').catch(() => {});
+      await modal(page).getByRole('button', { name: /^Grant$/ }).click();
+      await modal(page).first().waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => {});
+    },
+    hold: 2500,
+  },
+  {
+    id: '04-competence',
+    act: 'Who may act',
+    script: 'Holding the permission is necessary, and not sufficient. '
+      + 'ISO seventeen thousand and thirty four also asks whether they are competent to perform it, on the day.',
+    run: async (page) => {
+      await closeDialogs(page);
+      await page.getByRole('button', { name: 'Competence' }).first().click();
+      await modal(page).first().waitFor({ state: 'visible' });
+      await modal(page).locator('select').first().selectOption({ index: 1 }).catch(() => {});
+      const dates = modal(page).locator('input[type=date]');
+      await dates.nth(0).fill('2026-01-01').catch(() => {});
+      await dates.nth(1).fill('2027-01-01').catch(() => {});
+      await modal(page).locator('input.t').last()
+        .fill('Witnessed demonstration; assessment record TR-118.');
+    },
+    hold: 3000,
+  },
+  {
+    id: '05-belonging',
+    act: 'Who may act',
+    script: 'And membership is simply belonging. It grants nothing at all — '
+      + 'it is the scope a role can be granted in.',
+    run: async (page) => {
+      await modal(page).getByRole('button', { name: /^Record$/ }).click().catch(() => {});
+      await closeDialogs(page);
+      await page.getByRole('button', { name: /\d+ members?/ }).first().click();
+      await modal(page).first().waitFor({ state: 'visible' });
+    },
+    hold: 3000,
+  },
+  {
+    id: '06-scoped',
+    act: 'Who may act',
+    script: 'The consequence is visible immediately. The same console, a different person, '
+      + 'and the navigation itself is smaller — you cannot open what you do not hold.',
+    run: async (page) => {
+      await closeDialogs(page);
+      await switchTo(page, 'ravi@producer.example');
+    },
+    hold: 3000,
+  },
+  {
+    id: '07-customer',
+    act: 'Who may act',
+    script: 'A laboratory customer sees no producer screens whatsoever — '
+      + 'only their own catalogue, orders and certificates.',
+    run: async (page) => {
+      await switchTo(page, 'meera@genpharm.example');
+    },
+    hold: 3000,
+  },
+  {
+    id: '08-tenant',
+    act: 'Who may act',
+    script: 'And a second producer runs on the same platform, seeing none of the first. '
+      + 'Different laboratory, different materials, different people.',
+    run: async (page) => {
+      await switchTo(page, 'admin@producer.example');
+      await page.getByRole('button', { name: /Switch to/ }).click();
+      await page.waitForTimeout(1200);
+      await go(page, /^Projects$/).catch(() => {});
+    },
+    hold: 3500,
+  },
+];
+
+/* ── Film: Configure without code ────────────────────────────────────────────
+ *
+ * The designers are the low-code story and the best thing in the product to
+ * film — and the main film has no room to stop for them. */
+
+const LOWCODE: Beat[] = [
+  {
+    id: '01-draft',
+    act: 'Configure without code',
+    chapter: 'Configure without code',
+    script: 'Fields, option lists, layouts and workflows are configuration, not code. '
+      + 'They are designed in a draft, and nothing is live until it is signed.',
+    run: async (page) => {
+      await signIn(page, 'admin@producer.example');
+      await go(page, /Form designer/);
+      await page.locator('main').waitFor({ state: 'visible' });
+    },
+    hold: 2500,
+  },
+  {
+    id: '02-field',
+    act: 'Configure without code',
+    script: 'A new field on a lot: what it is called, what type it takes, whether it is required, '
+      + 'and whether it belongs on the certificate.',
+    run: async (page) => {
+      await page.getByRole('button', { name: 'Add a field' }).click();
+      await modal(page).first().waitFor({ state: 'visible' });
+      await modal(page).locator('input.t').first().fill('Container seal');
+    },
+    hold: 3000,
+  },
+  {
+    id: '03-preview',
+    act: 'Configure without code',
+    script: 'The preview beside it is not a mock-up. It is the same renderer the record screens use, '
+      + 'drawing the draft you are editing.',
+    run: async (page) => {
+      await closeDialogs(page);
+      await page.locator('.preview, main').first().waitFor({ state: 'visible' });
+    },
+    hold: 3000,
+  },
+  {
+    id: '04-layout',
+    act: 'Configure without code',
+    script: 'A layout decides what is shown and where — and it can be scoped to particular roles, '
+      + 'so a dispatcher and a scientist need not see the same form.',
+    run: async (page) => {
+      await page.getByRole('button', { name: /Arrange these fields|Layout/ }).first()
+        .click({ timeout: 5000 }).catch(() => {});
+      await page.locator('.lab').first().scrollIntoViewIfNeeded().catch(() => {});
+    },
+    hold: 3500,
+  },
+  {
+    id: '05-flow',
+    act: 'Configure without code',
+    script: 'The flow designer does the same for the state machines. '
+      + 'These are the moves the server will actually enforce — not a diagram of them.',
+    run: async (page) => {
+      await go(page, /Flow designer/);
+      await page.locator('main').waitFor({ state: 'visible' });
+    },
+    hold: 3000,
+  },
+  {
+    id: '06-signature',
+    act: 'Configure without code',
+    script: 'Each move can demand an electronic signature, or a guard condition — '
+      + 'and the machine on the right is what the runtime resolved from this draft.',
+    run: async (page) => {
+      await page.locator('main').first().scrollIntoViewIfNeeded().catch(() => {});
+      await page.waitForTimeout(600);
+    },
+    hold: 3000,
+  },
+  {
+    id: '07-publish',
+    act: 'Configure without code',
+    script: 'None of it is live yet. Publishing is a signed act that leaves a numbered version '
+      + 'behind — and every record created afterwards is pinned to it.',
+    run: async (page) => {
+      await go(page, /Configuration/);
+      await page.getByRole('button', { name: /Review and publish/ }).click();
+      await modal(page).first().waitFor({ state: 'visible' });
+    },
+    hold: 3000,
+  },
+  {
+    id: '08-published',
+    act: 'Configure without code',
+    script: 'Which is what makes "under what rules was this certificate issued" '
+      + 'a question you can still answer years later.',
+    run: async (page) => {
+      await publishDraft(page);
+      await closeDialogs(page);
+    },
+    hold: 3500,
+  },
+];
+
+/* ── Film: Prove it to an assessor ───────────────────────────────────────────
+ *
+ * What an ISO 17034 assessor actually asks for, and what the platform can hand
+ * over without anybody assembling a binder. */
+
+const ASSESSOR: Beat[] = [
+  {
+    id: '01-clauses',
+    act: 'Prove it to an assessor',
+    chapter: 'Prove it to an assessor',
+    script: 'An assessor arrives with a checklist. This is that checklist, '
+      + 'reported from the records rather than from a specification with ticks beside it.',
+    run: async (page) => {
+      await signIn(page, 'neha@producer.example');
+      await go(page, /Conformance/);
+      await page.locator('.kpi').first().waitFor({ state: 'visible' });
+    },
+    hold: 3000,
+  },
+  {
+    id: '02-two-facts',
+    act: 'Prove it to an assessor',
+    script: 'Each requirement carries two separate facts: what the code enforces, '
+      + 'and what the records currently show. They can disagree, and the disagreement is the finding.',
+    run: async (page) => {
+      await page.locator('main .card').first().scrollIntoViewIfNeeded().catch(() => {});
+      await page.waitForTimeout(600);
+    },
+    hold: 3500,
+  },
+  {
+    id: '03-gaps',
+    act: 'Prove it to an assessor',
+    script: 'Nothing here rounds a gap up to a pass. The gaps are counted, '
+      + 'and the count is the control that isolates them.',
+    run: async (page) => {
+      await page.locator('button.kpi').filter({ hasText: /gap/i }).first()
+        .click({ timeout: 5000 }).catch(() => {});
+    },
+    hold: 3500,
+  },
+  {
+    id: '04-pack',
+    act: 'Prove it to an assessor',
+    script: 'The whole assessment leaves as one signed pack, with a digest — '
+      + 'so what was handed over can be checked against what the ledger says was exported.',
+    run: async (page) => {
+      await page.getByRole('button', { name: /Export the assessment pack/ })
+        .click({ timeout: 8000 }).catch(() => {});
+      await page.locator('.toast, .note.okbox').first()
+        .waitFor({ state: 'visible', timeout: 10_000 }).catch(() => {});
+    },
+    hold: 3000,
+  },
+  {
+    id: '05-ledger',
+    act: 'Prove it to an assessor',
+    script: 'Behind it is the ledger. Every act, appended and hash-linked to the one before it.',
+    run: async (page) => {
+      await go(page, /Audit ledger/);
+      await page.locator('.ledger .e').first().waitFor({ state: 'visible' });
+    },
+    hold: 2500,
+  },
+  {
+    id: '06-three-outcomes',
+    act: 'Prove it to an assessor',
+    script: 'And verifying it has three outcomes, not two. Intact, broken — '
+      + 'or not checked, because a key was rotated and this server no longer holds the old one.',
+    run: async (page) => {
+      await page.getByRole('button', { name: /Verify the chain/ }).click();
+      await page.locator('.note.okbox, .note.warn, .note.deny').first()
+        .waitFor({ state: 'visible', timeout: 15_000 });
+    },
+    hold: 3500,
+  },
+  {
+    id: '07-operations',
+    act: 'Prove it to an assessor',
+    script: 'The unattended half is reported too. A job that failed every night for a week '
+      + 'used to look exactly like one with nothing to do.',
+    run: async (page) => {
+      await go(page, /Operations/);
+      await page.locator('main table').first().waitFor({ state: 'visible' });
+    },
+    hold: 3000,
+  },
+  {
+    id: '08-drills',
+    act: 'Prove it to an assessor',
+    script: 'Including the restores. A backup nobody has ever restored is a hypothesis — '
+      + 'and this page says so, in as many words, when no drill has been run.',
+    run: async (page) => {
+      await page.locator('main').first().scrollIntoViewIfNeeded().catch(() => {});
+      await page.waitForTimeout(800);
+    },
+    hold: 3500,
+  },
+];
+
+/* ── The films ────────────────────────────────────────────────────────────────
+ *
+ * `main` is the story: one material from certification to recall. The others
+ * are the subjects it cannot stop for without losing its thread — each is a
+ * short film in its own right, and they share these helpers and this pipeline.
+ */
+export const FILMS: Record<string, Beat[]> = {
+  main: [...ACT_I, ...ACT_II, ...ACT_III, ...ACT_IV, ...FINALE],
+  people: PEOPLE,
+  lowcode: LOWCODE,
+  assessor: ASSESSOR,
+};
+
+/** The film named by $FILM, defaulting to the main one. */
+export function pickFilm(name?: string): { name: string; beats: Beat[] } {
+  const key = name ?? process.env['FILM'] ?? 'main';
+  const beats = FILMS[key];
+  if (!beats) {
+    throw new Error(`No film "${key}". Try: ${Object.keys(FILMS).join(', ')}`);
+  }
+  return { name: key, beats };
+}

@@ -13,7 +13,8 @@ import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 
 const HERE = import.meta.dirname;
-const BUILD = path.join(HERE, 'build');
+const FILM = process.env['FILM'] ?? 'main';
+const BUILD = path.join(HERE, 'build', FILM);
 const SEGMENTS = path.join(BUILD, 'segments');
 const FPS = 30;
 // Delivered at 1080p — the 2x capture downscales to it cleanly.
@@ -24,7 +25,7 @@ const ff = (args: string[]) =>
   execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', ...args], { stdio: 'inherit' });
 
 if (!existsSync(path.join(BUILD, 'marks.json'))) {
-  console.error('No build/marks.json — run `pnpm demo:record` first.');
+  console.error(`No build/${FILM}/marks.json — run \`pnpm demo:record\` first.`);
   process.exit(1);
 }
 const { frames, marks } = JSON.parse(readFileSync(path.join(BUILD, 'marks.json'), 'utf8')) as {
@@ -72,11 +73,23 @@ for (const [i, beat] of marks.entries()) {
   const listFile = path.join(SEGMENTS, `${beat.id}.txt`);
   writeFileSync(listFile, lines.join('\n'));
 
-  // Force the segment to the narration's length: -t trims a long one, tpad
-  // freezes the last frame to extend a short one.
+  /*
+   * Force the segment to the narration's length — trimming from the START, not
+   * the end.
+   *
+   * A shot that ran longer than its narration did so because the ACTION took
+   * longer: signing in, waiting on a dialog. The narration describes what that
+   * action produced, so the seconds worth keeping are the last ones. Keeping
+   * the first ones instead put the words "a second producer runs on the same
+   * platform" over a half-finished login, with the actual switch trimmed off
+   * the end. tpad still extends a shot that came in short.
+   */
+  const shot = (beat.end - beat.start) / 1000;
+  const offset = Math.max(0, shot - beat.audio);
   const out = path.join(SEGMENTS, `${beat.id}.mp4`);
   ff([
     '-f', 'concat', '-safe', '0', '-i', listFile,
+    ...(offset > 0.05 ? ['-ss', offset.toFixed(3)] : []),
     '-vf', `tpad=stop_mode=clone:stop_duration=6,fps=${FPS},scale=${OUT_W}:${OUT_H}:flags=lanczos,format=yuv420p`,
     '-t', beat.audio.toFixed(3),
     '-c:v', 'libx264', '-crf', '18', '-preset', 'medium', out,
@@ -91,7 +104,8 @@ for (const [i, beat] of marks.entries()) {
     beat.id, '',
   );
   elapsed += beat.audio;
-  console.log(`  ${beat.id.padEnd(20)} ${mine.length.toString().padStart(4)} frames → ${beat.audio.toFixed(2)}s`);
+  console.log(`  ${beat.id.padEnd(20)} ${mine.length.toString().padStart(4)} frames → ${beat.audio.toFixed(2)}s`
+    + (offset > 0.05 ? `  (trimmed ${offset.toFixed(1)}s of lead-in)` : ''));
 }
 
 writeFileSync(path.join(SEGMENTS, 'video.txt'), videoList.join('\n'));
@@ -102,12 +116,12 @@ ff(['-f', 'concat', '-safe', '0', '-i', path.join(SEGMENTS, 'video.txt'), '-c', 
 ff(['-f', 'concat', '-safe', '0', '-i', path.join(SEGMENTS, 'audio.txt'), '-c', 'copy', path.join(BUILD, 'narration.wav')]);
 
 console.log('Muxing…');
-const out = path.join(BUILD, 'lotmark-demo.mp4');
+const out = path.join(HERE, 'build', `lotmark-${FILM}.mp4`);
 ff([
   '-i', path.join(BUILD, 'video.mp4'), '-i', path.join(BUILD, 'narration.wav'),
   '-map', '0:v', '-map', '1:a',
   '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out,
 ]);
 
-writeFileSync(path.join(BUILD, 'lotmark-demo.srt'), srt.join('\n'));
+writeFileSync(path.join(HERE, 'build', `lotmark-${FILM}.srt`), srt.join('\n'));
 console.log(`\n▸ ${out}  (${elapsed.toFixed(1)}s)`);
