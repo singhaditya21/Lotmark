@@ -600,6 +600,58 @@
         }
       }
     },
+    "/api/v1/home": {
+      "get": {
+        "operationId": "getHome",
+        "summary": "What is waiting on the caller across every surface, scoped to what they can act on",
+        "description": "No single permission: the counts are each filtered by the act permission that would clear them (study:sign, value:authorise, …), so a caller holding none gets an empty inbox rather than a 403.",
+        "tags": [
+          "Production"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          }
+        }
+      }
+    },
+    "/api/v1/search": {
+      "get": {
+        "operationId": "getSearch",
+        "summary": "The jump-to-code index for the command palette — every code the caller may see",
+        "description": "No single permission: each kind is scoped by its own read permission (project:read, capa:manage, order:read_all/own), so the index only ever contains records the caller could already open.",
+        "tags": [
+          "Production"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request succeeded."
+          },
+          "400": {
+            "description": "The request was malformed. RFC 9457 problem details."
+          },
+          "401": {
+            "description": "Not authenticated, the second factor is outstanding, or a signing step-up is required. The `code` distinguishes them."
+          }
+        }
+      }
+    },
     "/api/v1/projects": {
       "get": {
         "operationId": "getProjects",
