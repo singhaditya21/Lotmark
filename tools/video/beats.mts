@@ -27,6 +27,47 @@ export interface Beat {
   readonly run: (page: Page) => Promise<void>;
   /** Extra milliseconds to hold after the action, for a beat that needs to land. */
   readonly hold?: number;
+  /**
+   * A full-screen card naming what this film covers.
+   *
+   * Films open on one: the journey in a sentence, then the features it passes
+   * through. A viewer who watches only the first ten seconds should still know
+   * what they were about to be shown.
+   */
+  readonly slide?: Slide;
+}
+
+export interface Slide {
+  readonly title: string;
+  readonly journey: string;
+  readonly features: readonly string[];
+}
+
+/**
+ * The slide, as HTML for the screencast overlay.
+ *
+ * Sits just BELOW the caption layer so the caption still reads over it, and
+ * borrows the console's own palette so the card looks like the product rather
+ * than like a slide deck bolted onto it.
+ */
+export function slideHtml(slide: Slide): string {
+  const features = slide.features.map((f) =>
+    `<li style="margin:0 0 11px;padding-left:22px;position:relative">`
+    + `<span style="position:absolute;left:0;color:#7ea9e0">&#9656;</span>${f}</li>`).join('');
+  return `<div style="position:fixed;inset:0;z-index:2147483646;background:#0f1216;`
+    + `color:#e6e9ee;display:flex;flex-direction:column;justify-content:center;`
+    + `padding:0 9% 120px;box-sizing:border-box;`
+    + `font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">`
+    + `<div style="font-size:14px;letter-spacing:.2em;text-transform:uppercase;`
+    + `color:#7ea9e0;margin-bottom:18px">Lotmark</div>`
+    + `<div style="font-size:56px;font-weight:700;letter-spacing:-1.4px;margin-bottom:20px">`
+    + `${slide.title}</div>`
+    + `<div style="font-size:24px;line-height:1.5;color:#9aa4b2;max-width:60%;margin-bottom:38px">`
+    + `${slide.journey}</div>`
+    + `<div style="font-size:13px;letter-spacing:.18em;text-transform:uppercase;`
+    + `color:#5b6472;margin-bottom:14px">What this covers</div>`
+    + `<ul style="list-style:none;margin:0;padding:0;font-size:20px;line-height:1.35;`
+    + `columns:2;column-gap:64px;max-width:88%">${features}</ul></div>`;
 }
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
@@ -45,7 +86,16 @@ export async function signIn(page: Page, email: string): Promise<void> {
   await code.waitFor({ state: 'visible', timeout: 10_000 });
   await code.fill('123456');
   await page.getByRole('button', { name: 'Verify' }).click();
-  await page.locator('header.top').waitFor({ state: 'visible', timeout: 15_000 });
+  /*
+   * Either the shell, OR the forced password change.
+   *
+   * An account still carrying the password it was issued is refused every other
+   * screen until it sets its own, so it lands on a centred layout with no
+   * header at all — and waiting for `header.top` simply times out on exactly
+   * the account whose first login is worth filming.
+   */
+  await page.locator('header.top, h1:has-text("Set your own password")')
+    .first().waitFor({ state: 'visible', timeout: 15_000 });
 }
 
 /** Sign out and back in as somebody else — the persona hand-off. */
@@ -157,6 +207,28 @@ export async function publishDraft(page: Page): Promise<void> {
 /* ── Act I — Certify ─────────────────────────────────────────────────────── */
 
 const ACT_I: Beat[] = [
+  {
+    id: '00-slide',
+    act: 'Act I — Certify',
+    script: 'A reference material, followed from the bench to a laboratory that buys it, '
+      + 'through a recall, to an assessor asking how you know.',
+    slide: {
+      title: 'One material, end to end',
+      journey: 'Certify it, sell it, handle it going wrong, and prove all of it afterwards.',
+      features: [
+        'Electronic signatures &#8212; 21 CFR 11 &#167;11.200',
+        'Four-eyes value authorisation',
+        'Lot release and certification',
+        'Catalogue, orders and dispatch',
+        'Cold chain with automatic CAPA',
+        'Certificate withdrawal and recall',
+        'Hash-linked audit ledger',
+        'Public certificate verification',
+      ],
+    },
+    run: async () => { /* the slide is the shot */ },
+    hold: 900,
+  },
   {
     id: '01-home',
     act: 'Act I — Certify',
@@ -485,6 +557,28 @@ const FINALE: Beat[] = [
 
 const PEOPLE: Beat[] = [
   {
+    id: '00-slide',
+    act: 'Who may act',
+    script: 'Permission, competence and belonging are three different questions. '
+      + 'Conflating them is how somebody ends up able to do what nobody decided they could.',
+    slide: {
+      title: 'Who may act',
+      journey: 'Authority, competence and membership are separate things &#8212; and all three are needed.',
+      features: [
+        'Roles granted at a scope, with a reason',
+        'Dated grants that expire themselves',
+        'Competence &#8212; ISO 17034 6.3',
+        'Team membership grants nothing',
+        'The console shrinks by role',
+        'Customers see no producer screens',
+        'Two producers, fully isolated',
+        'Every grant recorded in the ledger',
+      ],
+    },
+    run: async () => {},
+    hold: 900,
+  },
+  {
     id: '01-three-things',
     act: 'Who may act',
     chapter: 'Who may act',
@@ -597,6 +691,28 @@ const PEOPLE: Beat[] = [
 
 const LOWCODE: Beat[] = [
   {
+    id: '00-slide',
+    act: 'Configure without code',
+    script: 'What a laboratory records, and how its work moves, differs from producer to producer. '
+      + 'Here that is configuration rather than a change request.',
+    slide: {
+      title: 'Configure without code',
+      journey: 'Fields, forms and workflows are designed in a draft and published under signature.',
+      features: [
+        'Custom fields and option lists',
+        'Layouts, scoped to particular roles',
+        'Preview by the real record renderer',
+        'State machines the server enforces',
+        'Guard conditions and signed moves',
+        'Draft &#8594; review &#8594; sign &#8594; publish',
+        'Numbered versions records are pinned to',
+        'Nothing live until it is signed',
+      ],
+    },
+    run: async () => {},
+    hold: 900,
+  },
+  {
     id: '01-draft',
     act: 'Configure without code',
     chapter: 'Configure without code',
@@ -698,6 +814,28 @@ const LOWCODE: Beat[] = [
 
 const ASSESSOR: Beat[] = [
   {
+    id: '00-slide',
+    act: 'Prove it to an assessor',
+    script: 'An assessment is not a document you write the week before. '
+      + 'It is a question about records, and the records are already here.',
+    slide: {
+      title: 'Prove it to an assessor',
+      journey: 'Conformance reported from the records, not from a specification with ticks beside it.',
+      features: [
+        'Clause-by-clause conformance',
+        'Enforcement vs live evidence',
+        'Gaps isolated, never rounded up',
+        'Signed assessment pack with a digest',
+        'Append-only, hash-linked ledger',
+        'Three verdicts: intact, broken, not checked',
+        'Scheduled job health',
+        'Rehearsed restore drills',
+      ],
+    },
+    run: async () => {},
+    hold: 900,
+  },
+  {
     id: '01-clauses',
     act: 'Prove it to an assessor',
     chapter: 'Prove it to an assessor',
@@ -791,6 +929,307 @@ const ASSESSOR: Beat[] = [
   },
 ];
 
+
+/* ── Film: The laboratory's side ─────────────────────────────────────────────
+ *
+ * Half the product belongs to the customer, and the main film only passes
+ * through it. This is that half on its own terms. */
+
+const CUSTOMER: Beat[] = [
+  {
+    id: '00-slide',
+    act: "The laboratory's side",
+    script: 'A reference material is bought by somebody. This is what they see — '
+      + 'and, just as importantly, what they do not.',
+    slide: {
+      title: "The laboratory's side",
+      journey: 'The customer half: buy the material, track it, and hold its certificate.',
+      features: [
+        'A catalogue of released lots only',
+        'Certified value on every line',
+        'Expiry flagged before you buy',
+        'Orders priced against your own laboratory',
+        'Courier and tracking reference',
+        'Certificate vault',
+        'Shareable verification address',
+        'Price tiers you can claim',
+      ],
+    },
+    run: async () => {},
+    hold: 900,
+  },
+  {
+    id: '01-catalogue',
+    act: "The laboratory's side",
+    script: 'The catalogue carries only released lots whose value somebody authorised, '
+      + 'each with its certificate and its expiry.',
+    run: async (page) => {
+      await signIn(page, 'meera@genpharm.example');
+      await page.locator('main table').first().waitFor({ state: 'visible' });
+    },
+    hold: 2500,
+  },
+  {
+    id: '02-order',
+    act: "The laboratory's side",
+    script: 'Ordering is priced per unit, against her own organisation. '
+      + 'The quantity cannot exceed the stock that actually exists.',
+    run: async (page) => {
+      await page.locator('input[type=number]').first().fill('3');
+      await page.getByRole('button', { name: 'Place order' }).click();
+      await page.locator('.toast').first().waitFor({ state: 'visible', timeout: 10_000 });
+    },
+    hold: 2500,
+  },
+  {
+    id: '03-my-orders',
+    act: "The laboratory's side",
+    script: 'It appears in her orders with its own number — and nobody else’s orders are visible to her.',
+    run: async (page) => {
+      await go(page, /My orders/);
+      await page.locator('main table').first().waitFor({ state: 'visible' });
+    },
+    hold: 2500,
+  },
+  {
+    id: '04-vault',
+    act: "The laboratory's side",
+    script: 'The vault holds the certificate behind every material on her shelves, '
+      + 'and says loudly when one has been withdrawn.',
+    run: async (page) => {
+      await go(page, /Certificate vault/);
+      await page.locator('main table').first().waitFor({ state: 'visible' });
+    },
+    hold: 3000,
+  },
+  {
+    id: '05-share',
+    act: "The laboratory's side",
+    script: 'Each one carries a verification address she can copy and hand to her own auditor, '
+      + 'who needs no account with the producer at all.',
+    run: async (page) => {
+      await page.getByRole('button', { name: /copy link/i }).first()
+        .click({ timeout: 5000 }).catch(() => {});
+      await page.locator('.toast, main').first().waitFor({ state: 'visible' }).catch(() => {});
+    },
+    hold: 3000,
+  },
+  {
+    id: '06-tiers',
+    act: "The laboratory's side",
+    script: 'And a laboratory that qualifies for a price tier claims it here — '
+      + 'a request somebody on the producer side has to decide, with their reasoning recorded.',
+    run: async (page) => {
+      await go(page, /Price tiers/);
+      await page.locator('main').first().waitFor({ state: 'visible' });
+    },
+    hold: 3500,
+  },
+];
+
+/* ── Film: An account's life ─────────────────────────────────────────────────
+ *
+ * From created, through enrolment, to authority — and to revoked. */
+
+const ONBOARDING: Beat[] = [
+  {
+    id: '00-slide',
+    act: "An account's life",
+    script: 'An account is created, enrolled, given authority, and one day taken away again. '
+      + 'Each of those is a deliberate, recorded act.',
+    slide: {
+      title: "An account's life",
+      journey: 'Created with a one-time credential, forced to enrol, granted authority, revoked.',
+      features: [
+        'Credentials shown once, never in the ledger',
+        'An enrolment credential, not a standing one',
+        'Forced password change on first login',
+        'A length rule enforced before it is sent',
+        'Other sessions ended on change',
+        'Authority granted separately, with a reason',
+        'Deactivation ends sessions and revokes roles',
+        'Every step in the audit ledger',
+      ],
+    },
+    run: async () => {},
+    hold: 900,
+  },
+  {
+    id: '01-create',
+    act: "An account's life",
+    script: 'An administrator creates the account. The credentials are shown exactly once '
+      + 'and are deliberately never written to the audit ledger.',
+    run: async (page) => {
+      await signIn(page, 'admin@producer.example');
+      await go(page, /^People$/);
+      await page.getByRole('button', { name: 'Add a person' }).click();
+      await modal(page).first().waitFor({ state: 'visible' });
+      const fields = modal(page).locator('input.t');
+      await fields.nth(0).fill('Priya Deshmukh');
+      await fields.nth(1).fill('p.deshmukh@producer.example');
+      await fields.nth(2).fill('p-deshmukh');
+    },
+    hold: 3000,
+  },
+  {
+    id: '02-enrolment',
+    act: "An account's life",
+    script: 'And what they are given is an enrolment credential, not a standing one. '
+      + 'It works to sign in once, and for nothing else.',
+    run: async (page) => {
+      await closeDialogs(page);
+      await switchTo(page, 'newuser@producer.example');
+    },
+    hold: 3000,
+  },
+  {
+    id: '03-forced',
+    act: "An account's life",
+    script: 'Because somebody else chose that password and may still know it, '
+      + 'the console opens here and goes nowhere else until it is replaced.',
+    run: async (page) => {
+      await page.getByText(/Set your own password/).first().waitFor({ state: 'visible', timeout: 10_000 });
+    },
+    hold: 3000,
+  },
+  {
+    id: '04-rule',
+    act: "An account's life",
+    script: 'The length rule is enforced before anything is sent, '
+      + 'and changing it ends every other session that account had open.',
+    run: async (page) => {
+      await page.locator('input[autocomplete="current-password"]').fill('demo-viewer');
+      const next = page.locator('input[autocomplete="new-password"]');
+      await next.nth(0).fill('a-long-enough-passphrase');
+      await next.nth(1).fill('a-long-enough-passphrase');
+    },
+    hold: 2500,
+  },
+  {
+    id: '05-in',
+    act: "An account's life",
+    script: 'Only now does the console appear — and it shows exactly what this person holds, '
+      + 'which so far is a bench scientist’s work and nothing more.',
+    run: async (page) => {
+      await page.getByRole('button', { name: /Set password/ }).click();
+      await page.locator('header.top').waitFor({ state: 'visible', timeout: 15_000 });
+    },
+    hold: 3000,
+  },
+  {
+    id: '06-revoke',
+    act: "An account's life",
+    script: 'And when somebody leaves, deactivating the account ends their sessions '
+      + 'and revokes every role they held, in one recorded act.',
+    run: async (page) => {
+      await switchTo(page, 'admin@producer.example');
+      await go(page, /^People$/);
+      await page.locator('main table').first().waitFor({ state: 'visible' });
+    },
+    hold: 3500,
+  },
+];
+
+/* ── Film: Finding your way ──────────────────────────────────────────────────
+ *
+ * The wayfinding the console grew: a home that knows what is waiting, and a
+ * palette that goes straight to any code. */
+
+const WAYFINDING: Beat[] = [
+  {
+    id: '00-slide',
+    act: 'Finding your way',
+    script: 'A regulated console fills up with records fast. '
+      + 'Two things keep it navigable: knowing what is waiting, and going straight to a code.',
+    slide: {
+      title: 'Finding your way',
+      journey: 'Land on what needs you, and jump to any record by the code somebody quoted.',
+      features: [
+        'A home scoped to what you can act on',
+        'Counts you can click through',
+        'An inbox of work waiting on you',
+        'A badge on every other screen',
+        'Jump to a code &#8212; &#8984;K',
+        'Projects, lots, certificates, CAPAs, orders',
+        'Straight into the record, not a list',
+        'Transient confirmations that clear themselves',
+      ],
+    },
+    run: async () => {},
+    hold: 900,
+  },
+  {
+    id: '01-home',
+    act: 'Finding your way',
+    script: 'A producer lands on their own work rather than a table of everything. '
+      + 'These counts are scoped to what this person can actually act on.',
+    run: async (page) => {
+      await signIn(page, 'admin@producer.example');
+      await page.locator('.kpi').first().waitFor({ state: 'visible' });
+    },
+    hold: 3000,
+  },
+  {
+    id: '02-inbox',
+    act: 'Finding your way',
+    script: 'Underneath is the work itself — studies awaiting a signature, an open corrective action — '
+      + 'each one a way straight into the screen that clears it.',
+    run: async (page) => {
+      await page.locator('main table tbody tr').first().hover().catch(() => {});
+    },
+    hold: 3000,
+  },
+  {
+    id: '03-clickthrough',
+    act: 'Finding your way',
+    script: 'Clicking a count takes you to the surface that holds it.',
+    run: async (page) => {
+      await page.locator('button.kpi').first().click({ timeout: 5000 }).catch(() => {});
+      await page.waitForTimeout(800);
+    },
+    hold: 2500,
+  },
+  {
+    id: '04-palette',
+    act: 'Finding your way',
+    script: 'Everything here is cited by a code — in a corrective action, an email, an audit finding. '
+      + 'Command K resolves one.',
+    run: async (page) => {
+      await page.keyboard.press('Meta+k');
+      await page.locator('.cmdk').waitFor({ state: 'visible', timeout: 10_000 });
+    },
+    hold: 2500,
+  },
+  {
+    id: '05-jump',
+    act: 'Finding your way',
+    script: 'Typing a certificate number finds it among every record this person may see, '
+      + 'and opens the project it belongs to — not a list of search results.',
+    run: async (page) => {
+      await page.locator('.cmdk-input').fill('CRT');
+      await page.waitForTimeout(900);
+      await page.keyboard.press('Enter');
+      await page.locator('main h1').first().waitFor({ state: 'visible', timeout: 10_000 });
+    },
+    hold: 3000,
+  },
+  {
+    id: '06-capa',
+    act: 'Finding your way',
+    script: 'A nonconformity number does the same, and lands on the register instead. '
+      + 'One key, whatever the code refers to.',
+    run: async (page) => {
+      await page.keyboard.press('Meta+k');
+      await page.locator('.cmdk').waitFor({ state: 'visible', timeout: 10_000 });
+      await page.locator('.cmdk-input').fill('NCR');
+      await page.waitForTimeout(900);
+      await page.keyboard.press('Enter');
+      await page.locator('main h1').first().waitFor({ state: 'visible', timeout: 10_000 });
+    },
+    hold: 3500,
+  },
+];
+
 /* ── The films ────────────────────────────────────────────────────────────────
  *
  * `main` is the story: one material from certification to recall. The others
@@ -802,6 +1241,9 @@ export const FILMS: Record<string, Beat[]> = {
   people: PEOPLE,
   lowcode: LOWCODE,
   assessor: ASSESSOR,
+  customer: CUSTOMER,
+  onboarding: ONBOARDING,
+  wayfinding: WAYFINDING,
 };
 
 /** The film named by $FILM, defaulting to the main one. */

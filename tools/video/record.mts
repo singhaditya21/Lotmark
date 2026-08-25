@@ -21,7 +21,7 @@
 import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright';
-import { pickFilm } from './beats.mts';
+import { pickFilm, slideHtml } from './beats.mts';
 
 const HERE = import.meta.dirname;
 const { name: FILM, beats: BEATS } = pickFilm();
@@ -142,6 +142,8 @@ for (const beat of beats) {
    * hides the container — so every caption after the first was added into a
    * hidden layer and never appeared. Own the handle, dispose the handle.
    */
+  // The slide sits under the caption, and is torn down with it.
+  const slide = beat.slide ? await page.screencast.showOverlay(slideHtml(beat.slide)) : null;
   let overlay = await page.screencast.showOverlay(caption);
 
   try {
@@ -169,6 +171,7 @@ for (const beat of beats) {
   if (spent < target) await page.waitForTimeout(target - spent);
 
   await dispose(overlay);
+  await dispose(slide);
   marks.push({ id: beat.id, act: beat.act, start, end: Date.now() - t0, audio });
   console.log(`  ${beat.id.padEnd(20)} shot ${((Date.now() - t0 - start) / 1000).toFixed(1)}s `
     + `(narration ${audio.toFixed(1)}s)`);
