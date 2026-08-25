@@ -27,6 +27,16 @@ export interface Ctx {
   readonly body: (key: string) => unknown;
   /** The list inside a recorded body, whatever the envelope calls it. */
   readonly list: (key: string) => Array<Record<string, unknown>> | null;
+  /**
+   * EVERY copy of that list — the shared one and each persona's.
+   *
+   * `list` is deliberately persona-scoped, so a chain mutates what the person
+   * acting is looking at. That is wrong for an act whose consequence lands on
+   * SOMEBODY ELSE'S screen: dispatch records a temperature excursion, and the
+   * CAPA it raises has to appear in the quality manager's register — a person
+   * who cannot see dispatch's copy and whose own copy dispatch cannot reach.
+   */
+  readonly allLists: (key: string) => Array<Array<Record<string, unknown>>>;
   /** Append to the audit ledger. This is the point of most of these. */
   readonly audit: (kind: string, action: string, detail: string) => void;
   readonly actor: string;
@@ -331,19 +341,29 @@ export const CHAINS: ReadonlyArray<readonly [string, Chain]> = [
 
     let capaRaised: string | null = null;
     if (out.length > 0) {
-      const register = ctx.list('GET /capa');
+      /*
+       * Into EVERY register, not the acting person's.
+       *
+       * Dispatch records the reading, but dispatch cannot see the CAPA
+       * register at all — so writing to their persona-scoped copy put the CAPA
+       * somewhere nobody would ever look, and the quality manager's screen
+       * never showed the thing the toast had just announced. The numbering has
+       * to span every copy too, or the new CAPA collides with the seeded one.
+       */
+      const registers = ctx.allLists('GET /capa');
       const worst = out.reduce((a, b) => (Math.abs(Number(b['celsius'])) > Math.abs(Number(a['celsius'])) ? b : a));
-      const nums = (register ?? []).map((c) => Number(/(\d+)$/.exec(String(c['code']))?.[1] ?? 0));
+      const nums = registers.flat().map((c) => Number(/(\d+)$/.exec(String(c['code']))?.[1] ?? 0));
       capaRaised = `NCR-${String(Math.max(230, ...nums) + 1).padStart(4, '0')}`;
       const raisedOn = ctx.now().slice(0, 10);
-      register?.unshift({
+      const raised = {
         id: ctx.id(), code: capaRaised, source: 'Cold chain excursion',
         severity: 'Major', state: 'open', raised_on: raisedOn,
         due_on: new Date(Date.parse(raisedOn) + 14 * 864e5).toISOString().slice(0, 10),
         root_cause: null, corrective_action: null, closed_at: null,
         team: shipment?.['team'] ?? null,
         availableTransitions: ['investigation'], transitions: [],
-      });
+      };
+      for (const register of registers) register.unshift(structuredClone(raised));
       ctx.audit('WORKFLOW', 'capa.raised',
         `${capaRaised} · ${String(shipment?.['code'] ?? 'shipment')} · ${out.length} reading(s) outside `
         + `${String(shipment?.['temperature_class'] ?? '2-8')} °C, worst ${String(worst['celsius'])} °C`);

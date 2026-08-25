@@ -117,9 +117,19 @@ export async function closeDialogs(page: Page): Promise<void> {
     const open = modal(page).first();
     if (!await open.isVisible().catch(() => false)) return;
     const close = open.getByRole('button', { name: /^(Close|Done|Cancel)$/ }).last();
-    if (await close.isVisible().catch(() => false)) await close.click().catch(() => {});
+    if (await close.isVisible().catch(() => false)) await close.click({ timeout: 2500 }).catch(() => {});
     else await page.keyboard.press('Escape').catch(() => {});
-    await open.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+    if (await open.waitFor({ state: 'hidden', timeout: 3000 }).then(() => true, () => false)) return;
+    /*
+     * Last resort: ask the element itself. A native <dialog> always has close(),
+     * and while one is open the rest of the document is inert — so a stuck
+     * dialog does not merely cover the navigation, it removes it from the
+     * accessibility tree and every later beat fails on a locator that "does not
+     * exist".
+     */
+    await page.evaluate(() => {
+      document.querySelectorAll('dialog[open]').forEach((d) => (d as HTMLDialogElement).close());
+    }).catch(() => {});
   }
 }
 
@@ -346,7 +356,7 @@ const ACT_III: Beat[] = [
       if (await stepUpIfAsked(page)) await move();
       await modal(page).first().waitFor({ state: 'hidden', timeout: 15_000 }).catch(() => {});
       // Open the history the move just wrote.
-      await page.locator('details.capa-history summary').first().click().catch(() => {});
+      await page.locator('details.capa-history summary').first().click({ timeout: 3000 }).catch(() => {});
     },
     hold: 3000,
   },
@@ -365,8 +375,18 @@ const ACT_III: Beat[] = [
       await modal(page).locator('input.t, textarea.t').first()
         .fill('Homogeneity re-assessment invalidated the assigned value.');
       await modal(page).getByRole('button', { name: /^Withdraw issue/ }).click();
-      await stepUpIfAsked(page);
-      await modal(page).getByRole('button', { name: /^Withdraw issue/ }).click().catch(() => {});
+      if (await stepUpIfAsked(page)) {
+        // The ceremony closes the panel's withdraw mode, so it is re-entered
+        // rather than blind-clicked: the confirm and the mode button share a
+        // label, and clicking the wrong one withdrew twice.
+        await modal(page).getByRole('button', { name: /Withdraw issue #\d+…/ })
+          .click({ timeout: 3000 }).catch(() => {});
+        await modal(page).locator('input.t, textarea.t').first()
+          .fill('Homogeneity re-assessment invalidated the assigned value.', { timeout: 3000 })
+          .catch(() => {});
+        await modal(page).getByRole('button', { name: /^Withdraw issue #\d+$/ })
+          .click({ timeout: 3000 }).catch(() => {});
+      }
     },
     hold: 3000,
   },

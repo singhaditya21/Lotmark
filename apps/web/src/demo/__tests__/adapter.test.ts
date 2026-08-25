@@ -481,6 +481,29 @@ describe('an act leaves a trace', () => {
     expect(raised?.['state']).toBe('open');
   });
 
+  it('shows dispatch\'s excursion CAPA to the quality manager', async () => {
+    /*
+     * The hand-off that matters. Dispatch records the reading but cannot see the
+     * CAPA register at all; quality can. Writing the CAPA into only the acting
+     * persona's copy put it somewhere nobody would ever look, and the register
+     * never showed the CAPA the console had just announced by name.
+     */
+    await signIn(demoFetch, 'vikram@producer.example');
+    const shipments = ((await call(demoFetch, 'GET', '/orders')).body as
+      { shipments?: Array<Record<string, unknown>> }).shipments ?? [];
+    const res = await call(demoFetch, 'POST', `/shipments/${String(shipments[0]!['id'])}/readings`,
+      { readings: [{ readAt: '2026-08-25T09:00:00Z', celsius: 14 }] });
+    const code = String(res.body['capaRaised']);
+    expect(code).toMatch(/^NCR-\d{4}$/);
+
+    await signIn(demoFetch, 'neha@producer.example');
+    const register = listIn((await call(demoFetch, 'GET', '/capa')).body);
+    expect(register.some((c) => c['code'] === code),
+      'quality must see the CAPA dispatch raised').toBe(true);
+    // And it must not collide with a CAPA the fixture already holds.
+    expect(register.filter((c) => c['code'] === code).length).toBe(1);
+  });
+
   it('logs an in-range reading without raising anything', async () => {
     const shipments = ((await call(demoFetch, 'GET', '/orders')).body as
       { shipments?: Array<Record<string, unknown>> }).shipments ?? [];

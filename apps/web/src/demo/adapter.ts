@@ -519,6 +519,10 @@ export async function demoFetch(rawPath: string, init: RequestInit): Promise<Res
     // one lookup that resolves persona-scoped first, then shared.
     body: (key) => read(key)?.body,
     list: (key) => listOf(read(key)?.body) as Array<Record<string, unknown>> | null,
+    allLists: (key) => Object.keys(state)
+      .filter((k) => k === key || k.endsWith(`|${key}`))
+      .map((k) => listOf(state[k]!.body) as Array<Record<string, unknown>> | null)
+      .filter((l): l is Array<Record<string, unknown>> => l !== null),
     actor: actorLabel(),
     now: () => new Date().toISOString(),
     id: newId,
