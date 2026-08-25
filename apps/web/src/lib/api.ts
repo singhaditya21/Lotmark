@@ -625,3 +625,19 @@ export interface ConformanceView {
   clauses: ClauseView[];
   summary: { clauses: number; enforced: number; weaker: number };
 }
+
+export interface HomeItem {
+  kind: 'study' | 'value' | 'lot' | 'capa' | 'order';
+  code: string;
+  title: string;
+  detail: string;
+  surface: string;
+  overdue?: boolean;
+}
+export interface HomeView {
+  attention: HomeItem[];
+  summary: {
+    studiesToSign: number; valuesToAuthorise: number; lotsToCertify: number;
+    capaOpen: number; capaOverdue: number; ordersToDispatch: number;
+  };
+}

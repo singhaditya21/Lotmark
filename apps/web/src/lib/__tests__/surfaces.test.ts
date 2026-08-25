@@ -30,11 +30,14 @@ const customer = (perms: readonly string[]): Viewer =>
   ({ held: new Set(perms), roleKinds: ['customer'] });
 
 describe('every persona lands somewhere that makes sense', () => {
-  it('gives the science and quality roles their sections', () => {
-    expect(resolveRoute(producer(PERSONA.scientist), null)).toBe('projects');
-    expect(resolveRoute(producer(PERSONA.prodlead), null)).toBe('projects');
-    expect(resolveRoute(producer(PERSONA.techmgr), null)).toBe('projects');
-    expect(resolveRoute(producer(PERSONA.quality), null)).toBe('projects');
+  it('lands every producer on Home, and still gives them their sections', () => {
+    // Home is first for every producer (permission null), so it is where they
+    // land; Projects remains one of their sections.
+    for (const role of ['scientist', 'prodlead', 'techmgr', 'quality'] as const) {
+      const v = producer(PERSONA[role]);
+      expect(resolveRoute(v, null), role).toBe('home');
+      expect(visibleSurfaces(v).map((s) => s.id), role).toContain('projects');
+    }
   });
 
   it('does NOT send Commercial or Dispatch to an empty Projects table', () => {
@@ -47,9 +50,9 @@ describe('every persona lands somewhere that makes sense', () => {
     for (const role of ['commercial', 'dispatch'] as const) {
       const viewer = producer(PERSONA[role]);
       expect(visibleSurfaces(viewer).map((s) => s.id), role).not.toContain('projects');
-      // They land on the order book, which is what they came for — not the
-      // audit ledger, which they also hold and rarely need.
-      expect(resolveRoute(viewer, null), `${role} should land on orders`).toBe('orders');
+      // They land on Home — which surfaces their own pending work (orders to
+      // dispatch) — not an empty Projects table they cannot read.
+      expect(resolveRoute(viewer, null), `${role} should land on home`).toBe('home');
     }
   });
 
@@ -101,8 +104,8 @@ describe('choosing which section to show', () => {
 
   it('falls back rather than showing a section the viewer may not open', () => {
     // A stale request — from a role that has since been revoked — must not
-    // render a section the person no longer holds.
-    expect(resolveRoute(producer(PERSONA.scientist), 'capa')).toBe('projects');
+    // render a section the person no longer holds; it falls back to Home.
+    expect(resolveRoute(producer(PERSONA.scientist), 'capa')).toBe('home');
   });
 
   it('never falls back into the other half', () => {

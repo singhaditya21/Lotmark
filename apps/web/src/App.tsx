@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { DemoTour } from './demo/Tour';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, ApiError, type Me, type Project } from './lib/api';
+import { api, ApiError, type Me, type Project, type HomeView } from './lib/api';
 import { visibleSurfaces, resolveRoute, type Viewer } from './lib/surfaces';
 import { SignIn } from './pages/SignIn';
 import { ChangePassword } from './pages/ChangePassword';
 import { Access } from './pages/Access';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
+import { Home } from './pages/Home';
 import { Audit } from './pages/Audit';
 import { Capa } from './pages/Capa';
 import { People } from './pages/People';
@@ -60,6 +61,19 @@ export function App() {
   const me = useQuery({
     queryKey: ['me'],
     queryFn: () => api.get<Me>('/auth/me'),
+    retry: false,
+  });
+
+  /*
+   * The home summary, fetched once here so the nav badge and the Home page share
+   * one request (react-query dedupes on the key). Enabled only once signed in —
+   * a producer lands on Home, and the badge is how a pending count reaches every
+   * other screen without opening Home.
+   */
+  const home = useQuery({
+    queryKey: ['home'],
+    queryFn: () => api.get<HomeView>('/home'),
+    enabled: !!me.data,
     retry: false,
   });
 
@@ -156,6 +170,11 @@ export function App() {
             <button key={s.id} aria-current={route === s.id ? 'page' : 'false'}
                     onClick={() => go(s.id)}>
               {s.label}
+              {s.id === 'home' && (home.data?.attention.length ?? 0) > 0 && (
+                <span className="badge" aria-label={`${home.data!.attention.length} waiting`}>
+                  {home.data!.attention.length}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -196,6 +215,8 @@ export function App() {
         */}
         {route === null ? (
           <Access viewer={viewer} name={me.data.user.name} organisation={me.data.organisation} />
+        ) : route === 'home' ? (
+          <Home name={me.data.user.name} onGo={go} />
         ) : route === 'audit' ? (
           <Audit canVerify={held.has('audit:verify')} />
         ) : route === 'capa' ? (

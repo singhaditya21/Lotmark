@@ -150,6 +150,11 @@ export const OPERATIONS: readonly Operation[] = [
     'server-side.'),
 
   /* ── Production ───────────────────────────────────────────────────────── */
+  sessionOp('GET', '/api/v1/home', 'Production',
+    'What is waiting on the caller across every surface, scoped to what they can act on',
+    'No single permission: the counts are each filtered by the act permission that ' +
+    'would clear them (study:sign, value:authorise, …), so a caller holding none ' +
+    'gets an empty inbox rather than a 403.'),
   op('GET', '/api/v1/projects', 'Production', 'Projects visible to the caller', 'project:read',
     'Filtered by the teams the caller holds project:read in, derived from the ' +
     'same authority object the guard uses.'),

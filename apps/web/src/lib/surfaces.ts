@@ -62,6 +62,10 @@ export const SURFACES: readonly Surface[] = [
    * listing the ledger before their order book sent them to a page they rarely
    * need — correct, and not what they came for.
    */
+  // First, so every producer lands here rather than on a raw table: a summary
+  // of what is waiting on them across every other surface. `null` permission —
+  // even a role that can open nothing else gets a home that says so.
+  { id: 'home', label: 'Home', half: 'producer', permission: null },
   { id: 'projects', label: 'Projects', half: 'producer', permission: 'project:read' },
   { id: 'capa', label: 'Complaints & CAPA', half: 'producer', permission: 'capa:manage' },
   { id: 'orders', label: 'Orders & dispatch', half: 'producer', permission: 'order:read_all' },
