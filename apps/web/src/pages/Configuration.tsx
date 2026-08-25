@@ -38,6 +38,7 @@ export function Configuration() {
   const [error, setError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [stepUpFor, setStepUpFor] = useState<string | null>(null);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
 
   const overview = useQuery({
     queryKey: ['config'],
@@ -51,6 +52,7 @@ export function Configuration() {
   });
 
   const draftId = overview.data?.draftId ?? null;
+  const draftVersion = overview.data?.versions.find((v) => v.id === draftId);
 
   const review = useQuery({
     queryKey: ['config-review', draftId],
@@ -99,7 +101,7 @@ export function Configuration() {
   const discard = useMutation({
     mutationFn: () => api.del(`/admin/config/draft/${draftId}`),
     onSuccess: () => {
-      setReviewing(false); setError(null);
+      setReviewing(false); setConfirmDiscard(false); setError(null);
       setFlash('The draft was discarded. The active configuration is unchanged.');
       refresh();
     },
@@ -116,8 +118,8 @@ export function Configuration() {
         this certificate issued" answerable years later.
       </p>
 
-      {flash && <div className="note okbox">{flash}</div>}
-      {error && <div className="note deny">{error}</div>}
+      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
+      {error && <div className="note deny" role="alert">{error}</div>}
 
       <div className="row" style={{ margin: '12px 0' }}>
         {draftId ? (
@@ -125,7 +127,7 @@ export function Configuration() {
             <button className="btn" onClick={() => { setReviewing(true); setError(null); }}>
               Review and publish the draft
             </button>
-            <button className="btn ghost" onClick={() => discard.mutate()} disabled={discard.isPending}>
+            <button className="btn ghost" onClick={() => setConfirmDiscard(true)} disabled={discard.isPending}>
               Discard the draft
             </button>
           </>
@@ -243,7 +245,7 @@ export function Configuration() {
         {review.isLoading && <p className="muted">Checking…</p>}
 
         {(review.data?.problems ?? []).length > 0 && (
-          <div className="note deny">
+          <div className="note deny" role="alert">
             <b>This cannot be published yet.</b>
             <ul className="plain">
               {review.data!.problems.map((p) => <li key={p}>{p}</li>)}
@@ -327,6 +329,25 @@ export function Configuration() {
           </div>
         </Dialog>
       )}
+
+      {/* Discarding is the one irreversible act here (a server DELETE of the
+          whole draft), so it is the one that asks first — naming what is lost. */}
+      <Dialog
+        open={confirmDiscard}
+        title="Discard this draft?"
+        lede={draftVersion
+          ? `Draft version ${draftVersion.number} and its ${draftVersion.changeCount} change(s) will be deleted. This cannot be undone; the active configuration is unchanged.`
+          : 'This draft will be deleted. This cannot be undone.'}
+        onClose={() => setConfirmDiscard(false)}
+        footer={<>
+          <button className="btn danger" disabled={discard.isPending} onClick={() => discard.mutate()}>
+            {discard.isPending ? 'Discarding…' : 'Discard draft'}
+          </button>
+          <button className="btn ghost" onClick={() => setConfirmDiscard(false)}>Keep it</button>
+        </>}
+      >
+        {error && <div className="note deny" role="alert">{error}</div>}
+      </Dialog>
 
       <StepUp
         open={stepUpFor !== null}

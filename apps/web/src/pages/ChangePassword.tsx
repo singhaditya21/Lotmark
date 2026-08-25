@@ -52,7 +52,11 @@ export function ChangePassword({
   const fieldError = useFieldErrors(problem);
 
   const mismatch = confirm.length > 0 && confirm !== newPassword;
-  const submittable = currentPassword.length > 0 && newPassword.length > 0 && !mismatch && !busy;
+  // The 12-character rule is printed on the field, so enforce it here too rather
+  // than shipping a submit the server will predictably reject.
+  const tooShort = newPassword.length > 0 && newPassword.length < 12;
+  const submittable =
+    currentPassword.length > 0 && newPassword.length >= 12 && !mismatch && !busy;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -66,9 +70,11 @@ export function ChangePassword({
       if (err instanceof ApiError) {
         setProblem(err.problem);
         setError(err.problem.detail);
-        // Only the current password is cleared. Retyping a long new password
-        // that was never the problem is how people end up choosing a shorter one.
-        setCurrent('');
+        // Nothing is auto-cleared. With the length rule enforced above, a
+        // rejection here means the server disagreed (wrong current password,
+        // reuse, …); wiping a field the user then has to retype — including a
+        // long new password that was never the problem — only invites a weaker
+        // choice. The field-level errors point at what to fix.
       } else {
         setError('Could not change the password.');
       }
@@ -101,7 +107,7 @@ export function ChangePassword({
             </Field>
 
             <Field label="New password" hint="at least 12 characters"
-                   error={fieldError.get('newPassword')}>
+                   error={tooShort ? 'At least 12 characters.' : fieldError.get('newPassword')}>
               <input className="t" type="password" autoComplete="new-password"
                      value={newPassword} onChange={(e) => setNext(e.target.value)} required />
             </Field>
@@ -112,7 +118,7 @@ export function ChangePassword({
                      value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
             </Field>
 
-            {error && <div className="note deny">{error}</div>}
+            {error && <div className="note deny" role="alert">{error}</div>}
 
             <div className="row" style={{ marginTop: 10 }}>
               <button className="btn" type="submit" disabled={!submittable}

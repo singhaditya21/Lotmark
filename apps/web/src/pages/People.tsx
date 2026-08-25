@@ -130,8 +130,12 @@ export function People() {
         needed, and none of them implies another.
       </p>
 
-      {flash && <div className="note okbox">{flash}</div>}
-      {error && <div className="note deny">{error}</div>}
+      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
+      {/* A dialog's own failure is shown inside it (below); on the page body it
+          would sit behind the backdrop, unseen, while the user re-clicks. */}
+      {error && !(newUser || grantFor !== null || competenceFor !== null || newTeam) && (
+        <div className="note deny" role="alert">{error}</div>
+      )}
 
       <div className="row" style={{ margin: '12px 0' }}>
         <button className="btn" onClick={() => { setNewUser(true); setError(null); }}>Add a person</button>
@@ -280,6 +284,7 @@ export function People() {
             </select>
           </Field>
         </div>
+        {error && <div className="note deny" role="alert">{error}</div>}
       </Dialog>
 
       {/* ── The credential, shown once ──────────────────────────────────── */}
@@ -354,6 +359,7 @@ export function People() {
           A dated grant expires on its own. That is the point: leave cover that
           depends on somebody remembering to revoke it usually is not revoked.
         </div>
+        {error && <div className="note deny" role="alert">{error}</div>}
       </Dialog>
 
       {/* ── Record competence ───────────────────────────────────────────── */}
@@ -393,6 +399,7 @@ export function People() {
                  onChange={(e) => setComp({ ...comp, basis: e.target.value })}
                  placeholder="Witnessed demonstration, 12 March; assessment record TR-118" />
         </Field>
+        {error && <div className="note deny" role="alert">{error}</div>}
       </Dialog>
 
       {/* ── Create a team ───────────────────────────────────────────────── */}
@@ -421,6 +428,7 @@ export function People() {
           <input className="t" value={team.description}
                  onChange={(e) => setTeam({ ...team, description: e.target.value })} />
         </Field>
+        {error && <div className="note deny" role="alert">{error}</div>}
       </Dialog>
     </>
   );

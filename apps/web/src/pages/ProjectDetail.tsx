@@ -117,8 +117,10 @@ export function ProjectDetail({
         stage <b>{project.stage}</b>
       </p>
 
-      {flash && <div className="note okbox">{flash}</div>}
-      {error && <div className="note deny">{error}</div>}
+      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
+      {/* When a signing dialog is open its own failure belongs INSIDE it, not on
+          the page body behind the backdrop where the user cannot see it. */}
+      {error && pending === null && <div className="note deny" role="alert">{error}</div>}
 
       <div className="kpis" style={{ marginTop: 13 }}>
         <div className="kpi"><div className="k">Assigned value</div>
@@ -318,7 +320,7 @@ export function ProjectDetail({
         title={pending ? describe(pending) : ''}
         description={pending ? explain(pending) : ''}
         busy={act.isPending}
-        error={null}
+        error={pending ? error : null}
         onCancel={() => { setPending(null); setError(null); }}
         onSign={(meaning, reason) => pending && act.mutate({ p: pending, meaning, reason })}
       />

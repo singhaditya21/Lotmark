@@ -9,9 +9,12 @@ import { api, type OpsReport } from '../lib/api';
  * is about to expire; another raises the CAPA for overdue stability monitoring.
  * Neither failing is something to discover a fortnight later.
  *
- * Deliberately shows nothing while loading and nothing on error. A banner that
- * flickers on every page load, or that shouts because a request failed once, is
- * a banner people learn to ignore — and then it is worse than absent.
+ * Shows nothing while loading. On error it does NOT stay silent — a silent
+ * banner is indistinguishable from a healthy one, and this banner exists
+ * precisely so a failure is not mistaken for health; it shows a quiet, distinct
+ * "couldn't check" state instead. It still never shouts because one request
+ * failed transiently: react-query keeps the last good data, so `isError` here
+ * means the check is failing, not flickering.
  */
 export function JobHealthBanner({ onOpen }: { onOpen: () => void }) {
   const ops = useQuery({
@@ -21,11 +24,20 @@ export function JobHealthBanner({ onOpen }: { onOpen: () => void }) {
     refetchInterval: 60_000,
   });
 
+  if (ops.isError && !ops.data) {
+    return (
+      <div className="note warn" style={{ margin: '0 0 12px' }} role="status">
+        Job health could not be checked — treat as unknown, not healthy.{' '}
+        <button className="btn ghost sm" onClick={onOpen}>Open Operations</button>
+      </div>
+    );
+  }
+
   const attention = ops.data?.attention ?? [];
   if (attention.length === 0) return null;
 
   return (
-    <div className="note deny" style={{ margin: '0 0 12px' }}>
+    <div className="note deny" style={{ margin: '0 0 12px' }} role="alert">
       <b>
         {attention.length} scheduled job{attention.length === 1 ? '' : 's'} need
         attention.

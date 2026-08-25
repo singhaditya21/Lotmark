@@ -42,8 +42,18 @@ export function Operations() {
 
       {ops.isLoading && <div className="spinner">Checking…</div>}
 
+      {/* A failed status check is NOT a clean bill of health — it is the absence
+          of one. Saying so is the whole point of this screen. */}
+      {ops.isError && (
+        <div className="note deny" role="alert">
+          <b>Could not load operations status.</b> Treat this as unknown, not
+          healthy — the check itself failed.{' '}
+          <button className="btn ghost sm" onClick={() => void ops.refetch()}>Retry</button>
+        </div>
+      )}
+
       {attention.length > 0 ? (
-        <div className="note deny">
+        <div className="note deny" role="alert">
           <b>{attention.length} job{attention.length === 1 ? '' : 's'} need attention.</b>
           <ul className="plain">
             {attention.map((j) => <li key={j.name}><span className="mono">{j.name}</span> — {j.advice}</li>)}

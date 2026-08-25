@@ -96,8 +96,8 @@ export function Orders() {
           : 'Every order in the tenant, and the cold chain behind each shipment.'}
       </p>
 
-      {flash && <div className="note okbox">{flash}</div>}
-      {error && <div className="note deny">{error}</div>}
+      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
+      {error && <div className="note deny" role="alert">{error}</div>}
 
       {view.isLoading ? <div className="spinner">Loading…</div> : (v?.orders ?? []).length === 0 ? (
         <div className="note">No orders yet.</div>
@@ -131,6 +131,11 @@ export function Orders() {
                         {o.state}
                       </span>
                       {o.courier && <div className="muted" style={{ fontSize: 11.5 }}>{o.courier}</div>}
+                      {/* The tracking reference is the buyer's one handle on a
+                          dispatched shipment; it is in the payload, so show it. */}
+                      {o.tracking_reference && (
+                        <div className="mono" style={{ fontSize: 11.5 }}>{o.tracking_reference}</div>
+                      )}
                     </td>
                     <td>
                       {shipmentsOf(o.id).length === 0 ? <span className="muted">—</span>

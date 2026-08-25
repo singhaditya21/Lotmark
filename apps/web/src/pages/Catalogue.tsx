@@ -45,7 +45,9 @@ export function Catalogue() {
     }),
     onSuccess: (r) => {
       setBasket({}); setError(null);
-      setFlash(`Order ${r.code} placed — ${(r.totalMinor / 100).toFixed(2)}.`);
+      // Currency as a code, never the ₹ glyph: this bundle is published
+      // world-readable and scanned for it. Matches how Orders shows a total.
+      setFlash(`Order ${r.code} placed — ${(r.totalMinor / 100).toFixed(2)} INR.`);
       refresh();
     },
     onError,
@@ -61,6 +63,10 @@ export function Catalogue() {
   });
 
   const items = cat.data?.items ?? [];
+  // Shelf life is load-bearing for a reference material, so it is flagged at the
+  // point of purchase, not discovered after. `soon` is 90 days out — short-dated.
+  const today = new Date().toISOString().slice(0, 10);
+  const soon = new Date(Date.now() + 90 * 864e5).toISOString().slice(0, 10);
   const inBasket = Object.values(basket).reduce((n, q) => n + q, 0);
   const basketTotal = items.reduce((sum, i) => sum + (basket[i.id] ?? 0) * i.unit_price_minor, 0);
 
@@ -72,8 +78,8 @@ export function Catalogue() {
         certificate has been withdrawn is not here at all.
       </p>
 
-      {flash && <div className="note okbox">{flash}</div>}
-      {error && <div className="note deny">{error}</div>}
+      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
+      {error && <div className="note deny" role="alert">{error}</div>}
 
       {cat.data?.canOrder && inBasket > 0 && (
         <div className="note info">
@@ -120,7 +126,14 @@ export function Catalogue() {
                         </>
                       )}
                     </td>
-                    <td className="mono">{i.expiry_date}</td>
+                    <td className="mono">
+                      {i.expiry_date}
+                      {i.expiry_date < today
+                        ? <div><span className="chip bad">expired</span></div>
+                        : i.expiry_date < soon
+                          ? <div><span className="chip warn">short-dated</span></div>
+                          : null}
+                    </td>
                     <td>
                       {i.storage_condition}
                       {i.cold_chain && <span className="chip warn" style={{ marginLeft: 6 }}>cold chain</span>}
@@ -136,7 +149,13 @@ export function Catalogue() {
                           className="t mono" type="number" min={0} max={i.stock_units}
                           style={{ width: 76 }}
                           value={basket[i.id] ?? 0}
-                          onChange={(e) => setBasket({ ...basket, [i.id]: Math.max(0, Number(e.target.value)) })}
+                          // `max` alone does not stop a typed value; clamp to
+                          // stock so the basket, total and order can never claim
+                          // more units than exist.
+                          onChange={(e) => setBasket({
+                            ...basket,
+                            [i.id]: Math.min(i.stock_units, Math.max(0, Number(e.target.value))),
+                          })}
                         />
                       )}
                       {cat.data?.canManage && (

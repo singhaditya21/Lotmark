@@ -145,6 +145,8 @@ export function App() {
 
   return (
     <>
+      {/* Keyboard users reach content without tabbing the whole section nav. */}
+      <a className="skip" href="#main">Skip to content</a>
       <header className="top">
         <span className="brand">Lotmark</span>
         <nav aria-label="Sections">
@@ -171,9 +173,9 @@ export function App() {
         </div>
       </header>
 
-      <main>
+      <main id="main" tabIndex={-1}>
         {passwordNotice && (
-          <div className="note okbox" style={{ marginBottom: 14 }}>
+          <div className="note okbox" style={{ marginBottom: 14 }} aria-live="polite">
             {passwordNotice}{' '}
             <button className="btn ghost sm" onClick={() => setPasswordNotice(null)}>Dismiss</button>
           </div>

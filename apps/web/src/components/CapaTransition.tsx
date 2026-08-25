@@ -132,7 +132,7 @@ export function CapaTransition({
       )}
 
       {problem && (
-        <div className="note deny">
+        <div className="note deny" role="alert">
           {problem.detail}
           {problem.auditSeq && (
             <div className="muted" style={{ fontSize: 12, marginTop: 5 }}>

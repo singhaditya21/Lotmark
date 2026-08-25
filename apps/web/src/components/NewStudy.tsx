@@ -117,7 +117,7 @@ export function NewStudy({
         </>
       )}
 
-      {problem && <div className="note deny">{problem.detail}</div>}
+      {problem && <div className="note deny" role="alert">{problem.detail}</div>}
     </Dialog>
   );
 }

@@ -73,7 +73,7 @@ export function StepUp({
                  required />
         </label>
 
-        {error && <div className="note deny">{error}</div>}
+        {error && <div className="note deny" role="alert">{error}</div>}
 
         <div className="row" style={{ marginTop: 14 }}>
           <button className="btn" type="submit" disabled={busy || code.length !== 6}>

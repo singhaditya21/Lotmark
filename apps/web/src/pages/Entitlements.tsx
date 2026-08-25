@@ -85,8 +85,8 @@ export function Entitlements() {
         </div>
       )}
 
-      {flash && <div className="note okbox">{flash}</div>}
-      {error && <div className="note deny">{error}</div>}
+      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
+      {error && <div className="note deny" role="alert">{error}</div>}
 
       {v?.canClaim && (
         <div className="row" style={{ margin: '12px 0' }}>

@@ -64,7 +64,7 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
                 <input className="t" type="password" autoComplete="current-password"
                        value={password} onChange={(e) => setPassword(e.target.value)} required />
               </label>
-              {error && <div className="note deny">{error}</div>}
+              {error && <div className="note deny" role="alert">{error}</div>}
               <button className="btn" type="submit" disabled={busy} style={{ marginTop: 6, width: '100%' }}>
                 {busy ? 'Checking…' : 'Continue'}
               </button>
@@ -82,7 +82,7 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
                        onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
                        required autoFocus />
               </label>
-              {error && <div className="note deny">{error}</div>}
+              {error && <div className="note deny" role="alert">{error}</div>}
               <div className="row" style={{ marginTop: 6 }}>
                 <button className="btn" type="submit" disabled={busy || code.length !== 6}>
                   {busy ? 'Verifying…' : 'Verify'}

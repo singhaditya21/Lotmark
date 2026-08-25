@@ -18,7 +18,7 @@ function ChainVerdict({ result }: { result: ChainResult }) {
 
   if (result.ok) {
     return (
-      <div className="note okbox">
+      <div className="note okbox" role="status">
         The chain is intact across {result.entries} entries{spanned}.
       </div>
     );
@@ -26,7 +26,7 @@ function ChainVerdict({ result }: { result: ChainResult }) {
 
   if (result.unverified) {
     return (
-      <div className="note warn">
+      <div className="note warn" role="status">
         <b>Not checked — this is not a failure.</b> No key is held for generation{' '}
         <span className="mono">{result.keysMissing.join(', ')}</span>, so those entries could
         not be verified. Nothing suggests they have been altered; the key simply is not on
@@ -37,7 +37,7 @@ function ChainVerdict({ result }: { result: ChainResult }) {
   }
 
   return (
-    <div className="note deny">
+    <div className="note deny" role="alert">
       <b>BROKEN at entry {result.brokenAt}.</b> {result.reason}
     </div>
   );
@@ -88,7 +88,7 @@ export function Audit({ canVerify }: { canVerify: boolean }) {
         )}
       </div>
 
-      {error && <div className="note deny">{error}</div>}
+      {error && <div className="note deny" role="alert">{error}</div>}
       {result && <ChainVerdict result={result} />}
 
       {isLoading ? <div className="spinner">Loading the ledger…</div> : (

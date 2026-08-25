@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, type VaultView } from '../lib/api';
 import { sig } from '../lib/format';
@@ -18,6 +19,7 @@ import { sig } from '../lib/format';
  * organisation whose certificate is in question.
  */
 export function Vault() {
+  const [copied, setCopied] = useState<string | null>(null);
   const vault = useQuery({
     queryKey: ['vault'],
     queryFn: () => api.get<VaultView>('/vault'),
@@ -115,11 +117,22 @@ export function Vault() {
                     </td>
                     <td>
                       {h.verification_token ? (
-                        <a className="mono" style={{ fontSize: 11.5 }}
-                           href={`${vault.data!.verifyOrigin}/verify/${h.verification_token}`}
-                           target="_blank" rel="noreferrer">
-                          check
-                        </a>
+                        <div className="row" style={{ gap: 10 }}>
+                          <a className="mono" style={{ fontSize: 11.5 }}
+                             href={`${vault.data!.verifyOrigin}/verify/${h.verification_token}`}
+                             target="_blank" rel="noreferrer">
+                            check
+                          </a>
+                          {/* Hand an auditor the address without leaving the page. */}
+                          <button className="btn ghost sm"
+                                  onClick={async () => {
+                                    const url = `${vault.data!.verifyOrigin}/verify/${h.verification_token}`;
+                                    try { await navigator.clipboard.writeText(url); setCopied(h.verification_token); }
+                                    catch { setCopied(null); }
+                                  }}>
+                            {copied === h.verification_token ? 'copied ✓' : 'copy link'}
+                          </button>
+                        </div>
                       ) : <span className="muted">—</span>}
                     </td>
                   </tr>

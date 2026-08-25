@@ -28,7 +28,7 @@ export function Capa({ canManage }: { canManage: boolean }) {
   });
 
   if (register.isLoading) return <div className="spinner">Loading the register…</div>;
-  if (register.error) return <div className="note deny">{(register.error as Error).message}</div>;
+  if (register.error) return <div className="note deny" role="alert">{(register.error as Error).message}</div>;
 
   const all = register.data?.capa ?? [];
   const open = all.filter((c) => isOpen(c.state));

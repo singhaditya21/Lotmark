@@ -31,6 +31,9 @@ export function Conformance({ canExport }: { canExport: boolean }) {
   const [open, setOpen] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // The page exists to find where enforcement and evidence disagree, so the gap
+  // count is also the control that isolates them.
+  const [gapsOnly, setGapsOnly] = useState(false);
 
   const view = useQuery({
     queryKey: ['conformance'],
@@ -74,17 +77,24 @@ export function Conformance({ canExport }: { canExport: boolean }) {
         disagree — and where they do, that is the finding.
       </p>
 
-      {flash && <div className="note okbox">{flash}</div>}
-      {error && <div className="note deny">{error}</div>}
+      {flash && <div className="note okbox" aria-live="polite">{flash}</div>}
+      {error && <div className="note deny" role="alert">{error}</div>}
 
       {v && (
         <div className="kpis" style={{ marginTop: 13 }}>
           <div className="kpi"><div className="k">Clauses</div><div className="v mono">{v.summary.clauses}</div></div>
           <div className="kpi"><div className="k">Fully enforced</div><div className="v mono">{v.summary.enforced}</div></div>
-          <div className="kpi">
-            <div className="k">With a gap</div>
+          <button
+            className="kpi"
+            style={{ font: 'inherit', textAlign: 'left',
+                     cursor: v.summary.weaker > 0 ? 'pointer' : 'default',
+                     outline: gapsOnly ? '2px solid var(--pri)' : undefined, outlineOffset: -1 }}
+            aria-pressed={gapsOnly}
+            disabled={v.summary.weaker === 0}
+            onClick={() => setGapsOnly((g) => !g)}>
+            <div className="k">With a gap{gapsOnly ? ' · showing only these' : ''}</div>
             <div className="v mono">{v.summary.weaker}</div>
-          </div>
+          </button>
         </div>
       )}
 
@@ -103,7 +113,7 @@ export function Conformance({ canExport }: { canExport: boolean }) {
 
       {view.isLoading && <div className="spinner">Gathering the evidence…</div>}
 
-      {(v?.clauses ?? []).map((c) => (
+      {(v?.clauses ?? []).filter((c) => !gapsOnly || c.status !== 'enforced').map((c) => (
         <div className="card" key={c.clause} style={{ marginTop: 13 }}>
           <div className="pad" style={{ paddingBottom: 8 }}>
             <h2 style={{ marginTop: 0, marginBottom: 4, fontSize: 15 }}>

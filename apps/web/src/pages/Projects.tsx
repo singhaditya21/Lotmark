@@ -11,7 +11,7 @@ export function Projects({ onOpen, canCreate }: { onOpen: (p: Project) => void; 
   });
 
   if (isLoading) return <div className="spinner">Loading projects…</div>;
-  if (error) return <div className="note deny">{(error as Error).message}</div>;
+  if (error) return <div className="note deny" role="alert">{(error as Error).message}</div>;
 
   const projects = data?.projects ?? [];
 
@@ -55,7 +55,14 @@ export function Projects({ onOpen, canCreate }: { onOpen: (p: Project) => void; 
             </thead>
             <tbody>
               {projects.map((p) => (
-                <tr key={p.id} className="click" onClick={() => onOpen(p)}>
+                // The project row is the sole entry into the whole release
+                // chain, so it must open from the keyboard, not the mouse alone.
+                <tr key={p.id} className="click" onClick={() => onOpen(p)}
+                    role="button" tabIndex={0}
+                    aria-label={`Open project ${p.code} — ${p.material}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(p); }
+                    }}>
                   <td className="mono">{p.code}</td>
                   <td><b>{p.material}</b></td>
                   <td className="mono muted">{p.cas ?? '—'}</td>
