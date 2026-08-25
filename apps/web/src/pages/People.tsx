@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../components/Toast';
-import { api, ApiError, type Directory, type NewUserResult } from '../lib/api';
+import { api, ApiError, type Directory, type NewUserResult, type TeamRow } from '../lib/api';
 import { Dialog, Field } from '../components/Dialog';
 
 /**
@@ -32,6 +32,8 @@ export function People() {
   const [grantFor, setGrantFor] = useState<string | null>(null);
   const [competenceFor, setCompetenceFor] = useState<string | null>(null);
   const [newTeam, setNewTeam] = useState(false);
+  const [rosterFor, setRosterFor] = useState<TeamRow | null>(null);
+  const [addUserId, setAddUserId] = useState('');
 
   const [form, setForm] = useState({ email: '', displayName: '', code: '', organisationId: '' });
   const [grant, setGrant] = useState({ roleKey: '', teamId: '', validTo: '', reason: '' });
@@ -117,10 +119,46 @@ export function People() {
     onError,
   });
 
+  const addMember = useMutation({
+    mutationFn: (a: { teamId: string; userId: string }) =>
+      api.post(`/admin/teams/${a.teamId}/members`, { userId: a.userId }),
+    onSuccess: () => {
+      setAddUserId(''); setError(null);
+      toast.success('Added to the team. It grants nothing until a role is scoped to the team.');
+      refresh();
+    },
+    onError,
+  });
+
+  const removeMember = useMutation({
+    mutationFn: (a: { teamId: string; userId: string }) =>
+      api.del(`/admin/teams/${a.teamId}/members/${a.userId}`),
+    onSuccess: () => {
+      setError(null);
+      toast.success('Removed from the team. Any role held only within it no longer applies.');
+      refresh();
+    },
+    onError,
+  });
+
   const d = dir.data;
   const rolesOf = (userId: string) => (d?.assignments ?? []).filter((a) => a.user_id === userId);
   const competenceOf = (userId: string) => (d?.competence ?? []).filter((c) => c.user_id === userId);
   const today = new Date().toISOString().slice(0, 10);
+
+  // Roster: the users currently in a team, and the ones who could be added.
+  const usersById = new Map((d?.users ?? []).map((u) => [u.id, u]));
+  const membersOf = (teamId: string) => (d?.memberships ?? [])
+    .filter((m) => m.team_id === teamId)
+    .map((m) => usersById.get(m.user_id))
+    .filter((u): u is NonNullable<typeof u> => u !== undefined);
+  const addableTo = (teamId: string) => {
+    const inTeam = new Set((d?.memberships ?? [])
+      .filter((m) => m.team_id === teamId).map((m) => m.user_id));
+    // A producer team; deactivated accounts and current members are not offered.
+    return (d?.users ?? []).filter((u) =>
+      !u.deactivated_at && u.organisation_kind === 'producer' && !inTeam.has(u.id));
+  };
 
   return (
     <>
@@ -133,7 +171,7 @@ export function People() {
 
       {/* A dialog's own failure is shown inside it (below); on the page body it
           would sit behind the backdrop, unseen, while the user re-clicks. */}
-      {error && !(newUser || grantFor !== null || competenceFor !== null || newTeam) && (
+      {error && !(newUser || grantFor !== null || competenceFor !== null || newTeam || rosterFor !== null) && (
         <div className="note deny" role="alert">{error}</div>
       )}
 
@@ -237,7 +275,11 @@ export function People() {
                 <tr key={t.id}>
                   <td><b>{t.name}</b>{t.archived_at && <span className="chip grey" style={{ marginLeft: 6 }}>archived</span>}</td>
                   <td className="mono">{t.key}</td>
-                  <td className="mono">{t.members}</td>
+                  <td>
+                    <button className="btn ghost sm" onClick={() => { setRosterFor(t); setAddUserId(''); setError(null); }}>
+                      {t.members} member{t.members === 1 ? '' : 's'}
+                    </button>
+                  </td>
                   <td className="muted">{t.description ?? '—'}</td>
                 </tr>
               ))}
@@ -430,6 +472,52 @@ export function People() {
         </Field>
         {error && <div className="note deny" role="alert">{error}</div>}
       </Dialog>
+
+      {/* ── A team's roster ─────────────────────────────────────────────── */}
+      {rosterFor && (
+        <Dialog
+          open
+          title={`Members of ${rosterFor.name}`}
+          lede="Membership is belonging, not authority — it grants nothing on its own. A role scoped to this team is what carries permission within it."
+          onClose={() => { setRosterFor(null); setAddUserId(''); }}
+          footer={<button className="btn ghost" onClick={() => { setRosterFor(null); setAddUserId(''); }}>Done</button>}
+        >
+          {membersOf(rosterFor.id).length === 0 ? (
+            <p className="muted">Nobody is in this team yet.</p>
+          ) : (
+            <ul className="plain">
+              {membersOf(rosterFor.id).map((u) => (
+                <li key={u.id} className="row" style={{ justifyContent: 'space-between' }}>
+                  <span>
+                    <b>{u.display_name}</b>{' '}
+                    <span className="muted mono" style={{ fontSize: 'var(--fs-tiny)' }}>{u.email}</span>
+                  </span>
+                  <button className="btn ghost sm" disabled={removeMember.isPending}
+                          onClick={() => removeMember.mutate({ teamId: rosterFor.id, userId: u.id })}>
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="row" style={{ marginTop: 14 }}>
+            <select className="t" value={addUserId} style={{ flex: 1 }}
+                    onChange={(e) => setAddUserId(e.target.value)}>
+              <option value="">Add someone to this team…</option>
+              {addableTo(rosterFor.id).map((u) => (
+                <option key={u.id} value={u.id}>{u.display_name} — {u.organisation_name}</option>
+              ))}
+            </select>
+            <button className="btn" disabled={!addUserId || addMember.isPending}
+                    onClick={() => addMember.mutate({ teamId: rosterFor.id, userId: addUserId })}>
+              {addMember.isPending ? 'Adding…' : 'Add'}
+            </button>
+          </div>
+
+          {error && <div className="note deny" role="alert">{error}</div>}
+        </Dialog>
+      )}
     </>
   );
 }

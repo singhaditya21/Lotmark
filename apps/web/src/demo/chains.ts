@@ -345,6 +345,52 @@ export const CHAINS: ReadonlyArray<readonly [string, Chain]> = [
       + `${changes.length} change(s): ${changes.map((c) => String(c['key'])).join(', ')}`);
     return { number: Number(published?.['number'] ?? 0), changes, signed: true };
   }],
+
+  /* ── Team membership: who belongs to a team ─────────────────────────────────
+   *
+   * Belonging, not authority — it grants nothing on its own. The roster reads
+   * the directory's `memberships`, so joining pushes a row and bumps the team's
+   * member count, and leaving removes it. */
+  ['POST /admin/teams/:id/members', (ctx, payload, [teamId]) => {
+    const dir = ctx.body('GET /admin/people') as {
+      memberships?: Array<Record<string, unknown>>;
+      teams?: Array<Record<string, unknown>>;
+      users?: Array<Record<string, unknown>>;
+    } | undefined;
+    const userId = String(payload['userId'] ?? '');
+    const already = dir?.memberships?.some(
+      (m) => m['team_id'] === teamId && m['user_id'] === userId && !m['left_on']);
+    if (dir?.memberships && !already) {
+      dir.memberships.push({ id: ctx.id(), team_id: teamId, user_id: userId, joined_on: ctx.now().slice(0, 10) });
+      const team = dir.teams?.find((t) => t['id'] === teamId);
+      if (team) team['members'] = Number(team['members'] ?? 0) + 1;
+      const user = dir.users?.find((u) => u['id'] === userId);
+      ctx.audit('CONFIGURATION', 'team.member.add',
+        `${String(user?.['display_name'] ?? 'Someone')} joined ${String(team?.['name'] ?? 'a team')} — membership grants nothing on its own`);
+    }
+    return { ok: true };
+  }],
+
+  ['DELETE /admin/teams/:id/members/:userId', (ctx, _payload, [teamId, userId]) => {
+    const dir = ctx.body('GET /admin/people') as {
+      memberships?: Array<Record<string, unknown>>;
+      teams?: Array<Record<string, unknown>>;
+      users?: Array<Record<string, unknown>>;
+    } | undefined;
+    if (dir?.memberships) {
+      const before = dir.memberships.length;
+      dir.memberships = dir.memberships.filter(
+        (m) => !(m['team_id'] === teamId && m['user_id'] === userId));
+      const team = dir.teams?.find((t) => t['id'] === teamId);
+      if (before !== dir.memberships.length && team) {
+        team['members'] = Math.max(0, Number(team['members'] ?? 0) - 1);
+      }
+      const user = dir.users?.find((u) => u['id'] === userId);
+      ctx.audit('CONFIGURATION', 'team.member.remove',
+        `${String(user?.['display_name'] ?? 'Someone')} left ${String(team?.['name'] ?? 'a team')}`);
+    }
+    return { ok: true };
+  }],
 ];
 
 /** Match a path against a chain pattern, collecting `:params`. */

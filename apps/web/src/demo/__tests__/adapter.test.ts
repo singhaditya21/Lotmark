@@ -433,6 +433,36 @@ describe('an act leaves a trace', () => {
     expect(String((await auditTop())['detail'])).toMatch(/released/i);
   });
 
+  it('adds and removes a team member, moving the roster and the count', async () => {
+    /*
+     * Belonging, not authority. Joining pushes a membership and bumps the team's
+     * count; leaving reverses both — so the roster the People screen reads and
+     * the count in its table stay in step.
+     */
+    const dir = (await call(demoFetch, 'GET', '/admin/people')).body as {
+      teams: Array<Record<string, unknown>>;
+      memberships: Array<Record<string, unknown>>;
+      users: Array<Record<string, unknown>>;
+    };
+    const team = dir.teams[0]!;
+    const teamId = String(team['id']);
+    const before = Number(team['members']);
+    const inTeam = new Set(dir.memberships.filter((m) => m['team_id'] === teamId).map((m) => m['user_id']));
+    const candidate = dir.users.find((u) => u['organisation_kind'] === 'producer' && !inTeam.has(u['id']))!;
+    expect(candidate, 'someone must be addable').toBeTruthy();
+    const userId = String(candidate['id']);
+
+    await call(demoFetch, 'POST', `/admin/teams/${teamId}/members`, { userId });
+    let after = (await call(demoFetch, 'GET', '/admin/people')).body as typeof dir;
+    expect(after.memberships.some((m) => m['team_id'] === teamId && m['user_id'] === userId)).toBe(true);
+    expect(Number(after.teams.find((t) => t['id'] === teamId)!['members'])).toBe(before + 1);
+
+    await call(demoFetch, 'DELETE', `/admin/teams/${teamId}/members/${userId}`);
+    after = (await call(demoFetch, 'GET', '/admin/people')).body as typeof dir;
+    expect(after.memberships.some((m) => m['team_id'] === teamId && m['user_id'] === userId)).toBe(false);
+    expect(Number(after.teams.find((t) => t['id'] === teamId)!['members'])).toBe(before);
+  });
+
   it('publishing a configuration draft makes it the active version', async () => {
     /*
      * The change-control loop. A pending draft carries changes; publishing it
