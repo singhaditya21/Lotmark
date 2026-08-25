@@ -155,7 +155,7 @@ export function FormDesigner() {
           then.
         </p>
         <div className="card pad" style={{ maxWidth: 560 }}>
-          <h2 style={{ marginTop: 0, fontSize: 15 }}>Open a draft to begin</h2>
+          <h2 className="card-title">Open a draft to begin</h2>
           <Field label="Why is this changing?"
                  hint="required; it becomes the version’s permanent explanation">
             <input className="t" value={reason} onChange={(e) => setReason(e.target.value)}
@@ -209,7 +209,7 @@ export function FormDesigner() {
           <div className="card">
             <div className="pad" style={{ paddingBottom: 8 }}>
               <div className="row">
-                <h2 style={{ margin: 0, fontSize: 15 }}>Fields on {entity.replace(/_/g, ' ')}</h2>
+                <h2 className="card-title">Fields on {entity.replace(/_/g, ' ')}</h2>
                 <button className="btn sm" style={{ marginLeft: 'auto' }}
                         onClick={() => setEditingField({
                           key: '', entity, label: '', type: 'text',
@@ -254,7 +254,7 @@ export function FormDesigner() {
           <div className="card">
             <div className="pad" style={{ paddingBottom: 8 }}>
               <div className="row">
-                <h2 style={{ margin: 0, fontSize: 15 }}>Option lists</h2>
+                <h2 className="card-title">Option lists</h2>
                 <button className="btn sm" style={{ marginLeft: 'auto' }}
                         onClick={() => setEditingList({
                           key: '', name: '',
@@ -305,7 +305,7 @@ export function FormDesigner() {
 
         {/* ── Preview ───────────────────────────────────────────────────── */}
         <div className="card pad" style={{ position: 'sticky', top: 12 }}>
-          <h2 style={{ marginTop: 0, fontSize: 15 }}>Preview</h2>
+          <h2 className="card-title">Preview</h2>
           <p className="muted" style={{ fontSize: 12.5, marginTop: 0 }}>
             Drawn by the same renderer the record screens use, from this draft.
           </p>
@@ -595,7 +595,7 @@ function LayoutEditor({
     <div className="card">
       <div className="pad" style={{ paddingBottom: 8 }}>
         <div className="row">
-          <h2 style={{ margin: 0, fontSize: 15 }}>Layout</h2>
+          <h2 className="card-title">Layout</h2>
           {!working && (
             <button className="btn sm" style={{ marginLeft: 'auto' }}
                     disabled={fields.length === 0}

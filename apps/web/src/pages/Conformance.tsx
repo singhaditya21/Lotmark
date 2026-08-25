@@ -81,7 +81,7 @@ export function Conformance({ canExport }: { canExport: boolean }) {
       {error && <div className="note deny" role="alert">{error}</div>}
 
       {v && (
-        <div className="kpis" style={{ marginTop: 13 }}>
+        <div className="kpis card-gap">
           <div className="kpi"><div className="k">Clauses</div><div className="v mono">{v.summary.clauses}</div></div>
           <div className="kpi"><div className="k">Fully enforced</div><div className="v mono">{v.summary.enforced}</div></div>
           <button
@@ -114,9 +114,9 @@ export function Conformance({ canExport }: { canExport: boolean }) {
       {view.isLoading && <div className="spinner">Gathering the evidence…</div>}
 
       {(v?.clauses ?? []).filter((c) => !gapsOnly || c.status !== 'enforced').map((c) => (
-        <div className="card" key={c.clause} style={{ marginTop: 13 }}>
+        <div className="card card-gap" key={c.clause}>
           <div className="pad" style={{ paddingBottom: 8 }}>
-            <h2 style={{ marginTop: 0, marginBottom: 4, fontSize: 15 }}>
+            <h2 className="card-title">
               {c.clause}{' '}
               <span className={`chip ${STATUS_TONE[c.status]}`}>{STATUS_LABEL[c.status]}</span>
             </h2>

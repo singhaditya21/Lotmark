@@ -45,7 +45,7 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
     <div className="centre">
       <div className="signin">
         <div style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.5px' }}>Lotmark</div>
+          <div className="wordmark">Lotmark</div>
           <div className="muted">Reference material producer platform</div>
         </div>
 

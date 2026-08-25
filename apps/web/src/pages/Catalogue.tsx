@@ -94,7 +94,7 @@ export function Catalogue() {
       {cat.isLoading ? <div className="spinner">Loading…</div> : items.length === 0 ? (
         <div className="note">Nothing is currently released for sale.</div>
       ) : (
-        <div className="card" style={{ marginTop: 13 }}>
+        <div className="card card-gap">
           <div className="scroll">
             <table>
               <thead>

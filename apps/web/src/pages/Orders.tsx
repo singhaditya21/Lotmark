@@ -102,7 +102,7 @@ export function Orders() {
       {view.isLoading ? <div className="spinner">Loading…</div> : (v?.orders ?? []).length === 0 ? (
         <div className="note">No orders yet.</div>
       ) : (
-        <div className="card" style={{ marginTop: 13 }}>
+        <div className="card card-gap">
           <div className="scroll">
             <table>
               <thead>

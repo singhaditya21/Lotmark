@@ -146,7 +146,7 @@ export function Configuration() {
         </div>
       )}
 
-      <div className="card" style={{ marginTop: 13 }}>
+      <div className="card card-gap">
         <div className="pad" style={{ paddingBottom: 0 }}>
           <h2 style={{ marginTop: 0 }}>Versions</h2>
         </div>
@@ -189,7 +189,7 @@ export function Configuration() {
         </div>
       </div>
 
-      <div className="card pad" style={{ marginTop: 13 }}>
+      <div className="card pad card-gap">
         <h2 style={{ marginTop: 0 }}>What needs a signature</h2>
         <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
           Security and behaviour changes require an electronic signature to
@@ -262,7 +262,7 @@ export function Configuration() {
 
         {(review.data?.changes ?? []).length > 0 && (
           <>
-            <h2 style={{ fontSize: 15 }}>{review.data!.changes.length} change(s)</h2>
+            <h2 className="card-title" style={{ marginTop: 'var(--space-6)' }}>{review.data!.changes.length} change(s)</h2>
             <div className="scroll">
               <table>
                 <thead><tr><th>Kind</th><th>Key</th><th>Change</th><th>Risk</th></tr></thead>

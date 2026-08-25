@@ -99,7 +99,7 @@ export function Entitlements() {
       {view.isLoading ? <div className="spinner">Loading…</div> : (v?.claims ?? []).length === 0 ? (
         <div className="note">No claims.</div>
       ) : (
-        <div className="card" style={{ marginTop: 13 }}>
+        <div className="card card-gap">
           <div className="scroll">
             <table>
               <thead>

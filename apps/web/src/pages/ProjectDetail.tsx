@@ -159,7 +159,7 @@ export function ProjectDetail({
           the page body behind the backdrop where the user cannot see it. */}
       {error && pending === null && <div className="note deny" role="alert">{error}</div>}
 
-      <div className="kpis" style={{ marginTop: 13 }}>
+      <div className="kpis card-gap">
         <div className="kpi"><div className="k">Assigned value</div>
           <div className="v mono">{sig(budget.data?.assignedValue, 7)}</div></div>
         <div className="kpi"><div className="k">u combined</div>

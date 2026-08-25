@@ -221,7 +221,7 @@ export function People() {
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 13 }}>
+      <div className="card card-gap">
         <div className="pad" style={{ paddingBottom: 0 }}>
           <h2 style={{ marginTop: 0 }}>Teams</h2>
           <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>

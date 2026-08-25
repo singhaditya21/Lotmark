@@ -129,7 +129,7 @@ export function FlowDesigner() {
           published under signature.
         </p>
         <div className="card pad" style={{ maxWidth: 560 }}>
-          <h2 style={{ marginTop: 0, fontSize: 15 }}>Open a draft to begin</h2>
+          <h2 className="card-title">Open a draft to begin</h2>
           <Field label="Why is this changing?" hint="required; the version’s permanent explanation">
             <input className="t" value={reason} onChange={(e) => setReason(e.target.value)}
                    placeholder="Let a CAPA be closed without a corrective action" />
@@ -220,7 +220,7 @@ export function FlowDesigner() {
             <div className="card">
               <div className="pad" style={{ paddingBottom: 8 }}>
                 <div className="row">
-                  <h2 style={{ margin: 0, fontSize: 15 }}>States</h2>
+                  <h2 className="card-title">States</h2>
                   <button className="btn sm" style={{ marginLeft: 'auto' }}
                           onClick={() => { setAddingState(true); setStateKey(''); setStateName(''); }}>
                     Add a state
@@ -281,7 +281,7 @@ export function FlowDesigner() {
             <div className="card">
               <div className="pad" style={{ paddingBottom: 8 }}>
                 <div className="row">
-                  <h2 style={{ margin: 0, fontSize: 15 }}>Moves</h2>
+                  <h2 className="card-title">Moves</h2>
                   <button className="btn sm" style={{ marginLeft: 'auto' }}
                           disabled={workflow.states.length < 2}
                           onClick={() => setEditing({
@@ -336,7 +336,7 @@ export function FlowDesigner() {
 
           {/* ── The diagram ───────────────────────────────────────────────── */}
           <div className="card pad" style={{ position: 'sticky', top: 12 }}>
-            <h2 style={{ marginTop: 0, fontSize: 15 }}>The machine</h2>
+            <h2 className="card-title">The machine</h2>
             <p className="muted" style={{ fontSize: 12.5, marginTop: 0 }}>
               Drawn from what the server resolved out of this draft, so it cannot show a move
               the runtime would not make.

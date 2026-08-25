@@ -400,7 +400,7 @@ function NotificationOutcome({
         </>
       )}
 
-      <h2 style={{ fontSize: 15 }}>Notified · {r.notified.length}</h2>
+      <h2 className="card-title" style={{ marginTop: 'var(--space-6)' }}>Notified · {r.notified.length}</h2>
       {r.notified.length === 0 ? (
         <p className="muted">No holder was on record.</p>
       ) : (
@@ -413,7 +413,7 @@ function NotificationOutcome({
 
       {unreachable.length > 0 && (
         <>
-          <h2 style={{ fontSize: 15 }}>Unreachable · {unreachable.length}</h2>
+          <h2 className="card-title" style={{ marginTop: 'var(--space-6)' }}>Unreachable · {unreachable.length}</h2>
           <div className="note deny">
             <b>These organisations have no active user to address the notice to.</b> A record
             was written for each, but nobody has been told. Reach them another way and note

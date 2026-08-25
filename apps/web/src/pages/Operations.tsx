@@ -63,7 +63,7 @@ export function Operations() {
         <div className="note okbox">Every scheduled job has succeeded within its expected window.</div>
       )}
 
-      <div className="card" style={{ marginTop: 13 }}>
+      <div className="card card-gap">
         <div className="pad" style={{ paddingBottom: 0 }}>
           <h2 style={{ marginTop: 0 }}>Scheduled jobs</h2>
         </div>
@@ -79,7 +79,7 @@ export function Operations() {
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 13 }}>
+      <div className="card card-gap">
         <div className="pad" style={{ paddingBottom: 0 }}>
           <h2 style={{ marginTop: 0 }}>Disaster recovery drills</h2>
           <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
@@ -126,8 +126,8 @@ export function Operations() {
       </div>
 
       {(ops.data?.limits ?? []).length > 0 && (
-        <div className="card pad" style={{ marginTop: 13 }}>
-          <h2 style={{ marginTop: 0, fontSize: 15 }}>What this page cannot tell you</h2>
+        <div className="card pad card-gap">
+          <h2 className="card-title">What this page cannot tell you</h2>
           <ul className="plain">
             {ops.data!.limits.map((l) => <li key={l} className="muted">{l}</li>)}
           </ul>

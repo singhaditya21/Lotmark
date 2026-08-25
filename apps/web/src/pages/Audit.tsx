@@ -92,7 +92,7 @@ export function Audit({ canVerify }: { canVerify: boolean }) {
       {result && <ChainVerdict result={result} />}
 
       {isLoading ? <div className="spinner">Loading the ledger…</div> : (
-        <div className="card ledger" style={{ marginTop: 13 }}>
+        <div className="card ledger card-gap">
           {(data?.entries ?? []).map((e) => (
             <div className="e" key={e.seq}>
               <span className="mono muted">#{e.seq}</span>

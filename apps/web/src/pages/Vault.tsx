@@ -54,7 +54,7 @@ export function Vault() {
           orders alone.
         </div>
       ) : (
-        <div className="card" style={{ marginTop: 13 }}>
+        <div className="card card-gap">
           <div className="scroll">
             <table>
               <thead>
