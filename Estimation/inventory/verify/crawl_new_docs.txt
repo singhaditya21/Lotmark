@@ -1,0 +1,525 @@
+/PvPI/Application_Form_1_1.docx
+/PvPI/about/Signal Review Panel under PvPI.pdf
+/PvPI/adr/ADR reporting Form_Kala Azar_28-02-2017.pdf
+/PvPI/adr/April 2017.pdf
+/PvPI/adr/August 2017.pdf
+/PvPI/adr/February 2017.pdf
+/PvPI/adr/January 2017.pdf
+/PvPI/adr/July 2017.pdf
+/PvPI/adr/June 2017.pdf
+/PvPI/adr/March 2017.pdf
+/PvPI/adr/May 2017.pdf
+/PvPI/adr/October-2016 .pdf
+/PvPI/adr/September 2017.pdf
+/PvPI/adr/Serious AEFI Case notification form.pdf
+/PvPI/das/Drug Alert (April 2017).pdf
+/PvPI/das/Drug Alert (April 2018).pdf
+/PvPI/das/Drug Alert (February 2017).pdf
+/PvPI/das/Drug Alert (January 2017).pdf
+/PvPI/das/Drug Alert (June 2017).pdf
+/PvPI/das/Drug Alert (March 2016).pdf
+/PvPI/das/Drug Alert (March 2017).pdf
+/PvPI/das/Drug Alert (March 2018).pdf
+/PvPI/das/Drug Alert (May 2017).pdf
+/PvPI/das/Drug Safety Alert (April 2016).pdf
+/PvPI/das/Drug Safety Alert (August 2016).pdf
+/PvPI/das/Drug Safety Alert (August 2017).pdf
+/PvPI/das/Drug Safety Alert (December 2016).pdf
+/PvPI/das/Drug Safety Alert (December 2017).pdf
+/PvPI/das/Drug Safety Alert (February 2018).pdf
+/PvPI/das/Drug Safety Alert (January 2018).pdf
+/PvPI/das/Drug Safety Alert (July 2016) .pdf
+/PvPI/das/Drug Safety Alert (July 2017).pdf
+/PvPI/das/Drug Safety Alert (June 2016) .pdf
+/PvPI/das/Drug Safety Alert (May 2016).pdf
+/PvPI/das/Drug Safety Alert (November 2016).pdf
+/PvPI/das/Drug Safety Alert (September 2017).pdf
+/PvPI/das/Regulatory Pharmacovigilance -Imp Safety label changes to Carbamazepine containing products -Reg.pdf
+/PvPI/das/Regulatory Pharmacovigilance -Potential signal and Recommendation for the label change of certain medicinal product marketed in India - Reg.pdf
+/PvPI/et/training/Cancellation and Refund policy for Skill Development Fee.pdf
+/PvPI/ne/MOM of 3rd Interactive Session.pdf
+/PvPI/ne/MOM of 4th Interactive Session.pdf
+/PvPI/ne/roles.pdf
+/PvPI/newsletter/Newsletter Vol 1 Issue 1 2011 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 2 Issue 2 2012 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 3 Issue 5 2013 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 3 Issue 6 2013 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 4 Issue 10 2014 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 5 Issue 11 2015 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 5 Issue 12 2015 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 5 Issue 13 2015 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 6 Issue 14 2016 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 6 Issue 15 2016 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 6 Issue 16 2016 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 6 Issue 17 2016 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 7 Issue 18 2017 PDF-min.pdf
+/PvPI/newsletter/Newsletter Vol 7 Issue 19 2017 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 7 Issue 20 2017 PDF.pdf
+/PvPI/newsletter/Newsletter Vol 7 Issue 21 2017 PDF.pdf
+/PvPI/oi/Stakeholder Feedback form.pdf
+/PvPI/order/Circular for Govt.Non Govt.Corporate Hospital.pdf
+/PvPI/order/Office Memorandum (Evaluation of PSURs data).pdf
+/PvPI/pub/Annual Performace Report 2017-18.pdf
+/PvPI/pub/Annual Report 2016-17.pdf
+/PvPI/pub/April 2016.pdf
+/PvPI/pub/April 2017.pdf
+/PvPI/pub/August 2016.pdf
+/PvPI/pub/August 2017.pdf
+/PvPI/pub/December 2015.pdf
+/PvPI/pub/December 2016.pdf
+/PvPI/pub/December 2017.pdf
+/PvPI/pub/February 2016.pdf
+/PvPI/pub/February 2017.pdf
+/PvPI/pub/Guidance Document for Marketing Authorization Holders.pdf
+/PvPI/pub/Guidance Document for spontaneous Adverse Drug Reaction Reporting.pdf
+/PvPI/pub/January 2016.pdf
+/PvPI/pub/January 2017.pdf
+/PvPI/pub/July 2016.pdf
+/PvPI/pub/July 2017.pdf
+/PvPI/pub/June 2017.pdf
+/PvPI/pub/March 2016.pdf
+/PvPI/pub/March 2017.pdf
+/PvPI/pub/May 2016.pdf
+/PvPI/pub/May 2017.pdf
+/PvPI/pub/November 2015.pdf
+/PvPI/pub/November 2016.pdf
+/PvPI/pub/November 2017.pdf
+/PvPI/pub/October 2015.pdf
+/PvPI/pub/October 2016.pdf
+/PvPI/pub/October 2017.pdf
+/PvPI/pub/Pharmacovigilance Programme of India Annual performance Report 2014-2015.pdf
+/PvPI/pub/Pharmacovigilance Programme of India Annual performance Report 2015-2016.pdf
+/PvPI/pub/September 2015.pdf
+/PvPI/pub/September 2016.pdf
+/PvPI/pub/September 2017.pdf
+/images/13.01.2022_Final_Tender_Document_for_113_Impurity.pdf
+/images/1_ICH_ICSR_Implementation_Guide_v5_02.pdf
+/images/2024-10_PDG_Fall_Meeting_-_Meeting_Highlights_final_clean_1.pdf
+/images/44_Derecognition_MDMC_Centre_Upload_Website.pdf
+/images/ADR-Reporting_status_of_April-2022_1.pdf
+/images/ADR-Reporting_status_of_April-2023.pdf
+/images/ADR-Reporting_status_of_Aug-2023.pdf
+/images/ADR-Reporting_status_of_Jan-2023.pdf
+/images/ADR-Reporting_status_of_June-2022_1.pdf
+/images/ADR-Reporting_status_of_March-2022.pdf
+/images/ADR-Reporting_status_of_Oct-2022.pdf
+/images/ADR-Reporting_status_of_Sept-2023_1.pdf
+/images/ADR_Reporting_Status_January-2024.pdf
+/images/ADR_reporting_status_of_PvPI_-April_-2024_1.pdf
+/images/ADR_reporting_status_of_PvPI_-December-2024.pdf
+/images/ADR_reporting_status_of_PvPI_-July-2024.pdf
+/images/ADR_reporting_status_of_PvPI_-June-2024_1.pdf
+/images/ADR_reporting_status_of_PvPI_-May_-2024.pdf
+/images/ADR_reporting_status_of_PvPI_-November-2024_1.pdf
+/images/ADR_reporting_status_of_PvPI_-October-2024.pdf
+/images/ADR_reporting_status_of_PvPI_-_January-2025.pdf
+/images/ADR_reporting_status_of_PvPI_-_July-2025.pdf
+/images/ADR_reporting_status_of_PvPI_-_June_-2025.pdf
+/images/ADR_reporting_status_of_PvPI_-_May-2025.pdf
+/images/AIIMS_Guwahati_Brochure-_2025.pdf
+/images/ANNUAL_REPORT_REGARDING_RTI_ACT-2005_1.pdf
+/images/ARnD/01.-Coal-tar-API.pdf
+/images/ARnD/02.-Coal-Tar-and-Salicylic-Acid-Ointment.pdf
+/images/ARnD/03.-Delamanid.pdf
+/images/ARnD/04.-Ferrous-Fumarate-and-Folic-Acid-Tablets.pdf
+/images/ARnD/05-Melatonin.pdf
+/images/ARnD/06.-Melatonin-Tablets.pdf
+/images/ARnD/07.-Nicotine.pdf
+/images/ARnD/08.-Nilotinib-Hydrochloride-Monohydrate.pdf
+/images/ARnD/09.-Nilotinib-Capsules.pdf
+/images/ARnD/1.-Carmellose-API.pdf
+/images/ARnD/1.-DRAFT-Amendments-for-Addendum-2028-10.6.2026.pdf
+/images/ARnD/1.-Dapagliflozin-Propanediol-Monohydrate--and-Metforn-Hydrochloride-Prolonged-release-Tablets.pdf
+/images/ARnD/10.-Metformin-and-Sitagliptin-Tablets.pdf
+/images/ARnD/10.-Polyethylene-Glycol.pdf
+/images/ARnD/10.-Pretomanid.pdf
+/images/ARnD/11.-Methylene-Chloride.pdf
+/images/ARnD/11.-Polyethylene-Glycol-3350.pdf
+/images/ARnD/11.-Pretomanid-Tablets.pdf
+/images/ARnD/12.-Nicardipine-Hydrochloride--Injection.pdf
+/images/ARnD/12.-Povidone-Iodine-Eye-Drops.pdf
+/images/ARnD/12.-Trypsin-Chymotrypsin-Tablets.pdf
+/images/ARnD/13-Sumatriptan-Tablets.pdf
+/images/ARnD/13.-Potato-Starch.pdf
+/images/ARnD/14.-Rice-Starch.pdf
+/images/ARnD/14.-Trypsin.pdf
+/images/ARnD/15.-Sunitinib-Malate.pdf
+/images/ARnD/16.-Sunitinib-Capsules.pdf
+/images/ARnD/17.-Wheat-Starch.pdf
+/images/ARnD/2.-Corn-Starch.pdf
+/images/ARnD/2.-Empagliflozin-Api.pdf
+/images/ARnD/24.-IPC-Update-July-10-2026.pdf
+/images/ARnD/3.-Doxycycline-for-injection.pdf
+/images/ARnD/3.-Empagliflozin-tablets.pdf
+/images/ARnD/4.-Doxycycline-API.pdf
+/images/ARnD/4.-Iron-Sucrose-Injection.pdf
+/images/ARnD/5.-Eltrombopag-Olamine.pdf
+/images/ARnD/5.-Methenamine-Hippurate.pdf
+/images/ARnD/6.-Eltrombopag-Olamine-tablets.pdf
+/images/ARnD/6.-Methenamine-Hippurate-Tablets.pdf
+/images/ARnD/7.-Fluconazole-in-Dextrose-Injection.pdf
+/images/ARnD/7.-Pazopanib-HCL.pdf
+/images/ARnD/8.-Halothane.pdf
+/images/ARnD/8.-Pazopanib-Tablets.pdf
+/images/ARnD/9.-Mesalazine-Gastro-resistant-Tablets.pdf
+/images/ARnD/9.-Phenytoin-Injection.pdf
+/images/ARnD/Approved--minutes-60th-SB-IPC.pdf
+/images/ARnD/Approved-minutes-59th-SB-IPC.pdf
+/images/ARnD/EoI_AnnexureI_Application-form_Verification-of-IP-Monographs.pdf
+/images/ARnD/EoI_verification-of-IP-monographs.pdf
+/images/ARnD/GD-11-Testing-of-DEG-and-EG-V2.0.pdf
+/images/ARnD/IP-Online-Notice-17Jul26.pdf
+/images/ARnD/Letter-for-Amendment-List-01-to-IP-2026_0001.pdf
+/images/ARnD/Letter-for-Errata-01-to-IP-2026_0001.pdf
+/images/ARnD/PDG-Annual-Meeting-Tokyo-October-2025.pdf
+/images/ARnD/PDG-Fall-Meeting---Meeting-Highlights.pdf
+/images/ARnD/PDG-Work-Plan-PPT.pdf
+/images/ARnD/PDG-working-Procedure.pdf
+/images/Admin/RTI-Annual-report-for-the-year-2025-26.pdf
+/images/Admin/RTI-Quarter-ending-30-06-2026.pdf
+/images/Admin/RTI-Quarterly-report-ending-31-03-2026.pdf
+/images/Admin/RTI-quarterly-report-1.pdf
+/images/Admin/updated-RR.pdf
+/images/Advertisement-for-the-post-of-SO--AA.pdf
+/images/Alpha_lipoic_acid.pdf
+/images/Amendments_rDNA_for_uploading_on_IPC_website_for_stakeholders_comments.pdf
+/images/Annexure_V-_Registration_Form.pdf
+/images/Annual_Repot_2020-21.PDF
+/images/Annual_Repot_2021-22.PDF
+/images/Appendices.pdf
+/images/Application_Form_1_1.docx
+/images/Application_Form_Call_for_Experts_Join_Expert_Working_Groups_of_the_Indian_Pharmacopoeia.pdf
+/images/Biologics/4.6.26-Draft_Amendments_Veterinary-products-file.pdf
+/images/Biologics/Draft-Revision-In-Biologicals_22.05.2026-pdf.pdf
+/images/Calcium_citrate_maletae.pdf
+/images/Call_for_Experts_to_Join_Expert_Working_Groups_of_the_Indian_Pharmacopoeia.pdf
+/images/Cancellation_Notice.pdf-1.pdf
+/images/Certification/Certification-Marks-Use.pdf
+/images/Certification/Certification_Process.pdf
+/images/Certification/Contact_us.pdf
+/images/Certification/Dealing_with_Complaints_and_Appeals.pdf
+/images/Certification/Fee_Structure.pdf
+/images/Certification/Feedback-Form.pdf
+/images/Certification/Impartiality_Policy.pdf
+/images/Change_in_Venue_for_the_Written_Examination_for_the_post_of_Scientific_Assistant.pdf
+/images/Clarification_on_Alternative_Methods_in_the_IP.pdf
+/images/Consultant.pdf
+/images/Corrigendum_against_Tender_for_Supply_of_113_Nos._of_Pharmaceutical_Impurity.pdf
+/images/Delisting_of_AMCs_under_PvPI_Notice_P1.pdf
+/images/Designating_FAA_CPIO20250704100912.pdf
+/images/Draft_Amendments.pdf
+/images/Draft_Amendments_General_Chapters_IP_2022_for_comments_30.11.2023.pdf
+/images/Draft_Amendments_Vaccines_and_immunosera_BBr_rDNA_Monographs_IP_2022_for_comments_30.11.2023.pdf
+/images/Draft_Amendments_to_IP_2018_for_stakeholders_comments.pdf
+/images/Drug_Safety_Alert_August_2021.pdf
+/images/Drug_Safety_Alert_August_2024.pdf
+/images/Drug_Safety_Alert_August_29_2025.pdf
+/images/Drug_Safety_Alert_December_2024.pdf
+/images/Drug_Safety_Alert_January_2021.pdf
+/images/Drug_Safety_Alert_July_2022.pdf
+/images/Drug_Safety_Alert_June_27_2025.pdf
+/images/Drug_Safety_Alert_March_12_2025.pdf
+/images/Drug_Safety_Alert_May_13_2025.pdf
+/images/Drug_Safety_Alert_May_2022.pdf
+/images/Drug_Safety_Alert_November_28_2024.pdf
+/images/Drug_Safety_Alerts_June_2024.pdf
+/images/Drugs_safety_Alert_February_2020_.pdf
+/images/E-Newsletter_-_Vol._5_Issue_2_2023.pdf
+/images/E-Newsletter_Vol._5_-_Issue_3_2023.pdf
+/images/E-Newsletter_Vol._6_Issue-1_2024.pdf
+/images/E-Newsletter_Vol._6_Issue_2.pdf
+/images/E-Newsletter_Vol._7_Issue_2_2025.pdf
+/images/E-_Newsletter_Vol._7_Issue_1_2025_compressed.pdf
+/images/Empanelment_for_Newspaper__Magazines_IPC_Library_2024.pdf
+/images/English_Notice_Inviting_Tender.pdf
+/images/Enrollment_form_for_new_ADR_monitoring_centre_under_PvPI.pdf
+/images/EoI_Terms_Conditions_with_Proforma_for_Empanelment.pdf
+/images/Extension_in_the_Implementation_Date_of_IP_Addendum_2021_Letter_270721.PDF
+/images/File393.pdf
+/images/File481.pdf
+/images/Final_English_Impurity_Advertisement.pdf
+/images/Final_Hindi_Impurity_Advertisement.pdf
+/images/Final_Tender_Document_for_70_Nos._of_API_Reference_Standard.pdf
+/images/GeM-Bidding-7676017_1.pdf
+/images/Handook_PvPI.pdf
+/images/Hindi_Notice_Inviting_Tender.pdf
+/images/Homepage/IPC-Calendar-of-Events.pdf
+/images/IPC_10_Year_Journey_Writeup2.pdf
+/images/IPC_Update_Feb_4_2022.pdf
+/images/IPC_Webinar_on_Approaches_to_Alternative_Microbiological_Methods.pdf
+/images/IP_Addendum_2021.pdf
+/images/Inhalation_Preparations_Revised.pdf
+/images/Instructions_for_Filling_the_Medical_Device_Adverse_1.2_1.pdf
+/images/Internsip_Flyer_-_8.5.2025_Final.pdf
+/images/Intimation.pdf
+/images/Intimation_Letter_PT-042023.pdf
+/images/List_of_Monthly_DRUGs_safety_alert_16-03-2020.pdf
+/images/MPR-_Dec_-2021.pdf
+/images/MPR-_Nov-2021.pdf
+/images/MPR-_Oct_-2021.pdf
+/images/MVPI_-_workshop_invitation.pdf
+/images/Manual_10_under_RTI_Act_200520250728164716_1.pdf
+/images/Manual_16.pdf.pdf
+/images/Manual_17pdf.pdf
+/images/Membership_Form_Contractual_Employee.pdf
+/images/Membership_Form_Regular_Employee.pdf
+/images/Membership_Form_Trainee_Internship.pdf
+/images/Microbial_Techniques-Webinar.pdf
+/images/Microbiology/Intimation-Letter.pdf
+/images/Microbiology/Registration-form-1.pdf
+/images/Monthly_Drug_Safety_Alert_October_2020.pdf
+/images/MvPI_Flyer_03.11.2020.pdf
+/images/MvPI_Newsletter_Vol._6_Issue_3_-_28.10.2024.pdf
+/images/NABH_NOMINATION_FORM16032020.pdf
+/images/News_Collaboration_with_BP_19.02.2021.pdf
+/images/Newsletter_-_Vol._6_Issue_4_-_17.1.2025.pdf
+/images/Nimhans_Workshop_updated_flyer.pdf
+/images/Notice-Lorcaserin_for_Omission_of_Monographs_of_Hydrochloride_and_Lorcaserin.pdf
+/images/Notice.PDF
+/images/Notice_on_IPRS_Use.PDF
+/images/Notice_regarding_Date__Venue_for_written_examination_of_Administrative_Assistant.pdf
+/images/PROJ10391_Assamese-Comic_Book_-_English_Book_Vertical.pdf
+/images/PROJ10391_Bengali_Comic_Book_-_English_Book_Vertical.pdf
+/images/PROJ10391_Gujarati_Comic_Book_-_English_Book_Vertical.pdf
+/images/PROJ10391_Hindi_Comic_Book_-_English_Book_Vertical.pdf
+/images/PROJ10391_Malayalam-Comic_Book_-_English_Book_Vertical.pdf
+/images/PROJ10391_Marathi_Comic_Book_-_English_Book_Vertical.pdf
+/images/PROJ10391_Punjabi-Comic_Book_-_Book_Vertical.pdf
+/images/PROJ10391_Urdu-Comic_Book_-_English_Book_Vertical.pdf
+/images/PROJ13825_Kannada_-_Comic_Book_-_English_Book_Vertical.pdf
+/images/PROJ13825_Oriya_-_Comic_Book_-_English_Book_Vertical.pdf
+/images/PROJ13825_Tamil_-_Comic_Book_-_English_Book_Vertical.pdf
+/images/PROJ13825_Telugu_-_Comic_Book_-_English_Book_Vertical.pdf
+/images/Phytopharmaceutical_Drugs_General_Chapter_-_01112021.pdf
+/images/Poster_-_Pregnancy_test_kits_adverse_event.pdf
+/images/Poster_-_Risk_of_Reuse_of_Medical_Device_1.pdf
+/images/Procedure_for_Purchasing_IP_2022_via_Online_Mode-_For_IP_conference_2022_attendees_Industry_and_Accademia_Only.pdf
+/images/PvPI_Profile_-_19.9.2025.pdf
+/images/PvPI_Training_Calendar-2025-26.pdf
+/images/QA/ANNEXURE-V-Registration-form.pdf
+/images/QA/Expression-of-Interest-submission-form-for-Performance-Evaluation-of-Laboratories.pdf
+/images/Quarterly_Report_for_ending_30.06.2022.PDF
+/images/Quarterly_report_for_CIC_for_the_quarter_ending_30-06-2025.pdf
+/images/Quaterly_Report_for_ending_31.03.2022.PDF
+/images/RSD/IP_Prednisone_Protocol-2.pdf
+/images/RTI/RTI.pdf
+/images/RTI_Annual_report_for_the_year_2023-24.pdf
+/images/RTI_Annual_report_for_the_year_2024-25.pdf
+/images/RTI_quarterly_report.pdf
+/images/RTI_quarterly_report_.pdf
+/images/RTI_quarterly_report_30-09-2024.pdf
+/images/Rashtriya_Ekta_Diwas-2020.pdf
+/images/Registration.pdf
+/images/Registration_Form.pdf
+/images/Registration_Form_PT-042023.pdf
+/images/Registration_form.pdf
+/images/Registration_form_PT_01_2025.pdf
+/images/Release_of_Addendum_2021_to_Indian_Pharmacopoeia_2018.pdf
+/images/Requisition_Form_Books_PeriodicalsSerials_etcpdf.pdf
+/images/Revised_Draft_General_Chapter_on_Approach_to_Alternative_Microbiological_Methods_24.06.21.pdf
+/images/SDP_CALENDAR_2025.pdf
+/images/SDP_Calendar_2020.pdf
+/images/SDP_Calendar_2022.pdf
+/images/SDP_Calendar_2023_05.01.2023.pdf
+/images/SDP_Calendar_2024-25.pdf
+/images/Selenous_Acid.pdf
+/images/Signed_letter_.pdf
+/images/Sikkim_Conference_Flyer_1.pdf
+/images/Standing_National_Committee_on_Medicine_SNCM.pdf
+/images/Tender_Documents_Tender_Notice_for_Disposal_of_Old__Obsolete_Items.pdf
+/images/Vacancy/Advertisment-for-Jr-Medical-Device-Assoicate.pdf
+/images/Vacancy/Advertisment-for-the-post-of-PA-and-Sr.-PA.pdf
+/images/Vacancy/Advertisment-for-the-post-of-PA-and-Sr.-PA1.pdf
+/images/Vacancy/Fireman-Advertisement.pdf
+/images/Vacancy/final-Pharmacopoeial-Associate-RR-1.pdf
+/images/Vacancy/final-Pharmacopoeial-Associate-RR.pdf
+/images/Vacancy/lab-attendant-Advertisement-3.pdf
+/images/Vacancy/recp-vaccency.pdf
+/images/Vacancy/result-for-the-post-of-SA.pdf
+/images/Vacancy/result-for-the-post-of-SSO-EWS.pdf
+/images/Vacancy/website-advertisement-for-the-post-of-SA-2026.pdf
+/images/Webinar_-_Biomedical_Engineer.pdf
+/images/Zinc_citrate.pdf
+/images/amendments__Vaccines_and_antisera_for_human_use_for_uploading_on_IPC_website_for_stakeholders_comments_15.04.2025.pdf
+/images/library/Final-GeM-tender.pdf
+/images/library/GeM-Tender-Published.pdf
+/images/library/List-of-Publishers-ONOS.pdf
+/images/library/SUPPLY-ORDER-FORM---2026.pdf
+/images/library/books/Registration-Form_240410_185136.pdf
+/images/mvpi/ADRMS-Registration-Form--for-Marketing-Authorization-Holders-MAHs-under-MvPI-3.pdf
+/images/mvpi/ADRMS-USER-MANUAL-FOR-STAKEHOLDERS.pdf
+/images/mvpi/Capture-and-record-the-information-of-MDAE-while-reporting-in-ADRMS.pdf
+/images/mvpi/Conducting-research-and-project-based-training-of-students-research-scholars-in-Materiovigilance-at-MDMC-or-NCC-MvPI-IPC.pdf
+/images/mvpi/Conducting-sensitization-programme-or-CME-or-ALT.pdf
+/images/mvpi/E-Newsletter---Vol.-8-Issue-2-UPDATED.pdf
+/images/mvpi/Enrolment-of-New-Medical-Device-Adverse-Event-Monitoring-Centres-MDMCs-and-Regional-Training-Centres-RTCs.pdf
+/images/mvpi/Format-I-Healthcare-Institution-Readiness-Assessment-Checklist-for-Engagement-as-MDMC.pdf
+/images/mvpi/Functioning-of-RTC-MvPI.pdf
+/images/mvpi/Healthcare-Institution-Readiness-Assessment-Checklist-for-Engagement-as-MDMC.pdf
+/images/mvpi/List-of-725-MDMCs.pdf
+/images/mvpi/MvPI-Newsletter-Vol.-7-Issue-4-2025.pdf
+/images/mvpi/MvPI-Newsletter-Vol.-8-Issue-1.pdf
+/images/mvpi/Newsletter-Vol.-7-Issue-3---8.10.25.pdf
+/images/mvpi/Resource_Material/Resource-materials-on-Adverse-Drug-Reaction-Monitoring-System-ADRMS.pdf
+/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-Blood-Pressure-Monitor.pdf
+/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-Dental-Amalgam.pdf
+/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-Dental-Implants.pdf
+/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-ECG.pdf
+/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-Pulse-Oximeter.pdf
+/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-Self-care-devices.pdf
+/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-medical-devices.pdf
+/images/news/581-4636657156.pdf
+/images/news/Amendment%20List003-9730213721.pdf
+/images/news/Annexure-2-0676979070.pdf
+/images/news/April%20News%20Letter-5357543339.pdf
+/images/news/Celebaration_of_72th_Indenpedence_Day_at_IPC_Ghaziabad.pdf
+/images/news/Errata%20012-0097385523.pdf
+/images/news/Errata11-2599255777.pdf
+/images/news/File783.pdf
+/images/news/Impurity%20Rate%20List-6013262732.pdf
+/images/news/Magazines-9089017331.pdf
+/images/news/Matter%20-%20Copy-3987606313.pdf
+/images/news/PQWE-7518330078.pdf
+/images/news/lP%20EM%20General%20Chapter%2012%20July%202016.pdf
+/images/news/lnauguration%20Ceremony%20website%20note-6122957878.pdf
+/images/pdf/AR%20Form-2103822203.pdf
+/images/pdf/Addendum-7063460911.pdf
+/images/pdf/Anti_Tubercular_Drugs_Monographs-6784513030.doc
+/images/pdf/Anti_cancer_Drugs_Monographs_-6840433229.doc
+/images/pdf/Antiretroviral_Drugs_Monographs-9303051538.doc
+/images/pdf/April_2016-7257289472.pdf
+/images/pdf/Charges-1949445585.pdf
+/images/pdf/December_2015-6995895751.pdf
+/images/pdf/February_2016-2498400991.pdf
+/images/pdf/File590.pdf
+/images/pdf/File717.pdf
+/images/pdf/File718.pdf
+/images/pdf/File753.pdf
+/images/pdf/File838.pdf
+/images/pdf/Inauguration_Ceremony_website_note-6122957878.pdf
+/images/pdf/January_2016-4983170198.pdf
+/images/pdf/March_2016-4685455691.pdf
+/images/pdf/May_2016-5972951440.pdf
+/images/pdf/November_2015-7699074658.pdf
+/images/pdf/Oct_2016-9657925265.pdf
+/images/pdf/October_2015-7649190217.pdf
+/images/pdf/September_2015-3781046885.pdf
+/images/pdf/Webinar_on_Oxygen_Standards.pdf
+/images/pdf/august2016-7505978886.pdf
+/images/pdf/december16-6789715999.pdf
+/images/pdf/june-2016-6350682298.pdf
+/images/pdf/nov16-6441257704.pdf
+/images/publication/IPC-Newsletter-Vol.-2-2025---8.6.2026.pdf
+/images/pvpi/11.-Order-issued-by-CDSCO-for-Sodium-Valproate-assocaited-Gum-Hyperplasia-dated-on-09.04.2019.pdf
+/images/pvpi/12.-Order-issued-by-CDSCO-for-Sulfasalazine-assocaited-DRESS-Syndrome-dated-on-09.04.2019.pdf
+/images/pvpi/1250-AMCs-List.pdf
+/images/pvpi/13.-Order-issued-by-CDSCO-for-Tranexamic-Acid-assocaited-Seizure-Convulsion-dated-on-09.04.2019.pdf
+/images/pvpi/14.-Order-issued-by-CDSCO-for-Cefepime-assocaited-Urticaria-dated-on-12.06.2019.pdf
+/images/pvpi/15.-Order-issued-by-CDSCO-for-Fluconazole-assocaited-Hyperpigmentation-dated-on-12.06.2019.pdf
+/images/pvpi/16.-Order-issued-by-CDSCO-for-Phenobarbital-assocaited-DRESS-Syndrome-dated-on-12.06.2019.pdf
+/images/pvpi/17.-Order-issued-by-CDSCO-for-Sulfasalazine-assocaited-SJS-dated-on-12.06.2019.pdf
+/images/pvpi/18.-Order-issued-by-CDSCO-for-Sulfasalazine-assocaited-TEN-dated-on-12.06.2019.pdf
+/images/pvpi/19.-Order-issued-by-CDSCO-for-Terbinafine-assocaited-AGEP-dated-on-12.06.2019.pdf
+/images/pvpi/20.-Order-issued-by-CDSCO-for--Carvedilol-assocaited-Hyperkalemia-dated-on-13.06.2019.pdf
+/images/pvpi/21.-Order-issued-by-CDSCO-for-Amlodipine-assocaited-Gingival-Hypertrophy-dated-on-13.06.2019.pdf
+/images/pvpi/22.-Order-issued-by-CDSCO-for-Amlodipine-associated-Alopecia-dated-on-13.06.2019.pdf
+/images/pvpi/23.-Order-issued-by-CDSCO-for-Cefixime-assocaited-Mouth-Ulceration-dated-on-19.06.2019.pdf
+/images/pvpi/24.-Order-issued-by-CDSCO-for-Meropenem-assocaited-Hypokalemia-dated-on-19.06.2019.pdf
+/images/pvpi/25.-Order-issued-by-CDSCO-for-Artemether-Lumefantrine-assocaited-SJS-dated-on-19.06.2019.pdf
+/images/pvpi/26.-Order-issued-by-CDSCO-for-Carbamazepine-assocaited-DRESS-Syndrome-dated-on-19.06.2019.pdf
+/images/pvpi/27.-Order-issued-by-CDSCO-for-Diclofenac-assocaited-Nicolous-Syndrome-dated-on-24.07.2019.pdf
+/images/pvpi/28.-Order-issued-by-CDSCO-for-Proton-Pump-Inhibitors-assocaited-Acute-Kidney-Injury-dated-on-04.11.2019.pdf
+/images/pvpi/29.-Order-issued-by-CDSCO-for-Chloroquine-associated-SJSTEN-dated-on-13.01.2020.pdf
+/images/pvpi/30.-Order-issued-by-CDSCO-for-Lamivudine-associated-Hearing-Loss-dated-on-13.01.2020.pdf
+/images/pvpi/31.-Order-issued-by-CDSCO-for-Carbimazole-related-agranulocytosis-dated-on-17.02.2026.pdf
+/images/pvpi/32.-Order-issued-by-CDSCO-for-Doxycycline-related-CNS-Side-effects-Restlessness-Anxiety-Irritability-Nervousness-and-Dizziness-dated-on-17.02.2026.pdf
+/images/pvpi/33.-Order-issued-by-CDSCO-for-Cotrimoxazole-related-Fixed-Drug-Eruption-dated-on-06.07.2026.pdf
+/images/pvpi/34.-Order-issued-by-CDSCO-for-Metronidazole-related-to-Fixed-Drug-Eruption-FDE-dated-on-06.07.2026.pdf
+/images/pvpi/35.-Order-issued-by-CDSCO-for-Oral-Itraconazole-related-Symmetrical-Drug-Related-Intertriginous-and-Flexural-Exanthema-dated-on-06.07.2026.pdf
+/images/pvpi/36.-Order-issued-by-CDSCO-for-PiperacillinTazobactam-related-Blurred-Vision-dated-on-06.07.2026.pdf
+/images/pvpi/37.-Order-issued-by-CDSCO-for-Tetracycline-related-Fixed-Drug-Eruption-FDE-dated-on-06.07.2026.pdf
+/images/pvpi/38.-Order-issued-by-CDSCO-for-Vancomycin-related-Dress-Syndrome-dated-on-06.07.2026.pdf
+/images/pvpi/39.-Order-issued-by-CDSCO-for-Azithromycin-related-Fixed-Drug-Eruption-FDE-dated-on-06.07.2026.pdf
+/images/pvpi/40.-Order-issued-by-CDSCO-for-Tranexamic-Acid-related-Back-Pain-dated-on-21.07.2026.pdf
+/images/pvpi/41.-Order-issued-by-CDSCO-for-Aceclofenac-related-Fixed-Drug-Eruption-FDE-dated-on-21.07.2026.pdf
+/images/pvpi/42.-Order-issued-by-CDSCO-for-Ibuprofen-related-Fixed-Drug-Eruption-FDE-dated-on-21.07.2026.pdf
+/images/pvpi/ADR-reporting-status-of-PvPI---Feb-2026.pdf
+/images/pvpi/ADR-reporting-status-of-PvPI---Jan-2026.pdf
+/images/pvpi/ADR-reporting-status-of-PvPI---July--2026.pdf
+/images/pvpi/ADR-reporting-status-of-PvPI---June--2026.pdf
+/images/pvpi/ADR-reporting-status-of-PvPI---March-2026.pdf
+/images/pvpi/ADR-reporting-status-of-PvPI---May-2026.pdf
+/images/pvpi/Brochure-NPW-2026-13.8.2026-c.pdf
+/images/pvpi/Drug-Safety-Alert-February-20-2026.pdf
+/images/pvpi/Drug-Safety-Alert-July-27-2026.pdf
+/images/pvpi/Drug-Safety-Alert-June-30-2026.pdf
+/images/pvpi/Drug-Safety-Alert-March-30-2026.pdf
+/images/pvpi/Drug-Safety-Alert-May-2026.pdf
+/images/pvpi/Drug_Safety_Alert_September_2025.pdf
+/images/pvpi/List-of-Drugs-Safety-Alerts-issued-by-PvPI-from-March-2016-to-till-date---27.07.2026.pdf
+/images/pvpi/List-of-SRP-Reccomendations-to-CDSCO-November-2025.pdf
+/images/pvpi/PvPI-Newsletter-Vol.-15-Issue-2-2025.pdf
+/images/pvpi/PvPI-Newsletter-Vol.-15-Issue-4-2025.pdf
+/images/pvpi/PvPI-Newsletter-Vol.-16-Issue-1-2026-January-to-March-2026.pdf
+/images/pvpi/PvPI-NewsletterV15I3.pdf
+/images/pvpi/PvPI-Training-Calendar---2026-27.pdf
+/images/pvpi/SDP-Calendar-2026.pdf
+/images/tenders/Audit_and_Certification_of_Annual_Accounts_of_the_IPC.pdf
+/mandates/indian-pharmacopoeia/monographs/images/general_requirements.pdf
+/news-highlights/images/general_requirements.pdf
+/pvpi/01.-Important-Safety-label-changes-to-Carbamazepine-containing-products-dated-on-12.05.2015.pdf
+/pvpi/02.-Order-issued-by-CDSCO-for-Carbamazepine-associated-SJSTEN-dated-on-12.05.2015.pdf
+/pvpi/03.-Order-issued-by-CDSCO-for-PiperacillinTazobactam-associated-HypokalaemiaBronchospasm-dated-on-23.12.2015.pdf
+/pvpi/04.-Potential-signal-and-Recommendation-for-the-label-change-of-certain-medicinal-product-marketed-in-India-dated-on-23.12.2015.pdf
+/pvpi/05.-Order-issued-by-CDSCO-for-Rabies-Vaccine-Human-associated-Erythema-Multiforme-dated-on-04.10.2016.pdf
+/pvpi/06.-Order-issued-by-CDSCO-for-Drug-safety-label-change-of-Rabies-Vaccine-Human-marketed-in-India-dated-on-04.10.2016.pdf
+/pvpi/07.-Order-issued-by-CDSCO-for-Cefotaxime-assocaited-Angioedema-dated-on-09.04.2019.pdf
+/pvpi/08.-Order-issued-by-CDSCO-for-Cefixime-assocaited-AGEP-on-dated-09.04.2019.pdf
+/pvpi/09.-Order-issued-by-CDSCO-for-Ofloxacine-assocaited-SJS-TEN-dated-on-09.04.2019.pdf
+/pvpi/10.-Order-issued-by-CDSCO-for-Quetiapine-assocaited-Urinary-Incontinence-dated-on-09.04.2019.pdf
+/~ajeet/ipc/images/File101.pdf
+/~ajeet/ipc/images/File298.pdf
+/~ajeet/ipc/images/File52.pdf
+/~ajeet/ipc/images/File851.pdf
+/~ajeet/ipc/images/Inclusion_Request_Form-6688861212-4345358082.pdf
+/~ajeet/ipc/images/Library_Seminar.docx
+/~ajeet/ipc/images/pdf/File101.pdf
+/~ajeet/ipc/images/pdf/File235.pdf
+/~ajeet/ipc/images/pdf/File462.pdf
+/~ajeet/ipc/images/pdf/File528.pdf
+/~ajeet/ipc/images/pdf/File54.pdf
+/~ajeet/ipc/images/pdf/File569.pdf
+/~ajeet/ipc/images/pdf/File572.pdf
+/~ajeet/ipc/images/pdf/File589.pdf
+/~ajeet/ipc/images/pdf/File593.pdf
+/~ajeet/ipc/images/pdf/File594.pdf
+/~ajeet/ipc/images/pdf/File595.pdf
+/~ajeet/ipc/images/pdf/File597.pdf
+/~ajeet/ipc/images/pdf/File642.doc
+/~ajeet/ipc/images/pdf/File646.pdf
+/~ajeet/ipc/images/pdf/File703.pdf
+/~ajeet/ipc/images/pdf/File704.pdf
+/~ajeet/ipc/images/pdf/File71.pdf
+/~ajeet/ipc/images/pdf/File715.pdf
+/~ajeet/ipc/images/pdf/File72.pdf
+/~ajeet/ipc/images/pdf/File722.pdf
+/~ajeet/ipc/images/pdf/File729.pdf
+/~ajeet/ipc/images/pdf/File73.pdf
+/~ajeet/ipc/images/pdf/File764.pdf
+/~ajeet/ipc/images/pdf/File792.pdf
+/~ajeet/ipc/images/pdf/File837.pdf
+/~ajeet/ipc/images/pdf/File851.pdf
+/~ajeet/ipc/images/pdf/IPC-8638138670.pdf
+/~ajeet/ipc/images/pdf/List_of_Contratcula_Employees_of_IPC-2903865390.pdf
+/~ajeet/ipc/images/pdf/Quarterly_Report-1195396333.pdf
+/~ajeet/ipc/images/pdf/Quarterly_Report_for_CIC_for_the_-8791276266.pdf
+/~ajeet/ipc/images/pdf/Quarterly_Report_for_CIC_for_the_Quarter_Ending_31-03-2017-6896506545.pdf
+/~ajeet/ipc/images/pdf/RTI-0994899223.pdf
+/~ajeet/ipc/images/pdf/RTI-4144634415.pdf
+/~ajeet/ipc/images/pdf/RTI-4755066104.pdf
+/~ajeet/ipc/images/pdf/RTI_Quarterly_Report-9311665339.pdf
+/~ajeet/ipc/images/pdf/RTI_Quarterly_Report_-_April_17_to_June_17-2624664392.pdf
+/~ajeet/ipc/images/pdf/RTI_Quartly_report-9917373733.pdf
+/~ajeet/ipc/images/pdf/quarter_ended-2198488114.pdf
+/~ajeet/ipc/images/pdf/rti-7349783573.pdf
+/~ajeet/ipc/images/pdf/rti-8251287779.pdf

@@ -1,0 +1,1030 @@
+{
+ "meta": {
+  "title": "ipc.gov.in → Gov.In CMS + DBIM · work breakdown and effort model",
+  "basis": "Plan Option 3 (adopt Gov.In CMS + DBIM), Option 1 executed unconditionally, Option 4 carried as the named fallback.",
+  "unit": "person-day (PD). 21 PD = 1 person-month.",
+  "three_point": "o / m / p are optimistic / most likely / pessimistic. Expected = (o + 4m + p) / 6. Sigma = (p - o) / 6.",
+  "note": "Stage 1 is the engagement that fits the stated INR 20-30 lakh envelope. Stage 2 is priced but NOT committed: the plan refuses to cost it before Stage 1's inventory lands. Options are excluded from both and priced separately.",
+  "measured": {
+   "date": "2026-09-01",
+   "ipc_soft_404": "302 -> /404-page-not-found.html -> 200, 55,253 bytes",
+   "destination_status_codes": "mohfw/meity/msde/rural: depth1=200 depth2=200 depth3=404",
+   "destination_sitemaps": "meity serves a real 50-URL XML sitemap; mohfw/msde/rural return the app HTML",
+   "idn_fee": "registry.gov.in FAQ: no fee for registration or renewal under GOV.IN"
+  },
+  "quantities": {
+   "as_measured": "2026-09-01, independently re-measured; method in Estimation/site-audit.md",
+   "html_paths_live": 1727,
+   "content_items": 1084,
+   "content_items_stub_share": 0.233,
+   "median_article_words": 52.5,
+   "pdfs_live": 2758,
+   "hindi_urls": 389,
+   "hindi_genuinely_translated": "79-86",
+   "hindi_declaring_lang_hi": 0,
+   "distinct_templates": 9,
+   "largest_template_share": 0.83,
+   "hostname_families": 4,
+   "hostnames_on_nic": 1,
+   "note": "Authoring scales with ITEMS, redirect work with URLs, accessibility with TEMPLATES. Costing 1,906 as pages would overstate the content line by about 75%.",
+   "duplicate_url_surplus": 676,
+   "english_urls": 1322,
+   "audit_note": "First pass reported 1,906/2,851/497; an adversarial re-count found percent-encoding variants counted as distinct paths. Figures here are the de-duplicated ones.",
+   "legacy_urls": 16
+  },
+  "client_effort_pd": {
+   "triage_sign_off": "40-70 PD of IPC subject-matter time (60-80% of triage is client-side and cannot be bought)",
+   "content_authoring": "See option X.7 — excluded from Stage 1 and Stage 2 on the assumption IPC editors author"
+  },
+  "destination_measured": {
+   "date": "2026-09-01",
+   "architecture": "WordPress + ACF per tenant at cms-<name>.digifootprint.gov.in, shared Next.js front end, APISIX gateway, Akamai",
+   "redirect_capability": "CONFIRMED — /cms/wp-json/redirection/v1 returns 200 with bulk import/export routes",
+   "redirect_practice": "ZERO — 201 pre-migration URLs across mohfw/meity/msde returned no 301s",
+   "status_codes": "depth1=200, depth2=200, depth3=404 on all four tenants — the destination reproduces the defect",
+   "bulk_import": "NONE — CMS Manual v1.0 (May 2025, 95pp): pages are pre-defined and can only be edited",
+   "tenant_volumes": {
+    "meity": "50 pages / 334 documents / 6,653 media",
+    "mohfw": "28 pages / 0 documents / 10 media",
+    "msde": "28 pages / 104 documents / 2,852 media"
+   },
+   "mohfw_cutover": "5-11 April 2026; old URLs did not survive; authored Hindi did not survive",
+   "hindi": "Runtime Bhashini machine translation, not stored content; all four tenants ship a Bhashini Disclaimer page",
+   "annexure_g": "Titled 'For Ministry/Departments not onboarded on gov.in CMS Platform' — an Option 4 obligation"
+  },
+  "unknowns_left_unpriced": [
+   "Per-document PDF remediation rate — the published 5-15/30-60 minute figures did not survive audit. A one-day sample of 30-50 of IPC's own PDFs would settle it and is the cheapest uncertainty reduction available.",
+   "Redirect rows per source path — the circulating GOV.UK 12:1 ratio did not survive audit. Direction holds (rows exceed paths); magnitude is unknown."
+  ],
+  "procurement": {
+   "revealed_route": "GeM, category 'Hiring of Agency for IT Projects - Milestone basis'. IPC published GEM/2026/B/7781379 on 13-07-2026, estimated value INR 15 lakh, QCBS 70:30, EMD 4%, ePBG 5% for 60 months.",
+   "prequalification": "ISO 9001 + ISO 27000 + CMMI Level 3, min 10 IT professionals on payroll, INR 15 lakh min average annual turnover — a bar that excludes the boutique tier this estimate prices.",
+   "financial_powers": "IPC bye-laws Schedule-I: Secretary-cum-Scientific Director sanctions scheme expenditure to INR 50 lakh; above that, Chairman of the Governing Body to INR 2 crore, then the Governing Body itself.",
+   "nicsi_route": "NICSI's Board-approved SOP permits a work order to empanelled agencies without open tender. The Application and Website Development panel (28 vendors) expires 30-09-2026 with no visible successor.",
+   "rate_card": "No NICSI rate card is in the public domain as of 01-09-2026."
+  }
+ },
+ "roles": [
+  {
+   "ref": "EL",
+   "role": "Engagement Lead / Programme Manager",
+   "rate": 22000,
+   "note": "Client-facing; owns the CIO route and the decision gates."
+  },
+  {
+   "ref": "SA",
+   "role": "Solution Architect — Gov.In CMS / DBIM",
+   "rate": 24000,
+   "note": "Scarce skill; the platform-specific knowledge is the whole reason to hire outside."
+  },
+  {
+   "ref": "BA",
+   "role": "Content Strategist / Business Analyst",
+   "rate": 13000,
+   "note": "Owns the inventory, the triage facilitation and the disposition register."
+  },
+  {
+   "ref": "ME",
+   "role": "Migration Engineer",
+   "rate": 12000,
+   "note": "Crawler, two-signal validator, transforms, redirect map, cut-over."
+  },
+  {
+   "ref": "AX",
+   "role": "Accessibility Specialist",
+   "rate": 15000,
+   "note": "WCAG 2.1 AA; 50 of GIGW 3.0's 88 guidelines."
+  },
+  {
+   "ref": "SE",
+   "role": "Security Engineer",
+   "rate": 20000,
+   "note": "CSP, patching, pre-audit clearance, CERT-In liaison."
+  },
+  {
+   "ref": "QA",
+   "role": "QA Engineer",
+   "rate": 9500,
+   "note": "Assertion suites; every redirect row is a test."
+  },
+  {
+   "ref": "CO",
+   "role": "Content Operations / Editorial support",
+   "rate": 7500,
+   "note": "Bulk load, alt text, metadata. The line most safely moved to IPC's own team."
+  }
+ ],
+ "packages": [
+  {
+   "ref": "0.1",
+   "stage": 1,
+   "phase": "0 · Mandate and decisions",
+   "name": "Correct the brief; re-issue the objective in writing",
+   "o": 2,
+   "m": 3,
+   "p": 6,
+   "mix": {
+    "EL": 0.6,
+    "SA": 0.4
+   }
+  },
+  {
+   "ref": "0.2",
+   "stage": 1,
+   "phase": "0 · Mandate and decisions",
+   "name": "Gov.In CMS intake via the MoHFW CIO route",
+   "o": 3,
+   "m": 5,
+   "p": 11,
+   "mix": {
+    "EL": 0.5,
+    "SA": 0.5
+   }
+  },
+  {
+   "ref": "0.3",
+   "stage": 1,
+   "phase": "0 · Mandate and decisions",
+   "name": "Governance: WIM, CIO/Tech SPOC, RACI",
+   "o": 1,
+   "m": 2,
+   "p": 4,
+   "mix": {
+    "EL": 0.7,
+    "BA": 0.3
+   },
+   "lean_excluded": "Appointing a Web Information Manager and a Tech SPOC is an internal act; a supplier can advise but cannot do it."
+  },
+  {
+   "ref": "0.4",
+   "stage": 1,
+   "phase": "0 · Mandate and decisions",
+   "name": "registry.gov.in control and DNS readiness",
+   "o": 1,
+   "m": 2,
+   "p": 4,
+   "mix": {
+    "ME": 0.6,
+    "SE": 0.4
+   }
+  },
+  {
+   "ref": "0.5",
+   "stage": 1,
+   "phase": "0 · Mandate and decisions",
+   "name": "Security-audit route settled in writing",
+   "o": 1,
+   "m": 2,
+   "p": 4,
+   "mix": {
+    "SE": 0.7,
+    "EL": 0.3
+   }
+  },
+  {
+   "ref": "0.6",
+   "stage": 1,
+   "phase": "0 · Mandate and decisions",
+   "name": "Redirect-capability determination (pivotal)",
+   "o": 2,
+   "m": 3,
+   "p": 7,
+   "mix": {
+    "SA": 0.6,
+    "ME": 0.4
+   }
+  },
+  {
+   "ref": "0.7",
+   "stage": 1,
+   "phase": "0 · Mandate and decisions",
+   "name": "S3WaaS eligibility ruled in or out on the record",
+   "o": 0.5,
+   "m": 1,
+   "p": 2,
+   "mix": {
+    "EL": 1.0
+   },
+   "lean_excluded": "Asking NIC whether S3WaaS is available to IPC is a letter from IPC, not a consultancy task."
+  },
+  {
+   "ref": "0.8",
+   "stage": 1,
+   "phase": "0 · Mandate and decisions",
+   "name": "DBIM logo lockup 3A/3B determination",
+   "o": 0.5,
+   "m": 1,
+   "p": 2,
+   "mix": {
+    "SA": 0.5,
+    "BA": 0.5
+   }
+  },
+  {
+   "ref": "0.9",
+   "stage": 1,
+   "phase": "0 · Mandate and decisions",
+   "name": "Destination status-code behaviour proven; origin status layer designed",
+   "o": 2,
+   "m": 4,
+   "p": 9,
+   "mix": {
+    "SA": 0.5,
+    "ME": 0.5
+   }
+  },
+  {
+   "ref": "1.1",
+   "stage": 1,
+   "phase": "1 · Emergency remediation",
+   "name": "Real HTTP 404: error-document status, not a 302 to a 200 page",
+   "o": 1.5,
+   "m": 3,
+   "p": 7,
+   "mix": {
+    "ME": 0.7,
+    "QA": 0.3
+   }
+  },
+  {
+   "ref": "1.2",
+   "stage": 1,
+   "phase": "1 · Emergency remediation",
+   "name": "Charset: header says iso-8859-1 over 389 Hindi pages; header wins",
+   "o": 2,
+   "m": 4,
+   "p": 9,
+   "mix": {
+    "ME": 0.6,
+    "QA": 0.4
+   }
+  },
+  {
+   "ref": "1.3",
+   "stage": 1,
+   "phase": "1 · Emergency remediation",
+   "name": "Stale branding removal and content review sweep",
+   "o": 1,
+   "m": 2,
+   "p": 5,
+   "mix": {
+    "CO": 0.7,
+    "BA": 0.3
+   },
+   "lean_excluded": "Removing a stale G20 banner and reviewing content currency is editorial work IPC already has staff for."
+  },
+  {
+   "ref": "1.4",
+   "stage": 1,
+   "phase": "1 · Emergency remediation",
+   "name": "GIGW policy pages and portal links (DBIM mandates no india.gov.in link)",
+   "o": 1,
+   "m": 2,
+   "p": 4,
+   "mix": {
+    "CO": 0.5,
+    "BA": 0.5
+   }
+  },
+  {
+   "ref": "1.5",
+   "stage": 1,
+   "phase": "1 · Emergency remediation",
+   "name": "Joomla 3.8.10 (Jun 2018) on PHP 7.4.33 — both EOL: patch path or upgrade",
+   "o": 4,
+   "m": 8,
+   "p": 20,
+   "mix": {
+    "ME": 0.6,
+    "SE": 0.4
+   },
+   "lean_excluded": "NIC hosts the server and owns the runtime; an EOL Joomla/PHP upgrade path is theirs to decide and execute."
+  },
+  {
+   "ref": "1.6",
+   "stage": 1,
+   "phase": "1 · Emergency remediation",
+   "name": "robots.txt and a stopgap sitemap",
+   "o": 0.5,
+   "m": 1,
+   "p": 2,
+   "mix": {
+    "ME": 1.0
+   }
+  },
+  {
+   "ref": "1.7",
+   "stage": 1,
+   "phase": "1 · Emergency remediation",
+   "name": "CSP hardening on the live site",
+   "o": 2,
+   "m": 4,
+   "p": 10,
+   "mix": {
+    "SE": 0.6,
+    "ME": 0.4
+   }
+  },
+  {
+   "ref": "1.8",
+   "stage": 1,
+   "phase": "1 · Emergency remediation",
+   "name": "lang=\"hi\" across 389 Hindi pages; close the joomla.xml version disclosure",
+   "o": 1,
+   "m": 2,
+   "p": 5,
+   "mix": {
+    "ME": 0.6,
+    "AX": 0.4
+   }
+  },
+  {
+   "ref": "2.1",
+   "stage": 1,
+   "phase": "2 · Inventory and redirect map",
+   "name": "Joomla database extraction and reconciliation",
+   "o": 2,
+   "m": 4,
+   "p": 10,
+   "mix": {
+    "ME": 0.7,
+    "BA": 0.3
+   }
+  },
+  {
+   "ref": "2.2",
+   "stage": 1,
+   "phase": "2 · Inventory and redirect map",
+   "name": "Live crawl with the two-signal validator",
+   "o": 3,
+   "m": 5,
+   "p": 10,
+   "mix": {
+    "ME": 1.0
+   }
+  },
+  {
+   "ref": "2.3",
+   "stage": 1,
+   "phase": "2 · Inventory and redirect map",
+   "name": "Wayback / CommonCrawl orphan recovery",
+   "o": 2,
+   "m": 3,
+   "p": 7,
+   "mix": {
+    "ME": 1.0
+   }
+  },
+  {
+   "ref": "2.4",
+   "stage": 1,
+   "phase": "2 · Inventory and redirect map",
+   "name": "Search Console traffic overlay",
+   "o": 1,
+   "m": 2,
+   "p": 4,
+   "mix": {
+    "BA": 0.6,
+    "ME": 0.4
+   }
+  },
+  {
+   "ref": "2.5",
+   "stage": 1,
+   "phase": "2 · Inventory and redirect map",
+   "name": "Union of four sources into one authoritative register",
+   "o": 2,
+   "m": 3,
+   "p": 7,
+   "mix": {
+    "ME": 0.6,
+    "BA": 0.4
+   }
+  },
+  {
+   "ref": "2.6",
+   "stage": 1,
+   "phase": "2 · Inventory and redirect map",
+   "name": "Triage facilitation — keep / archive / retire",
+   "o": 6,
+   "m": 10,
+   "p": 20,
+   "mix": {
+    "BA": 0.8,
+    "EL": 0.2
+   }
+  },
+  {
+   "ref": "2.7",
+   "stage": 1,
+   "phase": "2 · Inventory and redirect map",
+   "name": "PDF estate inventory and disposition (~2,758 documents)",
+   "o": 5,
+   "m": 8,
+   "p": 18,
+   "mix": {
+    "BA": 0.5,
+    "ME": 0.5
+   }
+  },
+  {
+   "ref": "2.8",
+   "stage": 1,
+   "phase": "2 · Inventory and redirect map",
+   "name": "Redirect map — ~1,727 distinct source paths; rows exceed paths",
+   "o": 10,
+   "m": 16,
+   "p": 32,
+   "mix": {
+    "ME": 0.6,
+    "BA": 0.4
+   }
+  },
+  {
+   "ref": "2.9",
+   "stage": 1,
+   "phase": "2 · Inventory and redirect map",
+   "name": "Hindi pairing by hreflang; bilingual gap quantified",
+   "o": 2,
+   "m": 3,
+   "p": 7,
+   "mix": {
+    "BA": 0.6,
+    "CO": 0.4
+   }
+  },
+  {
+   "ref": "3.1",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": "IA re-expression into the platform's flat structure",
+   "o": 4,
+   "m": 7,
+   "p": 14,
+   "mix": {
+    "BA": 0.6,
+    "SA": 0.4
+   }
+  },
+  {
+   "ref": "3.2",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": "Template mapping and the CCPS banner slot",
+   "o": 3,
+   "m": 5,
+   "p": 11,
+   "mix": {
+    "SA": 0.5,
+    "AX": 0.5
+   }
+  },
+  {
+   "ref": "3.3",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": "Platform configuration, roles, editorial workflow",
+   "o": 3,
+   "m": 5,
+   "p": 10,
+   "mix": {
+    "SA": 0.5,
+    "ME": 0.5
+   }
+  },
+  {
+   "ref": "3.4",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": "Content mapping, authoring supervision and QA — no bulk import exists",
+   "o": 6,
+   "m": 10,
+   "p": 22,
+   "mix": {
+    "ME": 0.5,
+    "CO": 0.3,
+    "QA": 0.2
+   }
+  },
+  {
+   "ref": "3.5",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": "Content load — Hindi, byte-verified",
+   "o": 2,
+   "m": 4,
+   "p": 9,
+   "mix": {
+    "ME": 0.5,
+    "CO": 0.5
+   }
+  },
+  {
+   "ref": "3.7",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": "Document register: categorisation scheme, priority tiers, bilingual flags",
+   "o": 4,
+   "m": 6,
+   "p": 13,
+   "mix": {
+    "ME": 0.6,
+    "CO": 0.4
+   }
+  },
+  {
+   "ref": "3.9",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": "Accessibility conformance — 9 templates, one covering 83% of pages",
+   "o": 5,
+   "m": 9,
+   "p": 20,
+   "mix": {
+    "AX": 0.7,
+    "QA": 0.3
+   }
+  },
+  {
+   "ref": "3.10",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": "Search configuration and relevance",
+   "o": 2,
+   "m": 3,
+   "p": 6,
+   "mix": {
+    "SA": 0.5,
+    "ME": 0.5
+   }
+  },
+  {
+   "ref": "3.11",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": "Applications disposition — scoping only",
+   "o": 3,
+   "m": 5,
+   "p": 12,
+   "mix": {
+    "SA": 0.6,
+    "BA": 0.4
+   }
+  },
+  {
+   "ref": "3.12",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": ".सरकार.भारत IDN registration and configuration (registry fee nil)",
+   "o": 1,
+   "m": 2,
+   "p": 4,
+   "mix": {
+    "ME": 1.0
+   }
+  },
+  {
+   "ref": "3.13",
+   "stage": 3,
+   "phase": "X · Priced options, excluded from both stages",
+   "name": "DBIM Annexure G KPI feed — Option 4 (bespoke) branch only",
+   "o": 2,
+   "m": 3,
+   "p": 7,
+   "mix": {
+    "ME": 0.6,
+    "SA": 0.4
+   }
+  },
+  {
+   "ref": "3.14",
+   "stage": 2,
+   "phase": "3 · Build and content load",
+   "name": "Editorial training and standard operating procedures",
+   "o": 3,
+   "m": 5,
+   "p": 10,
+   "mix": {
+    "BA": 0.5,
+    "CO": 0.5
+   }
+  },
+  {
+   "ref": "4.1",
+   "stage": 2,
+   "phase": "4 · Audit and clearance",
+   "name": "Pre-audit hardening and pre-clearance of the obvious",
+   "o": 3,
+   "m": 5,
+   "p": 11,
+   "mix": {
+    "SE": 0.8,
+    "ME": 0.2
+   }
+  },
+  {
+   "ref": "4.2",
+   "stage": 2,
+   "phase": "4 · Audit and clearance",
+   "name": "Auditor procurement and pre-audit paperwork",
+   "o": 2,
+   "m": 3,
+   "p": 7,
+   "mix": {
+    "EL": 0.5,
+    "SE": 0.5
+   }
+  },
+  {
+   "ref": "4.3",
+   "stage": 2,
+   "phase": "4 · Audit and clearance",
+   "name": "VAPT cycle 1 and remediation",
+   "o": 4,
+   "m": 7,
+   "p": 16,
+   "mix": {
+    "SE": 0.6,
+    "ME": 0.4
+   }
+  },
+  {
+   "ref": "4.4",
+   "stage": 2,
+   "phase": "4 · Audit and clearance",
+   "name": "Retest and closure",
+   "o": 2,
+   "m": 3,
+   "p": 8,
+   "mix": {
+    "SE": 0.7,
+    "QA": 0.3
+   }
+  },
+  {
+   "ref": "4.5",
+   "stage": 2,
+   "phase": "4 · Audit and clearance",
+   "name": "Audit clearance documentation",
+   "o": 2,
+   "m": 3,
+   "p": 6,
+   "mix": {
+    "SE": 0.5,
+    "BA": 0.5
+   }
+  },
+  {
+   "ref": "5.1",
+   "stage": 2,
+   "phase": "5 · Cut-over and hypercare",
+   "name": "Cut-over runbook: one A-record, MX untouchable",
+   "o": 2,
+   "m": 4,
+   "p": 9,
+   "mix": {
+    "ME": 0.5,
+    "SA": 0.3,
+    "EL": 0.2
+   }
+  },
+  {
+   "ref": "5.2",
+   "stage": 2,
+   "phase": "5 · Cut-over and hypercare",
+   "name": "Redirect layer live; every row asserted automatically",
+   "o": 3,
+   "m": 5,
+   "p": 11,
+   "mix": {
+    "ME": 0.6,
+    "QA": 0.4
+   }
+  },
+  {
+   "ref": "5.3",
+   "stage": 2,
+   "phase": "5 · Cut-over and hypercare",
+   "name": "Sitemap, robots and Search Console submission",
+   "o": 1,
+   "m": 2,
+   "p": 4,
+   "mix": {
+    "ME": 1.0
+   }
+  },
+  {
+   "ref": "5.4",
+   "stage": 2,
+   "phase": "5 · Cut-over and hypercare",
+   "name": "IGOD refresh and India Portal depository records",
+   "o": 2,
+   "m": 3,
+   "p": 7,
+   "mix": {
+    "BA": 0.6,
+    "CO": 0.4
+   }
+  },
+  {
+   "ref": "5.5",
+   "stage": 2,
+   "phase": "5 · Cut-over and hypercare",
+   "name": "Hypercare and 404-log review",
+   "o": 5,
+   "m": 8,
+   "p": 16,
+   "mix": {
+    "ME": 0.4,
+    "QA": 0.3,
+    "BA": 0.3
+   }
+  },
+  {
+   "ref": "P.1a",
+   "stage": 1,
+   "phase": "P · Programme management",
+   "name": "Programme and delivery management — Stage 1",
+   "o": 8,
+   "m": 13,
+   "p": 24,
+   "mix": {
+    "EL": 1.0
+   }
+  },
+  {
+   "ref": "P.2a",
+   "stage": 1,
+   "phase": "P · Programme management",
+   "name": "Business analysis and content governance — Stage 1",
+   "o": 5,
+   "m": 8,
+   "p": 15,
+   "mix": {
+    "BA": 1.0
+   }
+  },
+  {
+   "ref": "P.3a",
+   "stage": 1,
+   "phase": "P · Programme management",
+   "name": "Documentation, SOPs and the Stage 2 cost baseline",
+   "o": 4,
+   "m": 6,
+   "p": 12,
+   "mix": {
+    "BA": 0.5,
+    "ME": 0.5
+   }
+  },
+  {
+   "ref": "P.1b",
+   "stage": 2,
+   "phase": "P · Programme management",
+   "name": "Programme and delivery management — Stage 2",
+   "o": 10,
+   "m": 16,
+   "p": 30,
+   "mix": {
+    "EL": 1.0
+   }
+  },
+  {
+   "ref": "P.2b",
+   "stage": 2,
+   "phase": "P · Programme management",
+   "name": "Business analysis and content governance — Stage 2",
+   "o": 6,
+   "m": 10,
+   "p": 19,
+   "mix": {
+    "BA": 1.0
+   }
+  },
+  {
+   "ref": "P.3b",
+   "stage": 2,
+   "phase": "P · Programme management",
+   "name": "Documentation, SOPs and handover — Stage 2",
+   "o": 3,
+   "m": 5,
+   "p": 10,
+   "mix": {
+    "BA": 0.5,
+    "ME": 0.5
+   }
+  },
+  {
+   "ref": "X.1",
+   "stage": 3,
+   "phase": "X · Priced options, excluded from both stages",
+   "name": "Hindi coverage completion — Option 4 branch only; Option 3 uses runtime Bhashini",
+   "o": 40,
+   "m": 75,
+   "p": 160,
+   "mix": {
+    "CO": 0.7,
+    "BA": 0.3
+   }
+  },
+  {
+   "ref": "X.2",
+   "stage": 3,
+   "phase": "X · Priced options, excluded from both stages",
+   "name": "Alt text and metadata enrichment across the asset estate",
+   "o": 12,
+   "m": 22,
+   "p": 48,
+   "mix": {
+    "CO": 0.7,
+    "AX": 0.3
+   }
+  },
+  {
+   "ref": "X.3",
+   "stage": 3,
+   "phase": "X · Priced options, excluded from both stages",
+   "name": "PDF accessibility remediation, priority tier",
+   "o": 20,
+   "m": 38,
+   "p": 85,
+   "mix": {
+    "CO": 0.6,
+    "AX": 0.4
+   }
+  },
+  {
+   "ref": "X.4",
+   "stage": 3,
+   "phase": "X · Priced options, excluded from both stages",
+   "name": "STQC Certified Quality Website: manual, application, assessment",
+   "o": 12,
+   "m": 20,
+   "p": 42,
+   "mix": {
+    "BA": 0.4,
+    "SE": 0.3,
+    "AX": 0.3
+   }
+  },
+  {
+   "ref": "X.5",
+   "stage": 3,
+   "phase": "X · Priced options, excluded from both stages",
+   "name": "Applications replatform — e-services, shop, PvPI, iponline",
+   "o": 60,
+   "m": 120,
+   "p": 280,
+   "mix": {
+    "SA": 0.2,
+    "ME": 0.5,
+    "QA": 0.2,
+    "BA": 0.1
+   }
+  },
+  {
+   "ref": "X.6",
+   "stage": 3,
+   "phase": "X · Priced options, excluded from both stages",
+   "name": "IAAP Certified Auditor Review Report — mandatory gate before STQC evaluation",
+   "o": 5,
+   "m": 9,
+   "p": 18,
+   "mix": {
+    "AX": 0.6,
+    "BA": 0.4
+   }
+  },
+  {
+   "ref": "X.7",
+   "stage": 3,
+   "phase": "X · Priced options, excluded from both stages",
+   "name": "Supplier-side manual authoring of surviving content items (if IPC cannot staff it)",
+   "o": 60,
+   "m": 95,
+   "p": 190,
+   "mix": {
+    "CO": 0.6,
+    "BA": 0.25,
+    "QA": 0.15
+   }
+  },
+  {
+   "ref": "X.8",
+   "stage": 3,
+   "phase": "X · Priced options, excluded from both stages",
+   "name": "Document repository loading — ~2,758 PDFs, one hand-made post each, 6 mandatory fields",
+   "o": 60,
+   "m": 95,
+   "p": 190,
+   "mix": {
+    "CO": 0.75,
+    "BA": 0.15,
+    "QA": 0.1
+   }
+  }
+ ],
+ "risks": [
+  {
+   "ref": "E1",
+   "stage": 1,
+   "risk": "Joomla database access refused or delayed; inventory falls back to crawl-only and is reconciled twice",
+   "prob": 0.5,
+   "impact": 8
+  },
+  {
+   "ref": "E2",
+   "stage": 1,
+   "risk": "Gov.In CMS intake stalls; the fallback decision has to be worked and defended",
+   "prob": 0.45,
+   "impact": 6
+  },
+  {
+   "ref": "E3",
+   "stage": 1,
+   "risk": "True estate materially larger than the ~1,787 working figure",
+   "prob": 0.35,
+   "impact": 12
+  },
+  {
+   "ref": "E4",
+   "stage": 1,
+   "risk": "Per-page 301s are contracted but never delivered — capability is confirmed (Redirection plugin REST with bulk import) yet 201 pre-migration URLs across three live tenants returned zero 301s",
+   "prob": 0.25,
+   "impact": 7
+  },
+  {
+   "ref": "E12",
+   "stage": 1,
+   "risk": "Retired shallow paths cannot return 404/410 on the destination — MEASURED: all four DBIM reference sites answer 200 at depth 1 and 2, 404 only at depth 3",
+   "prob": 0.7,
+   "impact": 6
+  },
+  {
+   "ref": "E5",
+   "stage": 1,
+   "risk": "Client-side triage sign-off slips, extending the management line",
+   "prob": 0.55,
+   "impact": 10
+  },
+  {
+   "ref": "E6",
+   "stage": 1,
+   "risk": "Production change windows on the live Joomla are slower than assumed",
+   "prob": 0.5,
+   "impact": 6
+  },
+  {
+   "ref": "E7",
+   "stage": 1,
+   "risk": "Devanagari corruption found in source, forcing re-keying rather than transcoding",
+   "prob": 0.3,
+   "impact": 5
+  },
+  {
+   "ref": "E8",
+   "stage": 2,
+   "risk": "Platform ingest is hand-authoring — CONFIRMED, not a risk: CMS Manual v1.0 has zero occurrences of bulk/import/CSV. Residual is the supervision overhead",
+   "prob": 0.95,
+   "impact": 10
+  },
+  {
+   "ref": "E9",
+   "stage": 2,
+   "risk": "A third audit cycle is required",
+   "prob": 0.45,
+   "impact": 8
+  },
+  {
+   "ref": "E10",
+   "stage": 2,
+   "risk": "Applications pulled into scope mid-flight rather than scoped separately",
+   "prob": 0.35,
+   "impact": 30
+  },
+  {
+   "ref": "E11",
+   "stage": 2,
+   "risk": "Attrition and re-ramp across a long elapsed programme",
+   "prob": 0.5,
+   "impact": 12
+  },
+  {
+   "ref": "E13",
+   "stage": 1,
+   "risk": "EOL Joomla and PHP force a version upgrade rather than a patch",
+   "prob": 0.6,
+   "impact": 10
+  }
+ ],
+ "commercials": {
+  "margin": 0.25,
+  "gst": 0.18,
+  "stage1_passthrough_inr": {
+   "low": 60000,
+   "base": 100000,
+   "high": 180000,
+   "note": "Crawl and validation tooling, a commercial rank/traffic data pull, and the .bharat IDN. Statutory audit and certification fees sit in Stage 2 and in the options."
+  }
+ }
+}

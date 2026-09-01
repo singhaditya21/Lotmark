@@ -8,10 +8,29 @@ GIGW 3.0, S3WaaS, CERT-In, STQC) and by direct probing of the live sites.
 
 | Document | What it is |
 |---|---|
+| [`estimate.md`](estimate.md) | **The estimate** — what it costs, who does it, and what a ₹20–30 lakh budget actually buys |
+| [`model/`](model/) | The effort model: 62 work packages, a seeded Monte Carlo, and the run that produced every figure |
 | [`migration-plan.md`](migration-plan.md) | The plan — target-state options, a recommendation, seven phases with exit criteria, risks, and the questions that must be answered before anything is costed |
 | [`site-audit.md`](site-audit.md) | Measured source state of ipc.gov.in: platform, hosting, crawlability, security headers, content inventory, bilingual coverage |
 | [`inventory/ipc-gov-in-urls.tsv`](inventory/ipc-gov-in-urls.tsv) | 195 URLs discovered from the navigation, with section, depth, language and type |
 | [`inventory/india-gov-in-sitemap-urls.txt`](inventory/india-gov-in-sitemap-urls.txt) | The 55 URLs in india.gov.in's published sitemap |
+
+## The answer, if you read nothing else
+
+**₹20–30 lakh buys Stage 1: remediate the live site, and produce the signed
+inventory and redirect map. It does not buy the migration.** That is 179
+person-days at P80 — ₹23.88 lakh excluding GST — delivered by eight named people
+averaging 1.55 FTE over 5.5 months. The full migration is roughly ₹53 lakh, and
+the priced options beyond it another ₹58 lakh.
+
+Stage 1 is also what the plan independently recommends as the first contract,
+because it refuses to cost the migration until the inventory exists. And it sits
+inside the Secretary-cum-Scientific Director's own ₹50 lakh sanction power,
+where the ₹53 lakh full programme would escalate to the Governing Body.
+
+**Before bidding, settle one thing:** IPC's own last IT tender demanded ISO 9001,
+ISO 27000 and CMMI Level 3 — a bar that excludes the boutique tier which makes
+₹20–30 lakh possible. See [`estimate.md` §10](estimate.md).
 
 ## The three findings that matter most
 
@@ -28,10 +47,15 @@ standards migration, not an infrastructure one, and costing it as the latter
 prices the wrong project.
 
 **3 · The site is roughly ten times larger than its menu suggests.** The
-navigation exposes 195 pages; the real surface is nearer **1,787 HTML paths and
-2,519 PDFs across four hostnames**, including a PvPI section and an eight-year
-news archive that are invisible from the homepage. Nothing should be costed
-before a proper inventory.
+navigation exposes 195 pages; measured, the estate is **1,906 live HTML paths
+and 2,851 PDFs across four hostnames**. But the number that drives authoring is
+**1,084 content items** — the rest are duplicate routes to the same article, and
+that is redirect work, not authoring work.
+
+**And a fourth, found while costing it:** the destination has **no bulk import**.
+MoHFW's own migration onto this platform carried across 28 pages and no
+documents at all. Content volume converts directly into hand-keying, which makes
+triage the whole project rather than a tidying step.
 
 ## Two defects worth fixing this month, whatever is decided
 
@@ -58,6 +82,9 @@ dig +short ipc.gov.in NS
 ```
 
 > **Scope note.** This folder is desk research from outside the organisation.
+> The estimate's quantities are measured and its method is reproducible; its
+> rates are a mixture of published benchmarks and stated judgement, and no
+> statutory fee in it is a quote.
 > It has no access to the Joomla database, the CMS, server logs or analytics,
 > and the plan says where each of those gaps changes the answer. Treat the page
 > and document counts as floors with a stated method, not as an audited total.

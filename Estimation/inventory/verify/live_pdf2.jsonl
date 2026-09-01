@@ -1,0 +1,579 @@
+{"p": "/PvPI/Application_Form_1_1.docx", "code": 206, "loc": "", "ct": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "range": "bytes 0-255/585546", "magic": "PK\u0003\u0004\u0014"}
+{"p": "/PvPI/about/Signal Review Panel under PvPI.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/19808", "magic": "%PDF-"}
+{"p": "/PvPI/adr/ADR reporting Form_Kala Azar_28-02-2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/193295", "magic": "%PDF-"}
+{"p": "/PvPI/adr/April 2017.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/PvPI/adr/August 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/3333075", "magic": "%PDF-"}
+{"p": "/PvPI/adr/February 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/10066616", "magic": "%PDF-"}
+{"p": "/PvPI/adr/January 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/4220527", "magic": "%PDF-"}
+{"p": "/PvPI/adr/July 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/853940", "magic": "%PDF-"}
+{"p": "/PvPI/adr/June 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/3566492", "magic": "%PDF-"}
+{"p": "/PvPI/adr/March 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/3854598", "magic": "%PDF-"}
+{"p": "/PvPI/adr/May 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/3501004", "magic": "%PDF-"}
+{"p": "/PvPI/adr/October-2016 .pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/4607234", "magic": "%PDF-"}
+{"p": "/PvPI/adr/September 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/6096264", "magic": "%PDF-"}
+{"p": "/PvPI/adr/Serious AEFI Case notification form.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/571482", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Alert (April 2017).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/397683", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Alert (April 2018).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/636448", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Alert (February 2017).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/216292", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Alert (January 2017).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/144712", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Alert (June 2017).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/141154", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Alert (March 2016).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/177422", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Alert (March 2017).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/384942", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Alert (March 2018).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/636020", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Alert (May 2017).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/350081", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (April 2016).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/29110", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (August 2016).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/159600", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (August 2017).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/635351", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (December 2016).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/274448", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (December 2017).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/634822", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (February 2018).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/631986", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (January 2018).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/636193", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (July 2016) .pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/224482", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (July 2017).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/290437", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (June 2016) .pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/313930", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (May 2016).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/213588", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (November 2016).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/189644", "magic": "%PDF-"}
+{"p": "/PvPI/das/Drug Safety Alert (September 2017).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/638661", "magic": "%PDF-"}
+{"p": "/PvPI/das/Regulatory Pharmacovigilance -Imp Safety label changes to Carbamazepine containing products -Reg.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/52466", "magic": "%PDF-"}
+{"p": "/PvPI/das/Regulatory Pharmacovigilance -Potential signal and Recommendation for the label change of certain medicinal product marketed in India - Reg.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/43894", "magic": "%PDF-"}
+{"p": "/PvPI/et/training/Cancellation and Refund policy for Skill Development Fee.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/39830", "magic": "%PDF-"}
+{"p": "/PvPI/ne/MOM of 3rd Interactive Session.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/316532", "magic": "%PDF-"}
+{"p": "/PvPI/ne/MOM of 4th Interactive Session.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/725652", "magic": "%PDF-"}
+{"p": "/PvPI/ne/roles.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/503210", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 1 Issue 1 2011 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/4471626", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 2 Issue 2 2012 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/4394734", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 3 Issue 5 2013 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/7333594", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 3 Issue 6 2013 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1183748", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 4 Issue 10 2014 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1554004", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 5 Issue 11 2015 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2184696", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 5 Issue 12 2015 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/3071320", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 5 Issue 13 2015 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/3053944", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 6 Issue 14 2016 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2212826", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 6 Issue 15 2016 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1886034", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 6 Issue 16 2016 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/8308708", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 6 Issue 17 2016 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/4020890", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 7 Issue 18 2017 PDF-min.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1463897", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 7 Issue 19 2017 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2087322", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 7 Issue 20 2017 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2753080", "magic": "%PDF-"}
+{"p": "/PvPI/newsletter/Newsletter Vol 7 Issue 21 2017 PDF.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/7452798", "magic": "%PDF-"}
+{"p": "/PvPI/oi/Stakeholder Feedback form.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/72836", "magic": "%PDF-"}
+{"p": "/PvPI/order/Circular for Govt.Non Govt.Corporate Hospital.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/549226", "magic": "%PDF-"}
+{"p": "/PvPI/order/Office Memorandum (Evaluation of PSURs data).pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/479868", "magic": "%PDF-"}
+{"p": "/PvPI/pub/Annual Performace Report 2017-18.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/21187337", "magic": "%PDF-"}
+{"p": "/PvPI/pub/Annual Report 2016-17.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/36285992", "magic": "%PDF-"}
+{"p": "/PvPI/pub/April 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/325770", "magic": "%PDF-"}
+{"p": "/PvPI/pub/April 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/276884", "magic": "%PDF-"}
+{"p": "/PvPI/pub/August 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/70636", "magic": "%PDF-"}
+{"p": "/PvPI/pub/August 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/599798", "magic": "%PDF-"}
+{"p": "/PvPI/pub/December 2015.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/329242", "magic": "%PDF-"}
+{"p": "/PvPI/pub/December 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/121288", "magic": "%PDF-"}
+{"p": "/PvPI/pub/December 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/669890", "magic": "%PDF-"}
+{"p": "/PvPI/pub/February 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/327336", "magic": "%PDF-"}
+{"p": "/PvPI/pub/February 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/287656", "magic": "%PDF-"}
+{"p": "/PvPI/pub/Guidance Document for Marketing Authorization Holders.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/9408860", "magic": "%PDF-"}
+{"p": "/PvPI/pub/Guidance Document for spontaneous Adverse Drug Reaction Reporting.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/5538420", "magic": "%PDF-"}
+{"p": "/PvPI/pub/January 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/313990", "magic": "%PDF-"}
+{"p": "/PvPI/pub/January 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/285890", "magic": "%PDF-"}
+{"p": "/PvPI/pub/July 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/4164300", "magic": "%PDF-"}
+{"p": "/PvPI/pub/July 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/235256", "magic": "%PDF-"}
+{"p": "/PvPI/pub/June 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/401324", "magic": "%PDF-"}
+{"p": "/PvPI/pub/March 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/335704", "magic": "%PDF-"}
+{"p": "/PvPI/pub/March 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/329260", "magic": "%PDF-"}
+{"p": "/PvPI/pub/May 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/311634", "magic": "%PDF-"}
+{"p": "/PvPI/pub/May 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/313934", "magic": "%PDF-"}
+{"p": "/PvPI/pub/November 2015.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/321098", "magic": "%PDF-"}
+{"p": "/PvPI/pub/November 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/278758", "magic": "%PDF-"}
+{"p": "/PvPI/pub/November 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/711574", "magic": "%PDF-"}
+{"p": "/PvPI/pub/October 2015.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/309780", "magic": "%PDF-"}
+{"p": "/PvPI/pub/October 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/167318", "magic": "%PDF-"}
+{"p": "/PvPI/pub/October 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/614998", "magic": "%PDF-"}
+{"p": "/PvPI/pub/Pharmacovigilance Programme of India Annual performance Report 2014-2015.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/7580520", "magic": "%PDF-"}
+{"p": "/PvPI/pub/Pharmacovigilance Programme of India Annual performance Report 2015-2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2516486", "magic": "%PDF-"}
+{"p": "/PvPI/pub/September 2015.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/132850", "magic": "%PDF-"}
+{"p": "/PvPI/pub/September 2016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/216972", "magic": "%PDF-"}
+{"p": "/PvPI/pub/September 2017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/602553", "magic": "%PDF-"}
+{"p": "/images/13.01.2022_Final_Tender_Document_for_113_Impurity.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/1_ICH_ICSR_Implementation_Guide_v5_02.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1400702", "magic": "%PDF-"}
+{"p": "/images/2024-10_PDG_Fall_Meeting_-_Meeting_Highlights_final_clean_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/427874", "magic": "%PDF-"}
+{"p": "/images/44_Derecognition_MDMC_Centre_Upload_Website.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/136397", "magic": "%PDF-"}
+{"p": "/images/ADR-Reporting_status_of_April-2022_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1167258", "magic": "%PDF-"}
+{"p": "/images/ADR-Reporting_status_of_April-2023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1322820", "magic": "%PDF-"}
+{"p": "/images/ADR-Reporting_status_of_Aug-2023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1467123", "magic": "%PDF-"}
+{"p": "/images/ADR-Reporting_status_of_Jan-2023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1273757", "magic": "%PDF-"}
+{"p": "/images/ADR-Reporting_status_of_June-2022_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1120583", "magic": "%PDF-"}
+{"p": "/images/ADR-Reporting_status_of_March-2022.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/ADR-Reporting_status_of_Oct-2022.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1241944", "magic": "%PDF-"}
+{"p": "/images/ADR-Reporting_status_of_Sept-2023_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1505545", "magic": "%PDF-"}
+{"p": "/images/ADR_Reporting_Status_January-2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1539398", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-April_-2024_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1580314", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-December-2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1651758", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-July-2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1944497", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-June-2024_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1561369", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-May_-2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1567721", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-November-2024_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1661719", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-October-2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2176458", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-_January-2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1703973", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-_July-2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1800399", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-_June_-2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1806558", "magic": "%PDF-"}
+{"p": "/images/ADR_reporting_status_of_PvPI_-_May-2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2454529", "magic": "%PDF-"}
+{"p": "/images/AIIMS_Guwahati_Brochure-_2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2400578", "magic": "%PDF-"}
+{"p": "/images/ANNUAL_REPORT_REGARDING_RTI_ACT-2005_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/11995", "magic": "%PDF-"}
+{"p": "/images/ARnD/01.-Coal-tar-API.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/305112", "magic": "%PDF-"}
+{"p": "/images/ARnD/02.-Coal-Tar-and-Salicylic-Acid-Ointment.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/304703", "magic": "%PDF-"}
+{"p": "/images/ARnD/03.-Delamanid.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/360631", "magic": "%PDF-"}
+{"p": "/images/ARnD/04.-Ferrous-Fumarate-and-Folic-Acid-Tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/379423", "magic": "%PDF-"}
+{"p": "/images/ARnD/05-Melatonin.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/299907", "magic": "%PDF-"}
+{"p": "/images/ARnD/06.-Melatonin-Tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/292282", "magic": "%PDF-"}
+{"p": "/images/ARnD/07.-Nicotine.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/299618", "magic": "%PDF-"}
+{"p": "/images/ARnD/08.-Nilotinib-Hydrochloride-Monohydrate.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/349536", "magic": "%PDF-"}
+{"p": "/images/ARnD/09.-Nilotinib-Capsules.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/302162", "magic": "%PDF-"}
+{"p": "/images/ARnD/1.-Carmellose-API.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/330550", "magic": "%PDF-"}
+{"p": "/images/ARnD/1.-DRAFT-Amendments-for-Addendum-2028-10.6.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/974587", "magic": "%PDF-"}
+{"p": "/images/ARnD/1.-Dapagliflozin-Propanediol-Monohydrate--and-Metforn-Hydrochloride-Prolonged-release-Tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/311243", "magic": "%PDF-"}
+{"p": "/images/ARnD/10.-Metformin-and-Sitagliptin-Tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/348057", "magic": "%PDF-"}
+{"p": "/images/ARnD/10.-Polyethylene-Glycol.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/402357", "magic": "%PDF-"}
+{"p": "/images/ARnD/10.-Pretomanid.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/426697", "magic": "%PDF-"}
+{"p": "/images/ARnD/11.-Methylene-Chloride.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/294297", "magic": "%PDF-"}
+{"p": "/images/ARnD/11.-Polyethylene-Glycol-3350.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/341106", "magic": "%PDF-"}
+{"p": "/images/ARnD/11.-Pretomanid-Tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/317740", "magic": "%PDF-"}
+{"p": "/images/ARnD/12.-Nicardipine-Hydrochloride--Injection.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/327650", "magic": "%PDF-"}
+{"p": "/images/ARnD/12.-Povidone-Iodine-Eye-Drops.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/240414", "magic": "%PDF-"}
+{"p": "/images/ARnD/12.-Trypsin-Chymotrypsin-Tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/312330", "magic": "%PDF-"}
+{"p": "/images/ARnD/13-Sumatriptan-Tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/292725", "magic": "%PDF-"}
+{"p": "/images/ARnD/13.-Potato-Starch.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/384242", "magic": "%PDF-"}
+{"p": "/images/ARnD/14.-Rice-Starch.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/377215", "magic": "%PDF-"}
+{"p": "/images/ARnD/14.-Trypsin.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/324401", "magic": "%PDF-"}
+{"p": "/images/ARnD/15.-Sunitinib-Malate.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/362044", "magic": "%PDF-"}
+{"p": "/images/ARnD/16.-Sunitinib-Capsules.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/349692", "magic": "%PDF-"}
+{"p": "/images/ARnD/17.-Wheat-Starch.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/369115", "magic": "%PDF-"}
+{"p": "/images/ARnD/2.-Corn-Starch.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/312698", "magic": "%PDF-"}
+{"p": "/images/ARnD/2.-Empagliflozin-Api.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/296837", "magic": "%PDF-"}
+{"p": "/images/ARnD/24.-IPC-Update-July-10-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/162407", "magic": "%PDF-"}
+{"p": "/images/ARnD/3.-Doxycycline-for-injection.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/340287", "magic": "%PDF-"}
+{"p": "/images/ARnD/3.-Empagliflozin-tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/286225", "magic": "%PDF-"}
+{"p": "/images/ARnD/4.-Doxycycline-API.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/353254", "magic": "%PDF-"}
+{"p": "/images/ARnD/4.-Iron-Sucrose-Injection.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/337594", "magic": "%PDF-"}
+{"p": "/images/ARnD/5.-Eltrombopag-Olamine.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/383380", "magic": "%PDF-"}
+{"p": "/images/ARnD/5.-Methenamine-Hippurate.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/236317", "magic": "%PDF-"}
+{"p": "/images/ARnD/6.-Eltrombopag-Olamine-tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/286195", "magic": "%PDF-"}
+{"p": "/images/ARnD/6.-Methenamine-Hippurate-Tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/227805", "magic": "%PDF-"}
+{"p": "/images/ARnD/7.-Fluconazole-in-Dextrose-Injection.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/306131", "magic": "%PDF-"}
+{"p": "/images/ARnD/7.-Pazopanib-HCL.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/296593", "magic": "%PDF-"}
+{"p": "/images/ARnD/8.-Halothane.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/317011", "magic": "%PDF-"}
+{"p": "/images/ARnD/8.-Pazopanib-Tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/292036", "magic": "%PDF-"}
+{"p": "/images/ARnD/9.-Mesalazine-Gastro-resistant-Tablets.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/391638", "magic": "%PDF-"}
+{"p": "/images/ARnD/9.-Phenytoin-Injection.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/297318", "magic": "%PDF-"}
+{"p": "/images/ARnD/Approved--minutes-60th-SB-IPC.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/109038", "magic": "%PDF-"}
+{"p": "/images/ARnD/Approved-minutes-59th-SB-IPC.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/217251", "magic": "%PDF-"}
+{"p": "/images/ARnD/EoI_AnnexureI_Application-form_Verification-of-IP-Monographs.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/649561", "magic": "%PDF-"}
+{"p": "/images/ARnD/EoI_verification-of-IP-monographs.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/629487", "magic": "%PDF-"}
+{"p": "/images/ARnD/GD-11-Testing-of-DEG-and-EG-V2.0.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/435619", "magic": "%PDF-"}
+{"p": "/images/ARnD/IP-Online-Notice-17Jul26.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/160545", "magic": "%PDF-"}
+{"p": "/images/ARnD/Letter-for-Amendment-List-01-to-IP-2026_0001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2043573", "magic": "%PDF-"}
+{"p": "/images/ARnD/Letter-for-Errata-01-to-IP-2026_0001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/4037046", "magic": "%PDF-"}
+{"p": "/images/ARnD/PDG-Annual-Meeting-Tokyo-October-2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/237792", "magic": "%PDF-"}
+{"p": "/images/ARnD/PDG-Fall-Meeting---Meeting-Highlights.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/249727", "magic": "%PDF-"}
+{"p": "/images/ARnD/PDG-Work-Plan-PPT.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/151525", "magic": "%PDF-"}
+{"p": "/images/ARnD/PDG-working-Procedure.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/386401", "magic": "%PDF-"}
+{"p": "/images/Admin/RTI-Annual-report-for-the-year-2025-26.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/87094", "magic": "%PDF-"}
+{"p": "/images/Admin/RTI-Quarter-ending-30-06-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/189251", "magic": "%PDF-"}
+{"p": "/images/Admin/RTI-Quarterly-report-ending-31-03-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/172296", "magic": "%PDF-"}
+{"p": "/images/Admin/RTI-quarterly-report-1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/82279", "magic": "%PDF-"}
+{"p": "/images/Admin/updated-RR.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2850642", "magic": "%PDF-"}
+{"p": "/images/Advertisement-for-the-post-of-SO--AA.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/186285", "magic": "%PDF-"}
+{"p": "/images/Alpha_lipoic_acid.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/232114", "magic": "%PDF-"}
+{"p": "/images/Amendments_rDNA_for_uploading_on_IPC_website_for_stakeholders_comments.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/290488", "magic": "%PDF-"}
+{"p": "/images/Annexure_V-_Registration_Form.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/202328", "magic": "%PDF-"}
+{"p": "/images/Annual_Repot_2020-21.PDF", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Annual_Repot_2021-22.PDF", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Appendices.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/611077", "magic": "%PDF-"}
+{"p": "/images/Application_Form_1_1.docx", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Application_Form_Call_for_Experts_Join_Expert_Working_Groups_of_the_Indian_Pharmacopoeia.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Betamethasone_IPRSB045_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/112338", "magic": "%PDF-"}
+{"p": "/images/Biologics/4.6.26-Draft_Amendments_Veterinary-products-file.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/312312", "magic": "%PDF-"}
+{"p": "/images/Biologics/Draft-Revision-In-Biologicals_22.05.2026-pdf.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/182510", "magic": "%PDF-"}
+{"p": "/images/Brivaracetam_IPRSB032_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/114818", "magic": "%PDF-"}
+{"p": "/images/Calcium_citrate_maletae.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/224738", "magic": "%PDF-"}
+{"p": "/images/Call_for_Experts_to_Join_Expert_Working_Groups_of_the_Indian_Pharmacopoeia.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Cancellation_Notice.pdf-1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/244006", "magic": "%PDF-"}
+{"p": "/images/Certification/Certification-Marks-Use.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/211703", "magic": "%PDF-"}
+{"p": "/images/Certification/Certification_Process.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/216663", "magic": "%PDF-"}
+{"p": "/images/Certification/Contact_us.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/92041", "magic": "%PDF-"}
+{"p": "/images/Certification/Dealing_with_Complaints_and_Appeals.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/155232", "magic": "%PDF-"}
+{"p": "/images/Certification/Fee_Structure.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/98963", "magic": "%PDF-"}
+{"p": "/images/Certification/Feedback-Form.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/151625", "magic": "%PDF-"}
+{"p": "/images/Certification/Impartiality_Policy.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/128192", "magic": "%PDF-"}
+{"p": "/images/Change_in_Venue_for_the_Written_Examination_for_the_post_of_Scientific_Assistant.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/113477", "magic": "%PDF-"}
+{"p": "/images/Clarification_on_Alternative_Methods_in_the_IP.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/504463", "magic": "%PDF-"}
+{"p": "/images/Consultant.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/147255", "magic": "%PDF-"}
+{"p": "/images/Corrigendum_against_Tender_for_Supply_of_113_Nos._of_Pharmaceutical_Impurity.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/D-Panthenol_IPRS_69_16.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/114117", "magic": "%PDF-"}
+{"p": "/images/Daclatasvir_Dihydrochloride_IPRSD067_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/116290", "magic": "%PDF-"}
+{"p": "/images/Danazol_IPRSD027.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/114309", "magic": "%PDF-"}
+{"p": "/images/Dapsone_IPRSD033_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/106914", "magic": "%PDF-"}
+{"p": "/images/Deferasirox.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/224535", "magic": "%PDF-"}
+{"p": "/images/Delisting_of_AMCs_under_PvPI_Notice_P1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/132920", "magic": "%PDF-"}
+{"p": "/images/Designating_FAA_CPIO20250704100912.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/495584", "magic": "%PDF-"}
+{"p": "/images/Diacerein_IPRSD028.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/112006", "magic": "%PDF-"}
+{"p": "/images/Diazepam_IPRSD059.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/116486", "magic": "%PDF-"}
+{"p": "/images/Diclofenac_Diethylamine_IPRSD042.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/114853", "magic": "%PDF-"}
+{"p": "/images/Diclofenac_Potassium_IPRSD066.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/111889", "magic": "%PDF-"}
+{"p": "/images/Diclofenac_Sodium_IPRSD075_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/106900", "magic": "%PDF-"}
+{"p": "/images/Dicylomine_HCl_IPRSD040.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/113347", "magic": "%PDF-"}
+{"p": "/images/Dienogest_IPRSD070_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/112370", "magic": "%PDF-"}
+{"p": "/images/Diethylcarbamazine_Citrate_IPRSD065.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/115138", "magic": "%PDF-"}
+{"p": "/images/Diiodohydroxyquinoline_IPRSD034.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/114498", "magic": "%PDF-"}
+{"p": "/images/Diphenhydramine_HCL_IPRSD038.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/115603", "magic": "%PDF-"}
+{"p": "/images/Disodium_Edetate_IPRS_48_17.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/115843", "magic": "%PDF-"}
+{"p": "/images/Dolutegravir_Sodiun_IPRSD023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/121953", "magic": "%PDF-"}
+{"p": "/images/Domeoridone_Maleate_IPRSD041.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/115174", "magic": "%PDF-"}
+{"p": "/images/Domperidone_IPRSD055.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/113492", "magic": "%PDF-"}
+{"p": "/images/Donepezil_HCl_IPRSD053.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/114997", "magic": "%PDF-"}
+{"p": "/images/Donepezil_Hydrochloride.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/225094", "magic": "%PDF-"}
+{"p": "/images/Doxofylline.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/231044", "magic": "%PDF-"}
+{"p": "/images/Doxycycline_Hydrochloride.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/795514", "magic": "%PDF-"}
+{"p": "/images/Draft_Amendments.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/106717", "magic": "%PDF-"}
+{"p": "/images/Draft_Amendments_General_Chapters_IP_2022_for_comments_30.11.2023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/213176", "magic": "%PDF-"}
+{"p": "/images/Draft_Amendments_Vaccines_and_immunosera_BBr_rDNA_Monographs_IP_2022_for_comments_30.11.2023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/443525", "magic": "%PDF-"}
+{"p": "/images/Draft_Amendments_to_IP_2018_for_stakeholders_comments.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/564712", "magic": "%PDF-"}
+{"p": "/images/Drotaverine_HCL.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/232631", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_August_2021.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/88042", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_August_2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/61223", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_August_29_2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/325182", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_December_2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/982137", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_January_2021.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/343514", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_July_2022.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/116749", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_June_27_2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/327504", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_March_12_2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/184982", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_May_13_2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/182117", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_May_2022.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/115479", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alert_November_28_2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/259137", "magic": "%PDF-"}
+{"p": "/images/Drug_Safety_Alerts_June_2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/272946", "magic": "%PDF-"}
+{"p": "/images/Drugs_safety_Alert_February_2020_.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/444424", "magic": "%PDF-"}
+{"p": "/images/E-Newsletter_-_Vol._5_Issue_2_2023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/12208043", "magic": "%PDF-"}
+{"p": "/images/E-Newsletter_Vol._5_-_Issue_3_2023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/15211788", "magic": "%PDF-"}
+{"p": "/images/E-Newsletter_Vol._6_Issue-1_2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/15072089", "magic": "%PDF-"}
+{"p": "/images/E-Newsletter_Vol._6_Issue_2.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/14818267", "magic": "%PDF-"}
+{"p": "/images/E-Newsletter_Vol._7_Issue_2_2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/4783518", "magic": "%PDF-"}
+{"p": "/images/E-_Newsletter_Vol._7_Issue_1_2025_compressed.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/16687625", "magic": "%PDF-"}
+{"p": "/images/Empanelment_for_Newspaper__Magazines_IPC_Library_2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/3634345", "magic": "%PDF-"}
+{"p": "/images/English_Notice_Inviting_Tender.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/175852", "magic": "%PDF-"}
+{"p": "/images/Enrollment_form_for_new_ADR_monitoring_centre_under_PvPI.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/439599", "magic": "%PDF-"}
+{"p": "/images/EoI_Terms_Conditions_with_Proforma_for_Empanelment.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/969629", "magic": "%PDF-"}
+{"p": "/images/Extension_in_the_Implementation_Date_of_IP_Addendum_2021_Letter_270721.PDF", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Fesoterodine_Fumarate_IPRSF045_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/110274", "magic": "%PDF-"}
+{"p": "/images/File393.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/428432", "magic": "%PDF-"}
+{"p": "/images/File481.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/580978", "magic": "%PDF-"}
+{"p": "/images/Final_English_Impurity_Advertisement.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Final_Hindi_Impurity_Advertisement.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Final_Tender_Document_for_70_Nos._of_API_Reference_Standard.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1239837", "magic": "%PDF-"}
+{"p": "/images/Formoterol_Fumarate_Dihydrate_IPRSF043_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/113170", "magic": "%PDF-"}
+{"p": "/images/Fumaric_Acid_IPRSF016.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/111044", "magic": "%PDF-"}
+{"p": "/images/GeM-Bidding-7676017_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/125893", "magic": "%PDF-"}
+{"p": "/images/Handook_PvPI.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/4271475", "magic": "%PDF-"}
+{"p": "/images/Hindi_Notice_Inviting_Tender.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/309619", "magic": "%PDF-"}
+{"p": "/images/Homepage/IPC-Calendar-of-Events.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/7663680", "magic": "%PDF-"}
+{"p": "/images/IPC_10_Year_Journey_Writeup2.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1460449", "magic": "%PDF-"}
+{"p": "/images/IPC_Update_Feb_4_2022.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/IPC_Webinar_on_Approaches_to_Alternative_Microbiological_Methods.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/IP_Addendum_2021.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Inhalation_Preparations_Revised.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1368509", "magic": "%PDF-"}
+{"p": "/images/Instructions_for_Filling_the_Medical_Device_Adverse_1.2_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/241874", "magic": "%PDF-"}
+{"p": "/images/Internsip_Flyer_-_8.5.2025_Final.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1814427", "magic": "%PDF-"}
+{"p": "/images/Intimation.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/163838", "magic": "%PDF-"}
+{"p": "/images/Intimation_Letter_PT-042023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/152162", "magic": "%PDF-"}
+{"p": "/images/Ketoconazole_IPRSK005_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/120146", "magic": "%PDF-"}
+{"p": "/images/Ketoconazole_IPRS_43_15.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/113667", "magic": "%PDF-"}
+{"p": "/images/Ketorolac_Tromethamine_IPRSK003.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/112884", "magic": "%PDF-"}
+{"p": "/images/Ketotifen_Fumarate.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/231321", "magic": "%PDF-"}
+{"p": "/images/L-Histidine_IPRSH006.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/113571", "magic": "%PDF-"}
+{"p": "/images/Lamivudine_IPRSL016_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/215764", "magic": "%PDF-"}
+{"p": "/images/Lansoprazole_IPRSL040.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/111810", "magic": "%PDF-"}
+{"p": "/images/Leflunomide_IPRSL001_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/111060", "magic": "%PDF-"}
+{"p": "/images/Lenvatinib_Mesylate_IPRSL041_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/113778", "magic": "%PDF-"}
+{"p": "/images/Levetiracetam_IPRSL027_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/114242", "magic": "%PDF-"}
+{"p": "/images/Levosalbutamol_Sulphate_IPRSL022.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/114373", "magic": "%PDF-"}
+{"p": "/images/List_of_Monthly_DRUGs_safety_alert_16-03-2020.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Lomotrigine_IPRSL013.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/115348", "magic": "%PDF-"}
+{"p": "/images/MPR-_Dec_-2021.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/MPR-_Nov-2021.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/MPR-_Oct_-2021.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/MVPI_-_workshop_invitation.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1006441", "magic": "%PDF-"}
+{"p": "/images/Manual_10_under_RTI_Act_200520250728164716_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/855190", "magic": "%PDF-"}
+{"p": "/images/Manual_16.pdf.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/123092", "magic": "%PDF-"}
+{"p": "/images/Manual_17pdf.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/366216", "magic": "%PDF-"}
+{"p": "/images/Membership_Form_Contractual_Employee.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/478119", "magic": "%PDF-"}
+{"p": "/images/Membership_Form_Regular_Employee.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/471947", "magic": "%PDF-"}
+{"p": "/images/Membership_Form_Trainee_Internship.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/479163", "magic": "%PDF-"}
+{"p": "/images/Microbial_Techniques-Webinar.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/365316", "magic": "%PDF-"}
+{"p": "/images/Microbiology/Intimation-Letter.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/227938", "magic": "%PDF-"}
+{"p": "/images/Microbiology/Registration-form-1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/152768", "magic": "%PDF-"}
+{"p": "/images/Monthly_Drug_Safety_Alert_October_2020.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/141490", "magic": "%PDF-"}
+{"p": "/images/MvPI_Flyer_03.11.2020.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/469616", "magic": "%PDF-"}
+{"p": "/images/MvPI_Newsletter_Vol._6_Issue_3_-_28.10.2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/12932492", "magic": "%PDF-"}
+{"p": "/images/NABH_NOMINATION_FORM16032020.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/75952", "magic": "%PDF-"}
+{"p": "/images/News_Collaboration_with_BP_19.02.2021.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/210751", "magic": "%PDF-"}
+{"p": "/images/Newsletter_-_Vol._6_Issue_4_-_17.1.2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/11184679", "magic": "%PDF-"}
+{"p": "/images/Nimhans_Workshop_updated_flyer.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Notice-Lorcaserin_for_Omission_of_Monographs_of_Hydrochloride_and_Lorcaserin.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/572355", "magic": "%PDF-"}
+{"p": "/images/Notice.PDF", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/377763", "magic": "%PDF-"}
+{"p": "/images/Notice_on_IPRS_Use.PDF", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Notice_regarding_Date__Venue_for_written_examination_of_Administrative_Assistant.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Olanzapine_IPRSO027_002.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/113649", "magic": "%PDF-"}
+{"p": "/images/Olmesartan_Medixomil_IPRSO006.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/115466", "magic": "%PDF-"}
+{"p": "/images/Olopatadine_HCl_IPRSO013.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/113688", "magic": "%PDF-"}
+{"p": "/images/Ondansetron_HCL.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/260409", "magic": "%PDF-"}
+{"p": "/images/Ornidazole_IPRSO029_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/108835", "magic": "%PDF-"}
+{"p": "/images/Oxacillin_Sodium_IPRSO004.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/112379", "magic": "%PDF-"}
+{"p": "/images/Oxcarbazepine_IPRSO017.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/115637", "magic": "%PDF-"}
+{"p": "/images/Oxybutnin_HCl__IPRS_70_18_.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/117025", "magic": "%PDF-"}
+{"p": "/images/Oxymetazoline_Hydrochloride.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/226197", "magic": "%PDF-"}
+{"p": "/images/Oxytetracycline_Dihydrate_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/975801", "magic": "%PDF-"}
+{"p": "/images/PROJ10391_Assamese-Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/9019277", "magic": "%PDF-"}
+{"p": "/images/PROJ10391_Bengali_Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/11335201", "magic": "%PDF-"}
+{"p": "/images/PROJ10391_Gujarati_Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/8389587", "magic": "%PDF-"}
+{"p": "/images/PROJ10391_Hindi_Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/9016584", "magic": "%PDF-"}
+{"p": "/images/PROJ10391_Malayalam-Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/9333494", "magic": "%PDF-"}
+{"p": "/images/PROJ10391_Marathi_Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/8387336", "magic": "%PDF-"}
+{"p": "/images/PROJ10391_Punjabi-Comic_Book_-_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/9086397", "magic": "%PDF-"}
+{"p": "/images/PROJ10391_Urdu-Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/11680044", "magic": "%PDF-"}
+{"p": "/images/PROJ13825_Kannada_-_Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/9012630", "magic": "%PDF-"}
+{"p": "/images/PROJ13825_Oriya_-_Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/8934532", "magic": "%PDF-"}
+{"p": "/images/PROJ13825_Tamil_-_Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/9171216", "magic": "%PDF-"}
+{"p": "/images/PROJ13825_Telugu_-_Comic_Book_-_English_Book_Vertical.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/9252733", "magic": "%PDF-"}
+{"p": "/images/Phytopharmaceutical_Drugs_General_Chapter_-_01112021.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Poster_-_Pregnancy_test_kits_adverse_event.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1668900", "magic": "%PDF-"}
+{"p": "/images/Poster_-_Risk_of_Reuse_of_Medical_Device_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2031468", "magic": "%PDF-"}
+{"p": "/images/Procedure_for_Purchasing_IP_2022_via_Online_Mode-_For_IP_conference_2022_attendees_Industry_and_Accademia_Only.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/PvPI_Profile_-_19.9.2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/13404818", "magic": "%PDF-"}
+{"p": "/images/PvPI_Training_Calendar-2025-26.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2708551", "magic": "%PDF-"}
+{"p": "/images/QA/ANNEXURE-V-Registration-form.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/147662", "magic": "%PDF-"}
+{"p": "/images/QA/Expression-of-Interest-submission-form-for-Performance-Evaluation-of-Laboratories.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/753881", "magic": "%PDF-"}
+{"p": "/images/Quarterly_Report_for_ending_30.06.2022.PDF", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Quarterly_report_for_CIC_for_the_quarter_ending_30-06-2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/453472", "magic": "%PDF-"}
+{"p": "/images/Quaterly_Report_for_ending_31.03.2022.PDF", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/RSD/IP_Prednisone_Protocol-2.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/461808", "magic": "%PDF-"}
+{"p": "/images/RTI/RTI.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/64755", "magic": "%PDF-"}
+{"p": "/images/RTI_Annual_report_for_the_year_2023-24.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/16092", "magic": "%PDF-"}
+{"p": "/images/RTI_Annual_report_for_the_year_2024-25.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/15875", "magic": "%PDF-"}
+{"p": "/images/RTI_quarterly_report.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/433975", "magic": "%PDF-"}
+{"p": "/images/RTI_quarterly_report_.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/474147", "magic": "%PDF-"}
+{"p": "/images/RTI_quarterly_report_30-09-2024.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/449243", "magic": "%PDF-"}
+{"p": "/images/Rashtriya_Ekta_Diwas-2020.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/5083014", "magic": "%PDF-"}
+{"p": "/images/Registration.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/118689", "magic": "%PDF-"}
+{"p": "/images/Registration_Form.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/118689", "magic": "%PDF-"}
+{"p": "/images/Registration_Form_PT-042023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/63095", "magic": "%PDF-"}
+{"p": "/images/Registration_form.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/92899", "magic": "%PDF-"}
+{"p": "/images/Registration_form_PT_01_2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/88836", "magic": "%PDF-"}
+{"p": "/images/Release_of_Addendum_2021_to_Indian_Pharmacopoeia_2018.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/Requisition_Form_Books_PeriodicalsSerials_etcpdf.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/394804", "magic": "%PDF-"}
+{"p": "/images/Revised_Draft_General_Chapter_on_Approach_to_Alternative_Microbiological_Methods_24.06.21.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/SDP_CALENDAR_2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2868175", "magic": "%PDF-"}
+{"p": "/images/SDP_Calendar_2020.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1407663", "magic": "%PDF-"}
+{"p": "/images/SDP_Calendar_2022.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2394160", "magic": "%PDF-"}
+{"p": "/images/SDP_Calendar_2023_05.01.2023.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2129067", "magic": "%PDF-"}
+{"p": "/images/SDP_Calendar_2024-25.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/3146205", "magic": "%PDF-"}
+{"p": "/images/Selenous_Acid.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/199123", "magic": "%PDF-"}
+{"p": "/images/Signed_letter_.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/895369", "magic": "%PDF-"}
+{"p": "/images/Sikkim_Conference_Flyer_1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1501394", "magic": "%PDF-"}
+{"p": "/images/Standing_National_Committee_on_Medicine_SNCM.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/294946", "magic": "%PDF-"}
+{"p": "/images/Tender_Documents_Tender_Notice_for_Disposal_of_Old__Obsolete_Items.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1338789", "magic": "%PDF-"}
+{"p": "/images/Vacancy/Advertisment-for-Jr-Medical-Device-Assoicate.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/122410", "magic": "%PDF-"}
+{"p": "/images/Vacancy/Advertisment-for-the-post-of-PA-and-Sr.-PA.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/134460", "magic": "%PDF-"}
+{"p": "/images/Vacancy/Advertisment-for-the-post-of-PA-and-Sr.-PA1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/134460", "magic": "%PDF-"}
+{"p": "/images/Vacancy/Fireman-Advertisement.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/86772", "magic": "%PDF-"}
+{"p": "/images/Vacancy/final-Pharmacopoeial-Associate-RR-1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/136431", "magic": "%PDF-"}
+{"p": "/images/Vacancy/final-Pharmacopoeial-Associate-RR.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/136431", "magic": "%PDF-"}
+{"p": "/images/Vacancy/lab-attendant-Advertisement-3.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/256778", "magic": "%PDF-"}
+{"p": "/images/Vacancy/recp-vaccency.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/134729", "magic": "%PDF-"}
+{"p": "/images/Vacancy/result-for-the-post-of-SA.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/97398", "magic": "%PDF-"}
+{"p": "/images/Vacancy/result-for-the-post-of-SSO-EWS.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/6579", "magic": "%PDF-"}
+{"p": "/images/Vacancy/website-advertisement-for-the-post-of-SA-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/136842", "magic": "%PDF-"}
+{"p": "/images/Webinar_-_Biomedical_Engineer.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2548774", "magic": "%PDF-"}
+{"p": "/images/Zinc_citrate.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/200460", "magic": "%PDF-"}
+{"p": "/images/amendments__Vaccines_and_antisera_for_human_use_for_uploading_on_IPC_website_for_stakeholders_comments_15.04.2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/350673", "magic": "%PDF-"}
+{"p": "/images/famotidine_IPRSF040_001.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/107171", "magic": "%PDF-"}
+{"p": "/images/library/Final-GeM-tender.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/128192", "magic": "%PDF-"}
+{"p": "/images/library/GeM-Tender-Published.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/174887", "magic": "%PDF-"}
+{"p": "/images/library/List-of-Publishers-ONOS.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/224137", "magic": "%PDF-"}
+{"p": "/images/library/SUPPLY-ORDER-FORM---2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/219300", "magic": "%PDF-"}
+{"p": "/images/library/books/Registration-Form_240410_185136.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/187551", "magic": "%PDF-"}
+{"p": "/images/mvpi/ADRMS-Registration-Form--for-Marketing-Authorization-Holders-MAHs-under-MvPI-3.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/142734", "magic": "%PDF-"}
+{"p": "/images/mvpi/ADRMS-USER-MANUAL-FOR-STAKEHOLDERS.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1183012", "magic": "%PDF-"}
+{"p": "/images/mvpi/Capture-and-record-the-information-of-MDAE-while-reporting-in-ADRMS.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1200824", "magic": "%PDF-"}
+{"p": "/images/mvpi/Conducting-research-and-project-based-training-of-students-research-scholars-in-Materiovigilance-at-MDMC-or-NCC-MvPI-IPC.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/212549", "magic": "%PDF-"}
+{"p": "/images/mvpi/Conducting-sensitization-programme-or-CME-or-ALT.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/202411", "magic": "%PDF-"}
+{"p": "/images/mvpi/E-Newsletter---Vol.-8-Issue-2-UPDATED.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/7482820", "magic": "%PDF-"}
+{"p": "/images/mvpi/Enrolment-of-New-Medical-Device-Adverse-Event-Monitoring-Centres-MDMCs-and-Regional-Training-Centres-RTCs.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/201043", "magic": "%PDF-"}
+{"p": "/images/mvpi/Format-I-Healthcare-Institution-Readiness-Assessment-Checklist-for-Engagement-as-MDMC.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/137863", "magic": "%PDF-"}
+{"p": "/images/mvpi/Functioning-of-RTC-MvPI.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/160036", "magic": "%PDF-"}
+{"p": "/images/mvpi/Healthcare-Institution-Readiness-Assessment-Checklist-for-Engagement-as-MDMC.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/mvpi/List-of-725-MDMCs.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/434061", "magic": "%PDF-"}
+{"p": "/images/mvpi/MvPI-Newsletter-Vol.-7-Issue-4-2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/11134349", "magic": "%PDF-"}
+{"p": "/images/mvpi/MvPI-Newsletter-Vol.-8-Issue-1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/16403207", "magic": "%PDF-"}
+{"p": "/images/mvpi/Newsletter-Vol.-7-Issue-3---8.10.25.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/11506122", "magic": "%PDF-"}
+{"p": "/images/mvpi/Resource_Material/Resource-materials-on-Adverse-Drug-Reaction-Monitoring-System-ADRMS.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/177393", "magic": "%PDF-"}
+{"p": "/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-Blood-Pressure-Monitor.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/191048", "magic": "%PDF-"}
+{"p": "/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-Dental-Amalgam.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/178737", "magic": "%PDF-"}
+{"p": "/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-Dental-Implants.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/184851", "magic": "%PDF-"}
+{"p": "/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-ECG.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/177340", "magic": "%PDF-"}
+{"p": "/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-Pulse-Oximeter.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/171067", "magic": "%PDF-"}
+{"p": "/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-Self-care-devices.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/220043", "magic": "%PDF-"}
+{"p": "/images/mvpi/Resource_Material/Resource-materials-on-adverse-events-associated-with-medical-devices.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/190068", "magic": "%PDF-"}
+{"p": "/images/news/581-4636657156.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/278054", "magic": "%PDF-"}
+{"p": "/images/news/Amendment%20List003-9730213721.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/784316", "magic": "%PDF-"}
+{"p": "/images/news/Annexure-2-0676979070.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/144354", "magic": "%PDF-"}
+{"p": "/images/news/April%20News%20Letter-5357543339.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/5230094", "magic": "%PDF-"}
+{"p": "/images/news/Celebaration_of_72th_Indenpedence_Day_at_IPC_Ghaziabad.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/740034", "magic": "%PDF-"}
+{"p": "/images/news/Errata%20012-0097385523.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/765698", "magic": "%PDF-"}
+{"p": "/images/news/Errata11-2599255777.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/801096", "magic": "%PDF-"}
+{"p": "/images/news/File783.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/65000", "magic": "%PDF-"}
+{"p": "/images/news/Impurity%20Rate%20List-6013262732.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/263182", "magic": "%PDF-"}
+{"p": "/images/news/Magazines-9089017331.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/106108", "magic": "%PDF-"}
+{"p": "/images/news/Matter%20-%20Copy-3987606313.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1236170", "magic": "%PDF-"}
+{"p": "/images/news/PQWE-7518330078.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/209278", "magic": "%PDF-"}
+{"p": "/images/news/lP%20EM%20General%20Chapter%2012%20July%202016.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/news/lnauguration%20Ceremony%20website%20note-6122957878.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/pdf/AR%20Form-2103822203.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/283828", "magic": "%PDF-"}
+{"p": "/images/pdf/Addendum-7063460911.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/174814", "magic": "%PDF-"}
+{"p": "/images/pdf/Anti_Tubercular_Drugs_Monographs-6784513030.doc", "code": 206, "loc": "", "ct": "application/msword", "range": "bytes 0-255/40960", "magic": "\u00d0\u00cf\u0011\u00e0\u00a1"}
+{"p": "/images/pdf/Anti_cancer_Drugs_Monographs_-6840433229.doc", "code": 206, "loc": "", "ct": "application/msword", "range": "bytes 0-255/84992", "magic": "\u00d0\u00cf\u0011\u00e0\u00a1"}
+{"p": "/images/pdf/Antiretroviral_Drugs_Monographs-9303051538.doc", "code": 206, "loc": "", "ct": "application/msword", "range": "bytes 0-255/76800", "magic": "\u00d0\u00cf\u0011\u00e0\u00a1"}
+{"p": "/images/pdf/April_2016-7257289472.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/325770", "magic": "%PDF-"}
+{"p": "/images/pdf/Charges-1949445585.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/211038", "magic": "%PDF-"}
+{"p": "/images/pdf/December_2015-6995895751.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/329242", "magic": "%PDF-"}
+{"p": "/images/pdf/February_2016-2498400991.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/327336", "magic": "%PDF-"}
+{"p": "/images/pdf/File590.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/224482", "magic": "%PDF-"}
+{"p": "/images/pdf/File717.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/287656", "magic": "%PDF-"}
+{"p": "/images/pdf/File718.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/329260", "magic": "%PDF-"}
+{"p": "/images/pdf/File753.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/276884", "magic": "%PDF-"}
+{"p": "/images/pdf/File838.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/406254", "magic": "%PDF-"}
+{"p": "/images/pdf/Inauguration_Ceremony_website_note-6122957878.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/113564", "magic": "%PDF-"}
+{"p": "/images/pdf/January_2016-4983170198.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/313990", "magic": "%PDF-"}
+{"p": "/images/pdf/March_2016-4685455691.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/335704", "magic": "%PDF-"}
+{"p": "/images/pdf/May_2016-5972951440.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/311634", "magic": "%PDF-"}
+{"p": "/images/pdf/November_2015-7699074658.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/321098", "magic": "%PDF-"}
+{"p": "/images/pdf/Oct_2016-9657925265.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/167318", "magic": "%PDF-"}
+{"p": "/images/pdf/October_2015-7649190217.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/309780", "magic": "%PDF-"}
+{"p": "/images/pdf/September_2015-3781046885.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/132850", "magic": "%PDF-"}
+{"p": "/images/pdf/Webinar_on_Oxygen_Standards.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/65063", "magic": "%PDF-"}
+{"p": "/images/pdf/august2016-7505978886.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/70636", "magic": "%PDF-"}
+{"p": "/images/pdf/december16-6789715999.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/121288", "magic": "%PDF-"}
+{"p": "/images/pdf/june-2016-6350682298.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/272984", "magic": "%PDF-"}
+{"p": "/images/pdf/nov16-6441257704.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/278758", "magic": "%PDF-"}
+{"p": "/images/publication/IPC-Newsletter-Vol.-2-2025---8.6.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/18745914", "magic": "%PDF-"}
+{"p": "/images/pvpi/11.-Order-issued-by-CDSCO-for-Sodium-Valproate-assocaited-Gum-Hyperplasia-dated-on-09.04.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/699218", "magic": "%PDF-"}
+{"p": "/images/pvpi/1150-AMC-Details.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/2486649", "magic": "%PDF-"}
+{"p": "/images/pvpi/12.-Order-issued-by-CDSCO-for-Sulfasalazine-assocaited-DRESS-Syndrome-dated-on-09.04.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/716242", "magic": "%PDF-"}
+{"p": "/images/pvpi/12000-AMC-List-1.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/670086", "magic": "%PDF-"}
+{"p": "/images/pvpi/1250-AMCs-List.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/592574", "magic": "%PDF-"}
+{"p": "/images/pvpi/13.-Order-issued-by-CDSCO-for-Tranexamic-Acid-assocaited-Seizure-Convulsion-dated-on-09.04.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/687838", "magic": "%PDF-"}
+{"p": "/images/pvpi/14.-Order-issued-by-CDSCO-for-Cefepime-assocaited-Urticaria-dated-on-12.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/671602", "magic": "%PDF-"}
+{"p": "/images/pvpi/15.-Order-issued-by-CDSCO-for-Fluconazole-assocaited-Hyperpigmentation-dated-on-12.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/743903", "magic": "%PDF-"}
+{"p": "/images/pvpi/16.-Order-issued-by-CDSCO-for-Phenobarbital-assocaited-DRESS-Syndrome-dated-on-12.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/715118", "magic": "%PDF-"}
+{"p": "/images/pvpi/17.-Order-issued-by-CDSCO-for-Sulfasalazine-assocaited-SJS-dated-on-12.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/688603", "magic": "%PDF-"}
+{"p": "/images/pvpi/18.-Order-issued-by-CDSCO-for-Sulfasalazine-assocaited-TEN-dated-on-12.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/689536", "magic": "%PDF-"}
+{"p": "/images/pvpi/19.-Order-issued-by-CDSCO-for-Terbinafine-assocaited-AGEP-dated-on-12.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/699825", "magic": "%PDF-"}
+{"p": "/images/pvpi/20.-Order-issued-by-CDSCO-for--Carvedilol-assocaited-Hyperkalemia-dated-on-13.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/680900", "magic": "%PDF-"}
+{"p": "/images/pvpi/21.-Order-issued-by-CDSCO-for-Amlodipine-assocaited-Gingival-Hypertrophy-dated-on-13.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/652802", "magic": "%PDF-"}
+{"p": "/images/pvpi/22.-Order-issued-by-CDSCO-for-Amlodipine-associated-Alopecia-dated-on-13.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/668567", "magic": "%PDF-"}
+{"p": "/images/pvpi/23.-Order-issued-by-CDSCO-for-Cefixime-assocaited-Mouth-Ulceration-dated-on-19.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/646960", "magic": "%PDF-"}
+{"p": "/images/pvpi/24.-Order-issued-by-CDSCO-for-Meropenem-assocaited-Hypokalemia-dated-on-19.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/646511", "magic": "%PDF-"}
+{"p": "/images/pvpi/25.-Order-issued-by-CDSCO-for-Artemether-Lumefantrine-assocaited-SJS-dated-on-19.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/678178", "magic": "%PDF-"}
+{"p": "/images/pvpi/26.-Order-issued-by-CDSCO-for-Carbamazepine-assocaited-DRESS-Syndrome-dated-on-19.06.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/686748", "magic": "%PDF-"}
+{"p": "/images/pvpi/27.-Order-issued-by-CDSCO-for-Diclofenac-assocaited-Nicolous-Syndrome-dated-on-24.07.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/733836", "magic": "%PDF-"}
+{"p": "/images/pvpi/28.-Order-issued-by-CDSCO-for-Proton-Pump-Inhibitors-assocaited-Acute-Kidney-Injury-dated-on-04.11.2019.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/704509", "magic": "%PDF-"}
+{"p": "/images/pvpi/29.-Order-issued-by-CDSCO-for-Chloroquine-associated-SJSTEN-dated-on-13.01.2020.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/71762", "magic": "%PDF-"}
+{"p": "/images/pvpi/30.-Order-issued-by-CDSCO-for-Lamivudine-associated-Hearing-Loss-dated-on-13.01.2020.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/68928", "magic": "%PDF-"}
+{"p": "/images/pvpi/31.-Order-issued-by-CDSCO-for-Carbimazole-related-agranulocytosis-dated-on-17.02.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/530406", "magic": "%PDF-"}
+{"p": "/images/pvpi/32.-Order-issued-by-CDSCO-for-Doxycycline-related-CNS-Side-effects-Restlessness-Anxiety-Irritability-Nervousness-and-Dizziness-dated-on-17.02.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/575197", "magic": "%PDF-"}
+{"p": "/images/pvpi/33.-Order-issued-by-CDSCO-for-Cotrimoxazole-related-Fixed-Drug-Eruption-dated-on-06.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/865196", "magic": "%PDF-"}
+{"p": "/images/pvpi/34.-Order-issued-by-CDSCO-for-Metronidazole-related-to-Fixed-Drug-Eruption-FDE-dated-on-06.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/869763", "magic": "%PDF-"}
+{"p": "/images/pvpi/35.-Order-issued-by-CDSCO-for-Oral-Itraconazole-related-Symmetrical-Drug-Related-Intertriginous-and-Flexural-Exanthema-dated-on-06.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/913162", "magic": "%PDF-"}
+{"p": "/images/pvpi/36.-Order-issued-by-CDSCO-for-PiperacillinTazobactam-related-Blurred-Vision-dated-on-06.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/873574", "magic": "%PDF-"}
+{"p": "/images/pvpi/37.-Order-issued-by-CDSCO-for-Tetracycline-related-Fixed-Drug-Eruption-FDE-dated-on-06.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/861807", "magic": "%PDF-"}
+{"p": "/images/pvpi/38.-Order-issued-by-CDSCO-for-Vancomycin-related-Dress-Syndrome-dated-on-06.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/856263", "magic": "%PDF-"}
+{"p": "/images/pvpi/39.-Order-issued-by-CDSCO-for-Azithromycin-related-Fixed-Drug-Eruption-FDE-dated-on-06.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/866230", "magic": "%PDF-"}
+{"p": "/images/pvpi/40.-Order-issued-by-CDSCO-for-Tranexamic-Acid-related-Back-Pain-dated-on-21.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/485508", "magic": "%PDF-"}
+{"p": "/images/pvpi/41.-Order-issued-by-CDSCO-for-Aceclofenac-related-Fixed-Drug-Eruption-FDE-dated-on-21.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/476647", "magic": "%PDF-"}
+{"p": "/images/pvpi/42.-Order-issued-by-CDSCO-for-Ibuprofen-related-Fixed-Drug-Eruption-FDE-dated-on-21.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/479464", "magic": "%PDF-"}
+{"p": "/images/pvpi/ADR-reporting-status-of-PvPI---Feb-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1856355", "magic": "%PDF-"}
+{"p": "/images/pvpi/ADR-reporting-status-of-PvPI---Jan-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1880917", "magic": "%PDF-"}
+{"p": "/images/pvpi/ADR-reporting-status-of-PvPI---July--2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1004280", "magic": "%PDF-"}
+{"p": "/images/pvpi/ADR-reporting-status-of-PvPI---June--2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/953328", "magic": "%PDF-"}
+{"p": "/images/pvpi/ADR-reporting-status-of-PvPI---March-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/1910179", "magic": "%PDF-"}
+{"p": "/images/pvpi/ADR-reporting-status-of-PvPI---May-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/974476", "magic": "%PDF-"}
+{"p": "/images/pvpi/Brochure-NPW-2026-13.8.2026-c.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/3661152", "magic": "%PDF-"}
+{"p": "/images/pvpi/Drug-Safety-Alert-February-20-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/303641", "magic": "%PDF-"}
+{"p": "/images/pvpi/Drug-Safety-Alert-July-27-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/357331", "magic": "%PDF-"}
+{"p": "/images/pvpi/Drug-Safety-Alert-June-30-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/355216", "magic": "%PDF-"}
+{"p": "/images/pvpi/Drug-Safety-Alert-March-30-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/402551", "magic": "%PDF-"}
+{"p": "/images/pvpi/Drug-Safety-Alert-May-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/875582", "magic": "%PDF-"}
+{"p": "/images/pvpi/Drug_Safety_Alert_September_2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/980541", "magic": "%PDF-"}
+{"p": "/images/pvpi/List-of-Drugs-Safety-Alerts-issued-by-PvPI-from-March-2016-to-till-date---27.07.2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/700351", "magic": "%PDF-"}
+{"p": "/images/pvpi/List-of-SRP-Reccomendations-to-CDSCO-November-2025.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/images/pvpi/PvPI-Newsletter-Vol.-15-Issue-2-2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/20526652", "magic": "%PDF-"}
+{"p": "/images/pvpi/PvPI-Newsletter-Vol.-15-Issue-4-2025.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/5204970", "magic": "%PDF-"}
+{"p": "/images/pvpi/PvPI-Newsletter-Vol.-16-Issue-1-2026-January-to-March-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/13732806", "magic": "%PDF-"}
+{"p": "/images/pvpi/PvPI-NewsletterV15I3.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/6472243", "magic": "%PDF-"}
+{"p": "/images/pvpi/PvPI-Training-Calendar---2026-27.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/8277134", "magic": "%PDF-"}
+{"p": "/images/pvpi/SDP-Calendar-2026.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/3196370", "magic": "%PDF-"}
+{"p": "/images/tenders/Audit_and_Certification_of_Annual_Accounts_of_the_IPC.pdf", "code": 206, "loc": "", "ct": "application/pdf", "range": "bytes 0-255/195277", "magic": "%PDF-"}
+{"p": "/mandates/indian-pharmacopoeia/monographs/images/general_requirements.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/news-highlights/images/general_requirements.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/pvpi/01.-Important-Safety-label-changes-to-Carbamazepine-containing-products-dated-on-12.05.2015.pdf", "code": 200, "loc": "", "ct": "text/html; charset=utf-8", "range": "", "magic": "<!DOC"}
+{"p": "/pvpi/02.-Order-issued-by-CDSCO-for-Carbamazepine-associated-SJSTEN-dated-on-12.05.2015.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/pvpi/03.-Order-issued-by-CDSCO-for-PiperacillinTazobactam-associated-HypokalaemiaBronchospasm-dated-on-23.12.2015.pdf", "code": 200, "loc": "", "ct": "text/html; charset=utf-8", "range": "", "magic": "<!DOC"}
+{"p": "/pvpi/04.-Potential-signal-and-Recommendation-for-the-label-change-of-certain-medicinal-product-marketed-in-India-dated-on-23.12.2015.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/pvpi/05.-Order-issued-by-CDSCO-for-Rabies-Vaccine-Human-associated-Erythema-Multiforme-dated-on-04.10.2016.pdf", "code": 200, "loc": "", "ct": "text/html; charset=utf-8", "range": "", "magic": "<!DOC"}
+{"p": "/pvpi/06.-Order-issued-by-CDSCO-for-Drug-safety-label-change-of-Rabies-Vaccine-Human-marketed-in-India-dated-on-04.10.2016.pdf", "code": 200, "loc": "", "ct": "text/html; charset=utf-8", "range": "", "magic": "<!DOC"}
+{"p": "/pvpi/07.-Order-issued-by-CDSCO-for-Cefotaxime-assocaited-Angioedema-dated-on-09.04.2019.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/pvpi/08.-Order-issued-by-CDSCO-for-Cefixime-assocaited-AGEP-on-dated-09.04.2019.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/pvpi/09.-Order-issued-by-CDSCO-for-Ofloxacine-assocaited-SJS-TEN-dated-on-09.04.2019.pdf", "code": 200, "loc": "", "ct": "text/html; charset=utf-8", "range": "", "magic": "<!DOC"}
+{"p": "/pvpi/10.-Order-issued-by-CDSCO-for-Quetiapine-assocaited-Urinary-Incontinence-dated-on-09.04.2019.pdf", "code": 200, "loc": "", "ct": "text/html; charset=utf-8", "range": "", "magic": "<!DOC"}
+{"p": "/~ajeet/ipc/images/File101.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/File298.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/File52.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/File851.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/Inclusion_Request_Form-6688861212-4345358082.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/Library_Seminar.docx", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File101.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File235.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File462.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File528.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File54.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File569.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File572.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File589.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File593.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File594.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File595.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File597.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File642.doc", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File646.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File703.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File704.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File71.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File715.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File72.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File722.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File729.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File73.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File764.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File792.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File837.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/File851.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/IPC-8638138670.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/List_of_Contratcula_Employees_of_IPC-2903865390.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/Quarterly_Report-1195396333.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/Quarterly_Report_for_CIC_for_the_-8791276266.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/Quarterly_Report_for_CIC_for_the_Quarter_Ending_31-03-2017-6896506545.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/RTI-0994899223.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/RTI-4144634415.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/RTI-4755066104.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/RTI_Quarterly_Report-9311665339.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/RTI_Quarterly_Report_-_April_17_to_June_17-2624664392.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/RTI_Quartly_report-9917373733.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/quarter_ended-2198488114.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/rti-7349783573.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}
+{"p": "/~ajeet/ipc/images/pdf/rti-8251287779.pdf", "code": 302, "loc": "/404-page-not-found.html", "ct": "text/html; charset=UTF-8", "range": "", "magic": ""}

@@ -67,16 +67,22 @@ hosting, new domain, data-centre cutover — is costing the wrong project.
 |---|---|---|
 | `robots.txt` | **absent** — returns the 404 page | present (`Allow: /*`, `Crawl-delay: 10`) |
 | `sitemap.xml` | **absent** — returns the 404 page | present, **55 URLs**, with `lastmod` |
-| Missing page | **HTTP 200** (soft-404) | proper status |
+| Missing page | **302 → a page returning 200** | proper status |
 
-The soft-404 is the one to fix first, and it is worse than it looks. Because
-`https://ipc.gov.in/anything-at-all` answers **200 OK** with the "page not
-found" body:
+The soft-404 is the one to fix first. *(Mechanism corrected 01/09/2026: a
+missing path returns **302** to `/404-page-not-found.html`, which then returns
+200 — a redirect-following client sees only the 200, which is how the original
+reading arose. Two consequences: the fix is an error-document status change
+rather than a rebuild, and the 302 is a **usable existence oracle**, so the
+inventory is not blocked on it.)* Because no missing path ever returns a 404:
 
 - Search engines index unlimited junk URLs as real pages.
-- **Any crawl-based inventory is unreliable** — a link typo produces a "valid"
-  page rather than an error. Every URL list in this folder was therefore built
-  from links actually present in the markup, never from guessed paths.
+- **A naive crawl-based inventory is unreliable** — a redirect-following client
+  reads a link typo as a "valid" page. Every URL list in this folder was
+  therefore built from links actually present in the markup, never from guessed
+  paths. A validator that does *not* follow redirects reads the estate correctly,
+  which is how the 1,906-path re-measurement in [`estimate.md` §2](estimate.md)
+  was possible before any remediation.
 - Link-checking tools report a clean site while links are broken.
 
 There is no authoritative list of what this website contains. Building one is
@@ -136,10 +142,18 @@ tidying task at the end; it is a deliverable in its own right (§5).
 
 ## 5 · Bilingual coverage — the biggest single gap
 
-| Language | Pages | Share |
+| Language | Pages in this inventory | Share |
 |---|---:|---:|
 | English | 183 | **94%** |
 | Hindi (`/hi/`) | **12** | **6%** |
+
+*(Corrected 01/09/2026: the mega-menu exposes 12 Hindi pages, but the full `/hi/`
+tree holds **497 live URLs**, of which only ~155–180 are genuinely translated —
+the rest are English content sitting under a Hindi URL. Separately, **none of the
+497 declares `lang="hi"`**; all declare `en-gb`, a WCAG 3.1.1 failure across the
+whole tree. And under Option 3 the platform serves Hindi as **runtime Bhashini
+machine translation** rather than stored content, which removes the translation
+programme from that branch entirely.)*
 
 Only twelve Hindi pages exist, and they are the shallow ones — home,
 news-highlights, employees-corner and their like. The department pages, the
@@ -168,9 +182,13 @@ what each one is, who operates it, and whether it moves, stays, or is replaced.
 
 ## 7 · What this audit could not establish from outside
 
-> **Since this was written, deeper research revised the scale.** The real
-> surface is approximately **1,787 HTML paths and 2,519 PDFs across four
-> hostnames** — about ten times what the navigation exposes. Two estates are
+> **Superseded by measurement, 01/09/2026.** The estate was re-measured with a
+> stated, reproducible method: **1,906 live HTML paths, 2,851 live PDFs, 1,084
+> content items, 497 Hindi URLs and 9 distinct page templates** across four
+> hostname families — of which **only `ipc.gov.in` is on NICNET**; `iponline`
+> and `onlinestore` are on AWS. Full figures and method in
+> [`estimate.md` §2](estimate.md). The earlier approximation was ~1,787 HTML
+> and ~2,519 PDFs — about ten times what the navigation exposes. Two estates are
 > invisible from the homepage: the **PvPI** section and an eight-year
 > news archive of ~858 pages, plus legacy `/~ajeet/` tilde directories and
 > ASP-era `/writereaddata/` paths. The 195 figure below is the mega-menu, and

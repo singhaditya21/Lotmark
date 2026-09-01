@@ -7,6 +7,14 @@ GIGW 3.0, S3WaaS, CERT-In and STQC — plus direct probing of both live sites.
 The source-state measurements are in [`site-audit.md`](site-audit.md); the URL
 inventories are in [`inventory/`](inventory/).
 
+> **Superseded in part, 1 September 2026.** The live destination has since been
+> measured directly, and [`estimate.md` §1](estimate.md) records twelve findings
+> that change this plan. The four that matter most: the Gov.In CMS has **no bulk
+> import**, so content volume converts into hand-keying; **MoHFW carried across
+> 28 pages and no documents**; per-page 301s are **capable but unused** (zero
+> across 201 tested URLs); and the destination **reproduces the soft-404 defect**
+> at depths 1 and 2. Corrections are marked inline below.
+
 ---
 
 ## 0 · The brief names the wrong destination
@@ -120,8 +128,12 @@ Organizations* section linking to bodies like IPC.
 ## 4 · The sizing correction
 
 **Do not cost this from the homepage.** The 195 paths in
-[`inventory/`](inventory/) are what the mega-menu exposes. Deeper research puts
-the real surface at approximately:
+[`inventory/`](inventory/) are what the mega-menu exposes. *(Re-measured
+01/09/2026 with a stated method — Wayback CDX ∪ live crawl ∪ Common Crawl,
+two-signal validated: **1,906 live HTML paths, 2,851 live PDFs, and — the
+number that actually drives authoring — 1,084 content items**, since ~820 of
+those URLs are duplicate routes to the same Joomla article. See
+[`estimate.md` §2](estimate.md).)* The earlier approximation was:
 
 | | Count |
 |---|---:|
@@ -160,10 +172,10 @@ give (§7).
 ### Phase 1 · Emergency remediation on the live site
 **2–4 weeks**, starting week 1. Destination-independent — none of it is wasted.
 
-- **Make missing paths return a real HTTP 404** with a branded error page. This unblocks everything downstream; nothing can be measured until it lands.
+- **Make missing paths return a real HTTP 404** with a branded error page. *(Corrected 01/09/2026: the current behaviour is a **302** to `/404-page-not-found.html`, which then returns 200. That 302 is itself a usable existence oracle, so Phase 2 is **not** blocked on this fix and the two run in parallel. The fix is an error-document status change, not a rebuild — and it remains necessary, because search engines still see no 404.)*
 - **Fix the charset.** The header says `iso-8859-1` while the document declares UTF-8 and contains Devanagari — the header wins.
 - Remove stale branding (the G20 presidency logo) — a Content Review Policy failure.
-- Add the mandatory **india.gov.in link** (currently absent).
+- Add the **india.gov.in link**. *(Corrected: DBIM v3.0 mandates no such link — its mandated footer is Website Policy, Sitemap, Related Links, Help and Feedback. Retain this only if GIGW requires it; do not cite DBIM for it.)*
 - Patch Joomla and all third-party extensions.
 - Publish `robots.txt`.
 
@@ -184,11 +196,11 @@ give (§7).
 **16–28 weeks.** Driven by surviving page count, editorial headcount and the Hindi decision — not by platform engineering, which the CMS absorbs.
 
 - Re-express IPC's deep trees inside the platform's flat IA.
-- **Reserve the CCPS banner slot from the first wireframe** — retrofitting it is the classic rework.
+- **Reserve the CCPS banner slot from the first wireframe** — retrofitting it is the classic rework. *(Confirmed binding on IPC: DBIM §7.4 places it on "all government organizations" and it is Checklist-1 item 40. The platform already ships the component, so this is subscription and configuration, not build.)*
 - **Adopt the platform's accessibility behaviour wholesale.** Do not port Joomla templates: 50 of GIGW 3.0's 88 guidelines are the full WCAG 2.1 A+AA set, and the current markup fails structurally (no `h1` anywhere, `lang="en-gb"` on Devanagari pages).
 - Make **alt text and heading structure required fields at import time** — retrofitting across thousands of assets is the expensive path.
 - **Re-enter Hindi as authored content, byte-verified.** A latin-1/UTF-8 round-trip corrupts Devanagari silently.
-- Register the mandatory **Devanagari IDN** in `.भारत` (Punycode `xn--h2brj9c`), required since 04/03/2024.
+- Register the mandatory **Devanagari IDN**. *(Corrected: the government IDN sits at the third level — `.सरकार.भारत`, e.g. `गृहमंत्रालय.सरकार.भारत` → `xn--i1b5bzbybhfo5c8b4bxh.xn--11b7cb3a6a.xn--h2brj9c` — not plain `.भारत`. Registration and renewal are free under the GOV.IN policy.)*
 
 **Exit:** staging frozen and complete · WCAG 2.1 AA passes on a stratified sample covering every template plus 10% of pages · Hindi renders with correct `lang` and `hreflang`.
 
@@ -220,7 +232,7 @@ give (§7).
 
 - Submit the Website Quality Manual, application, agreement and security clearance to STQC.
 - Stand up recurring obligations each with a **named owner and a calendar entry**: annual surveillance and surprise audits against three-year CQW validity, security re-audit cadence, content review and archival cycles.
-- Operate the DBIM Annexure G KPI feed continuously.
+- Operate the DBIM Annexure G KPI feed continuously. *(Corrected: Annexure G is titled "For Ministry/Departments **not** onboarded on gov.in CMS Platform". Under Option 3 this obligation does not arise; it belongs to the Option 4 branch.)*
 
 **Exit:** CQW issued **or** a dated decision to defer · every recurring obligation owned · first surveillance passed.
 
@@ -235,7 +247,7 @@ give (§7).
 | **The destination may not support per-page 301s at all** | Settle in writing in Phase 0. Fallback: a redirect layer on the ipc.gov.in origin ahead of the CMS. An unanswered question here blocks Phase 2 exit |
 | **~2,500 PDFs get renamed to opaque CDN numerics** | Redirect old file paths to human-readable document *landing pages*, not raw files; publish a persistent document register keyed by original filename |
 | **Hindi corrupts silently** | Fix charset in Phase 1; pair by `hreflang`; UTF-8 discipline with no Excel round-trip; emit rules for both canonical and double-encoded forms |
-| **Accessibility treated as a line item when it is the majority of the work** | Budget it as ~57% of conformance effort; adopt platform behaviour wholesale; alt text required at import |
+| **Accessibility treated as a line item when it is the majority of the work** | Adopt platform behaviour wholesale; alt text required at import. *(Corrected: the 57% figure is a share of **checkpoints** — 50 of GIGW 3.0's 88 — not of effort. Effort per checkpoint is wildly unequal. Size it from the **9 distinct templates**, one of which covers 83% of pages.)* |
 | **GIGW/STQC never checks URL continuity** — zero occurrences of "migrat", "301", "404", "robots" in GIGW 3.0 | Put the redirect map, sitemap, robots and 404-log review into the contract as explicit acceptance criteria with their own sign-off |
 | **Registry access blocks cut-over** | Verify login control and contact currency in Phase 0, weeks ahead |
 | **A careless DNS edit kills IPC's email** | A runbook that changes exactly one record and names MX untouchable; mail test as an exit criterion |
@@ -247,12 +259,12 @@ give (§7).
 Ordered by how much they move the estimate. Each needs a named owner and a date.
 
 1. **Will MoHFW's CIO sponsor and schedule Gov.In CMS onboarding, in writing, with a date?** Everything downstream is priced differently by the answer.
-2. **Does the destination support arbitrary per-page 301 redirects** — and if not, will NIC permit a redirect layer on the ipc.gov.in origin? *The single most important technical question in the programme.*
+2. ~~**Does the destination support arbitrary per-page 301 redirects?**~~ **ANSWERED 01/09/2026, and the answer splits.** *Capability: yes* — the WordPress layer runs the Redirection plugin, and `msde.gov.in/cms/wp-json/redirection/v1` exposes 20 REST routes including bulk import of a map from file. *Practice: zero* — 201 pre-migration URLs tested across mohfw, meity and msde returned **not one 301**. This is now a contractual risk, not a technical one: put redirect delivery in the contract with its own acceptance sign-off. A separate question remains open — **retired shallow paths cannot return 404/410 on the destination**, which answers 200 at depths 1 and 2.
 3. **Is DBIM adoption formally binding on an autonomous body** under MoHFW, or advisory?
 4. **Do we have the Joomla database, and does a Search Console property exist?** Without the database there is no authoritative published/unpublished distinction.
 5. **Who holds the registry.gov.in login**, are contacts current, and is an A-record change self-service or letter-driven?
 6. **Who is the Web Information Manager**, and what rank satisfies "Joint Secretary level" for a commission rather than a department?
-7. **Does NIC audit as part of hosting, or must IPC procure a CERT-In empanelled auditor?** Quote and lead time.
+7. **Does NIC audit as part of hosting, or must IPC procure a CERT-In empanelled auditor?** *Partly answered: GIGW 3.0 accepts audit clearance "issued by NIC, STQC or a CERT-In empanelled vendor", so NIC is an accepted route and this line is bimodal — zero cost or lakhs, not a band.* Still needs a quote and a lead time. **Also new: an IAAP Certified Auditor Review Report is now a pre-requisite for GIGW evaluation** (STQC OM F.No. STQC/IT&eGov/WQC/2022, 30.06.2025), a gate this plan did not contain.
 8. **Disposition of PvPI, the ~858-page news archive, `/~ajeet/`, `/writereaddata/`** — keep, archive or retire, and who signs each?
 9. **Hindi policy:** curated pages preserved as authored content, or Bhashini machine translation? Where does the `.भारत` IDN point?
 10. **The bilingual-PDF gap.** DBIM Annexure G reports "PDFs not having both Hindi and English version" to the central dashboard. Against ~2,500 documents — close it, close it by priority tier, or declare it?
