@@ -10,6 +10,8 @@ GIGW 3.0, S3WaaS, CERT-In, STQC) and by direct probing of the live sites.
 |---|---|
 | [`estimate.md`](estimate.md) | **The estimate** — what it costs, who does it, and what a ₹20–30 lakh budget actually buys |
 | [`IPC-Migration-Programme-Estimate.xlsx`](IPC-Migration-Programme-Estimate.xlsx) | **The workbook** — all three stages — timeline, twelve milestones, payments, cash flow, resourcing, options, confidence, and live Gantt and resource-loading charts |
+| [`IPC-Stage-1-Offer-A-20-lakh.xlsx`](IPC-Stage-1-Offer-A-20-lakh.xlsx) | Stage 1 scoped to a ₹20 lakh final cost — 122 PD, 20 weeks, 12.8% margin |
+| [`IPC-Stage-1-Offer-B-30-lakh.xlsx`](IPC-Stage-1-Offer-B-30-lakh.xlsx) | Stage 1 scoped to a ₹30 lakh final cost — 179 PD, 24 weeks, 15.7% margin |
 | [`model/`](model/) | The effort model: 62 work packages, a seeded Monte Carlo, and the builder that generates the workbook |
 | [`migration-plan.md`](migration-plan.md) | The plan — target-state options, a recommendation, seven phases with exit criteria, risks, and the questions that must be answered before anything is costed |
 | [`site-audit.md`](site-audit.md) | Measured source state of ipc.gov.in: platform, hosting, crawlability, security headers, content inventory, bilingual coverage |

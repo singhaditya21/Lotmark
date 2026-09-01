@@ -1,0 +1,183 @@
+{
+ "meta": {
+  "note": "Two priced offers, each a complete self-contained Stage 1 engagement scoped to a stated final cost inclusive of GST. Stage 2 and the options are shown in both as indicative and NOT contracted, so nobody reads either ceiling as buying the migration.",
+  "fx": {
+   "usd_inr": 95,
+   "basis": "USD/INR planning rate, September 2026 (spot band 94.6-95.8). Take a real quote at the day's rate."
+  },
+  "licence": {
+   "name": "Claude Max 20x",
+   "usd_per_month": 200,
+   "source": "Tier price per aipricing.guru and IntuitionLabs, September 2026. NOTE: claude.com/pricing itself lists Max as 'From $100 per month' without separating the 5x and 20x tiers, so confirm at purchase.",
+   "gst_note": "Imported digital service (OIDAR). 18% IGST applies under reverse charge and is recoverable as input credit by a GST-registered supplier, so it is carried ex-tax in the cost base.",
+   "seats": 1
+  }
+ },
+ "variants": [
+  {
+   "key": "v20",
+   "label": "Offer A",
+   "target_inc_gst": 2000000,
+   "weeks": 20,
+   "licence_months": 5,
+   "tooling_inr": 60000,
+   "headline": "Remediate and inventory",
+   "buys": "The live site made lawful and measurable, and one authoritative register of what the estate actually contains. The redirect map is delivered by PATTERN with only the traffic-bearing tail decided by hand.",
+   "not_buys": "A row-by-row redirect map, a signed PDF disposition, orphan recovery, CSP hardening, the destination status-layer design, and the GIGW policy-page work. Each moves to Stage 2, where it will cost more than it would have here.",
+   "drop": [
+    "0.8",
+    "0.9",
+    "1.4",
+    "1.7",
+    "2.3"
+   ],
+   "resize": {
+    "0.2": [
+     2,
+     3,
+     6
+    ],
+    "2.2": [
+     3,
+     4,
+     8
+    ],
+    "2.6": [
+     3,
+     5,
+     10
+    ],
+    "2.7": [
+     2,
+     4,
+     9
+    ],
+    "2.8": [
+     4,
+     6,
+     12
+    ],
+    "P.1a": [
+     6,
+     9,
+     17
+    ],
+    "P.2a": [
+     3,
+     5,
+     10
+    ],
+    "P.3a": [
+     3,
+     4,
+     8
+    ]
+   },
+   "milestones": [
+    {
+     "ref": "A1",
+     "week": 2,
+     "name": "Mobilisation and inception report",
+     "share": 0.1,
+     "exit": "Team named. Inception report accepted: scope, RACI, access list, and the written re-statement of the objective as adopting DBIM and the Gov.In CMS Platform rather than moving to india.gov.in. Claude Max 20x provisioned to the named analyst.",
+     "evidence": "Signed inception report; access requests lodged for the Joomla database, Search Console and registry.gov.in."
+    },
+    {
+     "ref": "A2",
+     "week": 7,
+     "name": "Live site remediated",
+     "share": 0.25,
+     "exit": "A missing path returns a genuine HTTP 404 under both a browser and a bare user agent. Header charset is UTF-8 and Devanagari renders. All 389 Hindi pages declare lang=\"hi\". robots.txt published. joomla.xml no longer publicly readable.",
+     "evidence": "Automated assertion suite run in front of the client, with before-and-after captures. Every item destination-independent, so none of it is wasted whichever target wins."
+    },
+    {
+     "ref": "A3",
+     "week": 11,
+     "name": "Platform and audit decision note",
+     "share": 0.15,
+     "exit": "Written intake position from the MoHFW CIO or a signed decision to take the DBIM-aligned rebuild. Audit route settled in writing. S3WaaS ruled in or out on the record. registry.gov.in control confirmed.",
+     "evidence": "Decision note with one signed page per question, each with a named owner and a date."
+    },
+    {
+     "ref": "A4",
+     "week": 16,
+     "name": "Authoritative URL register",
+     "share": 0.3,
+     "exit": "One register unioning the Joomla database, a live two-signal crawl and Search Console traffic. Every URL appears exactly once, live-validated, with language tree, template and title. Triage dispositions captured for the traffic-bearing head of the estate.",
+     "evidence": "Register delivered as a checked-in dataset with the crawl and validation code that produced it, so IPC can re-run it without the supplier."
+    },
+    {
+     "ref": "A5",
+     "week": 20,
+     "name": "Pattern redirect map and handover",
+     "share": 0.2,
+     "exit": "Redirect rules by URL pattern covering the estate, with the traffic-bearing tail decided row by row. Documented gap list naming every path still undecided, so Stage 2 starts from a known position rather than a fresh crawl.",
+     "evidence": "Rule set plus a gap register. An automated check that every pattern resolves and no rule shadows another."
+    }
+   ]
+  },
+  {
+   "key": "v30",
+   "label": "Offer B",
+   "target_inc_gst": 3000000,
+   "weeks": 24,
+   "licence_months": 6,
+   "tooling_inr": 100000,
+   "headline": "Remediate, inventory and decide",
+   "buys": "Everything in Offer A, plus a hand-decided redirect map covering every surviving path, a signed PDF disposition across ~2,758 documents, orphan recovery, CSP hardening, and the Stage 2 cost baseline as a contracted deliverable.",
+   "not_buys": "The migration itself. Stage 2 remains a separate procurement and its figure here is indicative until this engagement re-derives it.",
+   "drop": [],
+   "resize": {},
+   "milestones": [
+    {
+     "ref": "M1",
+     "week": 2,
+     "name": "Mobilisation and inception report",
+     "share": 0.1,
+     "exit": "Team named and on site. Inception report accepted: scope, RACI, access list, and the written re-statement of the objective as adopting DBIM and the Gov.In CMS Platform rather than 'moving to india.gov.in'.",
+     "evidence": "Signed inception report; access requests lodged for the Joomla database, Search Console and registry.gov.in."
+    },
+    {
+     "ref": "M2",
+     "week": 8,
+     "name": "Live site remediated",
+     "share": 0.2,
+     "exit": "A missing path returns a genuine HTTP 404 under both a browser and a bare user agent. Header charset is UTF-8 and Devanagari renders. All 389 Hindi pages declare lang=\"hi\". CSP no longer carries a wildcard with unsafe-inline and unsafe-eval. robots.txt published. joomla.xml no longer publicly readable.",
+     "evidence": "Automated assertion suite, run in front of the client, with before-and-after captures. Every item destination-independent."
+    },
+    {
+     "ref": "M3",
+     "week": 12,
+     "name": "Platform decision pack",
+     "share": 0.15,
+     "exit": "Written intake position from the MoHFW CIO, or a signed decision to take the DBIM-aligned rebuild instead. Redirect capability and destination status-code behaviour proven and documented, with the origin status-layer design if needed. Audit route settled in writing. S3WaaS ruled in or out on the record. DBIM logo lockup determined. registry.gov.in control confirmed.",
+     "evidence": "Decision pack with one signed page per question, each with a named owner and a date."
+    },
+    {
+     "ref": "M4",
+     "week": 16,
+     "name": "Draft inventory: the union register",
+     "share": 0.2,
+     "exit": "One register unioning the Joomla database, a live two-signal crawl, Wayback and Common Crawl orphans, and Search Console traffic. Every URL appears exactly once, live-validated, with language tree, template and title. Hindi paired by hreflang, never by URL transformation.",
+     "evidence": "Register delivered as a checked-in dataset with the crawl and validation code that produced it, so the client can re-run it."
+    },
+    {
+     "ref": "M5",
+     "week": 20,
+     "name": "Signed disposition register and redirect map",
+     "share": 0.25,
+     "exit": "Every verified URL carries a keep / archive / retire disposition signed by a named IPC content owner, including explicit dispositions for PvPI, the news archive, the legacy paths and the PDF estate. Redirect map complete: one decided row per surviving source path, with Hindi rows byte-verified through the real toolchain.",
+     "evidence": "Signed CSV. Automated check that every source path resolves to exactly one row and no destination is unreachable."
+    },
+    {
+     "ref": "M6",
+     "week": 24,
+     "name": "Stage 2 cost baseline and handover",
+     "share": 0.1,
+     "exit": "Stage 2 re-costed from the delivered register rather than from estimate, with quantities, rates and a three-point spread. Operating documentation and SOPs handed over. Recurring obligations listed with named owners.",
+     "evidence": "Stage 2 baseline document plus the re-runnable model. This is the deliverable that makes Stage 2 procurable."
+    }
+   ]
+  }
+ ]
+}
