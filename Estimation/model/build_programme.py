@@ -11,6 +11,10 @@ import json, pathlib
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
+from openpyxl.chart import BarChart, Reference, LineChart
+from openpyxl.chart.series import DataPoint
+from openpyxl.chart.label import DataLabelList
+from openpyxl.drawing.fill import PatternFillProperties, ColorChoice
 
 HERE = pathlib.Path(__file__).parent
 OUT = HERE.parent / "IPC-Migration-Programme-Estimate.xlsx"
@@ -122,6 +126,7 @@ for k, v in [
     ("Options & Exclusions", "The priced options, and the statutory costs that genuinely cannot be priced yet."),
     ("Confidence", "Percentiles, the correlation assumption and its sensitivity, and where the uncertainty actually lives."),
     ("Rate Card & Commercials", "Roles and rates, the supplier-tier envelope test, and EMD, PBG and LD at IPC's own revealed rates."),
+    ("Charts", "Four live Excel charts: a phase-level Gantt, a package-level Gantt across all 49 packages, resource loading stacked by role, and team size in FTE. Their backing data sits to the right in column AD — edit it and the charts move."),
 ]: r = kv(ws, r, k, v)
 r += 1
 r = kv(ws, r, "UNITS", "", True)
@@ -370,6 +375,7 @@ for rr in sorted(ROLE, key=lambda x: -sum(rp[x])):
         if i >= 4: c.number_format = "0.0"
     r += 1
 tots = [sum(rp[rr][p] for rr in ROLE) for p in range(1, NP + 1)]
+rp_tot = [0.0] + tots
 for i, v in enumerate(["", "TOTAL PD", "", sum(tots)] + tots, 1):
     c = ws.cell(row=r, column=i, value=v); c.font = F(10, True); c.fill = fill(BAND)
     if i >= 4: c.number_format = "0.0"
@@ -576,6 +582,130 @@ for t in SCH["commercial_terms"]:
             c.font = F(9, c=MUTE); c.alignment = Alignment(wrap_text=True, vertical="top")
             ws.row_dimensions[r].height = 15 * (1 + len(v) // 78)
     r += 1
+
+
+# =================================================================== CHARTS
+# Native Excel charts, so they stay live if anyone edits the backing numbers.
+# A Gantt in Excel is a stacked bar: an invisible offset series carrying the
+# start week, then a visible duration series on top of it.
+ws = wb.create_sheet("Charts")
+title(ws, "Charts", "Live Excel charts driven by the data blocks below them. The Gantt is a stacked "
+      "bar whose first series is invisible — that series carries the start week, the second carries "
+      "the duration. Edit a number in the block and the chart moves.", 8)
+
+def noline(series):
+    series.graphicalProperties.line.noFill = True
+
+def gantt(anchor, rows, data_row0, data_col0, height, chart_title):
+    """rows: list of (label, start_week, duration, hex_colour). Returns next free row."""
+    r0 = data_row0
+    ws.cell(row=r0, column=data_col0, value="Item").font = F(9, True, "FFFFFF")
+    ws.cell(row=r0, column=data_col0 + 1, value="Start-1").font = F(9, True, "FFFFFF")
+    ws.cell(row=r0, column=data_col0 + 2, value="Duration").font = F(9, True, "FFFFFF")
+    for cc in range(data_col0, data_col0 + 3):
+        ws.cell(row=r0, column=cc).fill = fill(HEAD)
+    for i, (label, start, dur, _col) in enumerate(rows, 1):
+        ws.cell(row=r0 + i, column=data_col0, value=label).font = F(9)
+        ws.cell(row=r0 + i, column=data_col0 + 1, value=start - 1).font = F(9)
+        ws.cell(row=r0 + i, column=data_col0 + 2, value=dur).font = F(9)
+
+    ch = BarChart(); ch.type = "bar"; ch.grouping = "stacked"; ch.overlap = 100
+    ch.title = chart_title
+    ch.height = height; ch.width = 30
+    data = Reference(ws, min_col=data_col0 + 1, max_col=data_col0 + 2,
+                     min_row=r0, max_row=r0 + len(rows))
+    cats = Reference(ws, min_col=data_col0, min_row=r0 + 1, max_row=r0 + len(rows))
+    ch.add_data(data, titles_from_data=True); ch.set_categories(cats)
+    off, dur_s = ch.series[0], ch.series[1]
+    off.graphicalProperties.noFill = True; noline(off)
+    for i, (_l, _s, _d, col) in enumerate(rows):
+        dp = DataPoint(idx=i); dp.graphicalProperties.solidFill = col
+        dp.graphicalProperties.line.solidFill = col
+        dur_s.data_points.append(dp)
+    ch.x_axis.scaling.orientation = "maxMin"      # categories: first row at the top
+    ch.y_axis.scaling.min = 0; ch.y_axis.scaling.max = TOTAL_W
+    ch.y_axis.majorGridlines = None
+    ch.y_axis.title = "Programme week"
+    ch.y_axis.delete = False; ch.x_axis.delete = False
+    ch.legend = None
+    ws.add_chart(ch, anchor)
+    return r0 + len(rows) + 2
+
+# --- Chart 1 · phase-level Gantt -----------------------------------------
+def span(pkgs, sm, off):
+    a = min(sm[p["ref"]]["start"] for p in pkgs) + off
+    b = max(sm[p["ref"]]["end"] for p in pkgs) + off
+    return a, b
+phase_rows = []
+for label, pkgs, sm, off in (("Stage 1", S1, s1s, 0), ("Stage 2", S2, s2s, S2_OFFSET)):
+    seen = {}
+    for pk in pkgs: seen.setdefault(pk["phase"], []).append(pk)
+    for ph in sorted(seen):
+        a, b = span(seen[ph], sm, off)
+        phase_rows.append((f'{label} · {ph}', a, b - a + 1, PH_FILL[ph[0]]))
+phase_rows.insert(len([r for r in phase_rows if r[0].startswith("Stage 1")]),
+                  ("Procurement gap", S1_W + 1, GAP_W, GAP_FILL))
+DCOL = 30
+nxt = gantt("A5", phase_rows, 4, DCOL, 11, f"Programme Gantt by phase — {TOTAL_W} weeks")
+
+# --- Chart 2 · package-level Gantt ---------------------------------------
+pkg_rows = []
+for pkgs, sm, off in ((S1, s1s, 0), (S2, s2s, S2_OFFSET)):
+    for pk in sorted(pkgs, key=lambda x: (sm[x["ref"]]["start"], x["ref"])):
+        s = sm[pk["ref"]]
+        pkg_rows.append((f'{pk["ref"]} {pk["name"][:44]}', s["start"] + off,
+                         s["end"] - s["start"] + 1, PH_FILL[pk["phase"][0]]))
+nxt = gantt("A28", pkg_rows, nxt, DCOL, 34, f"Work package Gantt — {len(pkg_rows)} packages")
+
+# --- Chart 3 · resource loading ------------------------------------------
+r0 = nxt + 4
+ws.cell(row=r0, column=DCOL, value="Role").font = F(9, True, "FFFFFF")
+ws.cell(row=r0, column=DCOL).fill = fill(HEAD)
+for pi in range(1, NP + 1):
+    c = ws.cell(row=r0, column=DCOL + pi, value=f"P{pi}")
+    c.font = F(9, True, "FFFFFF"); c.fill = fill(HEAD)
+order = [rr for rr in sorted(ROLE, key=lambda x: -sum(rp[x])) if sum(rp[rr]) > 0.05]
+for i, rr in enumerate(order, 1):
+    ws.cell(row=r0 + i, column=DCOL, value=ROLE[rr]["role"]).font = F(9)
+    for pi in range(1, NP + 1):
+        ws.cell(row=r0 + i, column=DCOL + pi, value=round(rp[rr][pi], 2)).font = F(9)
+ROLE_COL = {"ME": "4F6B7A", "BA": "8C7A5B", "EL": "9A6A4F", "SA": "5B6E4F",
+            "SE": "7A5B6B", "QA": "4F5F7A", "CO": "6B6459", "AX": "A88B4A"}
+rc = BarChart(); rc.type = "col"; rc.grouping = "stacked"; rc.overlap = 100
+rc.title = f"Resource loading — person-days by role, {NP} four-week periods (divide by 20 for FTE)"
+rc.height = 12; rc.width = 30
+d = Reference(ws, min_col=DCOL, max_col=DCOL + NP, min_row=r0 + 1, max_row=r0 + len(order))
+rc.add_data(d, titles_from_data=True, from_rows=True)
+rc.set_categories(Reference(ws, min_col=DCOL + 1, max_col=DCOL + NP, min_row=r0))
+for i, rr in enumerate(order):
+    rc.series[i].graphicalProperties.solidFill = ROLE_COL.get(rr, "9CA3AF")
+    rc.series[i].graphicalProperties.line.solidFill = "FFFFFF"
+rc.y_axis.title = "Person-days in period"; rc.x_axis.title = "Four-week period"
+rc.y_axis.delete = False; rc.x_axis.delete = False
+ws.add_chart(rc, "A98")
+
+# --- Chart 4 · total FTE line --------------------------------------------
+rt = r0 + len(order) + 1
+ws.cell(row=rt, column=DCOL, value="Total FTE").font = F(9, True)
+for pi in range(1, NP + 1):
+    ws.cell(row=rt, column=DCOL + pi, value=round(rp_tot[pi] / 20, 3)).font = F(9)
+lc = LineChart()
+lc.title = "Team size — full-time equivalents by period"
+lc.height = 9; lc.width = 30
+lc.add_data(Reference(ws, min_col=DCOL, max_col=DCOL + NP, min_row=rt, max_row=rt),
+            titles_from_data=True, from_rows=True)
+lc.set_categories(Reference(ws, min_col=DCOL + 1, max_col=DCOL + NP, min_row=r0))
+lc.series[0].graphicalProperties.line.solidFill = ACCENT
+lc.series[0].graphicalProperties.line.width = 28000
+lc.y_axis.title = "FTE"; lc.x_axis.title = "Four-week period"
+lc.y_axis.delete = False; lc.x_axis.delete = False; lc.legend = None
+ws.add_chart(lc, "A124")
+
+ws.column_dimensions["A"].width = 14
+ws.column_dimensions[get_column_letter(DCOL)].width = 42
+for cc in range(DCOL + 1, DCOL + NP + 2): ws.column_dimensions[get_column_letter(cc)].width = 9
+c = ws.cell(row=4, column=DCOL - 1, value="Chart data →")
+c.font = F(9, True, MUTE); c.alignment = Alignment(horizontal="right")
 
 for s in wb.worksheets: s.sheet_view.showGridLines = False
 wb.save(OUT)
