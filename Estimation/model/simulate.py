@@ -119,6 +119,12 @@ def main():
         # without pretending the work got smaller.
         "stage1-lean": ([p for p in ALL if p["stage"] == 1 and not p.get("lean_excluded")],
                         [r for r in RISKS if r["stage"] == 1 and r["ref"] != "E13"]),
+        # The recommended scope end to end: lean Stage 1 plus Stage 2, sampled in
+        # the same iterations. Not the sum of the two — a joint run shares the
+        # common factor, so the combined P80 is not P80(a) + P80(b).
+        "recommended": ([p for p in ALL if (p["stage"] == 2) or
+                         (p["stage"] == 1 and not p.get("lean_excluded"))],
+                        [r for r in RISKS if r["ref"] != "E13"]),
     }
 
     out = {"seed": SEED, "iterations": ITERATIONS, "rho": args.rho, "views": {}}
@@ -184,15 +190,19 @@ def main():
     out["stage2_resources"] = fte(views["stage2"][0], ROLES, out["views"]["stage2"]["P80"], months=9.0)
 
     out["sensitivity_stage1"] = {}
+    out["sensitivity_lean"] = {}
+    lr = views["stage1-lean"][1]
     for rho in (0.0, 0.3, 0.5, 0.7):
-        t, _ = simulate(s1p, s1r, rho)
-        out["sensitivity_stage1"][f"rho={rho}"] = pctiles(t)
+        tt, _ = simulate(s1p, s1r, rho)
+        out["sensitivity_stage1"][f"rho={rho}"] = pctiles(tt)
+        tl, _ = simulate(lp, lr, rho)
+        out["sensitivity_lean"][f"rho={rho}"] = pctiles(tl)
 
     if args.json:
         print(json.dumps(out, indent=1)); return
 
     print(f'{ITERATIONS:,} iterations · seed {SEED} · rho {args.rho}\n')
-    for name in ("stage1", "stage1-lean", "stage2", "stage1+2", "options"):
+    for name in ("stage1", "stage1-lean", "stage2", "recommended", "stage1+2", "options"):
         v = out["views"][name]
         print(f'{name.upper():<10} {v["packages"]:>2} packages  '
               f'PERT {v["pert_expected_pd"]:>6.1f} PD + risk EMV {v["risk_emv_pd"]:>5.1f} PD')

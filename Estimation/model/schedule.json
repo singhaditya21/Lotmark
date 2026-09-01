@@ -10,7 +10,12 @@
   "gst": 0.18,
   "note": "Phase 2 starts in week 3, in parallel with Phase 1 rather than after it. The 302-to-404 behaviour measured on 2026-09-01 is a usable existence oracle, so the inventory is not blocked on the 404 fix — which removes roughly six weeks from the plan's original sequencing.",
   "payment_lag_weeks": 4,
-  "payment_lag_note": "Government payment against a certified milestone conventionally runs 30 days. Modelled as a four-week lag between billing and receipt; it is where the working capital goes."
+  "payment_lag_note": "Government payment against a certified milestone conventionally runs 30 days. Modelled as a four-week lag between billing and receipt; it is where the working capital goes.",
+  "programme_weeks": 76,
+  "stage1_weeks": 24,
+  "gap_weeks": 12,
+  "stage2_weeks": 40,
+  "gap_note": "Stage 2 cannot be procured until Stage 1 delivers the baseline that makes it costable. Twelve weeks is the planning figure for that gap: IPC's last bid ran 11 days from publication to close, but carried 180 days of bid validity, and the governance chain — Secretary, then Chairman of the Governing Body, then the Governing Body — is the long pole. Range 8 to 16 weeks. This gap is where programmes lose time, so it is drawn rather than hidden."
  },
  "schedule": [
   {
@@ -219,6 +224,215 @@
    "rate": 0.1,
    "of": "contract value",
    "note": "M6 is itself 10% and is the natural retention. Do not stack a further retention on top of it."
+  }
+ ],
+ "stage2_schedule": [
+  {
+   "ref": "3.1",
+   "start": 1,
+   "end": 6
+  },
+  {
+   "ref": "3.3",
+   "start": 2,
+   "end": 7
+  },
+  {
+   "ref": "3.2",
+   "start": 3,
+   "end": 8
+  },
+  {
+   "ref": "3.11",
+   "start": 4,
+   "end": 10
+  },
+  {
+   "ref": "3.4",
+   "start": 6,
+   "end": 20
+  },
+  {
+   "ref": "3.7",
+   "start": 7,
+   "end": 14
+  },
+  {
+   "ref": "3.9",
+   "start": 10,
+   "end": 22
+  },
+  {
+   "ref": "3.5",
+   "start": 12,
+   "end": 18
+  },
+  {
+   "ref": "3.10",
+   "start": 14,
+   "end": 18
+  },
+  {
+   "ref": "3.12",
+   "start": 16,
+   "end": 19
+  },
+  {
+   "ref": "3.14",
+   "start": 16,
+   "end": 22
+  },
+  {
+   "ref": "4.2",
+   "start": 18,
+   "end": 26
+  },
+  {
+   "ref": "4.1",
+   "start": 21,
+   "end": 25
+  },
+  {
+   "ref": "4.3",
+   "start": 26,
+   "end": 31
+  },
+  {
+   "ref": "4.4",
+   "start": 31,
+   "end": 33
+  },
+  {
+   "ref": "4.5",
+   "start": 32,
+   "end": 34
+  },
+  {
+   "ref": "5.1",
+   "start": 30,
+   "end": 35
+  },
+  {
+   "ref": "5.2",
+   "start": 33,
+   "end": 36
+  },
+  {
+   "ref": "5.4",
+   "start": 34,
+   "end": 38
+  },
+  {
+   "ref": "5.3",
+   "start": 35,
+   "end": 37
+  },
+  {
+   "ref": "5.5",
+   "start": 36,
+   "end": 40
+  },
+  {
+   "ref": "P.1b",
+   "start": 1,
+   "end": 40
+  },
+  {
+   "ref": "P.2b",
+   "start": 1,
+   "end": 38
+  },
+  {
+   "ref": "P.3b",
+   "start": 32,
+   "end": 40
+  }
+ ],
+ "stage2_milestones": [
+  {
+   "ref": "N1",
+   "week": 4,
+   "name": "Mobilisation and platform tenancy live",
+   "share": 0.1,
+   "exit": "Gov.In CMS tenancy provisioned at cms-ipc.digifootprint.gov.in with named editor accounts and roles. Stage 1's signed register loaded as the working backlog. DBIM logo lockup applied.",
+   "evidence": "Tenancy reachable, roles demonstrated, register imported and row-counted against the Stage 1 sign-off."
+  },
+  {
+   "ref": "N2",
+   "week": 10,
+   "name": "Information architecture and templates approved",
+   "share": 0.15,
+   "exit": "IPC's deep Joomla trees re-expressed in the platform's flat structure and signed off. Template mapping complete across the nine source templates. CCPS banner slot reserved in the first wireframe, not retrofitted. Applications boundary decided in writing for /shop, /e-services, PvPI, iponline and onlinestore.",
+   "evidence": "Approved IA document; wireframes showing the CCPS slot; a signed applications scope decision."
+  },
+  {
+   "ref": "N3",
+   "week": 22,
+   "name": "Content loaded and staging frozen",
+   "share": 0.25,
+   "exit": "Every item with a keep disposition is live on staging with alt text and heading structure present at import, not retrofitted. Hindi byte-verified through the real toolchain. WCAG 2.1 AA passes on a stratified sample covering every template plus 10% of pages. Staging frozen — GIGW 5.3.1 requires audit clearance before production hosting and the auditor must test a frozen instance.",
+   "evidence": "Freeze declared in writing with a build identifier. Accessibility report against the stratified sample."
+  },
+  {
+   "ref": "N4",
+   "week": 34,
+   "name": "Audit clearance certificate issued",
+   "share": 0.2,
+   "exit": "Audit clearance certificate naming the specific frozen instance, from NIC, STQC or a CERT-In empanelled vendor. Every finding closed or formally accepted by the Web Information Manager. Zero code changes after retest — any change reopens the obligation.",
+   "evidence": "The certificate itself, plus a findings register with a disposition against every row."
+  },
+  {
+   "ref": "N5",
+   "week": 37,
+   "name": "Cut-over complete and redirects asserted",
+   "share": 0.2,
+   "exit": "One A-record changed at registry.gov.in; MX records untouched and a post-cut-over mail delivery test passed. 100% of redirect rows return a 301 to a 200, asserted automatically. Retired paths return 404 or 410, never 200 — via the origin status layer if the destination still answers 200 at shallow depths. Sitemap and robots.txt published and accepted in Search Console.",
+   "evidence": "Automated redirect assertion run over every row; mail test transcript; Search Console acceptance."
+  },
+  {
+   "ref": "N6",
+   "week": 40,
+   "name": "Hypercare complete and handover",
+   "share": 0.1,
+   "exit": "Four to six weeks of hypercare with the 404 log reviewed weekly and fixes applied. IGOD entry refreshed and India Portal depository records contributed. Every recurring obligation — security re-audit cadence, content review cycle, surveillance — carries a named owner and a calendar entry.",
+   "evidence": "404-log review record; IGOD entry; a signed obligations register with owners."
+  }
+ ],
+ "excluded_unpriced": [
+  {
+   "item": "STQC Certified Quality Website fee",
+   "position": "No GIGW 3.0 tariff is published",
+   "note": "The circulating INR 40,000 is real but its own section 6.1 scopes it to GIGW version 2009 and 87 test points. Obtain a written quote from the assigned STQC IT Laboratory, payable via Bharatkosh."
+  },
+  {
+   "item": "CERT-In empanelled security audit",
+   "position": "Bimodal: zero or lakhs",
+   "note": "GIGW 3.0 accepts clearance from NIC, STQC or a CERT-In empanelled vendor. If NIC performs it the line is zero. If procured, no Indian government body publishes a VAPT rate card and it goes to quotation."
+  },
+  {
+   "item": "IAAP Certified Auditor Review Report",
+   "position": "Unpriced, and newly mandatory",
+   "note": "STQC OM F.No. STQC/IT&eGov/WQC/2022 dated 30.06.2025 makes it a pre-requisite for GIGW evaluation. Commencement language is equivocal - confirm before relying on the date."
+  },
+  {
+   "item": "Third-party accessibility audit",
+   "position": "Vendor marketing ranges only",
+   "note": "No Indian government rate card exists. Priced per template and per sampled page, so the Phase 3 exit criterion drives it."
+  },
+  {
+   "item": "Bhashini production use",
+   "position": "Unpublished",
+   "note": "Official documentation states API usage shall be for proof-of-concept only. bhashini.ai is a separate commercial site and its prices are not the platform's."
+  },
+  {
+   "item": "Gov.In CMS Platform and NIC hosting",
+   "position": "Unpriced in both directions",
+   "note": "No published tariff, and no published statement that it is free. A genuine void, not a gap in searching."
+  },
+  {
+   "item": "Hindi translation",
+   "position": "Rate known, volume not",
+   "note": "Carry INR 1.00 / 2.50 / 6.00 per word. The National Translation Mission schedule of INR 0.50-1.00 is a scholar honorarium at roughly a quarter of market and will under-price a procured programme."
   }
  ]
 }

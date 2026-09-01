@@ -301,6 +301,69 @@
      "share": 0.035
     }
    ]
+  },
+  "recommended": {
+   "packages": 49,
+   "risks": 12,
+   "pert_expected_pd": 281.6,
+   "risk_emv_pd": 56.4,
+   "P10": 271.9,
+   "P50": 334.8,
+   "P70": 364.0,
+   "P80": 382.5,
+   "P90": 407.9,
+   "P95": 428.9,
+   "by_role_pd": {
+    "EL": 41.7,
+    "SA": 24.2,
+    "BA": 70.0,
+    "ME": 85.2,
+    "AX": 10.9,
+    "SE": 20.5,
+    "QA": 14.2,
+    "CO": 15.0
+   },
+   "by_phase_pd": {
+    "0 \u00b7 Mandate and decisions": 22.5,
+    "1 \u00b7 Emergency remediation": 18.2,
+    "2 \u00b7 Inventory and redirect map": 60.8,
+    "3 \u00b7 Build and content load": 68.5,
+    "4 \u00b7 Audit and clearance": 24.2,
+    "5 \u00b7 Cut-over and hypercare": 24.7,
+    "P \u00b7 Programme management": 63.0
+   },
+   "variance_drivers": [
+    {
+     "ref": "2.8",
+     "name": "Redirect map \u2014 ~1,727 distinct source paths; rows exceed paths",
+     "share": 0.123
+    },
+    {
+     "ref": "P.1b",
+     "name": "Programme and delivery management \u2014 Stage 2",
+     "share": 0.104
+    },
+    {
+     "ref": "P.1a",
+     "name": "Programme and delivery management \u2014 Stage 1",
+     "share": 0.067
+    },
+    {
+     "ref": "3.4",
+     "name": "Content mapping, authoring supervision and QA \u2014 no bulk import exists",
+     "share": 0.063
+    },
+    {
+     "ref": "3.9",
+     "name": "Accessibility conformance \u2014 9 templates, one covering 83% of pages",
+     "share": 0.057
+    },
+    {
+     "ref": "2.6",
+     "name": "Triage facilitation \u2014 keep / archive / retire",
+     "share": 0.05
+    }
+   ]
   }
  },
  "tiers": [
@@ -1044,6 +1107,40 @@
    "P80": 206.1,
    "P90": 222.1,
    "P95": 235.1
+  }
+ },
+ "sensitivity_lean": {
+  "rho=0.0": {
+   "P10": 140.5,
+   "P50": 157.1,
+   "P70": 164.3,
+   "P80": 168.5,
+   "P90": 174.5,
+   "P95": 179.4
+  },
+  "rho=0.3": {
+   "P10": 130.4,
+   "P50": 156.5,
+   "P70": 168.2,
+   "P80": 175.2,
+   "P90": 185.3,
+   "P95": 193.4
+  },
+  "rho=0.5": {
+   "P10": 125.4,
+   "P50": 156.0,
+   "P70": 170.1,
+   "P80": 178.7,
+   "P90": 191.0,
+   "P95": 201.0
+  },
+  "rho=0.7": {
+   "P10": 121.1,
+   "P50": 155.4,
+   "P70": 171.7,
+   "P80": 181.9,
+   "P90": 196.1,
+   "P95": 207.6
   }
  }
 }

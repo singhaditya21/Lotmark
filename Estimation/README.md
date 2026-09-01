@@ -9,7 +9,8 @@ GIGW 3.0, S3WaaS, CERT-In, STQC) and by direct probing of the live sites.
 | Document | What it is |
 |---|---|
 | [`estimate.md`](estimate.md) | **The estimate** — what it costs, who does it, and what a ₹20–30 lakh budget actually buys |
-| [`model/`](model/) | The effort model: 62 work packages, a seeded Monte Carlo, and the run that produced every figure |
+| [`IPC-Migration-Programme-Estimate.xlsx`](IPC-Migration-Programme-Estimate.xlsx) | **The workbook** — all three stages: timeline, twelve milestones, payments, cash flow, resourcing, options and confidence |
+| [`model/`](model/) | The effort model: 62 work packages, a seeded Monte Carlo, and the builder that generates the workbook |
 | [`migration-plan.md`](migration-plan.md) | The plan — target-state options, a recommendation, seven phases with exit criteria, risks, and the questions that must be answered before anything is costed |
 | [`site-audit.md`](site-audit.md) | Measured source state of ipc.gov.in: platform, hosting, crawlability, security headers, content inventory, bilingual coverage |
 | [`inventory/ipc-gov-in-urls.tsv`](inventory/ipc-gov-in-urls.tsv) | 195 URLs discovered from the navigation, with section, depth, language and type |
