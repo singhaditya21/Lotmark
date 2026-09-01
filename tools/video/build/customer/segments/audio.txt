@@ -1,0 +1,7 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/audio/00-slide.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/audio/01-catalogue.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/audio/02-order.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/audio/03-my-orders.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/audio/04-vault.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/audio/05-share.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/audio/06-tiers.wav'

@@ -1,0 +1,44 @@
+1
+00:00:00,000 --> 00:00:09,500
+A regulated console fills up with records
+fast. Two things keep it navigable:
+knowing what is waiting, and going
+straight to a code.
+
+2
+00:00:09,500 --> 00:00:18,775
+A producer lands on their own work rather
+than a table of everything. These counts
+are scoped to what this person can
+actually act on.
+
+3
+00:00:18,775 --> 00:00:29,125
+Underneath is the work itself — studies
+awaiting a signature, an open corrective
+action — each one a way straight into the
+screen that clears it.
+
+4
+00:00:29,125 --> 00:00:32,950
+Clicking a count takes you to the surface
+that holds it.
+
+5
+00:00:32,950 --> 00:00:41,950
+Everything here is cited by a code — in a
+corrective action, an email, an audit
+finding. Command K resolves one.
+
+6
+00:00:41,950 --> 00:00:52,275
+Typing a certificate number finds it among
+every record this person may see, and
+opens the project it belongs to — not a
+list of search results.
+
+7
+00:00:52,275 --> 00:01:00,950
+A nonconformity number does the same, and
+lands on the register instead. One key,
+whatever the code refers to.

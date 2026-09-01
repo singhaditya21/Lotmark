@@ -1,0 +1,7 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/segments/00-slide.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/segments/01-create.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/segments/02-enrolment.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/segments/03-forced.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/segments/04-rule.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/segments/05-in.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/segments/06-revoke.mp4'

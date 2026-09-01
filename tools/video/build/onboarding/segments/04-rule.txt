@@ -1,0 +1,225 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000624.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000625.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000626.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000627.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000628.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000629.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000630.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000631.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000632.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000633.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000634.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000635.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000636.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000637.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000638.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000639.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000640.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000641.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000642.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000643.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000644.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000645.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000646.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000647.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000648.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000649.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000650.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000651.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000652.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000653.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000654.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000655.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000656.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000657.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000658.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000659.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000660.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000661.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000662.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000663.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000664.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000665.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000666.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000667.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000668.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000669.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000670.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000671.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000672.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000673.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000674.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000675.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000676.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000677.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000678.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000679.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000680.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000681.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000682.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000683.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000684.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000685.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000686.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000687.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000688.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000689.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000690.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000691.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000692.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000693.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000694.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000695.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000696.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000697.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000698.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000699.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000700.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000701.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000702.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000703.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000704.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000705.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000706.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000707.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000708.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000709.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000710.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000711.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000712.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000713.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000714.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000715.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000716.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000717.jpg'
+duration 0.5230
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000718.jpg'
+duration 0.4970
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000719.jpg'
+duration 0.5070
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000720.jpg'
+duration 0.4990
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000721.jpg'
+duration 0.4920
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000722.jpg'
+duration 0.5020
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000723.jpg'
+duration 0.5000
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000724.jpg'
+duration 0.4950
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000725.jpg'
+duration 0.4950
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000726.jpg'
+duration 0.5070
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000727.jpg'
+duration 0.5000
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000728.jpg'
+duration 0.5040
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000729.jpg'
+duration 0.4990
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000730.jpg'
+duration 0.5040
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000731.jpg'
+duration 0.5010
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000732.jpg'
+duration 0.4990
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000733.jpg'
+duration 0.4920
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000734.jpg'
+duration 0.5060
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000735.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/frames/000735.jpg'

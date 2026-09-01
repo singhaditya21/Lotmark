@@ -1,10 +1,13 @@
 # dependencies
-node_modules/
+# node_modules/ is tracked by explicit request — see "Committed build output"
+# in the README. .pnpm-store stays ignored: it is the content-addressed cache,
+# not the tree the app resolves against.
 .pnpm-store/
 
 # build output
-dist/
-build/
+# dist/ and build/ are likewise tracked by explicit request.
+.next/
+out/
 .next/
 out/
 *.tsbuildinfo

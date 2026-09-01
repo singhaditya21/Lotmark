@@ -1,0 +1,13 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/main/frames/003306.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/main/frames/003307.jpg'
+duration 0.3140
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/main/frames/003308.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/main/frames/003309.jpg'
+duration 0.4950
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/main/frames/003310.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/main/frames/003311.jpg'
+duration 12.8260
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/main/frames/003311.jpg'

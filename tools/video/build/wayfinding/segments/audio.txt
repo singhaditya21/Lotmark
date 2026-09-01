@@ -1,0 +1,7 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/audio/00-slide.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/audio/01-home.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/audio/02-inbox.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/audio/03-clickthrough.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/audio/04-palette.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/audio/05-jump.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/audio/06-capa.wav'

@@ -1,0 +1,1617 @@
+{
+  "frames": [
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000000.jpg",
+      "w": 38
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000001.jpg",
+      "w": 42
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000002.jpg",
+      "w": 80
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000003.jpg",
+      "w": 552
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000004.jpg",
+      "w": 1053
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000005.jpg",
+      "w": 1533
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000006.jpg",
+      "w": 2069
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000007.jpg",
+      "w": 2545
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000008.jpg",
+      "w": 3051
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000009.jpg",
+      "w": 3550
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000010.jpg",
+      "w": 4036
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000011.jpg",
+      "w": 4551
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000012.jpg",
+      "w": 5047
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000013.jpg",
+      "w": 5549
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000014.jpg",
+      "w": 6040
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000015.jpg",
+      "w": 6538
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000016.jpg",
+      "w": 7049
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000017.jpg",
+      "w": 7551
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000018.jpg",
+      "w": 8049
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000019.jpg",
+      "w": 8540
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000020.jpg",
+      "w": 9040
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000021.jpg",
+      "w": 9550
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000022.jpg",
+      "w": 10046
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000023.jpg",
+      "w": 10438
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000024.jpg",
+      "w": 10448
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000025.jpg",
+      "w": 10457
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000026.jpg",
+      "w": 10468
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000027.jpg",
+      "w": 10481
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000028.jpg",
+      "w": 10499
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000029.jpg",
+      "w": 10515
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000030.jpg",
+      "w": 10532
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000031.jpg",
+      "w": 10550
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000032.jpg",
+      "w": 10563
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000033.jpg",
+      "w": 10582
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000034.jpg",
+      "w": 10598
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000035.jpg",
+      "w": 10615
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000036.jpg",
+      "w": 10631
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000037.jpg",
+      "w": 10648
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000038.jpg",
+      "w": 10665
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000039.jpg",
+      "w": 10682
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000040.jpg",
+      "w": 10699
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000041.jpg",
+      "w": 10715
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000042.jpg",
+      "w": 10731
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000043.jpg",
+      "w": 10748
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000044.jpg",
+      "w": 10765
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000045.jpg",
+      "w": 10782
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000046.jpg",
+      "w": 10798
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000047.jpg",
+      "w": 10815
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000048.jpg",
+      "w": 10833
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000049.jpg",
+      "w": 10849
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000050.jpg",
+      "w": 10871
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000051.jpg",
+      "w": 10887
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000052.jpg",
+      "w": 10903
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000053.jpg",
+      "w": 10921
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000054.jpg",
+      "w": 10939
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000055.jpg",
+      "w": 10954
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000056.jpg",
+      "w": 10972
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000057.jpg",
+      "w": 10984
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000058.jpg",
+      "w": 11001
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000059.jpg",
+      "w": 11021
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000060.jpg",
+      "w": 11038
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000061.jpg",
+      "w": 11053
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000062.jpg",
+      "w": 11070
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000063.jpg",
+      "w": 11087
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000064.jpg",
+      "w": 11102
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000065.jpg",
+      "w": 11120
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000066.jpg",
+      "w": 11137
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000067.jpg",
+      "w": 11153
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000068.jpg",
+      "w": 11170
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000069.jpg",
+      "w": 11186
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000070.jpg",
+      "w": 11203
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000071.jpg",
+      "w": 11220
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000072.jpg",
+      "w": 11236
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000073.jpg",
+      "w": 11254
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000074.jpg",
+      "w": 11270
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000075.jpg",
+      "w": 11285
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000076.jpg",
+      "w": 11303
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000077.jpg",
+      "w": 11319
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000078.jpg",
+      "w": 11336
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000079.jpg",
+      "w": 11354
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000080.jpg",
+      "w": 11371
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000081.jpg",
+      "w": 11387
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000082.jpg",
+      "w": 11404
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000083.jpg",
+      "w": 11420
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000084.jpg",
+      "w": 11437
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000085.jpg",
+      "w": 11454
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000086.jpg",
+      "w": 11486
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000087.jpg",
+      "w": 11502
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000088.jpg",
+      "w": 11508
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000089.jpg",
+      "w": 11535
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000090.jpg",
+      "w": 11549
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000091.jpg",
+      "w": 11568
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000092.jpg",
+      "w": 11587
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000093.jpg",
+      "w": 11600
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000094.jpg",
+      "w": 11615
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000095.jpg",
+      "w": 11632
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000096.jpg",
+      "w": 11649
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000097.jpg",
+      "w": 11666
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000098.jpg",
+      "w": 11682
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000099.jpg",
+      "w": 11698
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000100.jpg",
+      "w": 11715
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000101.jpg",
+      "w": 11732
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000102.jpg",
+      "w": 11748
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000103.jpg",
+      "w": 11764
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000104.jpg",
+      "w": 11782
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000105.jpg",
+      "w": 11798
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000106.jpg",
+      "w": 11815
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000107.jpg",
+      "w": 11831
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000108.jpg",
+      "w": 11847
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000109.jpg",
+      "w": 11864
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000110.jpg",
+      "w": 11881
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000111.jpg",
+      "w": 11897
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000112.jpg",
+      "w": 11915
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000113.jpg",
+      "w": 11932
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000114.jpg",
+      "w": 11948
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000115.jpg",
+      "w": 11964
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000116.jpg",
+      "w": 11983
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000117.jpg",
+      "w": 11999
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000118.jpg",
+      "w": 12016
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000119.jpg",
+      "w": 12034
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000120.jpg",
+      "w": 12268
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000121.jpg",
+      "w": 12322
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000122.jpg",
+      "w": 12328
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000123.jpg",
+      "w": 12334
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000124.jpg",
+      "w": 12347
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000125.jpg",
+      "w": 12365
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000126.jpg",
+      "w": 12381
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000127.jpg",
+      "w": 12398
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000128.jpg",
+      "w": 12414
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000129.jpg",
+      "w": 12431
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000130.jpg",
+      "w": 12447
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000131.jpg",
+      "w": 12463
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000132.jpg",
+      "w": 12480
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000133.jpg",
+      "w": 12497
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000134.jpg",
+      "w": 12514
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000135.jpg",
+      "w": 12530
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000136.jpg",
+      "w": 12547
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000137.jpg",
+      "w": 12563
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000138.jpg",
+      "w": 12580
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000139.jpg",
+      "w": 12597
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000140.jpg",
+      "w": 12614
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000141.jpg",
+      "w": 12630
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000142.jpg",
+      "w": 12647
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000143.jpg",
+      "w": 12663
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000144.jpg",
+      "w": 12681
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000145.jpg",
+      "w": 12697
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000146.jpg",
+      "w": 12714
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000147.jpg",
+      "w": 12731
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000148.jpg",
+      "w": 12748
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000149.jpg",
+      "w": 12764
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000150.jpg",
+      "w": 12781
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000151.jpg",
+      "w": 12797
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000152.jpg",
+      "w": 12814
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000153.jpg",
+      "w": 12831
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000154.jpg",
+      "w": 12866
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000155.jpg",
+      "w": 12881
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000156.jpg",
+      "w": 12897
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000157.jpg",
+      "w": 12915
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000158.jpg",
+      "w": 12932
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000159.jpg",
+      "w": 12948
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000160.jpg",
+      "w": 12966
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000161.jpg",
+      "w": 12982
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000162.jpg",
+      "w": 13000
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000163.jpg",
+      "w": 13013
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000164.jpg",
+      "w": 13032
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000165.jpg",
+      "w": 13052
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000166.jpg",
+      "w": 13065
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000167.jpg",
+      "w": 13082
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000168.jpg",
+      "w": 13098
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000169.jpg",
+      "w": 13115
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000170.jpg",
+      "w": 13131
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000171.jpg",
+      "w": 13149
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000172.jpg",
+      "w": 13165
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000173.jpg",
+      "w": 13181
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000174.jpg",
+      "w": 13198
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000175.jpg",
+      "w": 13214
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000176.jpg",
+      "w": 13231
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000177.jpg",
+      "w": 13248
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000178.jpg",
+      "w": 13265
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000179.jpg",
+      "w": 13282
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000180.jpg",
+      "w": 13300
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000181.jpg",
+      "w": 13315
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000182.jpg",
+      "w": 13332
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000183.jpg",
+      "w": 13352
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000184.jpg",
+      "w": 13367
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000185.jpg",
+      "w": 13576
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000186.jpg",
+      "w": 13600
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000187.jpg",
+      "w": 13648
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000188.jpg",
+      "w": 13656
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000189.jpg",
+      "w": 22713
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000190.jpg",
+      "w": 22723
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000191.jpg",
+      "w": 22755
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000192.jpg",
+      "w": 22768
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000193.jpg",
+      "w": 22784
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000194.jpg",
+      "w": 22799
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000195.jpg",
+      "w": 22817
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000196.jpg",
+      "w": 22829
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000197.jpg",
+      "w": 22848
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000198.jpg",
+      "w": 22865
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000199.jpg",
+      "w": 22881
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000200.jpg",
+      "w": 22898
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000201.jpg",
+      "w": 22914
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000202.jpg",
+      "w": 22932
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000203.jpg",
+      "w": 22948
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000204.jpg",
+      "w": 22964
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000205.jpg",
+      "w": 22980
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000206.jpg",
+      "w": 22997
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000207.jpg",
+      "w": 23014
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000208.jpg",
+      "w": 23031
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000209.jpg",
+      "w": 23048
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000210.jpg",
+      "w": 23064
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000211.jpg",
+      "w": 23080
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000212.jpg",
+      "w": 23097
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000213.jpg",
+      "w": 23114
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000214.jpg",
+      "w": 23131
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000215.jpg",
+      "w": 23148
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000216.jpg",
+      "w": 23165
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000217.jpg",
+      "w": 23182
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000218.jpg",
+      "w": 23199
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000219.jpg",
+      "w": 23216
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000220.jpg",
+      "w": 23234
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000221.jpg",
+      "w": 23253
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000222.jpg",
+      "w": 23271
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000223.jpg",
+      "w": 36079
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000224.jpg",
+      "w": 36092
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000225.jpg",
+      "w": 36120
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000226.jpg",
+      "w": 36133
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000227.jpg",
+      "w": 36147
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000228.jpg",
+      "w": 36165
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000229.jpg",
+      "w": 36182
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000230.jpg",
+      "w": 36196
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000231.jpg",
+      "w": 36214
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000232.jpg",
+      "w": 36231
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000233.jpg",
+      "w": 36248
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000234.jpg",
+      "w": 36266
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000235.jpg",
+      "w": 36279
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000236.jpg",
+      "w": 36297
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000237.jpg",
+      "w": 36314
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000238.jpg",
+      "w": 36331
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000239.jpg",
+      "w": 36347
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000240.jpg",
+      "w": 36363
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000241.jpg",
+      "w": 36381
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000242.jpg",
+      "w": 36397
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000243.jpg",
+      "w": 36415
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000244.jpg",
+      "w": 36430
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000245.jpg",
+      "w": 36447
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000246.jpg",
+      "w": 36464
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000247.jpg",
+      "w": 36480
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000248.jpg",
+      "w": 36497
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000249.jpg",
+      "w": 36514
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000250.jpg",
+      "w": 36531
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000251.jpg",
+      "w": 36547
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000252.jpg",
+      "w": 36564
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000253.jpg",
+      "w": 36581
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000254.jpg",
+      "w": 36599
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000255.jpg",
+      "w": 36614
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000256.jpg",
+      "w": 36634
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000257.jpg",
+      "w": 37423
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000258.jpg",
+      "w": 37434
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000259.jpg",
+      "w": 42397
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000260.jpg",
+      "w": 42408
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000261.jpg",
+      "w": 42801
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000262.jpg",
+      "w": 42810
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000263.jpg",
+      "w": 42820
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000264.jpg",
+      "w": 42833
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000265.jpg",
+      "w": 42847
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000266.jpg",
+      "w": 42864
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000267.jpg",
+      "w": 42881
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000268.jpg",
+      "w": 42910
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000269.jpg",
+      "w": 42927
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000270.jpg",
+      "w": 43424
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000271.jpg",
+      "w": 43928
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000272.jpg",
+      "w": 44418
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000273.jpg",
+      "w": 44915
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000274.jpg",
+      "w": 45425
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000275.jpg",
+      "w": 45929
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000276.jpg",
+      "w": 46426
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000277.jpg",
+      "w": 46918
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000278.jpg",
+      "w": 47421
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000279.jpg",
+      "w": 47916
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000280.jpg",
+      "w": 48428
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000281.jpg",
+      "w": 48928
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000282.jpg",
+      "w": 49420
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000283.jpg",
+      "w": 49925
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000284.jpg",
+      "w": 50416
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000285.jpg",
+      "w": 50922
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000286.jpg",
+      "w": 51426
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000287.jpg",
+      "w": 51918
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000288.jpg",
+      "w": 52425
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000289.jpg",
+      "w": 52907
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000290.jpg",
+      "w": 53427
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000291.jpg",
+      "w": 53920
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000292.jpg",
+      "w": 53937
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000293.jpg",
+      "w": 53946
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000294.jpg",
+      "w": 53956
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000295.jpg",
+      "w": 53968
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000296.jpg",
+      "w": 53984
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000297.jpg",
+      "w": 54000
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000298.jpg",
+      "w": 54018
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000299.jpg",
+      "w": 54040
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000300.jpg",
+      "w": 54059
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000301.jpg",
+      "w": 54076
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000302.jpg",
+      "w": 54093
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000303.jpg",
+      "w": 54109
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000304.jpg",
+      "w": 54126
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000305.jpg",
+      "w": 54143
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000306.jpg",
+      "w": 54160
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000307.jpg",
+      "w": 54176
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000308.jpg",
+      "w": 54191
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000309.jpg",
+      "w": 54209
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000310.jpg",
+      "w": 54225
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000311.jpg",
+      "w": 54242
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000312.jpg",
+      "w": 54258
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000313.jpg",
+      "w": 54276
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000314.jpg",
+      "w": 54300
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000315.jpg",
+      "w": 54310
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000316.jpg",
+      "w": 54326
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000317.jpg",
+      "w": 54343
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000318.jpg",
+      "w": 54360
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000319.jpg",
+      "w": 54376
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000320.jpg",
+      "w": 54393
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000321.jpg",
+      "w": 54411
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000322.jpg",
+      "w": 54428
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000323.jpg",
+      "w": 54938
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000324.jpg",
+      "w": 55337
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000325.jpg",
+      "w": 55430
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000326.jpg",
+      "w": 55722
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000327.jpg",
+      "w": 55733
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000328.jpg",
+      "w": 55743
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000329.jpg",
+      "w": 55752
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000330.jpg",
+      "w": 55767
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000331.jpg",
+      "w": 55783
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000332.jpg",
+      "w": 55799
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000333.jpg",
+      "w": 55816
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000334.jpg",
+      "w": 55840
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000335.jpg",
+      "w": 55858
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000336.jpg",
+      "w": 67249
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000337.jpg",
+      "w": 67263
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000338.jpg",
+      "w": 67655
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000339.jpg",
+      "w": 67664
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000340.jpg",
+      "w": 67673
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000341.jpg",
+      "w": 67685
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000342.jpg",
+      "w": 67700
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000343.jpg",
+      "w": 67718
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000344.jpg",
+      "w": 67738
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000345.jpg",
+      "w": 67764
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000346.jpg",
+      "w": 67783
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000347.jpg",
+      "w": 67796
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000348.jpg",
+      "w": 67811
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000349.jpg",
+      "w": 67826
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000350.jpg",
+      "w": 67843
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000351.jpg",
+      "w": 67859
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000352.jpg",
+      "w": 67873
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000353.jpg",
+      "w": 67889
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000354.jpg",
+      "w": 67909
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000355.jpg",
+      "w": 67929
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000356.jpg",
+      "w": 67947
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000357.jpg",
+      "w": 67962
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000358.jpg",
+      "w": 67978
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000359.jpg",
+      "w": 67993
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000360.jpg",
+      "w": 68010
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000361.jpg",
+      "w": 68025
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000362.jpg",
+      "w": 68040
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000363.jpg",
+      "w": 68059
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000364.jpg",
+      "w": 68075
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000365.jpg",
+      "w": 68091
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000366.jpg",
+      "w": 68109
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000367.jpg",
+      "w": 68127
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000368.jpg",
+      "w": 68143
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000369.jpg",
+      "w": 68161
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000370.jpg",
+      "w": 68177
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000371.jpg",
+      "w": 68192
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000372.jpg",
+      "w": 68209
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000373.jpg",
+      "w": 68230
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000374.jpg",
+      "w": 68249
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000375.jpg",
+      "w": 68263
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000376.jpg",
+      "w": 68769
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000377.jpg",
+      "w": 69176
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000378.jpg",
+      "w": 69269
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000379.jpg",
+      "w": 69556
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000380.jpg",
+      "w": 69567
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000381.jpg",
+      "w": 69579
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000382.jpg",
+      "w": 69589
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000383.jpg",
+      "w": 69601
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000384.jpg",
+      "w": 69618
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000385.jpg",
+      "w": 69634
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000386.jpg",
+      "w": 69657
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000387.jpg",
+      "w": 69675
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000388.jpg",
+      "w": 69691
+    },
+    {
+      "file": "/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000389.jpg",
+      "w": 69700
+    }
+  ],
+  "marks": [
+    {
+      "id": "00-slide",
+      "act": "Finding your way",
+      "start": 0,
+      "end": 10407,
+      "audio": 9.5
+    },
+    {
+      "id": "01-home",
+      "act": "Finding your way",
+      "start": 10407,
+      "end": 22687,
+      "audio": 9.275
+    },
+    {
+      "id": "02-inbox",
+      "act": "Finding your way",
+      "start": 22687,
+      "end": 36042,
+      "audio": 10.35
+    },
+    {
+      "id": "03-clickthrough",
+      "act": "Finding your way",
+      "start": 36043,
+      "end": 42371,
+      "audio": 3.825
+    },
+    {
+      "id": "04-palette",
+      "act": "Finding your way",
+      "start": 42371,
+      "end": 53876,
+      "audio": 9
+    },
+    {
+      "id": "05-jump",
+      "act": "Finding your way",
+      "start": 53877,
+      "end": 67207,
+      "audio": 10.325
+    },
+    {
+      "id": "06-capa",
+      "act": "Finding your way",
+      "start": 67208,
+      "end": 79388,
+      "audio": 8.675
+    }
+  ],
+  "width": 1920,
+  "height": 1080
+}

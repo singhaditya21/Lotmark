@@ -1,0 +1,43 @@
+1
+00:00:00,000 --> 00:00:08,125
+A reference material is bought by
+somebody. This is what they see — and,
+just as importantly, what they do not.
+
+2
+00:00:08,125 --> 00:00:16,650
+The catalogue carries only released lots
+whose value somebody authorised, each with
+its certificate and its expiry.
+
+3
+00:00:16,650 --> 00:00:25,700
+Ordering is priced per unit, against her
+own organisation. The quantity cannot
+exceed the stock that actually exists.
+
+4
+00:00:25,700 --> 00:00:32,275
+It appears in her orders with its own
+number — and nobody else’s orders are
+visible to her.
+
+5
+00:00:32,275 --> 00:00:40,575
+The vault holds the certificate behind
+every material on her shelves, and says
+loudly when one has been withdrawn.
+
+6
+00:00:40,575 --> 00:00:49,500
+Each one carries a verification address
+she can copy and hand to her own auditor,
+who needs no account with the producer at
+all.
+
+7
+00:00:49,500 --> 00:01:00,475
+And a laboratory that qualifies for a
+price tier claims it here — a request
+somebody on the producer side has to
+decide, with their reasoning recorded.

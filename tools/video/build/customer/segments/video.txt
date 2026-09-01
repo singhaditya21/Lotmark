@@ -1,0 +1,7 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/segments/00-slide.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/segments/01-catalogue.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/segments/02-order.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/segments/03-my-orders.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/segments/04-vault.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/segments/05-share.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/segments/06-tiers.mp4'

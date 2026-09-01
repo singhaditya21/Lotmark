@@ -1,1 +1,2 @@
-build/
+# build/ is tracked by explicit request — it holds the per-film frames,
+# segments and narration the finished films are assembled from.

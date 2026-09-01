@@ -1,0 +1,47 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000000.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000001.jpg'
+duration 0.0380
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000002.jpg'
+duration 0.4720
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000003.jpg'
+duration 0.5010
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000004.jpg'
+duration 0.4800
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000005.jpg'
+duration 0.5360
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000006.jpg'
+duration 0.4760
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000007.jpg'
+duration 0.5060
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000008.jpg'
+duration 0.4990
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000009.jpg'
+duration 0.4860
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000010.jpg'
+duration 0.5150
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000011.jpg'
+duration 0.4960
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000012.jpg'
+duration 0.5020
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000013.jpg'
+duration 0.4910
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000014.jpg'
+duration 0.4980
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000015.jpg'
+duration 0.5110
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000016.jpg'
+duration 0.5020
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000017.jpg'
+duration 0.4980
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000018.jpg'
+duration 0.4910
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000019.jpg'
+duration 0.5000
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000020.jpg'
+duration 0.5100
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000021.jpg'
+duration 0.4960
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000022.jpg'
+duration 0.3610
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/frames/000022.jpg'

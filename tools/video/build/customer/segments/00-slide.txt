@@ -1,0 +1,45 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000000.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000001.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000002.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000003.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000004.jpg'
+duration 0.5000
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000005.jpg'
+duration 0.5060
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000006.jpg'
+duration 0.4930
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000007.jpg'
+duration 0.5030
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000008.jpg'
+duration 0.4920
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000009.jpg'
+duration 0.5070
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000010.jpg'
+duration 0.4920
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000011.jpg'
+duration 0.5060
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000012.jpg'
+duration 0.5050
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000013.jpg'
+duration 0.4970
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000014.jpg'
+duration 0.4990
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000015.jpg'
+duration 0.5000
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000016.jpg'
+duration 0.4950
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000017.jpg'
+duration 0.4950
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000018.jpg'
+duration 0.5100
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000019.jpg'
+duration 0.4920
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000020.jpg'
+duration 0.5110
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000021.jpg'
+duration 0.4430
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/customer/frames/000021.jpg'

@@ -1,0 +1,7 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/segments/00-slide.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/segments/01-home.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/segments/02-inbox.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/segments/03-clickthrough.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/segments/04-palette.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/segments/05-jump.mp4'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/wayfinding/segments/06-capa.mp4'

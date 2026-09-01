@@ -1,0 +1,7 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/lowcode/frames/000336.jpg'
+duration 0.0333
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/lowcode/frames/000337.jpg'
+duration 5.0730
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/lowcode/frames/000338.jpg'
+duration 8.7260
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/lowcode/frames/000338.jpg'

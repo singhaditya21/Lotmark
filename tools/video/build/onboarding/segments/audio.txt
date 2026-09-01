@@ -1,0 +1,7 @@
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/audio/00-slide.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/audio/01-create.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/audio/02-enrolment.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/audio/03-forced.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/audio/04-rule.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/audio/05-in.wav'
+file '/Users/adityasingh/PersonalWork/Lotmark App/tools/video/build/onboarding/audio/06-revoke.wav'

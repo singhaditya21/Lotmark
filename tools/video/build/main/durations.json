@@ -1,0 +1,23 @@
+{
+  "00-slide": 9.175,
+  "01-home": 10.825,
+  "02-attention": 8.85,
+  "03-open-study": 5.55,
+  "04-sign-ceremony": 8.65,
+  "05-signed": 12.825,
+  "06-handoff": 4.975,
+  "07-authorise": 10.525,
+  "08-release": 7.875,
+  "09-certificate": 7.725,
+  "10-buyer": 8.8,
+  "11-order": 8.375,
+  "12-dispatch": 8.05,
+  "13-excursion": 7.025,
+  "14-capa-raised": 10.925,
+  "15-investigate": 8.875,
+  "16-withdraw": 8.325,
+  "17-ledger": 6.175,
+  "18-verify-chain": 10.05,
+  "19-config": 9.85,
+  "20-public-verify": 9.675
+}
