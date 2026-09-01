@@ -1,0 +1,224 @@
+{
+ "meta": {
+  "stage": "Stage 1 — Remediate and baseline",
+  "basis_date": "2026-09-01",
+  "weeks": 24,
+  "months": 5.5,
+  "pd_p80": 179,
+  "pd_pert": 130.6,
+  "contract_ex_gst": 2388000,
+  "gst": 0.18,
+  "note": "Phase 2 starts in week 3, in parallel with Phase 1 rather than after it. The 302-to-404 behaviour measured on 2026-09-01 is a usable existence oracle, so the inventory is not blocked on the 404 fix — which removes roughly six weeks from the plan's original sequencing.",
+  "payment_lag_weeks": 4,
+  "payment_lag_note": "Government payment against a certified milestone conventionally runs 30 days. Modelled as a four-week lag between billing and receipt; it is where the working capital goes."
+ },
+ "schedule": [
+  {
+   "ref": "0.1",
+   "start": 1,
+   "end": 3
+  },
+  {
+   "ref": "0.2",
+   "start": 2,
+   "end": 12
+  },
+  {
+   "ref": "0.4",
+   "start": 4,
+   "end": 7
+  },
+  {
+   "ref": "0.5",
+   "start": 5,
+   "end": 9
+  },
+  {
+   "ref": "0.6",
+   "start": 3,
+   "end": 7
+  },
+  {
+   "ref": "0.8",
+   "start": 6,
+   "end": 10
+  },
+  {
+   "ref": "0.9",
+   "start": 4,
+   "end": 9
+  },
+  {
+   "ref": "1.1",
+   "start": 3,
+   "end": 6
+  },
+  {
+   "ref": "1.2",
+   "start": 3,
+   "end": 7
+  },
+  {
+   "ref": "1.4",
+   "start": 5,
+   "end": 8
+  },
+  {
+   "ref": "1.6",
+   "start": 6,
+   "end": 7
+  },
+  {
+   "ref": "1.7",
+   "start": 4,
+   "end": 8
+  },
+  {
+   "ref": "1.8",
+   "start": 5,
+   "end": 8
+  },
+  {
+   "ref": "2.1",
+   "start": 3,
+   "end": 7
+  },
+  {
+   "ref": "2.2",
+   "start": 3,
+   "end": 6
+  },
+  {
+   "ref": "2.3",
+   "start": 5,
+   "end": 8
+  },
+  {
+   "ref": "2.4",
+   "start": 6,
+   "end": 9
+  },
+  {
+   "ref": "2.5",
+   "start": 8,
+   "end": 11
+  },
+  {
+   "ref": "2.6",
+   "start": 10,
+   "end": 19
+  },
+  {
+   "ref": "2.7",
+   "start": 11,
+   "end": 18
+  },
+  {
+   "ref": "2.8",
+   "start": 13,
+   "end": 20
+  },
+  {
+   "ref": "2.9",
+   "start": 9,
+   "end": 13
+  },
+  {
+   "ref": "P.1a",
+   "start": 1,
+   "end": 24
+  },
+  {
+   "ref": "P.2a",
+   "start": 2,
+   "end": 22
+  },
+  {
+   "ref": "P.3a",
+   "start": 18,
+   "end": 24
+  }
+ ],
+ "milestones": [
+  {
+   "ref": "M1",
+   "week": 2,
+   "name": "Mobilisation and inception report",
+   "share": 0.1,
+   "exit": "Team named and on site. Inception report accepted: scope, RACI, access list, and the written re-statement of the objective as adopting DBIM and the Gov.In CMS Platform rather than 'moving to india.gov.in'.",
+   "evidence": "Signed inception report; access requests lodged for the Joomla database, Search Console and registry.gov.in."
+  },
+  {
+   "ref": "M2",
+   "week": 8,
+   "name": "Live site remediated",
+   "share": 0.2,
+   "exit": "A missing path returns a genuine HTTP 404 under both a browser and a bare user agent. Header charset is UTF-8 and Devanagari renders. All 389 Hindi pages declare lang=\"hi\". CSP no longer carries a wildcard with unsafe-inline and unsafe-eval. robots.txt published. joomla.xml no longer publicly readable.",
+   "evidence": "Automated assertion suite, run in front of the client, with before-and-after captures. Every item destination-independent."
+  },
+  {
+   "ref": "M3",
+   "week": 12,
+   "name": "Platform decision pack",
+   "share": 0.15,
+   "exit": "Written intake position from the MoHFW CIO, or a signed decision to take the DBIM-aligned rebuild instead. Redirect capability and destination status-code behaviour proven and documented, with the origin status-layer design if needed. Audit route settled in writing. S3WaaS ruled in or out on the record. DBIM logo lockup determined. registry.gov.in control confirmed.",
+   "evidence": "Decision pack with one signed page per question, each with a named owner and a date."
+  },
+  {
+   "ref": "M4",
+   "week": 16,
+   "name": "Draft inventory: the union register",
+   "share": 0.2,
+   "exit": "One register unioning the Joomla database, a live two-signal crawl, Wayback and Common Crawl orphans, and Search Console traffic. Every URL appears exactly once, live-validated, with language tree, template and title. Hindi paired by hreflang, never by URL transformation.",
+   "evidence": "Register delivered as a checked-in dataset with the crawl and validation code that produced it, so the client can re-run it."
+  },
+  {
+   "ref": "M5",
+   "week": 20,
+   "name": "Signed disposition register and redirect map",
+   "share": 0.25,
+   "exit": "Every verified URL carries a keep / archive / retire disposition signed by a named IPC content owner, including explicit dispositions for PvPI, the news archive, the legacy paths and the PDF estate. Redirect map complete: one decided row per surviving source path, with Hindi rows byte-verified through the real toolchain.",
+   "evidence": "Signed CSV. Automated check that every source path resolves to exactly one row and no destination is unreachable."
+  },
+  {
+   "ref": "M6",
+   "week": 24,
+   "name": "Stage 2 cost baseline and handover",
+   "share": 0.1,
+   "exit": "Stage 2 re-costed from the delivered register rather than from estimate, with quantities, rates and a three-point spread. Operating documentation and SOPs handed over. Recurring obligations listed with named owners.",
+   "evidence": "Stage 2 baseline document plus the re-runnable model. This is the deliverable that makes Stage 2 procurable."
+  }
+ ],
+ "commercial_terms": [
+  {
+   "item": "Earnest money deposit",
+   "rate": 0.04,
+   "of": "contract value",
+   "note": "IPC's own revealed rate on GEM/2026/B/7781379 (13-07-2026), against a GeM recommendation of 1%. Refundable, but it blocks working capital through evaluation."
+  },
+  {
+   "item": "Performance bank guarantee",
+   "rate": 0.05,
+   "of": "contract value",
+   "note": "IPC's revealed rate, held 60 months on its last IT bid. For a 5.5-month assignment, negotiate the term down — a 60-month PBG on a 24-week engagement is a real and avoidable carrying cost."
+  },
+  {
+   "item": "PBG carrying cost per annum",
+   "rate": 0.015,
+   "of": "PBG value",
+   "note": "Bank commission. Routinely forgotten in pricing."
+  },
+  {
+   "item": "Liquidated damages cap",
+   "rate": 0.1,
+   "of": "contract value",
+   "note": "Convention is 0.5% per week of delay capped at 10%. This is the schedule risk expressed in rupees."
+  },
+  {
+   "item": "Retention against M6",
+   "rate": 0.1,
+   "of": "contract value",
+   "note": "M6 is itself 10% and is the natural retention. Do not stack a further retention on top of it."
+  }
+ ]
+}
